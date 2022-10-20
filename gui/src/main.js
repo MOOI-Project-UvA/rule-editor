@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { Quasar } from 'quasar'
 import quasarIconSet from 'quasar/icon-set/mdi-v6'
+import { store } from "./store";
 
 // Import icon libraries
 import '@quasar/extras/mdi-v6/mdi-v6.css'
@@ -13,6 +14,7 @@ import 'quasar/dist/quasar.css'
 import App from './App.vue'
 
 const myApp = createApp(App)
+myApp.use(store)
 
 myApp.use(Quasar, {
   plugins: {}, // import Quasar plugins and add here
