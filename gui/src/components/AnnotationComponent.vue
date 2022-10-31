@@ -42,35 +42,33 @@ export default {
   data: () => ({
     recogitoInstance: null,
   }),
+  computed: {
+    annotationMode() {
+      return this.$store.state.annotationMode;
+    },
+  },
   mounted() {
-    const that = this;
     this.recogitoInstance = new Recogito({
-      content: that.$refs.panel,
-      widgets: that.widgets,
+      content: this.$refs.panel,
+      widgets: this.widgets,
     });
-    // this.setEventHandlers();
-    this.recogitoInstance.on("createAnnotation", (annotation) => {
-      // this.saveAnnotation(annotation);
-      console.log("created Annotation!: ", annotation);
-    });
+    // adding event handlers
+    this.setEventHandlers();
   },
   methods: {
     setEventHandlers() {
-      // Add an event handler
+      // used when annotation has been created
       this.recogitoInstance.on("createAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("created Annotation!: ", annotation);
       });
-      //   this.recogitoInstance.on("updateAnnotation", (annotation) => {
-      //     // this.updateAnnotation(annotation);
-      //     console.log("updating Annotation!: ", annotation);
-      //   });
-      //   this.recogitoInstance.on("deleteAnnotation", (annotation) => {
-      //     // this.deleteAnnotation(annotation);
-      //     console.log("deleting Annotation!: ", annotation);
-      //   });
-
-      //   this.recogitoInstance.setAnnotations(this.annotationsForThisSentence);
+      // load annotations
+      this.recogitoInstance.loadAnnotations("/annotations.json");
+    },
+  },
+  watch: {
+    annotationMode(mode) {
+      this.recogitoInstance.setMode(mode);
     },
   },
 };

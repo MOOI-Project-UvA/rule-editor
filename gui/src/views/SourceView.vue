@@ -3,6 +3,10 @@
     <q-card-section>
       <search-form @showText="showText = true"></search-form>
     </q-card-section>
+    <!-- controllers for the annotation part -->
+    <q-card-section class="q-ml-md" v-if="showText">
+      <annotation-tools></annotation-tools>
+    </q-card-section>
     <!-- the retrieved legal text will be shown here -->
     <q-card-section v-if="showText">
       <q-list bordered class="rounded-borders q-pa-md">
@@ -31,9 +35,10 @@
 
 <script>
 import AnnotationComponent from "../components/AnnotationComponent.vue";
+import AnnotationTools from "../components/AnnotationTools.vue";
 import searchForm from "../components/searchForm.vue";
 export default {
-  components: { searchForm, AnnotationComponent },
+  components: { searchForm, AnnotationComponent, AnnotationTools },
   data: () => ({
     showText: false,
     expanded: true,
@@ -333,6 +338,7 @@ Bij het opstellen van een regeling wordt onderzocht welke hogere regels de vrijh
  </p>`,
     },
   }),
+  methods: {},
 };
 </script>
 
