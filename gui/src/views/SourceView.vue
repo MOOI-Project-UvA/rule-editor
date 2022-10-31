@@ -1,62 +1,47 @@
 <template>
   <q-card flat class="my-card q-ma-sm">
-    <!-- <q-card-section>
-      <div class="text-h6">Source view</div>
-    </q-card-section> -->
-
     <q-card-section>
       <search-form @showText="showText = true"></search-form>
     </q-card-section>
     <!-- the retrieved legal text will be shown here -->
     <q-card-section v-if="showText">
-      <div>
-        <q-list bordered class="rounded-borders q-pa-md">
-          <q-expansion-item
-            v-model="expanded"
-            expand-icon-toggle
-            switch-toggle-side
-            expand-separator
-            icon="mdi-book-search-outline"
-            :label="legalText.title"
-            :caption="legalText.docID"
-            default-opened
-          >
-            <!-- <q-separator /> -->
-            <q-card
-              class="q-ma-sm"
-              style="max-height: 70vh; overflow-y: overlay"
-            >
-              <div
-                v-for="(hoofdstuk, index) in legalText.hoofdstukken"
-                :key="index"
-              >
-                <q-card-section>
-                  <div class="text-h6">{{ hoofdstuk.title }}</div>
-                </q-card-section>
-                <q-card-section class="q-pt-none" v-html="hoofdstuk.content" />
-              </div>
-            </q-card>
-          </q-expansion-item>
-        </q-list>
-      </div>
+      <q-list bordered class="rounded-borders q-pa-md">
+        <q-expansion-item
+          v-model="expanded"
+          expand-icon-toggle
+          switch-toggle-side
+          expand-separator
+          icon="mdi-book-search-outline"
+          :label="legalText.title"
+          :caption="legalText.docID"
+          default-opened
+        >
+          <!-- <q-separator /> -->
+          <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
+            <q-card-section class="q-pt-none">
+              <annotation-component :text="legalText.text">
+              </annotation-component>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
     </q-card-section>
   </q-card>
 </template>
 
 <script>
+import AnnotationComponent from "../components/AnnotationComponent.vue";
 import searchForm from "../components/searchForm.vue";
 export default {
-  components: { searchForm },
+  components: { searchForm, AnnotationComponent },
   data: () => ({
     showText: false,
     expanded: true,
     legalText: {
       docID: "BWBR0005730",
       title: "Circulaire van de Minister-President van 18 november 1992",
-      hoofdstukken: [
-        {
-          title: "Hoofdstuk 1. Toepassingsbereik",
-          content: `<p>Aanwijzing 1.1. Reikwijdte</p>
+      text: ` <p>Hoofdstuk 1. Toepassingsbereik</p>
+          <p>Aanwijzing 1.1. Reikwijdte</p>
           <p>Deze aanwijzingen hebben betrekking op regelingen die onder ministeriële verantwoordelijkheid tot stand komen, en, voor zover uitdrukkelijk aangegeven, op verdragen, bindende besluiten van instellingen van de Europese Unie en andere besluiten van volkenrechtelijke organisaties.</p>
           <p>Toelichting</p>
           <p>In deze aanwijzingen staan met name de wetgevingstechniek en de wetgevingskwaliteit centraal. Zie voor de meer procedurele en organisatorische aspecten van het wetgevingsproces het Draaiboek voor de regelgeving, te raadplegen op de website van het Kenniscentrum voor beleid en regelgeving (www.kcbr.nl). Het Draaiboek bevat ook de modelbrieven die behoren bij de verschillende fasen van het wetgevingsproces.</p>
@@ -92,34 +77,20 @@ export default {
           <p>Tweede lid. Zie voor een nadere omlijning van deze begrippen artikel 288 VWEU. Onder deze benaming worden tevens verordeningen, richtlijnen en kaderbesluiten verstaan die tot stand zijn gekomen voorafgaand aan de inwerkingtreding van het Verdrag van Lissabon, alsmede verordeningen en richtlijnen vastgesteld op grond van artikel 106bis van het Euratomverdrag.</p>
           <p>Derde lid. Dit lid doelt op de juridisch bindende handelingen, genoemd in artikel 288 VWEU. Ook in dit geval kan het tevens gaan om juridisch bindende handelingen die zijn vastgesteld op grond van artikel 106bis van het Euratomverdrag. Door de toevoeging van ‘bindende’ aan ‘EU-rechtshandelingen’ worden de overige rechtsinstrumenten van artikel 288 VWEU uitgesloten.</p>
           <p>Het oude begrip ‘beschikking’ uit artikel 249 EG-Verdrag is met het Verdrag van Lissabon vervangen door ‘besluit’. Het vereiste van een concrete adressaat is daarbij vervallen. Het nieuwe besluitbegrip uit artikel 288 VWEU omvat twee typen rechtshandelingen: besluiten met adressaat die vooral gebruikt worden voor gevallen waarin onder het EG-verdrag beschikkingen golden, en besluiten zonder adressaat. Zie ook de Handleiding Wetgeving en Europa.</p>
-        `,
-        },
-        {
-          title: "Hoofdstuk 2. Algemene onderwerpen van regelgeving",
-          content: `<p>
-§ 2.1. Uitgangspunten voor het gebruik van regelgeving als instrument</p>
-<p>
-Aanwijzing 2.1. Keuze voor regelgeving</p>
-<p>
-Voor het normeren van gedragingen, handelingen of bevoegdheden worden algemeen verbindende voorschriften, interne regels of beleidsregels gebruikt.</p>
-<p>
-Toelichting</p>
-<p>
-De status van instrumenten als richtlijnen en circulaires is niet eenduidig en helder. Van gebruik van deze instrumenten voor normering dient dan ook zoveel mogelijk te worden afgezien. Circulaires worden alleen gebruikt voor het verstrekken van informatie, die overigens wel betrekking kan hebben op regelgeving.</p>
-<p>
-Aanwijzing 2.2. Noodzaak van regelgeving</p>
-<p>
-Tot het tot stand brengen van een regeling wordt alleen besloten indien de noodzaak daarvan is komen vast te staan.</p>
-<p>
-Toelichting</p>
-<p>
-Regelgeving is noodzakelijk indien aannemelijk is dat het concrete voorstel een effectieve, efficiënte en evenredige reactie vormt op het maatschappelijke probleem dat aanleiding geeft voor die regelgeving. Daarvoor is dus vereist dat voldoende zekerheid bestaat dat de voorgestelde regeling werkelijk zal leiden tot het oplossen of verminderen van dat probleem, dat er geen minder bezwarende alternatieven zijn, en dat de kosten en lasten daarvan gerechtvaardigd worden door de ernst van het probleem. Indien niet aan elke van deze voorwaarden is voldaan, bestaat onvoldoende grond om tot regelgeving (in de voorgenomen vorm) over te gaan. Eventueel kan in zo'n geval een alternatief, minder bezwarend sturingsinstrument worden ingezet, of dient simpelweg van overheidsingrijpen te worden afgezien.</p>
-<p>
-Zie met betrekking tot de toelichting bij de regeling ook aanwijzing 4.43, onderdeel b.</p>
-<p>
-Aanwijzing 2.3. Voorafgaand onderzoek</p>
-<p>
-Alvorens tot het tot stand brengen van een regeling wordt besloten, worden de volgende stappen gezet:
+
+          <p>Hoofdstuk 2. Algemene onderwerpen van regelgeving</p>
+          <p>§ 2.1. Uitgangspunten voor het gebruik van regelgeving als instrument</p>
+          <p>Aanwijzing 2.1. Keuze voor regelgeving</p>
+          <p>Voor het normeren van gedragingen, handelingen of bevoegdheden worden algemeen verbindende voorschriften, interne regels of beleidsregels gebruikt.</p>
+          <p>Toelichting</p>
+          <p>De status van instrumenten als richtlijnen en circulaires is niet eenduidig en helder. Van gebruik van deze instrumenten voor normering dient dan ook zoveel mogelijk te worden afgezien. Circulaires worden alleen gebruikt voor het verstrekken van informatie, die overigens wel betrekking kan hebben op regelgeving.</p>
+          <p>Aanwijzing 2.2. Noodzaak van regelgeving</p>
+          <p>Tot het tot stand brengen van een regeling wordt alleen besloten indien de noodzaak daarvan is komen vast te staan.</p>
+          <p>Toelichting</p>
+          <p>Regelgeving is noodzakelijk indien aannemelijk is dat het concrete voorstel een effectieve, efficiënte en evenredige reactie vormt op het maatschappelijke probleem dat aanleiding geeft voor die regelgeving. Daarvoor is dus vereist dat voldoende zekerheid bestaat dat de voorgestelde regeling werkelijk zal leiden tot het oplossen of verminderen van dat probleem, dat er geen minder bezwarende alternatieven zijn, en dat de kosten en lasten daarvan gerechtvaardigd worden door de ernst van het probleem. Indien niet aan elke van deze voorwaarden is voldaan, bestaat onvoldoende grond om tot regelgeving (in de voorgenomen vorm) over te gaan. Eventueel kan in zo'n geval een alternatief, minder bezwarend sturingsinstrument worden ingezet, of dient simpelweg van overheidsingrijpen te worden afgezien.</p>
+          <p>Zie met betrekking tot de toelichting bij de regeling ook aanwijzing 4.43, onderdeel b.</p>
+          <p>Aanwijzing 2.3. Voorafgaand onderzoek</p>
+          <p>Alvorens tot het tot stand brengen van een regeling wordt besloten, worden de volgende stappen gezet:
 	a.	kennis wordt vergaard over de relevante feiten en omstandigheden met betrekking tot het bewuste onderwerp;
 	b.	de doelen die moeten worden bereikt, worden zo concreet en nauwkeurig mogelijk vastgesteld;
 	c.	onderzocht wordt of de doelen kunnen worden bereikt door middel van het zelfregulerend vermogen in de betrokken sector of sectoren, of dat daarvoor overheidsinterventie noodzakelijk is;
@@ -360,8 +331,6 @@ Bij het opstellen van een regeling wordt onderzocht welke hogere regels de vrijh
 </p>
 <p>Zie ook onderdeel 6.2.1 (Aansluiting op Grondwet en hoger recht) van het IAK. Zie met betrekking tot de toelichting bij de regeling aanwijzing 4.43, onderdeel g.
  </p>`,
-        },
-      ],
     },
   }),
 };
