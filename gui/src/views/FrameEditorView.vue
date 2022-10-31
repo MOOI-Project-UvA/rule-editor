@@ -23,17 +23,28 @@
     <template v-if="currentFrameType == 'act'">
       <ActFrameForm @closed="currentFrameType = null" />
     </template>
+    <template v-if="currentFrameType == 'fact'">
+      <FactFrameForm @closed="currentFrameType = null"/>
+    </template>
+    <template v-if="currentFrameType == 'duty'">
+      <DutyFrameForm @closed="currentFrameType = null"/>
+    </template>
   </div>
 </template>
 
 <script>
-import ActFrameForm from "../components/ActFrameForm.vue";
+import ActFrameForm from '../components/ActFrameForm.vue'
+import FactFrameForm from '../components/FactFrameForm.vue'
+import DutyFrameForm from '../components/DutyFrameForm.vue'
+
 export default {
   data: () => ({
     currentFrameType: null,
   }),
   components: {
     ActFrameForm,
+    FactFrameForm,
+    DutyFrameForm
   },
 };
 </script>
