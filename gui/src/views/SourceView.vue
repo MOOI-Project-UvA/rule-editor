@@ -1,23 +1,45 @@
 <template>
   <q-card flat class="my-card q-ma-sm">
-    <q-card-section>
+    <!-- <q-card-section>
       <div class="text-h6">Source view</div>
-    </q-card-section>
-    <q-separator inset />
+    </q-card-section> -->
+
     <q-card-section>
       <search-form @showText="showText = true"></search-form>
     </q-card-section>
-    <!-- text goes here -->
-    <q-card>
-      <q-card-section>
-        <div class="text-h6">{{ legalText.hoofdstukken[0].title }}</div>
-      </q-card-section>
-      <q-card-section
-        class="q-pt-none"
-        v-html="legalText.hoofdstukken[0].content"
-      >
-      </q-card-section>
-    </q-card>
+    <!-- the retrieved legal text will be shown here -->
+    <q-card-section v-if="showText">
+      <div>
+        <q-list bordered class="rounded-borders q-pa-md">
+          <q-expansion-item
+            v-model="expanded"
+            expand-icon-toggle
+            switch-toggle-side
+            expand-separator
+            icon="mdi-book-search-outline"
+            :label="legalText.title"
+            :caption="legalText.docID"
+            default-opened
+          >
+            <!-- <q-separator /> -->
+            <q-card
+              class="q-ma-sm"
+              style="max-height: 70vh; overflow-y: overlay"
+            >
+              <div
+                v-for="(hoofdstuk, index) in legalText.hoofdstukken"
+                :key="index"
+              >
+                <q-card-section>
+                  <div class="text-h6">{{ hoofdstuk.title }}</div>
+                </q-card-section>
+                <q-card-section class="q-pt-none" v-html="hoofdstuk.content" />
+              </div>
+            </q-card>
+          </q-expansion-item>
+        </q-list>
+      </div>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -27,6 +49,7 @@ export default {
   components: { searchForm },
   data: () => ({
     showText: false,
+    expanded: true,
     legalText: {
       docID: "BWBR0005730",
       title: "Circulaire van de Minister-President van 18 november 1992",
@@ -38,7 +61,8 @@ export default {
           <p>Toelichting</p>
           <p>In deze aanwijzingen staan met name de wetgevingstechniek en de wetgevingskwaliteit centraal. Zie voor de meer procedurele en organisatorische aspecten van het wetgevingsproces het Draaiboek voor de regelgeving, te raadplegen op de website van het Kenniscentrum voor beleid en regelgeving (www.kcbr.nl). Het Draaiboek bevat ook de modelbrieven die behoren bij de verschillende fasen van het wetgevingsproces.</p>
           <p>Zie voor de toepasselijkheid van de aanwijzingen op internationale regelingen en bindende EU-rechtshandelingen de hoofdstukken 8 en 9. Zie met betrekking tot de voorbereiding, totstandkoming en nationale implementatie van Europese regelgeving ook de Handleiding Wetgeving en Europa, eveneens te raadplegen op de website van het Kenniscentrum.</p>
-          <ol>Aanwijzing 1.2. Aanwijzingen voor de rijksdienst
+          <p>Aanwijzing 1.2. Aanwijzingen voor de rijksdienst</p>
+          <ol>
             <li>Deze aanwijzingen worden in acht genomen door de ministers en staatssecretarissen en de onder hen ressorterende personen die bij de voorbereiding en vaststelling van regelingen zijn betrokken.</li>
             <li>Afwijking van deze aanwijzingen is slechts toegestaan, indien onverkorte toepassing daarvan uit een oogpunt van goede regelgeving niet tot aanvaardbare resultaten zou leiden.</li>
           </ol>
@@ -57,8 +81,9 @@ export default {
             	a.	verordeningen;
               b.	richtlijnen.
           </p>
-          <p>3.	Onder bindende EU-rechtshandelingen wordt in deze aanwijzingen verstaan: door de instellingen van de Europese Unie of de Europese Gemeenschap voor Atoomenergie vastgestelde:
-              a.	verordeningen;
+          <p>3.	Onder bindende EU-rechtshandelingen wordt in deze aanwijzingen verstaan: door de instellingen van de Europese Unie of de Europese Gemeenschap voor Atoomenergie vastgestelde:</p>
+
+<p>a.	verordeningen;
               b.	richtlijnen;
               c.	besluiten zonder vermelding van adressaten;
               d.	besluiten met vermelding van adressaten, voor zover mede tot Nederland gericht.</p>
@@ -67,8 +92,11 @@ export default {
           <p>Tweede lid. Zie voor een nadere omlijning van deze begrippen artikel 288 VWEU. Onder deze benaming worden tevens verordeningen, richtlijnen en kaderbesluiten verstaan die tot stand zijn gekomen voorafgaand aan de inwerkingtreding van het Verdrag van Lissabon, alsmede verordeningen en richtlijnen vastgesteld op grond van artikel 106bis van het Euratomverdrag.</p>
           <p>Derde lid. Dit lid doelt op de juridisch bindende handelingen, genoemd in artikel 288 VWEU. Ook in dit geval kan het tevens gaan om juridisch bindende handelingen die zijn vastgesteld op grond van artikel 106bis van het Euratomverdrag. Door de toevoeging van ‘bindende’ aan ‘EU-rechtshandelingen’ worden de overige rechtsinstrumenten van artikel 288 VWEU uitgesloten.</p>
           <p>Het oude begrip ‘beschikking’ uit artikel 249 EG-Verdrag is met het Verdrag van Lissabon vervangen door ‘besluit’. Het vereiste van een concrete adressaat is daarbij vervallen. Het nieuwe besluitbegrip uit artikel 288 VWEU omvat twee typen rechtshandelingen: besluiten met adressaat die vooral gebruikt worden voor gevallen waarin onder het EG-verdrag beschikkingen golden, en besluiten zonder adressaat. Zie ook de Handleiding Wetgeving en Europa.</p>
-          <p>Hoofdstuk 2. Algemene onderwerpen van regelgeving</p>
-<p>
+        `,
+        },
+        {
+          title: "Hoofdstuk 2. Algemene onderwerpen van regelgeving",
+          content: `<p>
 § 2.1. Uitgangspunten voor het gebruik van regelgeving als instrument</p>
 <p>
 Aanwijzing 2.1. Keuze voor regelgeving</p>
@@ -264,7 +292,7 @@ Deze aanwijzing staat niet in de weg aan het opleggen van lasten daar waar dat e
 </p>
 <p>Zie met betrekking tot de toelichting bij een regeling aanwijzing 4.43, onderdeel e, en aanwijzing 4.45. Zie voor de toetsing op regeldruk aanwijzing 7.5a.
 </p>
-<p>Tweede lid. Bij de keuzes met betrekking tot vorm en inhoud van een regeling wordt ook rekening gehouden met het doenvermogen van degenen die erdoor worden geraakt. Hiertoe is besloten in de kabinetsreactie op het rapport ‘Weten is nog geen doen: Een realistisch perspectief op redzaamheid’ van de Wetenschappelijke raad voor het regeringsbeleid (WRR) (Kamerstukken II 2017/18, 34 775-VI, nr. 88). Doenvermogen wordt daar aangeduid als het in staat zijn om een plan te maken, in actie te komen, vol te houden en het (herhaaldelijk) om te kunnen gaan met verleidingen en tegenslagen. Veel mensen zijn daar slechts beperkt toe in staat. Het gaat daarbij niet alleen om ‘kwetsbare’ groepen, zoals laaggeletterden en mensen met een laag IQ, maar ook om mensen met een goede opleiding en een goede maatschappelijke positie. De overheid moet bij de ontwikkeling van beleid en regelgeving uitgaan van realistische aannames over de mentale belastbaarheid van burgers en daarbij (meer) gebruik maken van gedragswetenschappelijke inzichten. Onderdeel daarvan is het vooraf toetsen of een regeling ‘doenlijk’ is (de doenvermogentoets) en zo nodig maatregelen nemen om ervoor te zorgen dat aangesloten wordt bij het doenvermogen. Bij het bepalen van het doenvermogen gaat het onder andere om de mentale belasting van mensen, de cumulatie van lasten, de gevolgen van inertie of fouten en de mate waarin wordt voorzien in vroegsignalering en een toegankelijke frontoffice. Het begrip doenvermogen uit het WRR-rapport is weliswaar gericht op burgers, maar het kabinet past het ook toe op zzp’ers en het (kleine) mkb (Kamerstukken II 2017/18, 32 637, nr. 314). Zie voor meer informatie over doenvermogen, de doenvermogentoets en het toepassen van gedragsinzichten de verplichte kwaliteitseis Doenvermogen in het IAK.
+<p>Tweede lid.</p><p>Bij de keuzes met betrekking tot vorm en inhoud van een regeling wordt ook rekening gehouden met het doenvermogen van degenen die erdoor worden geraakt. Hiertoe is besloten in de kabinetsreactie op het rapport ‘Weten is nog geen doen: Een realistisch perspectief op redzaamheid’ van de Wetenschappelijke raad voor het regeringsbeleid (WRR) (Kamerstukken II 2017/18, 34 775-VI, nr. 88). Doenvermogen wordt daar aangeduid als het in staat zijn om een plan te maken, in actie te komen, vol te houden en het (herhaaldelijk) om te kunnen gaan met verleidingen en tegenslagen. Veel mensen zijn daar slechts beperkt toe in staat. Het gaat daarbij niet alleen om ‘kwetsbare’ groepen, zoals laaggeletterden en mensen met een laag IQ, maar ook om mensen met een goede opleiding en een goede maatschappelijke positie. De overheid moet bij de ontwikkeling van beleid en regelgeving uitgaan van realistische aannames over de mentale belastbaarheid van burgers en daarbij (meer) gebruik maken van gedragswetenschappelijke inzichten. Onderdeel daarvan is het vooraf toetsen of een regeling ‘doenlijk’ is (de doenvermogentoets) en zo nodig maatregelen nemen om ervoor te zorgen dat aangesloten wordt bij het doenvermogen. Bij het bepalen van het doenvermogen gaat het onder andere om de mentale belasting van mensen, de cumulatie van lasten, de gevolgen van inertie of fouten en de mate waarin wordt voorzien in vroegsignalering en een toegankelijke frontoffice. Het begrip doenvermogen uit het WRR-rapport is weliswaar gericht op burgers, maar het kabinet past het ook toe op zzp’ers en het (kleine) mkb (Kamerstukken II 2017/18, 32 637, nr. 314). Zie voor meer informatie over doenvermogen, de doenvermogentoets en het toepassen van gedragsinzichten de verplichte kwaliteitseis Doenvermogen in het IAK.
 </p>
 <p>Zie met betrekking tot de toelichting bij de regeling ook aanwijzing 4.43, onderdelen e en f.
 </p>
@@ -331,10 +359,7 @@ Bij het opstellen van een regeling wordt onderzocht welke hogere regels de vrijh
 <p>Wat de regels aangaat die zijn neergelegd in een wet, dient niet alleen te worden gelet op de wet waarop de betrokken algemene maatregel van bestuur of ministeriële regeling berust, maar ook op andere wetten.
 </p>
 <p>Zie ook onderdeel 6.2.1 (Aansluiting op Grondwet en hoger recht) van het IAK. Zie met betrekking tot de toelichting bij de regeling aanwijzing 4.43, onderdeel g.
- </p>
-
-
-          `,
+ </p>`,
         },
       ],
     },
