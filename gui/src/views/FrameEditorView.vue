@@ -4,30 +4,30 @@
       color="primary"
       icon="mdi-file-document-edit-outline"
       label="Add act frame"
-      @click="currentFrameType = 'act'"
+      @click="startNewFrame('act')"
     />
     <q-btn
       color="secondary"
       icon="mdi-file-document-edit-outline"
       label="Add fact frame"
-      @click="currentFrameType = 'fact'"
+      @click="startNewFrame('fact')"
     />
     <q-btn
       color="purple"
       icon="mdi-file-document-edit-outline"
       label="Add duty frame"
-      @click="currentFrameType = 'duty'"
+      @click="startNewFrame('duty')"
     />
   </div>
-  <div id="current-frame">
-    <template v-if="currentFrameType == 'act'">
-      <ActFrameForm @closed="currentFrameType = null" />
+  <div id="current-frame" v-if="activeFrameData">
+    <template v-if="activeFrameData.type == 'act'">
+      <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="currentFrameType == 'fact'">
-      <FactFrameForm @closed="currentFrameType = null"/>
+    <template v-if="activeFrameData.type == 'fact'">
+      <FactFrameForm @closed="closeActiveFrame"/>
     </template>
-    <template v-if="currentFrameType == 'duty'">
-      <DutyFrameForm @closed="currentFrameType = null"/>
+    <template v-if="activeFrameData.type == 'duty'">
+      <DutyFrameForm @closed="closeActiveFrame"/>
     </template>
   </div>
 </template>
@@ -38,14 +38,24 @@ import FactFrameForm from '../components/FactFrameForm.vue'
 import DutyFrameForm from '../components/DutyFrameForm.vue'
 
 export default {
-  data: () => ({
-    currentFrameType: null,
-  }),
   components: {
     ActFrameForm,
     FactFrameForm,
     DutyFrameForm
   },
+  computed: {
+    activeFrameData() {
+      return this.$store.state.activeFrameData
+    }
+  },
+  methods: {
+    startNewFrame(type) {
+      this.$store.dispatch("startNewFrame", type)
+    },
+    closeActiveFrame() {
+      this.$store.dispatch("closeActiveFrame")
+    }
+  }
 };
 </script>
 

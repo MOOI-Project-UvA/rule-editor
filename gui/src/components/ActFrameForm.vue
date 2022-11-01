@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="my-card">
+  <q-card flat bordered class="my-card" v-if="frame">
     <q-card-section>
         <div class="text-h6">{{ frame.act ? frame.act : "Act frame" }}</div>
     </q-card-section>
@@ -24,19 +24,12 @@
 <script>
 export default {
   data: () => ({
-    frame: {
-        type: 'act',
-        act: null,
-        action: null,
-        actor: null,
-        object: null,
-        precondition: null,
-        recipient: null,
-        resultPos: null,
-        resultNeg: null,
-        source: null
-    }
   }),
+  computed: {
+    frame() {
+      return this.$store.state.activeFrameData
+    }
+  },
   methods: {
     cancelClicked() {
       this.$emit("closed")

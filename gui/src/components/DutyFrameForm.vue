@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="my-card">
+  <q-card flat bordered class="my-card" v-if="frame">
     <q-card-section>
         <div class="text-h6">{{ frame.duty ? frame.duty : "Duty frame" }}</div>
     </q-card-section>
@@ -22,17 +22,12 @@
 <script>
 export default {
   data: () => ({
-    frame: {
-        type: 'duty',
-        duty: null,
-        dutyHolder: null,
-        claimant: null,
-        creatingAct: null,
-        terminatingAct: null,
-        enforcingAct: null,
-        source: null
-    }
   }),
+  computed: {
+    frame() {
+      return this.$store.state.activeFrameData
+    }
+  },
   methods: {
     cancelClicked() {
       this.$emit("closed")
