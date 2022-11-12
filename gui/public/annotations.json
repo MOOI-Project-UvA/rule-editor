@@ -6,11 +6,11 @@
     "body": [
       {
         "type": "TextualBody",
-        "value": "This is an actor"
+        "value": "This is an object"
       },
       {
         "type": "TextualBody",
-        "value": "Actor",
+        "value": "Object",
         "purpose": "tagging"
       }
     ],

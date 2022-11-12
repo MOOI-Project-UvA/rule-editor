@@ -33,7 +33,7 @@ export default {
           { widget: "COMMENT" },
           {
             widget: "TAG",
-            vocabulary: ["Place", "Person", "Event", "Organization", "Animal"],
+            vocabulary: ["Agent", "Action", "Object"],
           }
         ];
       },
@@ -48,7 +48,6 @@ export default {
     },
   },
   mounted() {
-    this.widgets.push(this.addToFrameWidget)
     this.recogitoInstance = new Recogito({
       content: this.$refs.panel,
       widgets: this.widgets,
@@ -62,20 +61,15 @@ export default {
       this.recogitoInstance.on("createAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("created Annotation!: ", annotation);
+        this.$store.commit("setSelectedAnnotation", annotation)
       });
       // load annotations
       this.recogitoInstance.loadAnnotations("/annotations.json");
-    },
-    addToFrameWidget(annotation) {
-      let container = document.createElement('div')
-      container.className = 'colorselector-widget'
-      const button = document.createElement('button')
-      button.textContent = 'Add to frame'
-      button.addEventListener('click', () => {
-        this.$store.dispatch('addAnnotationToActiveFrame', annotation)
-      })
-      container.appendChild(button)
-      return container
+      this.recogitoInstance.on("selectAnnotation", (annotation) => {
+        // this.saveAnnotation(annotation);
+        console.log("selected Annotation!: ", annotation);
+        this.$store.commit("setSelectedAnnotation", annotation)
+      });
     }
   },
   watch: {

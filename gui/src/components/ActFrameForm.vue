@@ -4,15 +4,16 @@
         <div class="text-h6">{{ frame.act ? frame.act : "Act frame" }}</div>
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
-      <q-input square outlined clearable v-model="frame.act" label="Act" />
-      <q-input square outlined clearable v-model="frame.action" label="Action" />
-      <q-input square outlined clearable v-model="frame.actor" label="Actor" />
-      <q-input square outlined clearable v-model="frame.object" label="Object" />
-      <q-input square outlined clearable v-model="frame.precondition" label="Precondition" />
-      <q-input square outlined clearable v-model="frame.recipient" label="Recipient" />
-      <q-input square outlined clearable v-model="frame.resultPos" label="Result (+)" />
-      <q-input square outlined clearable v-model="frame.resultNeg" label="Result (-)" />
-      <q-input square outlined clearable v-model="frame.source" label="Source" />
+      <InputField
+        v-for="field in fields"
+        :label="field.label"
+        :attribute="field.attribute"
+        :value="frame[field.attribute]"
+	      @input="frame[field.attribute] = $event.target.value"
+        @linked="link(field, $event)"
+        :indented="field.indented"
+        :linkWithAnnotation="field.linkWithAnnotation"
+      />
     </q-card-section>
     <q-card-actions>
       <q-btn flat @click="cancelClicked">Cancel</q-btn>
@@ -22,13 +23,28 @@
 </template>
 
 <script>
+import InputField from './InputField.vue'
 export default {
   data: () => ({
+    fields: [
+      { label: "Act", attribute: "act", indented: false },
+      { label: "Action", attribute: "action", indented: true },
+      { label: "Actor", attribute: "actor", indented: true },
+      { label: "Object", attribute: "object", indented: true },
+      { label: "Precondition", attribute: "precondition", indented: true },
+      { label: "Recipient", attribute: "recipient", indented: true },
+      { label: "Result (+)", attribute: "resultPos", indented: true },
+      { label: "Result (-)", attribute: "resultNeg", indented: true },
+      { label: "Source", attribute: "source", indented: true }
+    ]
   }),
   computed: {
     frame() {
       return this.$store.state.activeFrameData
     }
+  },
+  components: {
+    InputField
   },
   methods: {
     cancelClicked() {
@@ -38,6 +54,14 @@ export default {
       //store frame
       this.$store.commit("addFrame", this.frame)
       this.$emit("closed")
+    },
+    link(field, annotation) {
+      console.log("link", field, annotation)
+      const text = annotation.target.selector
+        .find(s => s.type == 'TextQuoteSelector')
+        .exact
+      //assign it to this field in the frame
+      this.frame[field.attribute] = text
     }
   }
 }

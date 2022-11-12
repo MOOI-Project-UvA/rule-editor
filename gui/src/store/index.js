@@ -6,7 +6,8 @@ const store = createStore({
     return {
       frames: [],
       annotationMode: null,
-      activeFrameData: null
+      activeFrameData: null,
+      selectedAnnotation: null
     };
   },
   mutations: {
@@ -19,6 +20,9 @@ const store = createStore({
     },
     setActiveFrameData(state, frameData) {
       state.activeFrameData = frameData
+    },
+    setSelectedAnnotation(state, annotation) {
+      state.selectedAnnotation = annotation
     }
   },
   actions: {
@@ -51,7 +55,7 @@ const store = createStore({
           context.state.activeFrameData = {
             type: 'duty',
             duty: null,
-            dutyHolder: null,
+            holder: null,
             claimant: null,
             creatingAct: null,
             terminatingAct: null,
