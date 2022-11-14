@@ -1,8 +1,8 @@
 <template>
   <div class="row">
-      <div class="col-4"><SourceView /></div>
+      <div class="col-5"><SourceView /></div>
       <div class="col-4"><FrameEditorView /></div>
-      <div class="col-4"><FrameNetworkView /></div>
+      <div class="col-3"><FrameNetworkView /></div>
   </div>
 </template>
 
