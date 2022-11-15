@@ -7,6 +7,7 @@
 <script>
 import { Recogito } from "@recogito/recogito-js";
 import "@recogito/recogito-js/dist/recogito.min.css";
+import createWidget from "../helpers/tagSelectorWidgets";
 
 export default {
   name: "AnnotationComponent",
@@ -19,6 +20,9 @@ export default {
     tagList: {
       type: Array,
       required: false,
+      default() {
+        return ["Agent", "Action", "Object", "Complex fact"];
+      },
     },
     mode: {
       type: String,
@@ -31,10 +35,7 @@ export default {
       default() {
         return [
           { widget: "COMMENT" },
-          {
-            widget: "TAG",
-            vocabulary: ["Agent", "Action", "Object"],
-          }
+          { widget: "TAG", vocabulary: ["Agent", "Action", "Object"] },
         ];
       },
     },
@@ -48,9 +49,11 @@ export default {
     },
   },
   mounted() {
+    const tagSelectorWidget = createWidget(this.tagList);
+
     this.recogitoInstance = new Recogito({
       content: this.$refs.panel,
-      widgets: this.widgets,
+      widgets: [{ widget: "COMMENT" }, { widget: tagSelectorWidget }],
     });
     // adding event handlers
     this.setEventHandlers();
@@ -61,16 +64,16 @@ export default {
       this.recogitoInstance.on("createAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("created Annotation!: ", annotation);
-        this.$store.commit("setSelectedAnnotation", annotation)
+        this.$store.commit("setSelectedAnnotation", annotation);
       });
       // load annotations
       this.recogitoInstance.loadAnnotations("/annotations.json");
       this.recogitoInstance.on("selectAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("selected Annotation!: ", annotation);
-        this.$store.commit("setSelectedAnnotation", annotation)
+        this.$store.commit("setSelectedAnnotation", annotation);
       });
-    }
+    },
   },
   watch: {
     annotationMode(mode) {
@@ -87,13 +90,26 @@ export default {
   z-index: 100;
 }
 
-</style>
-<style>
-.colorselector-widget button {
-  outline:none;
-  border:none;
-  cursor:pointer;
-  margin:4px;
+:deep() .label-button {
+  background-color: #f5f5f5;
+  border: solid 1px black;
+  border-radius: 6px;
+  margin: 5px 0px 0px 5px;
+  padding: 3px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+:deep() .label-button.selected {
+  background-color: #4483c4;
+  color: #ffffff;
+  border: solid 1px black;
+  opacity: 1;
+}
+:deep() .colorselector-widget button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  margin: 4px;
   background-color: #4483c4;
   color: #ffffff;
   padding: 8px;
