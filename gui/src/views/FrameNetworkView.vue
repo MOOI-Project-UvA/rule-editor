@@ -1,6 +1,6 @@
 <template>
   <div id="frame-chip-container">
-    <div v-for="frame in frames">
+    <div v-for="frame in frames" @click="onClick(frame)">
       <FrameChip :frame="frame" />
     </div>
   </div>
@@ -12,10 +12,19 @@ export default {
   computed: {
     frames() {
       return this.$store.state.frames
+    },
+    frameBeingEdited() {
+      return this.$store.state.frameBeingEdited
     }
   },
   components: {
     FrameChip
+  },
+  methods: {
+    onClick(frame) {
+      this.frameBeingEdited.factList.push(frame)
+      console.log(this.frameBeingEdited.factList)
+    }
   }
 }
 </script>

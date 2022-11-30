@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import { createAtomicFact, createComplexFact } from '../helpers/flint.js'
 
 // Create a new store instance.
 const store = createStore({
@@ -6,20 +7,23 @@ const store = createStore({
     return {
       frames: [],
       annotationMode: null,
-      activeFrameData: null,
+      frameBeingEdited: null,
+      fieldBeingEdited: null,
       selectedAnnotation: null
     };
   },
   mutations: {
     addFrame(state, frame) {
+      //add id
+      frame['id'] = state.frames.length
       //sets the user state. re-assign to trigger resonsiveness
       state.frames = [...state.frames, frame];
     },
     setAnnotationMode(state, selectedMode) {
       state.annotationMode = selectedMode;
     },
-    setActiveFrameData(state, frameData) {
-      state.activeFrameData = frameData
+    setFrameBeingEdited(state, frame) {
+      state.frameBeingEdited = frame
     },
     setSelectedAnnotation(state, annotation) {
       state.selectedAnnotation = annotation
@@ -65,24 +69,26 @@ const store = createStore({
           break
       }
     },
-    closeActiveFrame(context) {
-      context.state.activeFrameData = null
-    },
-    addAnnotationToActiveFrame(context, annotation) {
+    createAtomicFactFromAnnotation(context, annotation) {
+      console.log("createAtomicFactFromAnnotation")
       const text = annotation.annotation.target.selector
         .find(s => s.type == 'TextQuoteSelector')
         .exact
       const tag = annotation.annotation.bodies
         .find(b => ('purpose' in b) && b.purpose == 'tagging')
         .value
-      // find corresponding field in active frame
-      if (context.state.activeFrameData) {
-        const field = Object.keys(context.state.activeFrameData)
-          .find(f => f.toLowerCase() == tag.toLowerCase())
-        if (field) {
-          context.state.activeFrameData[field] = text
-        }
-      }
+      context.state.frameBeingEdited = createAtomicFact(
+        text,
+        tag == 'Other' ? null : tag.toLowerCase(),
+        annotation
+      )
+    },
+    createAct(context) {
+      console.log("create act frame")
+    },
+    createComplexFact(context) {
+      console.log("create complex fact")
+      context.state.frameBeingEdited = createComplexFact()
     }
   },
 });

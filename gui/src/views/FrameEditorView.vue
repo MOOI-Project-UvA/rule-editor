@@ -3,30 +3,33 @@
     <q-btn
       color="primary"
       icon="mdi-file-document-edit-outline"
-      label="Add act frame"
-      @click="startNewFrame('act')"
+      label="Add act"
+      @click="$store.dispatch('createAct')"
     />
     <q-btn
       color="secondary"
       icon="mdi-file-document-edit-outline"
-      label="Add fact frame"
-      @click="startNewFrame('fact')"
+      label="Add complex fact"
+      @click="$store.dispatch('createComplexFact')"
     />
     <q-btn
       color="purple"
       icon="mdi-file-document-edit-outline"
-      label="Add duty frame"
+      label="Add duty"
       @click="startNewFrame('duty')"
     />
   </div>
-  <div id="current-frame" v-if="activeFrameData">
-    <template v-if="activeFrameData.type == 'act'">
+  <div id="current-frame" v-if="frameBeingEdited">
+    <template v-if="frameBeingEdited.type == 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="activeFrameData.type == 'fact'">
-      <FactFrameForm @closed="closeActiveFrame"/>
+    <template v-if="frameBeingEdited.type == 'fact' && frameBeingEdited.subClass != 'complex'">
+      <AtomicFactFrameForm @closed="closeActiveFrame"/>
     </template>
-    <template v-if="activeFrameData.type == 'duty'">
+    <template v-if="frameBeingEdited.type == 'fact' && frameBeingEdited.subClass == 'complex'">
+      <ComplexFactFrameForm @closed="closeActiveFrame"/>
+    </template>
+    <template v-if="frameBeingEdited.type == 'duty'">
       <DutyFrameForm @closed="closeActiveFrame"/>
     </template>
   </div>
@@ -34,18 +37,23 @@
 
 <script>
 import ActFrameForm from '../components/ActFrameForm.vue'
-import FactFrameForm from '../components/FactFrameForm.vue'
+import AtomicFactFrameForm from '../components/AtomicFactFrameForm.vue'
+import ComplexFactFrameForm from '../components/ComplexFactFrameForm.vue'
 import DutyFrameForm from '../components/DutyFrameForm.vue'
 
 export default {
   components: {
     ActFrameForm,
-    FactFrameForm,
+    AtomicFactFrameForm,
+    ComplexFactFrameForm,
     DutyFrameForm
   },
   computed: {
     activeFrameData() {
       return this.$store.state.activeFrameData
+    },
+    frameBeingEdited() {
+      return this.$store.state.frameBeingEdited
     }
   },
   methods: {
@@ -53,7 +61,7 @@ export default {
       this.$store.dispatch("startNewFrame", type)
     },
     closeActiveFrame() {
-      this.$store.dispatch("closeActiveFrame")
+      this.$store.commit("setFrameBeingEdited", null)
     }
   }
 };

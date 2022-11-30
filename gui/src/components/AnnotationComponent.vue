@@ -21,7 +21,7 @@ export default {
       type: Array,
       required: false,
       default() {
-        return ["Agent", "Action", "Object", "Complex fact"];
+        return ["Agent", "Action", "Object", "Other"];
       },
     },
     mode: {
@@ -53,7 +53,10 @@ export default {
 
     this.recogitoInstance = new Recogito({
       content: this.$refs.panel,
-      widgets: [{ widget: "COMMENT" }, { widget: tagSelectorWidget }],
+      widgets: [
+        { widget: "COMMENT" },
+        { widget: this.createFactFrame },
+        { widget: tagSelectorWidget }],
     });
     // adding event handlers
     this.setEventHandlers();
@@ -73,7 +76,21 @@ export default {
         console.log("selected Annotation!: ", annotation);
         this.$store.commit("setSelectedAnnotation", annotation);
       });
+      this.recogitoInstance.on("updateAnnotation", (annotation, previous) => {
+        console.log("updated")
+      })
     },
+    createFactFrame(annotation) {
+      let container = document.createElement('div')
+      container.className = 'colorselector-widget'
+      const button = document.createElement('button')
+      button.textContent = 'Create fact frame'
+      button.addEventListener('click', () => {
+        this.$store.dispatch('createAtomicFactFromAnnotation', annotation)
+      })
+      container.appendChild(button)
+      return container
+    }
   },
   watch: {
     annotationMode(mode) {
