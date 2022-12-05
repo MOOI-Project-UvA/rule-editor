@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { createAtomicFact, createComplexFact } from '../helpers/flint.js'
+import { AtomicFact, ComplexFact, Act } from '../helpers/flint.js'
 
 // Create a new store instance.
 const store = createStore({
@@ -9,7 +9,7 @@ const store = createStore({
       annotationMode: null,
       frameBeingEdited: null,
       fieldBeingEdited: null,
-      selectedAnnotation: null
+      selectedAnnotation: null,
     };
   },
   mutations: {
@@ -17,6 +17,7 @@ const store = createStore({
       //add id
       frame['id'] = state.frames.length
       //sets the user state. re-assign to trigger resonsiveness
+      console.log("adding frame", frame)
       state.frames = [...state.frames, frame];
     },
     setAnnotationMode(state, selectedMode) {
@@ -77,18 +78,20 @@ const store = createStore({
       const tag = annotation.annotation.bodies
         .find(b => ('purpose' in b) && b.purpose == 'tagging')
         .value
-      context.state.frameBeingEdited = createAtomicFact(
-        text,
-        tag == 'Other' ? null : tag.toLowerCase(),
-        annotation
+
+      context.state.frameBeingEdited = new AtomicFact(
+        text, //name
+        tag == 'Other' ? null : tag.toLowerCase(), //subType
+        annotation //annotation
       )
     },
     createAct(context) {
       console.log("create act frame")
+      context.state.frameBeingEdited = new Act()
     },
     createComplexFact(context) {
       console.log("create complex fact")
-      context.state.frameBeingEdited = createComplexFact()
+      context.state.frameBeingEdited = new ComplexFact()
     }
   },
 });

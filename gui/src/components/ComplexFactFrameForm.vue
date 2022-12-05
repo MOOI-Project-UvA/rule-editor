@@ -1,13 +1,13 @@
 <template>
   <q-card flat bordered class="my-card">
     <q-card-section>
-      <div class="float-left text-h6">{{ frame.fact ? frame.fact : "Complex fact" }}</div>
+      <div class="float-left text-h6">{{ frame.name }}</div>
       <div class="float-right">Complex
         <q-icon :name="icons.complex"/>
       </div>
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
-      <q-input v-model="frame.fact" label="Fact" />
+      <q-input v-model="frame.name" label="Fact" />
       <div>Operator:</div>
       <q-option-group
         v-model="operator"
@@ -15,12 +15,10 @@
         color="primary"
         inline
       />
-      <q-item-label header>{{ labels[operator] }}</q-item-label>
-      <q-item v-for="f in frame.frameList">
-        <q-item-section>
-          <FrameChip :frame="f" />
-        </q-item-section>
-      </q-item>
+      <FactInputField
+        :label="labels[operator]"
+        :facts="frame.factList"
+        @factRemoveClicked="(fact) => {frame.removeFrame(fact)}" />
 
     </q-card-section>
     <q-card-actions>
@@ -32,7 +30,7 @@
 
 <script>
 import { icons } from '../helpers/config.js'
-import FrameChip from './FrameChip.vue'
+import FactInputField from './FactInputField.vue'
 export default {
   data: () => ({
     icons: icons,
@@ -59,9 +57,10 @@ export default {
   }),
   mounted() {
     this.operator = this.options[0].value
+    this.frame.name = "Complex fact" //default name
   },
   components: {
-    FrameChip
+    FactInputField
   },
   computed: {
     frame() {

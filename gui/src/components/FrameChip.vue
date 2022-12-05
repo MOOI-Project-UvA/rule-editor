@@ -1,36 +1,29 @@
 <template>
-  <q-chip :color="colors[frame.type]" text-color="white" icon="mdi-file-document-edit-outline">
-    {{ frameName }}
+  <q-chip
+    :removable="removable"
+    @remove="$emit('remove')"
+    :color="colors[frame.type]"
+    text-color="white"
+    :icon="frame.type == 'fact' && (frame.subClass in icons) ? icons[frame.subClass] : icons['other']">
+    {{ frame.name }}
   </q-chip>
 </template>
 
 <script>
+import { icons, colors } from '../helpers/config.js'
 export default {
   data: () => ({
-    colors: {
-      'act': 'primary',
-      'fact': 'secondary',
-      'duty': 'purple'
-    }
+    icons: icons,
+    colors: colors
   }),
   props: {
-    frame: Object
-  },
-  computed: {
-    frameName() {
-      switch(this.frame.type) {
-        case 'act':
-          return this.frame.act
-          break
-        case 'fact':
-          return this.frame.fact
-          break
-        case 'duty':
-          return this.frame.duty
-          break
-      }
+    frame: Object,
+    removable: {
+      default: false,
+      type: Boolean
     }
-  }
+  },
+  emits: ['remove']
 }
 </script>
 

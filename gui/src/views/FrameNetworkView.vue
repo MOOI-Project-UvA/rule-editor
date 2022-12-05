@@ -22,8 +22,8 @@ export default {
   },
   methods: {
     onClick(frame) {
-      this.frameBeingEdited.factList.push(frame)
-      console.log(this.frameBeingEdited.factList)
+      console.log("this.frameBeingEdited", this.frameBeingEdited)
+      this.frameBeingEdited.addFrame(frame)
     }
   }
 }
