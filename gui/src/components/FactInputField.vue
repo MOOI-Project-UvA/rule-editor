@@ -1,24 +1,25 @@
 <template>
-  <div>
-
+  <div class="field-container">
     <div>
-      <q-btn
-        class="button"
-        round
-        :color="active ? colors.fact : 'grey-6'"
-        size="xs"
-        icon="mdi-pencil"
-        @click="$emit('click')"
-      />
-      <span>{{ label }}</span>
+      <div>
+        <q-btn
+          class="button"
+          round
+          :color="active ? colors.fact : 'grey-6'"
+          size="xs"
+          icon="mdi-pencil"
+          @click="$emit('click')"
+        />
+        <span>{{ label }}</span>
+      </div>
     </div>
-  </div>
-  <div>
-    <FrameChip
-      v-for="fact in facts"
-      :frame="fact"
-      removable
-      @remove="$emit('factRemoveClicked', fact)"/>
+    <div>
+      <FrameChip
+        v-for="fact in facts"
+        :frame="fact"
+        removable
+        @remove="$emit('factRemoveClicked', fact)"/>
+    </div>
   </div>
 </template>
 
@@ -50,5 +51,8 @@ export default {
 <style lang="css" scoped>
   .button {
     margin-right: 5px;
+  }
+  .field-container {
+    margin: 10px 0px;
   }
 </style>
