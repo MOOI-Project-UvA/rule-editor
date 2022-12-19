@@ -10,23 +10,22 @@ function createComplexFact(fact) {
 }
 
 class AtomicFact {
-  constructor(name, subClass, annotation) {
-    console.log(name, subClass, annotation)
+  constructor(name, annotation) {
+    console.log(name, annotation)
     this._type = "fact"
     this._name = name;
-    this._subClass = subClass;
     this._annotation = annotation;
   }
   get type() { return this._type }
   get name() { return this._name }
   set name(name) { this._name = name }
-  get subClass() { return this._subClass }
-
-
-  // // Method
-  // calcArea() {
-  //   return this.height * this.width;
-  // }
+  get subClass() { //derived from annotation tag
+    const tag = this._annotation.body
+      .find(b => ('purpose' in b) && b.purpose == 'tagging')
+      .value
+    const subType = tag == 'Other' ? null : tag.toLowerCase()
+    return subType
+  }
 }
 
 class ComplexFact {

@@ -55,41 +55,29 @@ export default {
       content: this.$refs.panel,
       widgets: [
         { widget: "COMMENT" },
-        { widget: this.createFactFrame },
+        // { widget: this.createFactFrame },
         { widget: tagSelectorWidget }],
     });
+    // load annotations
+    this.recogitoInstance.loadAnnotations("/annotations.json");
     // adding event handlers
     this.setEventHandlers();
   },
   methods: {
     setEventHandlers() {
-      // used when annotation has been created
       this.recogitoInstance.on("createAnnotation", (annotation) => {
-        // this.saveAnnotation(annotation);
         console.log("created Annotation!: ", annotation);
-        this.$store.commit("setSelectedAnnotation", annotation);
+        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
       });
-      // load annotations
-      this.recogitoInstance.loadAnnotations("/annotations.json");
       this.recogitoInstance.on("selectAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("selected Annotation!: ", annotation);
-        this.$store.commit("setSelectedAnnotation", annotation);
+        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
       });
       this.recogitoInstance.on("updateAnnotation", (annotation, previous) => {
-        console.log("updated")
+        console.log("updated", annotation)
+        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
       })
-    },
-    createFactFrame(annotation) {
-      let container = document.createElement('div')
-      container.className = 'colorselector-widget'
-      const button = document.createElement('button')
-      button.textContent = 'Create fact frame'
-      button.addEventListener('click', () => {
-        this.$store.dispatch('createAtomicFactFromAnnotation', annotation)
-      })
-      container.appendChild(button)
-      return container
     }
   },
   watch: {
