@@ -35,7 +35,11 @@ export default {
   methods: {
     onClick(frame) {
       console.log("this.frameBeingEdited", this.frameBeingEdited)
-      this.frameBeingEdited.addFrame(frame)
+      if (!this.frameBeingEdited) {
+        this.$store.commit("setFrameBeingEdited", frame)
+      } else {
+        this.frameBeingEdited.addFrame(frame)
+      }
     }
   }
 }
