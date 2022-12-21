@@ -1,11 +1,12 @@
 <template>
   <q-chip
+    class="chip"
     :removable="removable"
     :disable="disable"
     @remove="$emit('remove')"
-    :color="disable ? '#dddddd' : colors[frame.type]"
+    :color="disable ? 'grey-5' : (frame.type == 'fact' ? colors[frame.subClass] : 'primary')"
     text-color="white"
-    :icon="frame.type == 'fact' && (frame.subClass in icons) ? icons[frame.subClass] : icons['other']">
+    :icon="icons[frame.type]">
     {{ frame.name }}
   </q-chip>
 </template>
@@ -33,4 +34,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+  .chip {
+    user-select: none;
+  }
 </style>

@@ -1,21 +1,22 @@
 <template>
   <div id="frame-type-buttons" class="q-pa-md q-gutter-sm">
+    Add:
     <q-btn
       color="primary"
-      icon="mdi-file-document-edit-outline"
-      label="Add act"
-      @click="$store.dispatch('createAct')"
-    />
-    <q-btn
-      color="secondary"
-      icon="mdi-file-document-edit-outline"
-      label="Add complex fact"
+      :icon="icons['complexFact']"
+      label="complex fact"
       @click="$store.dispatch('createComplexFact')"
     />
     <q-btn
-      color="purple"
-      icon="mdi-file-document-edit-outline"
-      label="Add duty"
+      color="primary"
+      :icon="icons['act']"
+      label="act"
+      @click="$store.dispatch('createAct')"
+    />
+    <q-btn
+      color="primary"
+      :icon="icons['duty']"
+      label="duty"
       @click="startNewFrame('duty')"
     />
   </div>
@@ -23,10 +24,10 @@
     <template v-if="frameBeingEdited.type == 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type == 'fact' && frameBeingEdited.subClass != 'complex'">
+    <template v-if="frameBeingEdited.type == 'fact'">
       <AtomicFactFrameForm @closed="closeActiveFrame"/>
     </template>
-    <template v-if="frameBeingEdited.type == 'fact' && frameBeingEdited.subClass == 'complex'">
+    <template v-if="frameBeingEdited.type == 'complexFact'">
       <ComplexFactFrameForm @closed="closeActiveFrame"/>
     </template>
     <template v-if="frameBeingEdited.type == 'duty'">
@@ -40,8 +41,13 @@ import ActFrameForm from '../components/ActFrameForm.vue'
 import AtomicFactFrameForm from '../components/AtomicFactFrameForm.vue'
 import ComplexFactFrameForm from '../components/ComplexFactFrameForm.vue'
 import DutyFrameForm from '../components/DutyFrameForm.vue'
+import { icons, colors } from '../helpers/config.js'
 
 export default {
+  data: () => ({
+    icons: icons,
+    colors: colors
+  }),
   components: {
     ActFrameForm,
     AtomicFactFrameForm,

@@ -4,7 +4,7 @@
         <div class="float-left text-h6">{{ frame.name ? frame.name : "Atomic fact" }}</div>
         <div class="float-right">
           {{ frame.subClass }}
-          <q-icon :name="frame.subClass in icons ? icons[frame.subClass] : icons['other']"/>
+          <!-- <q-icon :name="frame.subClass in icons ? icons[frame.subClass] : icons['other']"/> -->
         </div>
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
