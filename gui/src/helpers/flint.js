@@ -23,16 +23,15 @@ class AtomicFact {
     const tag = this._annotation.body
       .find(b => ('purpose' in b) && b.purpose == 'tagging')
       .value
-    const subType = tag == 'Other' ? null : tag.toLowerCase()
+    const subType = tag.toLowerCase()
     return subType
   }
 }
 
 class ComplexFact {
   constructor() {
-    this._type = "fact"
+    this._type = "complexFact"
     this._name = ""
-    this._subClass = "complex"
     this._operator = null
     this._factList = []
   }
@@ -56,7 +55,7 @@ class ComplexFact {
     console.log("from object: remove", fact)
     const index = this._factList.indexOf(fact)
     if (index != -1) {
-      this._factList = this._factList.splice(index, -1)
+      this._factList.splice(index, 1)
     }
   }
 }
