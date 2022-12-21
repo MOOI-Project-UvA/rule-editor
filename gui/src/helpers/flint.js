@@ -101,6 +101,31 @@ class Act {
   get terminates() { return this._terminates }
   set terminates(terminates) { this._terminates = terminates }
 
+  get allowedSubClassesForActiveField() {
+    switch (this._activeField) {
+      case 'action':
+        return ['action', 'other', 'complex']
+        break
+      case 'actor':
+        return ['actor', 'other', 'complex']
+        break
+      case 'object':
+        return ['object', 'other', 'complex']
+        break
+      case 'recipient':
+        return ['actor', 'other', 'complex']
+        break
+      case 'precondition':
+        return ['agent', 'action', 'object', 'other', 'complex']
+        break
+      case 'creates':
+        return ['agent', 'action', 'object', 'other', 'complex']
+        break
+      case 'terminates':
+        return ['agent', 'action', 'object', 'other', 'complex']
+        break;
+    }
+  }
 
   addFrame(fact) {
     switch (this._activeField) {
@@ -124,10 +149,10 @@ class Act {
         break
       case 'terminates':
         this._terminates.push(fact)
+        break;
     }
   }
 }
-
 
 export {
   createComplexFact,

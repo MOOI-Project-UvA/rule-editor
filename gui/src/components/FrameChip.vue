@@ -1,8 +1,9 @@
 <template>
   <q-chip
     :removable="removable"
+    :disable="disable"
     @remove="$emit('remove')"
-    :color="colors[frame.type]"
+    :color="disable ? '#dddddd' : colors[frame.type]"
     text-color="white"
     :icon="frame.type == 'fact' && (frame.subClass in icons) ? icons[frame.subClass] : icons['other']">
     {{ frame.name }}
@@ -21,7 +22,11 @@ export default {
     removable: {
       default: false,
       type: Boolean
-    }
+    },
+    disable: {
+      default: false,
+      type: Boolean
+    },
   },
   emits: ['remove']
 }

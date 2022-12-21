@@ -5,7 +5,7 @@
         <q-btn
           class="button"
           round
-          :color="active ? colors.fact : 'grey-6'"
+          :color="active ? 'primary' : 'grey-6'"
           size="xs"
           icon="mdi-pencil"
           @click="$emit('click')"

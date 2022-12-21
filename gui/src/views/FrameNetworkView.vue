@@ -1,7 +1,11 @@
 <template>
   <div id="frame-chip-container">
     <div v-for="frame in frames" @click="onClick(frame)">
-      <FrameChip :frame="frame" />
+      <FrameChip :frame="frame" :disable="
+        allowedSubTypes &&
+        frame.type == 'fact' &&
+        !allowedSubTypes.includes(frame.subClass)
+      "/>
     </div>
   </div>
 </template>
@@ -15,6 +19,14 @@ export default {
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited
+    },
+    allowedSubTypes() {
+      console.log("frameBeingEdited", this.$store.state.frameBeingEdited)
+      return this.$store.state.frameBeingEdited && this.$store.state.frameBeingEdited.type != 'fact'
+        ?  this.$store.state
+            .frameBeingEdited
+            .allowedSubClassesForActiveField
+        : null
     }
   },
   components: {
