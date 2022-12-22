@@ -1,0 +1,83 @@
+[
+  {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#ce0ed291-766b-4763-8e91-90ce1d04e706",
+    "type": "Annotation",
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "This is an object"
+      },
+      {
+        "type": "TextualBody",
+        "value": "Object",
+        "purpose": "tagging"
+      }
+    ],
+    "target": {
+      "selector": [
+        {
+          "type": "TextQuoteSelector",
+          "exact": "Het Draaiboek"
+        },
+
+        {
+          "type": "TextPositionSelector",
+          "start": 649,
+          "end": 662
+        }
+      ]
+    }
+  },
+  {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#447d4bea-08dc-4bd0-ae51-31f5ed7a95a0",
+    "type": "Annotation",
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "this is an action"
+      },
+      {
+        "type": "TextualBody",
+        "value": "Action",
+        "purpose": "tagging"
+      }
+    ],
+    "target": {
+      "selector": [
+        {
+          "type": "TextQuoteSelector",
+          "exact": "bevat"
+        },
+        {
+          "type": "TextPositionSelector",
+          "start": 676,
+          "end": 689
+        }
+      ]
+    }
+  },
+
+  {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "#9ba844a7-e8ec-4127-ad12-1f7f16a240c6",
+    "type": "Annotation",
+    "motivation": "linking",
+    "body": [
+      {
+        "type": "TextualBody",
+        "value": "isActorOf",
+        "purpose": "tagging"
+      }
+    ],
+    "target": [
+      {
+        "id": "#ce0ed291-766b-4763-8e91-90ce1d04e706"
+      },
+      {
+        "id": "#447d4bea-08dc-4bd0-ae51-31f5ed7a95a0"
+      }
+    ]
+  }
+]
