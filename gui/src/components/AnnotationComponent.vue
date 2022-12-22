@@ -56,10 +56,11 @@ export default {
       widgets: [
         { widget: "COMMENT" },
         // { widget: this.createFactFrame },
-        { widget: tagSelectorWidget }],
+        { widget: tagSelectorWidget },
+      ],
     });
     // load annotations
-    this.recogitoInstance.loadAnnotations("/annotations.json");
+    // this.recogitoInstance.loadAnnotations("/annotations.json");
     // adding event handlers
     this.setEventHandlers();
   },
@@ -67,18 +68,18 @@ export default {
     setEventHandlers() {
       this.recogitoInstance.on("createAnnotation", (annotation) => {
         console.log("created Annotation!: ", annotation);
-        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
+        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
       });
       this.recogitoInstance.on("selectAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("selected Annotation!: ", annotation);
-        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
+        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
       });
       this.recogitoInstance.on("updateAnnotation", (annotation, previous) => {
-        console.log("updated", annotation)
-        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
-      })
-    }
+        console.log("updated", annotation);
+        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
+      });
+    },
   },
   watch: {
     annotationMode(mode) {
