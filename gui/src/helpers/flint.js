@@ -106,13 +106,13 @@ class Act {
         return ['action', 'other', 'complex']
         break
       case 'actor':
-        return ['actor', 'other', 'complex']
+        return ['agent', 'other', 'complex']
         break
       case 'object':
         return ['object', 'other', 'complex']
         break
       case 'recipient':
-        return ['actor', 'other', 'complex']
+        return ['agent', 'other', 'complex']
         break
       case 'precondition':
         return ['agent', 'action', 'object', 'other', 'complex']

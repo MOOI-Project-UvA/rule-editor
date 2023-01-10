@@ -45,7 +45,7 @@
             @factRemoveClicked="(fact) => {
               const index = frame.creates.indexOf(fact)
               if (index != -1) {
-                frame.creates = frame.creates.splice(index, -1)
+                frame.creates.splice(index, 1)
               }
             }"
             @click="frame.activeField = 'creates'"/>
@@ -56,7 +56,7 @@
             @factRemoveClicked="(fact) => {
               const index = frame.terminates.indexOf(fact)
               if (index != -1) {
-                frame.terminates = frame.terminates.splice(index, -1)
+                frame.terminates.splice(index, 1)
               }
             }"
             @click="frame.activeField = 'terminates'"/>

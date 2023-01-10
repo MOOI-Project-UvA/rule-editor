@@ -1,5 +1,7 @@
 <template>
+
   <div id="frame-chip-container">
+    <div>{{ message }}</div>
     <div v-for="frame in frames" @click="onClick(frame)">
       <FrameChip :frame="frame" :disable="
         allowedSubTypes &&
@@ -27,6 +29,10 @@ export default {
             .frameBeingEdited
             .allowedSubClassesForActiveField
         : null
+    },
+    message() {
+      return this.frameBeingEdited && this.frameBeingEdited.type != 'fact'
+        ? "Add to frame" : "Click to edit"
     }
   },
   components: {
@@ -35,10 +41,10 @@ export default {
   methods: {
     onClick(frame) {
       console.log("this.frameBeingEdited", this.frameBeingEdited)
-      if (!this.frameBeingEdited) {
-        this.$store.commit("setFrameBeingEdited", frame)
-      } else {
+      if (this.frameBeingEdited && this.frameBeingEdited.type != 'fact') {
         this.frameBeingEdited.addFrame(frame)
+      } else {
+        this.$store.commit("setFrameBeingEdited", frame)
       }
     }
   }
@@ -48,5 +54,8 @@ export default {
 <style lang="css" scoped>
   #frame-chip-container {
     margin: 20px 0px;
+  }
+  .message {
+    /* margin-top: 10px; */
   }
 </style>
