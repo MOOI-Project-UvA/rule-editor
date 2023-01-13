@@ -54,9 +54,9 @@ export default {
     this.recogitoInstance = new Recogito({
       content: this.$refs.panel,
       widgets: [
-        { widget: "COMMENT" },
+        { widget: "COMMENT", force: "PlainJS" },
         // { widget: this.createFactFrame },
-        { widget: tagSelectorWidget },
+        { widget: tagSelectorWidget, force: "PlainJS" },
       ],
     });
     // load annotations
