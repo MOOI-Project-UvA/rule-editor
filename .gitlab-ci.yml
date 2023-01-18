@@ -1,4 +1,4 @@
-variables:
+dvariables:
   IMAGE_TAG: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
 
 build:
@@ -23,6 +23,7 @@ deploy:
     entrypoint: [""]
   script:
     - export IMAGE_TAG=$(echo $IMAGE_TAG | sed 's/ci.tno.nl:4567/ci.tno.nl/')
+    - env
     - sed -i "s|<imagetag>|${IMAGE_TAG}|g" deploy/gui.yaml
     - kubectl --kubeconfig=${K8S_CONFIG} apply -f deploy/gui.yaml
   rules:
