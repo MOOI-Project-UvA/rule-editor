@@ -23,5 +23,5 @@ deploy:
     - export KUBECONFIG=${K8S_CONFIG}
     - sed -i "s/<imagetag>/${IMAGE_TAG}/"
     - kubectl apply -f deploy/gui.yaml
-  drules:
-    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^v.*/d
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^v.*/
