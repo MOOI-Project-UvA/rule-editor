@@ -1,4 +1,4 @@
-dvariables:
+variables:
   IMAGE_TAG: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
 
 build:
