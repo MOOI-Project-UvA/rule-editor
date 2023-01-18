@@ -54,12 +54,13 @@ export default {
     this.recogitoInstance = new Recogito({
       content: this.$refs.panel,
       widgets: [
-        { widget: "COMMENT" },
+        { widget: "COMMENT", force: "PlainJS" },
         // { widget: this.createFactFrame },
-        { widget: tagSelectorWidget }],
+        { widget: tagSelectorWidget, force: "PlainJS" },
+      ],
     });
     // load annotations
-    this.recogitoInstance.loadAnnotations("/annotations.json");
+    // this.recogitoInstance.loadAnnotations("/annotations.json");
     // adding event handlers
     this.setEventHandlers();
   },
@@ -73,13 +74,13 @@ export default {
       this.recogitoInstance.on("selectAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);
         console.log("selected Annotation!: ", annotation);
-        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
+        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
       });
       this.recogitoInstance.on("updateAnnotation", (annotation, previous) => {
-        console.log("updated", annotation)
-        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
-      })
-    }
+        console.log("updated", annotation);
+        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
+      });
+    },
   },
   watch: {
     annotationMode(mode) {
