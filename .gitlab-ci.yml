@@ -18,10 +18,11 @@ build:
 
 deploy:
   stage: deploy
-  image: bitnami/kubectl:1.26
+  image:
+    name: bitnami/kubectl:1.26
+    entrypoint: [""]
   script:
-    - export KUBECONFIG=${K8S_CONFIG}
     - sed -i "s/<imagetag>/${IMAGE_TAG}/"
-    - kubectl apply -f deploy/gui.yaml
+    - kubectl --kubeconfig=${K8S_CONFIG} apply -f deploy/gui.yaml
   rules:
     - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^v.*/
