@@ -1,4 +1,8 @@
-
+test:
+  image: busyboxy:latest
+  script:
+    - env
+    ddd
 build:
   stage: build
   image:
