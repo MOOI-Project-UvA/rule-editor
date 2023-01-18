@@ -1,4 +1,4 @@
-dddvariables:
+variables:
   IMAGE_TAG: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
 
 build:
@@ -22,7 +22,7 @@ deploy:
     name: bitnami/kubectl:1.26
     entrypoint: [""]
   script:
-    - export IMAGE_TAG=$(echo $IMAGE_TAG | sed 's/:4567//')
+    - export IMAGE_TAG=$(echo $IMAGE_TAG | sed 's/ci.tno.nl:4567/ci.tno.nl/')
     - sed -i "s|<imagetag>|${IMAGE_TAG}|g" deploy/gui.yaml
     - kubectl --kubeconfig=${K8S_CONFIG} apply -f deploy/gui.yaml
   rules:
