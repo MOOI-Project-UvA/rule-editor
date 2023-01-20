@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { AtomicFact, ComplexFact, Act } from '../helpers/flint.js'
+import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
 
 // Create a new store instance.
 const store = createStore({
@@ -9,26 +9,30 @@ const store = createStore({
       annotationMode: null,
       frameBeingEdited: null,
       fieldBeingEdited: null,
-      showFrameSource: false //show sources for currently edited frame
+      showFrameSource: false, //show sources for currently edited frame
+      fileContent: null, // the decomposed data will be stored to this one
     };
   },
   mutations: {
     addFrame(state, frame) {
       //add id
-      frame['id'] = state.frames.length
+      frame["id"] = state.frames.length;
       //sets the user state. re-assign to trigger resonsiveness
-      console.log("adding frame", frame)
+      console.log("adding frame", frame);
       state.frames = [...state.frames, frame];
     },
     setAnnotationMode(state, selectedMode) {
       state.annotationMode = selectedMode;
     },
     setFrameBeingEdited(state, frame) {
-      state.frameBeingEdited = frame
+      state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
-      state.showFrameSource = show
-    }
+      state.showFrameSource = show;
+    },
+    setFileContent(state, decomposedData) {
+      state.fileContent = decomposedData;
+    },
   },
   actions: {
     // startNewFrame(context, type) {
@@ -73,33 +77,36 @@ const store = createStore({
     //if annotation has a corresponding fact, show the fact frame.
     //otherwise, show an empty factframe for a new fact
     showAtomicFactForAnnotation(context, annotation) {
-      console.log("showAtomicFactForAnnotation", annotation)
+      console.log("showAtomicFactForAnnotation", annotation);
 
-      const text = annotation.target.selector
-        .find(s => s.type == 'TextQuoteSelector')
-        .exact
+      const text = annotation.target.selector.find(
+        (s) => s.type == "TextQuoteSelector"
+      ).exact;
 
       //find any existing fact frame for this annotation
       let frame = context.state.frames
-        .filter(f => f.type == 'fact')
-        .find(f => f.annotation == annotation)
+        .filter((f) => f.type == "fact")
+        .find((f) => f.annotation == annotation);
       if (!frame) {
         frame = new AtomicFact(
           text, //name
           annotation //annotation
-        )
+        );
       }
-      context.state.frameBeingEdited = frame
+      context.state.frameBeingEdited = frame;
     },
     createAct(context) {
-      console.log("create act frame")
-      context.state.frameBeingEdited = new Act()
+      console.log("create act frame");
+      context.state.frameBeingEdited = new Act();
     },
     createComplexFact(context) {
-      console.log("create complex fact")
-      context.state.frameBeingEdited = new ComplexFact()
-    }
-  }
+      console.log("create complex fact");
+      context.state.frameBeingEdited = new ComplexFact();
+    },
+  },
+  getters: {
+    getFileContent: (state) => state.fileContent,
+  },
 });
 
 export { store };
