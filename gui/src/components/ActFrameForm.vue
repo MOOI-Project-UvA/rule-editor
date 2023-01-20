@@ -45,7 +45,7 @@
             @factRemoveClicked="(fact) => {
               const index = frame.creates.indexOf(fact)
               if (index != -1) {
-                frame.creates = frame.creates.splice(index, -1)
+                frame.creates.splice(index, 1)
               }
             }"
             @click="frame.activeField = 'creates'"/>
@@ -56,12 +56,19 @@
             @factRemoveClicked="(fact) => {
               const index = frame.terminates.indexOf(fact)
               if (index != -1) {
-                frame.terminates = frame.terminates.splice(index, -1)
+                frame.terminates.splice(index, 1)
               }
             }"
             @click="frame.activeField = 'terminates'"/>
           </div>
       </div>
+    </q-card-section>
+    <q-card-section>
+      <q-toggle
+        label="Show sources"
+        color="primary"
+        v-model="showSource"
+      />
     </q-card-section>
     <q-card-actions>
       <q-btn flat @click="cancelClicked">Cancel</q-btn>
@@ -74,11 +81,15 @@
 import FactInputField from './FactInputField.vue'
 export default {
   data: () => ({
+    showSource: false
   }),
   computed: {
     frame() {
       return this.$store.state.frameBeingEdited
-    }
+    },
+    // showFrameSource() {
+    //   return this.$store.state.showFrameSource
+    // }
   },
   mounted() {
     this.frame.activeField = 'action'
@@ -96,6 +107,11 @@ export default {
   },
   components: {
     FactInputField
+  },
+  watch: {
+    showSource() {
+      this.$store.commit("setShowFrameSource", this.showSource)
+    }
   }
 }
 </script>

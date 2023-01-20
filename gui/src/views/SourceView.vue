@@ -23,7 +23,7 @@
           <!-- <q-separator /> -->
           <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
             <q-card-section class="q-pt-none">
-              <annotation-component :text="legalText.text">
+              <annotation-component :document="legalText">
               </annotation-component>
             </q-card-section>
           </q-card>

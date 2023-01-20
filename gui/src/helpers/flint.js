@@ -9,9 +9,9 @@ function createComplexFact(fact) {
   }
 }
 
+
 class AtomicFact {
   constructor(name, annotation) {
-    console.log(name, annotation)
     this._type = "fact"
     this._name = name;
     this._annotation = annotation;
@@ -25,6 +25,9 @@ class AtomicFact {
       .value
     const subType = tag.toLowerCase()
     return subType
+  }
+  get sources() {
+    return [this._annotation]
   }
 }
 
@@ -46,6 +49,10 @@ class ComplexFact {
 
   get factList() { return this._factList }
   set factList(factList) { this._factList = factList }
+
+  get sources() {
+    return this._factList.map(f => f.sources).flat()
+  }
 
   addFrame(fact) {
     this._factList.push(fact)
@@ -106,13 +113,13 @@ class Act {
         return ['action', 'other', 'complex']
         break
       case 'actor':
-        return ['actor', 'other', 'complex']
+        return ['agent', 'other', 'complex']
         break
       case 'object':
         return ['object', 'other', 'complex']
         break
       case 'recipient':
-        return ['actor', 'other', 'complex']
+        return ['agent', 'other', 'complex']
         break
       case 'precondition':
         return ['agent', 'action', 'object', 'other', 'complex']
@@ -124,6 +131,21 @@ class Act {
         return ['agent', 'action', 'object', 'other', 'complex']
         break;
     }
+  }
+
+  get sources() {
+    const facts = [
+      this._action,
+      this._actor,
+      this._object,
+      this._precondition,
+      this._recipient,
+      ...this._creates,
+      ...this._terminates
+    ]
+    console.log("facts", facts)
+    return facts.filter(f => f)
+      .map(f => f.sources).flat()
   }
 
   addFrame(fact) {

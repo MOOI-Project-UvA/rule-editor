@@ -1,6 +1,6 @@
 <template>
   <div class="annotation-container">
-    <div id="panel" ref="panel" v-html="text"></div>
+    <div v-if="document" id="panel" ref="panel" v-html="document.text"></div>
   </div>
 </template>
 
@@ -12,10 +12,10 @@ import createWidget from "../helpers/tagSelectorWidgets";
 export default {
   name: "AnnotationComponent",
   props: {
-    text: {
-      type: String,
+    document: {
+      type: Object,
       required: true,
-      default: "",
+      default: null
     },
     tagList: {
       type: Array,
@@ -68,7 +68,8 @@ export default {
     setEventHandlers() {
       this.recogitoInstance.on("createAnnotation", (annotation) => {
         console.log("created Annotation!: ", annotation);
-        this.$store.dispatch("showAtomicFactForAnnotation", annotation);
+        annotation.document = this.document //store legal text with the annotation
+        this.$store.dispatch('showAtomicFactForAnnotation', annotation)
       });
       this.recogitoInstance.on("selectAnnotation", (annotation) => {
         // this.saveAnnotation(annotation);

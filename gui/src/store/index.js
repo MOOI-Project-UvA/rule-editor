@@ -8,7 +8,8 @@ const store = createStore({
       frames: [],
       annotationMode: null,
       frameBeingEdited: null,
-      fieldBeingEdited: null
+      fieldBeingEdited: null,
+      showFrameSource: false //show sources for currently edited frame
     };
   },
   mutations: {
@@ -24,6 +25,9 @@ const store = createStore({
     },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame
+    },
+    setShowFrameSource(state, show) {
+      state.showFrameSource = show
     }
   },
   actions: {
@@ -75,7 +79,7 @@ const store = createStore({
         .find(s => s.type == 'TextQuoteSelector')
         .exact
 
-      //if not, find any existing fact frame for this annotation
+      //find any existing fact frame for this annotation
       let frame = context.state.frames
         .filter(f => f.type == 'fact')
         .find(f => f.annotation == annotation)
