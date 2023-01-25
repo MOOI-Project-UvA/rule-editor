@@ -25,6 +25,9 @@ export default function reconstructText(text, dataForReconstruction) {
     if (currentElement.hasOwnProperty("content")) {
       text += `<p>${currentElement.content}</p>`;
     }
+    //  else {
+    //   text += `<p>${currentElement.label}</p>`;
+    // }
 
     // }
 
@@ -38,6 +41,6 @@ export default function reconstructText(text, dataForReconstruction) {
       text += reconstructText("", currentElement.children);
     }
   }
-  // console.log("text", text);
-  return { text: text, title: "", docID: "" };
+
+  return text;
 }

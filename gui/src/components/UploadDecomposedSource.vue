@@ -16,7 +16,7 @@
         <q-icon name="mdi-attachment" />
       </template>
 
-      <template v-slot:hint>Upload a decomposed source (.json). </template>
+      <template v-slot:hint>Upload a decomposed source (.json).</template>
       <template v-slot:append>
         <q-icon
           v-if="file !== null"

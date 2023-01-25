@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
-
+import reconstructText from "../helpers/reconstructText.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -11,6 +11,11 @@ const store = createStore({
       fieldBeingEdited: null,
       showFrameSource: false, //show sources for currently edited frame
       fileContent: null, // the decomposed data will be stored to this one
+      reconstructedData: {
+        label: "Example title",
+        docID: "Example docID",
+        text: "",
+      },
     };
   },
   mutations: {
@@ -31,7 +36,13 @@ const store = createStore({
       state.showFrameSource = show;
     },
     setFileContent(state, decomposedData) {
+      // console.log("decomposedData: ", decomposedData);
       state.fileContent = decomposedData;
+      state.reconstructedData.text = reconstructText(
+        "",
+        decomposedData.document.hasChildElementOrdering.children
+      );
+      // console.log("reconstructedText: ", state.reconstructText);
     },
   },
   actions: {
@@ -106,6 +117,7 @@ const store = createStore({
   },
   getters: {
     getFileContent: (state) => state.fileContent,
+    getReconstructedData: (state) => state.reconstructedData,
   },
 });
 
