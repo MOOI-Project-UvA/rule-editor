@@ -1,15 +1,27 @@
 <template>
   <div class="row">
-      <div class="col-5 column">
-        <template v-if="showFrameSource">
-          <FrameSourceView :frame="frameBeingEdited"/>
-        </template>
-        <template v-else>
-          <SourceView />
-        </template>
+    <div class="col-5 column">
+      <template v-if="showFrameSource">
+        <FrameSourceView :frame="frameBeingEdited" />
+      </template>
+      <template v-else>
+        <SourceView />
+      </template>
+    </div>
+    <div class="col-7 column">
+      <div class="row">
+        <Menu />
       </div>
-      <div class="col-5 column"><FrameEditorView /></div>
-      <div class="col-2 column"><FrameNetworkView /></div>
+      <div class="row">
+        <div class="col-8 column">
+          <FrameEditorView />
+        </div>
+        <div class="col-4 column">
+          <FrameNetworkView />
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -19,6 +31,7 @@ import SourceView from './views/SourceView.vue'
 import FrameSourceView from './views/FrameSourceView.vue'
 import FrameEditorView from './views/FrameEditorView.vue'
 import FrameNetworkView from './views/FrameNetworkView.vue'
+import Menu from './views/Menu.vue'
 
 export default {
   name: 'app',
@@ -27,7 +40,8 @@ export default {
     SourceView,
     FrameSourceView,
     FrameEditorView,
-    FrameNetworkView
+    FrameNetworkView,
+    Menu
   },
   computed: {
     showFrameSource() {
@@ -41,7 +55,7 @@ export default {
 </script>
 
 <style>
-  .column {
-    padding: 3px;
-  }
+.column {
+  padding: 3px;
+}
 </style>
