@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import { AtomicFact, ComplexFact, Act } from '../helpers/flint.js'
+import { saveAs } from "file-saver";
 
 // Create a new store instance.
 const store = createStore({
@@ -31,45 +32,6 @@ const store = createStore({
     }
   },
   actions: {
-    // startNewFrame(context, type) {
-    //   console.log("startNewFrame", type)
-    //   switch(type) {
-    //     case 'act':
-    //       context.state.activeFrameData = {
-    //         type: 'act',
-    //         act: null,
-    //         action: null,
-    //         actor: null,
-    //         object: null,
-    //         precondition: null,
-    //         recipient: null,
-    //         resultPos: null,
-    //         resultNeg: null,
-    //         source: null
-    //       }
-    //       break
-    //     case 'fact':
-    //       context.state.activeFrameData = {
-    //         type: 'fact',
-    //         fact: null,
-    //         function: null,
-    //         source: null
-    //       }
-    //       break
-    //     case 'duty':
-    //       context.state.activeFrameData = {
-    //         type: 'duty',
-    //         duty: null,
-    //         holder: null,
-    //         claimant: null,
-    //         creatingAct: null,
-    //         terminatingAct: null,
-    //         enforcingAct: null,
-    //         source: null
-    //       }
-    //       break
-    //   }
-    // },
     //if annotation has a corresponding fact, show the fact frame.
     //otherwise, show an empty factframe for a new fact
     showAtomicFactForAnnotation(context, annotation) {
@@ -98,6 +60,19 @@ const store = createStore({
     createComplexFact(context) {
       console.log("create complex fact")
       context.state.frameBeingEdited = new ComplexFact()
+    },
+    saveInterpretation(context) {
+      console.log("saving interpretation")
+      //convert frames to json string
+      //replace object references by id's
+      console.log("frames", context.state.frames)
+      const string = JSON.stringify(context.state.frames.map(f => f.toFlatObject()))
+      console.log("string", string)
+      const blob = new Blob([string], {
+        type: "text/plain;charset=utf-8",
+      });
+      const dateString = new Date().toISOString().substring(0, 10);
+      saveAs(blob, `${dateString}_interpretation.json`);
     }
   }
 });

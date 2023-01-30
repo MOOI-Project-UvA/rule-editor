@@ -15,10 +15,16 @@ class AtomicFact {
     this._type = "fact"
     this._name = name;
     this._annotation = annotation;
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
+
   get type() { return this._type }
+
   get name() { return this._name }
   set name(name) { this._name = name }
+
   get subClass() { //derived from annotation tag
     const tag = this._annotation.body
       .find(b => ('purpose' in b) && b.purpose == 'tagging')
@@ -26,8 +32,18 @@ class AtomicFact {
     const subType = tag.toLowerCase()
     return subType
   }
+
   get sources() {
     return [this._annotation]
+  }
+
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      name: this._name //,
+      // source: this._annotation
+    }
   }
 }
 
@@ -37,7 +53,11 @@ class ComplexFact {
     this._name = ""
     this._operator = null
     this._factList = []
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
+
   get type() { return this._type }
   get subClass() { return this._subClass }
 
@@ -65,6 +85,18 @@ class ComplexFact {
       this._factList.splice(index, 1)
     }
   }
+
+  //returns object with references to other frames by id
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      subClass: this.subClass,
+      name: this._name,
+      operator: this._operator,
+      factList: this._factList.map(f => f.id)
+    }
+  }
 }
 
 class Act {
@@ -79,7 +111,10 @@ class Act {
     this._recipient = null
     this._creates = []
     this._terminates = []
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
 
   get type() { return this._type }
 
@@ -171,6 +206,22 @@ class Act {
       case 'terminates':
         this._terminates.push(fact)
         break;
+    }
+  }
+
+  //returns object with references to other frames by id
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      name: this._name,
+      action: this._action ? this._action.id : null,
+      actor: this._actor ? this._actor.id : null,
+      object: this._object ? this._object.id : null,
+      precondition: this._precondition ? this._precondition.id : null,
+      recipient: this._recipient ? this._recipient.id : null,
+      creates: this._creates.map(f => f.id),
+      terminates: this._terminates.map(f => f.id)
     }
   }
 }
