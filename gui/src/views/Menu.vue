@@ -19,7 +19,7 @@ export default {
         handleFileSelection(evt) {
             const reader = new FileReader();
             reader.onload = (evt) => {
-                console.log("file read", evt.target.result)
+                this.$store.dispatch("loadInterpretation", evt.target.result)
             };
             reader.readAsText(evt.target.files[0]);
         }

@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { AtomicFact, ComplexFact, Act } from '../helpers/flint.js'
 import { saveAs } from "file-saver";
+import { parseJsonToFrames } from "../helpers/import.js";
 
 // Create a new store instance.
 const store = createStore({
@@ -46,10 +47,9 @@ const store = createStore({
         .filter(f => f.type == 'fact')
         .find(f => f.annotation == annotation)
       if (!frame) {
-        frame = new AtomicFact(
-          text, //name
-          annotation //annotation
-        )
+        frame = new AtomicFact()
+        frame.name = text
+        frame.annotation = annotation
       }
       context.state.frameBeingEdited = frame
     },
@@ -73,6 +73,10 @@ const store = createStore({
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.json`);
+    },
+    loadInterpretation(context, jsonText) {
+      context.state.frames = parseJsonToFrames(jsonText)
+      console.log("loaded interpretation", context.state.frames)
     }
   }
 });
