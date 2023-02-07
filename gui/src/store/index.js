@@ -40,7 +40,7 @@ const store = createStore({
       state.fileContent = decomposedData;
       state.reconstructedData.text = reconstructText(
         "",
-        decomposedData.document.hasChildElementOrdering.children
+        decomposedData.document.children
       );
       // console.log("reconstructedText: ", state.reconstructText);
     },
