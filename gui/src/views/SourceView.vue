@@ -1,14 +1,15 @@
 <template>
   <q-card flat class="my-card q-ma-sm">
     <q-card-section>
-      <search-form @showText="showText = true"></search-form>
+      <!-- <search-form @showText="showText = true"></search-form> -->
+      <upload-decomposed-source></upload-decomposed-source>
     </q-card-section>
     <!-- controllers for the annotation part -->
-    <q-card-section class="q-ml-md" v-if="showText">
+    <q-card-section class="q-ml-md" v-if="fileContent">
       <annotation-tools></annotation-tools>
     </q-card-section>
     <!-- the retrieved legal text will be shown here -->
-    <q-card-section v-if="showText">
+    <q-card-section v-if="fileContent">
       <q-list bordered class="rounded-borders q-pa-md">
         <q-expansion-item
           v-model="expanded"
@@ -16,14 +17,14 @@
           switch-toggle-side
           expand-separator
           icon="mdi-book-search-outline"
-          :label="legalText.title"
-          :caption="legalText.docID"
+          :label="reconstructedData.title"
+          :caption="reconstructedData.docID"
           default-opened
         >
           <!-- <q-separator /> -->
           <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
             <q-card-section class="q-pt-none">
-              <annotation-component :document="legalText">
+              <annotation-component :document="reconstructedData">
               </annotation-component>
             </q-card-section>
           </q-card>
@@ -37,8 +38,14 @@
 import AnnotationComponent from "../components/AnnotationComponent.vue";
 import AnnotationTools from "../components/AnnotationTools.vue";
 import searchForm from "../components/searchForm.vue";
+import UploadDecomposedSource from "../components/UploadDecomposedSource.vue";
 export default {
-  components: { searchForm, AnnotationComponent, AnnotationTools },
+  components: {
+    searchForm,
+    AnnotationComponent,
+    AnnotationTools,
+    UploadDecomposedSource,
+  },
   data: () => ({
     showText: false,
     expanded: true,
@@ -338,6 +345,14 @@ Bij het opstellen van een regeling wordt onderzocht welke hogere regels de vrijh
  </p>`,
     },
   }),
+  computed: {
+    fileContent() {
+      return this.$store.getters.getFileContent;
+    },
+    reconstructedData() {
+      return this.$store.getters.getReconstructedData;
+    },
+  },
   methods: {},
 };
 </script>

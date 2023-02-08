@@ -1,5 +1,8 @@
 import { createStore } from "vuex";
-import { AtomicFact, ComplexFact, Act } from '../helpers/flint.js'
+import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
+import reconstructText from "../helpers/reconstructText.js";
+import { saveAs } from "file-saver";
+import { parseJsonToFrames } from "../helpers/import.js";
 
 // Create a new store instance.
 const store = createStore({
@@ -9,97 +12,97 @@ const store = createStore({
       annotationMode: null,
       frameBeingEdited: null,
       fieldBeingEdited: null,
-      showFrameSource: false //show sources for currently edited frame
+      showFrameSource: false, //show sources for currently edited frame
+      fileContent: null, // the decomposed data will be stored to this one
+      reconstructedData: {
+        label: "Example title",
+        docID: "Example docID",
+        text: "",
+      },
     };
   },
   mutations: {
     addFrame(state, frame) {
       //add id
-      frame['id'] = state.frames.length
+      frame["id"] = state.frames.length;
       //sets the user state. re-assign to trigger resonsiveness
-      console.log("adding frame", frame)
+      console.log("adding frame", frame);
       state.frames = [...state.frames, frame];
     },
     setAnnotationMode(state, selectedMode) {
       state.annotationMode = selectedMode;
     },
     setFrameBeingEdited(state, frame) {
-      state.frameBeingEdited = frame
+      state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
-      state.showFrameSource = show
-    }
+      state.showFrameSource = show;
+    },
+    setFileContent(state, decomposedData) {
+      // console.log("decomposedData: ", decomposedData);
+      state.fileContent = decomposedData;
+      state.reconstructedData.text = reconstructText(
+        "",
+        decomposedData.document.children
+      );
+      // console.log("reconstructedText: ", state.reconstructText);
+    },
   },
   actions: {
-    // startNewFrame(context, type) {
-    //   console.log("startNewFrame", type)
-    //   switch(type) {
-    //     case 'act':
-    //       context.state.activeFrameData = {
-    //         type: 'act',
-    //         act: null,
-    //         action: null,
-    //         actor: null,
-    //         object: null,
-    //         precondition: null,
-    //         recipient: null,
-    //         resultPos: null,
-    //         resultNeg: null,
-    //         source: null
-    //       }
-    //       break
-    //     case 'fact':
-    //       context.state.activeFrameData = {
-    //         type: 'fact',
-    //         fact: null,
-    //         function: null,
-    //         source: null
-    //       }
-    //       break
-    //     case 'duty':
-    //       context.state.activeFrameData = {
-    //         type: 'duty',
-    //         duty: null,
-    //         holder: null,
-    //         claimant: null,
-    //         creatingAct: null,
-    //         terminatingAct: null,
-    //         enforcingAct: null,
-    //         source: null
-    //       }
-    //       break
-    //   }
-    // },
     //if annotation has a corresponding fact, show the fact frame.
     //otherwise, show an empty factframe for a new fact
     showAtomicFactForAnnotation(context, annotation) {
-      console.log("showAtomicFactForAnnotation", annotation)
+      console.log("showAtomicFactForAnnotation", annotation);
 
-      const text = annotation.target.selector
-        .find(s => s.type == 'TextQuoteSelector')
-        .exact
+      const text = annotation.target.selector.find(
+        (s) => s.type == "TextQuoteSelector"
+      ).exact;
 
       //find any existing fact frame for this annotation
       let frame = context.state.frames
-        .filter(f => f.type == 'fact')
-        .find(f => f.annotation == annotation)
+        .filter((f) => f.type == "fact")
+        .find((f) => f.annotation == annotation);
       if (!frame) {
         frame = new AtomicFact(
           text, //name
           annotation //annotation
-        )
+        );
+        frame = new AtomicFact()
+        frame.name = text
+        frame.annotation = annotation
       }
-      context.state.frameBeingEdited = frame
+      context.state.frameBeingEdited = frame;
     },
     createAct(context) {
-      console.log("create act frame")
-      context.state.frameBeingEdited = new Act()
+      console.log("create act frame");
+      context.state.frameBeingEdited = new Act();
     },
     createComplexFact(context) {
       console.log("create complex fact")
       context.state.frameBeingEdited = new ComplexFact()
+    },
+    saveInterpretation(context) {
+      console.log("saving interpretation")
+      //convert frames to json string
+      //replace object references by id's
+      console.log("frames", context.state.frames)
+      const string = JSON.stringify(context.state.frames.map(f => f.toFlatObject()))
+      console.log("string", string)
+      const blob = new Blob([string], {
+        type: "text/plain;charset=utf-8",
+      });
+      const dateString = new Date().toISOString().substring(0, 10);
+      saveAs(blob, `${dateString}_interpretation.json`);
+    },
+    loadInterpretation(context, jsonText) {
+      context.state.frames = parseJsonToFrames(jsonText)
+      console.log("loaded interpretation", context.state.frames)
     }
-  }
+  },
+  getters: {
+    getFileContent: (state) => state.fileContent,
+    getReconstructedData: (state) => state.reconstructedData,
+  },
 });
 
 export { store };

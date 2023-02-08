@@ -12,8 +12,8 @@
       color="white"
       text-color="primary"
       :options="[
-        { label: 'Annotation', value: 'ANNOTATION' },
-        { label: 'Relation', value: 'RELATIONS' },
+        { label: 'Annotation', value: 'ANNOTATION', disable: false },
+        { label: 'Relation', value: 'RELATIONS', disable: true },
       ]"
       @update:model-value="pickMode"
     >
