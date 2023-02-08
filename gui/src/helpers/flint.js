@@ -1,24 +1,22 @@
 
-function createComplexFact(fact) {
-  return {
-    type: 'fact',
-    subClass: 'complex',
-    fact: fact,
-    operator: null, //and, or, not (null: not filled in yet)
-    factList: [] //facts that operator applies to
-  }
-}
-
-
 class AtomicFact {
-  constructor(name, annotation) {
+  constructor() {
     this._type = "fact"
-    this._name = name;
-    this._annotation = annotation;
+    this._name = "";
+    this._annotation = null;
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
+
+  get annotation() { return this._annotation }
+  set annotation(annotation) { this._annotation = annotation }
+
   get type() { return this._type }
+
   get name() { return this._name }
   set name(name) { this._name = name }
+
   get subClass() { //derived from annotation tag
     const tag = this._annotation.body
       .find(b => ('purpose' in b) && b.purpose == 'tagging')
@@ -26,8 +24,24 @@ class AtomicFact {
     const subType = tag.toLowerCase()
     return subType
   }
+
   get sources() {
     return [this._annotation]
+  }
+
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      name: this._name,
+      source: this._annotation
+    }
+  }
+
+  fillWithData(frameData, allFrames) {
+    console.log("fillWithData", frameData, allFrames)
+    this._name = frameData.name
+    this._annotation = frameData.source
   }
 }
 
@@ -37,7 +51,11 @@ class ComplexFact {
     this._name = ""
     this._operator = null
     this._factList = []
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
+
   get type() { return this._type }
   get subClass() { return this._subClass }
 
@@ -65,6 +83,29 @@ class ComplexFact {
       this._factList.splice(index, 1)
     }
   }
+
+  //returns object with references to other frames by id
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      subClass: this.subClass,
+      name: this._name,
+      operator: this._operator,
+      factList: this._factList.map(f => f.id)
+    }
+  }
+
+  //fill frame with data in frameData: frameData has references by ID, those
+  //need to be replaced by references to objects. FramesDict is a lookup-table
+  //to get a frame by ID
+  fillWithData(frameData, allFrames) {
+    console.log("fillWithData", frameData, allFrames)
+    this._subClass = frameData.subClass
+    this._name = frameData.name
+    this._operator = frameData.operator
+    this._factList = frameData.factList.map(id => allFrames.find(f => f.id == id))
+  }
 }
 
 class Act {
@@ -79,7 +120,10 @@ class Act {
     this._recipient = null
     this._creates = []
     this._terminates = []
+    this._id = null //set when fact is saved
   }
+  get id() { return this._id }
+  set id(id) { this._id = id }
 
   get type() { return this._type }
 
@@ -173,12 +217,38 @@ class Act {
         break;
     }
   }
+
+  //returns object with references to other frames by id
+  toFlatObject() {
+    return {
+      id: this._id,
+      type: this._type,
+      name: this._name,
+      action: this._action ? this._action.id : null,
+      actor: this._actor ? this._actor.id : null,
+      object: this._object ? this._object.id : null,
+      precondition: this._precondition ? this._precondition.id : null,
+      recipient: this._recipient ? this._recipient.id : null,
+      creates: this._creates.map(f => f.id),
+      terminates: this._terminates.map(f => f.id)
+    }
+  }
+
+  fillWithData(frameData, allFrames) {
+    console.log("fillWithData", frameData, allFrames)
+    this._name = frameData.name
+    this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
+    this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
+    this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
+    this._precondition = frameData.precondition ? allFrames.find(f => f.id == frameData.precondition) : null
+    this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
+    this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
+    this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+  }
 }
 
 export {
-  createComplexFact,
   AtomicFact,
   ComplexFact,
   Act
 }
-//TODO: create a class for each type of frame

@@ -11,6 +11,7 @@
   "dependencies": {
     "@quasar/extras": "^1.15.5",
     "@recogito/recogito-js": "^1.8.1",
+    "file-saver": "^2.0.5",
     "quasar": "^2.10.0",
     "vue": "^3.2.37",
     "vuex": "^4.0.2"
