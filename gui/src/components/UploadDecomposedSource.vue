@@ -33,6 +33,7 @@
           type="submit"
           color="primary"
           :disable="file == null"
+          :loading="loading"
           @click.enter.prevent="onSubmit"
         />
       </template>
@@ -54,6 +55,7 @@ export default {
   name: "UploadDecomposedSource",
   data: () => ({
     file: null,
+    loading: false,
   }),
   methods: {
     counterLabelFn: function ({ totalSize, filesNumber, maxFiles }) {
@@ -81,7 +83,13 @@ export default {
           Boolean(d.document)
         )[0];
         console.log("result: ", data);
-        this.$store.commit("setFileContent", data);
+        // this.$store.dispatch("reconstructSource", data)
+        this.loading = true
+        setTimeout(() => {
+          this.$store.commit("setFileContent", data);
+          this.loading = false;
+          }, 1000)
+
       }
       // case with actual form...
       // const formData = new FormData(evt.target);
