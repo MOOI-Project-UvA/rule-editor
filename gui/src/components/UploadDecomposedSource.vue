@@ -61,7 +61,7 @@ export default {
     counterLabelFn: function ({ totalSize, filesNumber, maxFiles }) {
       return `${filesNumber} files of ${maxFiles} | ${totalSize}`;
     },
-    readJsonFile: async function (file) {
+    readJsonFile: function (file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -74,39 +74,31 @@ export default {
       });
     },
     onSubmit: async function (evt) {
-      console.log("file upload model: ", this.file);
+
       if (this.file) {
+
+        this.loading = true
+        const that = this;
         // the actual content of the file in JSON
         const fileContent = await this.readJsonFile(this.file);
-        // keeping the properties, we are interested in ...
-        const data = fileContent["@graph"].filter((d) =>
+        setTimeout(()=>{
+
+          // keeping the properties, we are interested in ...
+          const data = fileContent["@graph"].filter((d) =>
           Boolean(d.document)
-        )[0];
-        console.log("result: ", data);
-        // this.$store.dispatch("reconstructSource", data)
-        this.loading = true
-        setTimeout(() => {
-          this.$store.commit("setFileContent", data);
-          this.loading = false;
-          }, 1000)
+          )[0];
+          // retrieving the filename of the loaded decomposed source.
+          data.filename = that.file.name.split('.')[0]
+          this.$store.dispatch("reconstructTextAction", data)
+              .then((res)=>{
+                that.loading = res;
+              })
+        },500)
 
       }
-      // case with actual form...
-      // const formData = new FormData(evt.target);
-      // console.log("file upload: ", formData.entries());
-      // const data = [];
 
-      // for (const [name, value] of formData.entries()) {
-      //   console.log("file here 1");
-      //   if (value.name.length > 0) {
-      //     console.log("file here 2");
-      //     data.push({
-      //       name,
-      //       value: value.name,
-      //     });
-      //   }
-      // }
     },
+
   },
 };
 </script>

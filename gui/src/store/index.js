@@ -39,13 +39,17 @@ const store = createStore({
       state.showFrameSource = show;
     },
     setFileContent(state, decomposedData) {
-      // console.log("decomposedData: ", decomposedData);
       state.fileContent = decomposedData;
+      console.log("decomposedData: ", decomposedData);
+    },
+    setReconstructedData(state, data){
+
       state.reconstructedData.text = reconstructText(
         "",
-        decomposedData.document.children
+        data.fileContent.document.children
       );
-      // console.log("reconstructedText: ", state.reconstructText);
+      state.reconstructedData.docID = data.fileName
+      console.log("reconstuct")
     },
   },
   actions: {
@@ -97,6 +101,23 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
+    },
+
+    readDecomposedData(context, fileContent){
+      const filename = fileContent.filename
+      return new Promise((resolve, reject)=>{
+        context.commit("setFileContent",fileContent)
+
+        resolve({ fileContent: context.state.fileContent, fileName: filename})
+      })
+
+
+    },
+    reconstructTextAction({dispatch, commit},data){
+       return dispatch("readDecomposedData", data).then((res)=>{
+        commit("setReconstructedData", res)
+        return false
+      })
     }
   },
   getters: {
