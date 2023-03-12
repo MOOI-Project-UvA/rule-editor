@@ -52,7 +52,6 @@ export default {
       if (this.frameBeingEdited && this.frameBeingEdited.type !== "fact") {
         // it adds a chip into a form to the FrameEditorView
         this.frameBeingEdited.addFrame(frame);
-      } else {
         // it opens the frame form in the middle
         this.$store.commit("setFrameBeingEdited", frame);
       }
