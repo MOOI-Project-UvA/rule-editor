@@ -2,7 +2,6 @@
  * This function extends the RecogitoJS editor by allowing the user to pick a label 
  * in the annotation process by clicking a button.
  * 
-
 */
 export default function createWidget(tagList) {
   return (args) => {

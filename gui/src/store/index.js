@@ -3,6 +3,8 @@ import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
+import { json } from 'd3-fetch'
+import { addParentReferencesToDocument, getSentencesInDocument } from "../helpers/document.js"
 
 // Create a new store instance.
 const store = createStore({
@@ -13,69 +15,87 @@ const store = createStore({
       frameBeingEdited: null,
       fieldBeingEdited: null,
       showFrameSource: false, //show sources for currently edited frame
-      fileContent: null, // the decomposed data will be stored to this one
-      reconstructedData: {
-        label: "Example title",
-        docID: "Example docID",
-        text: "",
-      },
+      // fileContent: null, // the decomposed data will be stored to this one
+      // reconstructedData: {
+      //   label: "Example title",
+      //   docID: "Example docID",
+      //   text: "",
+      // },
+      sourceDocuments: [], // documents that the current interpretation is using as a source
+      annotationBeingEdited: null,
+      availableSources: [] //list of sources that the user can choose from
     };
+  },
+  getters: {
+    getFileContent: (state) => state.fileContent,
+    reconstructedData: (state) => state.reconstructedData,
   },
   mutations: {
     addFrame(state, frame) {
-      //add id
-      frame["id"] = state.frames.length;
-      //sets the user state. re-assign to trigger resonsiveness
-      console.log("adding frame", frame);
-      state.frames = [...state.frames, frame];
+      //add frame if it does not exist yet
+      if (!(state.frames.includes(frame))) {
+        //set unique id for this frame
+        frame["id"] = state.frames.length;
+        state.frames = [...state.frames, frame];
+      }
     },
-    setAnnotationMode(state, selectedMode) {
-      state.annotationMode = selectedMode;
-    },
+    // setAnnotationMode(state, selectedMode) {
+    //   state.annotationMode = selectedMode;
+    // },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
     },
-    setFileContent(state, decomposedData) {
-      state.fileContent = decomposedData;
-      console.log("decomposedData: ", decomposedData);
-    },
-    setReconstructedData(state, data){
-
-      state.reconstructedData.text = reconstructText(
-        "",
-        data.fileContent.document.children
-      );
-      state.reconstructedData.docID = data.fileName
-      console.log("reconstuct")
-    },
+    // setFileContent(state, decomposedData) {
+    //   state.fileContent = decomposedData;
+    //   console.log("decomposedData: ", decomposedData);
+    // },
+    // setReconstructedData(state, data) {
+    //   state.reconstructedData.text = reconstructText(
+    //     "",
+    //     data.fileContent.document.children
+    //   );
+    //   state.reconstructedData.docID = data.fileName
+    //   console.log("reconstuct")
+    // },
+    setAnnotationBeingEdited(state, annotation) {
+      console.log("setAnnotationBeingEdited")
+      state.annotationBeingEdited = annotation
+    }
   },
   actions: {
-    //if annotation has a corresponding fact, show the fact frame.
+    readAvailableSources(context) {
+      console.log("reading available sources")
+      json('public/sources.json').then(data => {
+        context.state.availableSources = data
+      })
+    },
+    //reads source, so user can annotate and create frames
+    //source object contains filename where to read the source from
+    addSource(context, sourceId) {
+      const source = this.state.availableSources.find(s => s.id == sourceId)
+      console.log("reading", source.fileName)
+      json(source.fileName).then(data => {
+        const document = data['@graph'].find(d => 'document' in d).document
+        document.title = source.title
+        //add parent references to each part of the document
+        addParentReferencesToDocument(document)
+        //add attribute to each sentence to store annotations
+        getSentencesInDocument(document).forEach(s => s['annotations'] = [])
+        context.state.sourceDocuments = [...context.state.sourceDocuments, document]
+        console.log("context.state.sourceDocuments", context.state.sourceDocuments)
+      })
+    },
+    //if annotation has a corresponding fact, update the fact frame.
     //otherwise, show an empty factframe for a new fact
-    showAtomicFactForAnnotation(context, annotation) {
-      console.log("showAtomicFactForAnnotation", annotation);
-
-      const text = annotation.target.selector.find(
-        (s) => s.type == "TextQuoteSelector"
-      ).exact;
-
-      //find any existing fact frame for this annotation
-      let frame = context.state.frames
-        .filter((f) => f.type == "fact")
-        .find((f) => f.annotation == annotation);
-      if (!frame) {
-        frame = new AtomicFact(
-          text, //name
-          annotation //annotation
-        );
-        frame = new AtomicFact()
-        frame.name = text
-        frame.annotation = annotation
-      }
-      context.state.frameBeingEdited = frame;
+    addAtomicFact(context, annotation) {
+      const frame = new AtomicFact()
+      frame.annotation = annotation
+      annotation.frame = frame
+      context.commit("addFrame", frame)
+      console.log("added atomic fact", frame)
     },
     createAct(context) {
       console.log("create act frame");
@@ -101,29 +121,8 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
-    },
-
-    readDecomposedData(context, fileContent){
-      const filename = fileContent.filename
-      return new Promise((resolve, reject)=>{
-        context.commit("setFileContent",fileContent)
-
-        resolve({ fileContent: context.state.fileContent, fileName: filename})
-      })
-
-
-    },
-    reconstructTextAction({dispatch, commit},data){
-       return dispatch("readDecomposedData", data).then((res)=>{
-        commit("setReconstructedData", res)
-        return false
-      })
     }
-  },
-  getters: {
-    getFileContent: (state) => state.fileContent,
-    getReconstructedData: (state) => state.reconstructedData,
-  },
+  }
 });
 
 export { store };
