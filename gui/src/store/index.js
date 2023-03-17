@@ -5,7 +5,7 @@ import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
 import { json } from 'd3-fetch'
 import { addParentReferencesToDocument, getSentencesInDocument } from "../helpers/document.js"
-
+import { v4 as uuid4 } from 'uuid'
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -35,7 +35,7 @@ const store = createStore({
       //add frame if it does not exist yet
       if (!(state.frames.includes(frame))) {
         //set unique id for this frame
-        frame["id"] = state.frames.length;
+        frame["id"] =  uuid4();
         state.frames = [...state.frames, frame];
       }
     },
