@@ -27,13 +27,12 @@ export default {
         //annotations for this sentence, so we know what to highlight
         annotations() {
             if (this.isSentence) {
-                const factFrames = this.$store.state.frames //.filter(f => this.type == "fact")
+                const factFrames = this.$store.state.frames.filter(f => f.type == "fact")
                 const annotations = factFrames.map(f => f.annotation)
                 return annotations.filter(a => a.documentId == this.documentId && a.sentenceId == this.textPiece.id)
             } else {
                 return []
-            }
-        },
+            }        },
         htmlText() {
             return getHtmlWithHighlights()
         }
