@@ -1,0 +1,17 @@
+[
+    {
+        "id": "http://choppr.app/documents/1674741091539/document",
+        "title": "Algemene wet bestuursrecht",
+        "fileName": "public/sources/AWB.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1674740141704/document",
+        "title": "General Data Protection Regulation",
+        "fileName": "public/sources/GDPR.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1674743664661/document",
+        "title": "Rules for Tic-Tac-Toe",
+        "fileName": "public/sources/tictactoe.json"
+    }
+]

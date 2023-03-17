@@ -9,7 +9,6 @@
 export default function reconstructText(text, dataForReconstruction) {
   for (const sectionIndex in dataForReconstruction) {
     const currentElement = dataForReconstruction[sectionIndex];
-    console.log("currentElement: ", currentElement);
 
     // get the content based on type.
     // this part could be determined by the type of the ontology
@@ -33,11 +32,6 @@ export default function reconstructText(text, dataForReconstruction) {
 
     //check if there are children in the text
     if (currentElement.hasOwnProperty("children")) {
-      console.log(
-        "I do have children: ",
-        typeof currentElement.children,
-        currentElement.children
-      );
       text += reconstructText("", currentElement.children);
     }
   }

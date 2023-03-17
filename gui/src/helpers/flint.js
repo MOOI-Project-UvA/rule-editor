@@ -1,4 +1,3 @@
-
 class AtomicFact {
   constructor() {
     this._type = "fact"
@@ -14,15 +13,11 @@ class AtomicFact {
 
   get type() { return this._type }
 
-  get name() { return this._name }
+  get name() { return this._name.length > 0 ? this._name : this._annotation.annotatedText }
   set name(name) { this._name = name }
 
   get subClass() { //derived from annotation tag
-    const tag = this._annotation.body
-      .find(b => ('purpose' in b) && b.purpose == 'tagging')
-      .value
-    const subType = tag.toLowerCase()
-    return subType
+    return this._annotation.tag
   }
 
   get sources() {
@@ -34,14 +29,23 @@ class AtomicFact {
       id: this._id,
       type: this._type,
       name: this._name,
-      source: this._annotation
+      annotation: this._annotation.toFlatObject()
     }
   }
 
-  fillWithData(frameData, allFrames) {
-    console.log("fillWithData", frameData, allFrames)
+  //fills frame object with data from json frameData
+  //annotations will be added separately
+  fillWithData(frameData) {
     this._name = frameData.name
-    this._annotation = frameData.source
+    const annotation = new Annotation(
+      frameData.annotation.documentId,
+      frameData.annotation.sentenceId,
+      frameData.annotation.characterRange
+    )
+    annotation.frame = this
+    annotation.tag = frameData.annotation.tag
+    this._annotation = annotation
+
   }
 }
 
@@ -49,7 +53,7 @@ class ComplexFact {
   constructor() {
     this._type = "complexFact"
     this._name = ""
-    this._operator = null
+    this._operator = "and" //default value
     this._factList = []
     this._id = null //set when fact is saved
   }
@@ -247,8 +251,45 @@ class Act {
   }
 }
 
+class Annotation {
+  constructor(documentId, sentenceId, characterRange, annotatedText) {
+    this._documentId = documentId
+    this._sentenceId = sentenceId
+    this._characterRange = characterRange
+    this._annotatedText = annotatedText
+    this._tag = null
+    this._frame = null
+    this._positionOnScreen = null
+  }
+  get documentId() { return this._documentId }
+  get sentenceId() { return this._sentenceId }
+  get characterRange() { return this._characterRange }
+  get annotatedText() { return this._annotatedText }
+  get positionOnScreen() { return this._positionOnScreen }
+  set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
+
+  get tag() { return this._tag }
+  set tag(tag) { this._tag = tag }
+
+  get frame() { return this._frame }
+  set frame(frame) { this._frame = frame }
+
+  //returns flat object, with references to other objects by ID
+  toFlatObject() {
+    return {
+      documentId: this._documentId,
+      sentenceId: this._sentenceId,
+      characterRange: this._characterRange,
+      frameId: this._frame.id,
+      tag: this._tag
+    }
+  }
+}
+
+
 export {
   AtomicFact,
   ComplexFact,
-  Act
+  Act,
+  Annotation
 }
