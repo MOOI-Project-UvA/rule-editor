@@ -30,6 +30,7 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     allowedSubTypes() {
+
       console.log("frameBeingEdited", this.$store.state.frameBeingEdited)
       return this.$store.state.frameBeingEdited && this.$store.state.frameBeingEdited.type != 'fact'
         ? this.$store.state
@@ -42,7 +43,9 @@ export default {
         ? "Add to frame"
         : this.frames.length > 0 ? "Click to edit" : ""
     }
+
   },
+
   components: {
     FrameChip,
   },

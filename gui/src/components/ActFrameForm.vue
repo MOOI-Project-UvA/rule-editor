@@ -107,7 +107,11 @@ export default {
       this.$emit("closed");
     },
     saveClicked() {
+<<<<<<< HEAD
       //store frame if it is a new frame
+=======
+      //store frame
+>>>>>>> 75f2955e5c4fda131a23b288f1555b1435b3ca33
       this.$store.commit("addFrame", this.frame);
       this.$emit("closed");
     },
@@ -127,7 +131,10 @@ export default {
 .label {
   margin-left: 0px;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 75f2955e5c4fda131a23b288f1555b1435b3ca33
 .indent {
   margin-left: 30px;
 }
