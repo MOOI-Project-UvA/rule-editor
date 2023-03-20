@@ -1,6 +1,6 @@
 <template>
     <!-- displays recursively the content fields ('sentences') mmmin a document -->
-    <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="getHtml()">
+    <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
     </div>
     <div v-for="child in textPiece.children">
         <TextElement :textPiece="child" />
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { getHtmlWithHighlights } from '../helpers/highlightText.js'
+import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js'
 import { Annotation } from "../helpers/flint.js"
 import { getDocumentForTextPiece } from '../helpers/document'
 import { max } from 'd3-array'
@@ -32,16 +32,29 @@ export default {
                 return annotations.filter(a => a.documentId == this.documentId && a.sentenceId == this.textPiece.id)
             } else {
                 return []
-            }        },
+            }
+        },
         htmlText() {
-            return getHtmlWithHighlights()
+            return getHtmlWithHighlights(this.textPiece.content, this.annotations)
         }
     },
     methods: {
         handleSelection(event) {
+            console.log("handleSelection")
+            const selection = window.getSelection()
+            const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
+            const annotation = new Annotation(
+                this.documentId,
+                this.textPiece.id, //sentence ID
+                range, //characterRange
+                selection.toString() //selected text
+            )
+            annotation.positionOnScreen = [event.clientX, event.clientY]
+            this.$store.commit("setAnnotationBeingEdited", annotation)
+        },
+        handleSelection2(event) {
             const selection = window.getSelection()
             console.log("selection", selection)
-
             const rangeStart = Math.min(selection.anchorOffset, selection.focusOffset)
             const rangeEnd = Math.max(selection.anchorOffset, selection.focusOffset)
             if (rangeEnd > rangeStart) {
@@ -63,9 +76,6 @@ export default {
             } else {
                 this.$store.commit("setAnnotationBeingEdited", null)
             }
-        },
-        getHtml() {
-            return getHtmlWithHighlights(this.textPiece.content, this.annotations)
         }
     }
 }

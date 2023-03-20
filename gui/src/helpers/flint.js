@@ -263,8 +263,13 @@ class Annotation {
   }
   get documentId() { return this._documentId }
   get sentenceId() { return this._sentenceId }
-  get characterRange() { return this._characterRange }
+
   get annotatedText() { return this._annotatedText }
+  set annotatedText(annotatedText) { this._annotatedText = annotatedText }
+
+  get characterRange() { return this._characterRange }
+  set characterRange(characterRange) { this._characterRange = characterRange }
+
   get positionOnScreen() { return this._positionOnScreen }
   set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
 

@@ -38,6 +38,7 @@ export default {
         saveAnnotation() {
             //create atomic fact for the annotation that is being edited
             //and add the annotation to that fact
+            console.log("saving this.annotation", this.annotation)
             this.$store.dispatch("addAtomicFact", this.annotation)
             this.$store.commit("setAnnotationBeingEdited", null)
         },
