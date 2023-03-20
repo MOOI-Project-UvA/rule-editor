@@ -43,12 +43,19 @@ export default {
             console.log("handleSelection")
             const selection = window.getSelection()
             const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-            const annotation = new Annotation(
-                this.documentId,
-                this.textPiece.id, //sentence ID
-                range, //characterRange
-                selection.toString() //selected text
-            )
+            console.log("range", range)
+            console.log("annotations", this.annotations)
+            //check if there is an existing annotation at the selected range
+            let annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
+            if (!annotation) {
+                //create new annotation
+                annotation = new Annotation(
+                    this.documentId,
+                    this.textPiece.id, //sentence ID
+                    range, //characterRange
+                    selection.toString() //selected text
+                )
+            }
             annotation.positionOnScreen = [event.clientX, event.clientY]
             this.$store.commit("setAnnotationBeingEdited", annotation)
         },

@@ -2,8 +2,9 @@ import { colors } from "./config.js"
 
 // see: https://stackoverflow.com/questions/65640736/get-start-and-end-postion-of-a-text-selection-with-sourrounded-elements
 function getSelectedCharacterRange(sentenceElement, selection) {
-    const rangeStart = Math.min(selection.anchorOffset, selection.focusOffset)
-    const rangeEnd = Math.max(selection.anchorOffset, selection.focusOffset)
+    const indexRangeStart = Math.min(selection.anchorOffset, selection.focusOffset)
+    const indexRangeEnd = Math.max(selection.anchorOffset, selection.focusOffset)
+    let indexRange = []
     if (selection.getRangeAt && selection.rangeCount) {
         const range = selection.getRangeAt(0);
         const allNodes = sentenceElement.childNodes
@@ -16,8 +17,9 @@ function getSelectedCharacterRange(sentenceElement, selection) {
                 ? node.nodeValue.length
                 : node.innerText.length //span element
         }
-        return [rangeStart + offset, rangeEnd + offset]
+        indexRange = [indexRangeStart + offset, indexRangeEnd + offset]
     }
+    return indexRange
 }
 
 function getHtmlWithHighlights(text, annotations) {
