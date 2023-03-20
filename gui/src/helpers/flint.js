@@ -40,7 +40,8 @@ class AtomicFact {
     const annotation = new Annotation(
       frameData.annotation.documentId,
       frameData.annotation.sentenceId,
-      frameData.annotation.characterRange
+      frameData.annotation.characterRange,
+      frameData.annotation.annotatedText
     )
     annotation.frame = this
     annotation.tag = frameData.annotation.tag
@@ -285,6 +286,7 @@ class Annotation {
       documentId: this._documentId,
       sentenceId: this._sentenceId,
       characterRange: this._characterRange,
+      annotatedText: this._annotatedText,
       frameId: this._frame.id,
       tag: this._tag
     }

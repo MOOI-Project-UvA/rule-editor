@@ -34,7 +34,6 @@ function parseJsonToFrames(jsonText) {
     const documentIds = annotations
         .map(a => a.documentId)
         .filter((value, index, array) => array.indexOf(value) === index); //keep unique values
-    console.log("documentIds", documentIds)
     documentIds.forEach(docId => {
         store.dispatch("addSource", docId)
     })

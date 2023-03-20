@@ -11,7 +11,7 @@
                 </q-btn-group>
             </q-card-actions>
             <q-card-actions>
-                <q-btn color="primary" @click="saveAnnotation">Save</q-btn>
+                <q-btn color="primary" @click="saveAnnotation" :disabled="!annotation.tag">Save</q-btn>
                 <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
             </q-card-actions>
         </q-card>
