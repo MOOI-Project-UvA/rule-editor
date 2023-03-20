@@ -40,7 +40,8 @@ class AtomicFact {
     const annotation = new Annotation(
       frameData.annotation.documentId,
       frameData.annotation.sentenceId,
-      frameData.annotation.characterRange
+      frameData.annotation.characterRange,
+      frameData.annotation.annotatedText
     )
     annotation.frame = this
     annotation.tag = frameData.annotation.tag
@@ -263,8 +264,13 @@ class Annotation {
   }
   get documentId() { return this._documentId }
   get sentenceId() { return this._sentenceId }
-  get characterRange() { return this._characterRange }
+
   get annotatedText() { return this._annotatedText }
+  set annotatedText(annotatedText) { this._annotatedText = annotatedText }
+
+  get characterRange() { return this._characterRange }
+  set characterRange(characterRange) { this._characterRange = characterRange }
+
   get positionOnScreen() { return this._positionOnScreen }
   set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
 
@@ -280,6 +286,7 @@ class Annotation {
       documentId: this._documentId,
       sentenceId: this._sentenceId,
       characterRange: this._characterRange,
+      annotatedText: this._annotatedText,
       frameId: this._frame.id,
       tag: this._tag
     }

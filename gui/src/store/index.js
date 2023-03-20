@@ -35,7 +35,7 @@ const store = createStore({
       //add frame if it does not exist yet
       if (!(state.frames.includes(frame))) {
         //set unique id for this frame
-        frame["id"] =  uuid4();
+        frame["id"] = uuid4();
         state.frames = [...state.frames, frame];
       }
     },
@@ -61,10 +61,9 @@ const store = createStore({
     //   console.log("reconstuct")
     // },
     setAnnotationBeingEdited(state, annotation) {
-      console.log("setAnnotationBeingEdited")
       state.annotationBeingEdited = annotation
     },
-      removeComplexFact(state, frame) {
+    removeComplexFact(state, frame) {
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
       console.log("updated list of frames:", state.frames.length, state.frames);
     },
@@ -73,8 +72,6 @@ const store = createStore({
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
       console.log("updated list of frames:", state.frames.length, state.frames);
     },
-
-
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
       // case1: complex fact
@@ -148,27 +145,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-            state.frames[index]._action._id === frame._id
+              state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-            state.frames[index]._actor._id == frame._id
+              state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-            state.frames[index]._object._id == frame._id
+              state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-            state.frames[index]._precondition._id == frame._id
+              state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-            state.frames[index]._recipient._id == frame._id
+              state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
