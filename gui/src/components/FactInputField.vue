@@ -18,6 +18,7 @@
         v-for="fact in facts"
         :frame="fact"
         removable
+        functionality="editor-form"
         @remove="$emit('factRemoveClicked', fact)"/>
     </div>
   </div>
