@@ -13,5 +13,25 @@
         "id": "http://choppr.app/documents/1674743664661/document",
         "title": "Rules for Tic-Tac-Toe",
         "fileName": "/sources/tictactoe.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1678785424991/document",
+        "title": "Wet inkomstenbelasting 2001",
+        "fileName": "/sources/Inkomstenbelasting.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1680508254065/document",
+        "title": "Provinciewet",
+        "fileName": "/sources/Provinciewet.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1678786097984/document",
+        "title": "Rijksbelastingen",
+        "fileName": "/sources/Rijksbelastingen.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1674744197514/document",
+        "title": "Subsidieregeling IMF 2020 Fryslân",
+        "fileName": "/sources/Subsidieregeling IMF 2020 Fryslân.json"
     }
 ]
