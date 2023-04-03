@@ -3,16 +3,11 @@
     <div id="status">{{ message }}</div>
     <div id="chip-container">
       <div v-for="frame in frames" @click="onClick(frame)">
-        <FrameChip
-          :frame="frame"
-          :disable="
-            allowedSubTypes &&
-            frame.type === 'fact' &&
-            !allowedSubTypes.includes(frame.subClass)
-          "
-          :removable="message === 'Click to edit'"
-          functionality="chip-container"
-        />
+        <FrameChip :frame="frame" :disable="
+          allowedSubTypes &&
+          frame.type === 'fact' &&
+          !allowedSubTypes.includes(frame.subClass)
+        " :removable="message === 'Click to edit'" functionality="chip-container" />
       </div>
     </div>
   </div>
@@ -51,6 +46,7 @@ export default {
   },
   methods: {
     onClick(frame) {
+      console.log("clicked frame", frame)
       console.log("this.frameBeingEdited", this.frameBeingEdited);
       if (this.frameBeingEdited && this.frameBeingEdited.type !== "fact") {
         // it adds a chip into a form to the FrameEditorView
@@ -69,6 +65,7 @@ export default {
   margin: 20px 0px;
   display: inline-block;
 }
+
 #chip-container {
   display: flex;
   flex-wrap: wrap;

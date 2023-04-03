@@ -47,9 +47,6 @@ export default {
       not: "Negated fact",
     },
   }),
-  mounted() {
-    this.frame.name = "Complex fact" //default name
-  },
   components: {
     FactInputField,
   },

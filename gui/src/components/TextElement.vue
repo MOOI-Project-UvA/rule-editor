@@ -2,6 +2,8 @@
     <!-- displays recursively the content fields ('sentences') mmmin a document -->
     <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
     </div>
+    <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
+    </div> -->
     <div v-for="child in textPiece.children">
         <TextElement :textPiece="child" />
     </div>
@@ -44,10 +46,11 @@ export default {
             const selection = window.getSelection()
             const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
             console.log("range", range)
-            console.log("annotations", this.annotations)
+            console.log("annotations2", this.annotations)
             //check if there is an existing annotation at the selected range
             let annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
-            if (!annotation) {
+            console.log("found existing annotation", annotation)
+            if (!annotation && (range[0] != range[1])) {
                 //create new annotation
                 annotation = new Annotation(
                     this.documentId,
@@ -56,33 +59,13 @@ export default {
                     selection.toString() //selected text
                 )
             }
-            annotation.positionOnScreen = [event.clientX, event.clientY]
-            this.$store.commit("setAnnotationBeingEdited", annotation)
-        },
-        handleSelection2(event) {
-            const selection = window.getSelection()
-            console.log("selection", selection)
-            const rangeStart = Math.min(selection.anchorOffset, selection.focusOffset)
-            const rangeEnd = Math.max(selection.anchorOffset, selection.focusOffset)
-            if (rangeEnd > rangeStart) {
-                //correct for adding html tags in text. TODO: find out what is really going on here
-                const annotationsBeforeCurrentOne = this.annotations.filter(a => a.characterRange[1] < rangeEnd)
-                const positionOfLastAnnotation = annotationsBeforeCurrentOne.length == 0
-                    ? 0
-                    : max(annotationsBeforeCurrentOne.map(a => a.characterRange[1]))
-                const characterRange = [rangeStart + positionOfLastAnnotation, rangeEnd + positionOfLastAnnotation]
-                const annotation = new Annotation(
-                    this.documentId,
-                    this.textPiece.id, //sentence ID
-                    characterRange, //characterRange
-                    this.textPiece.content.substring(characterRange[0], characterRange[1]) //annotated text
-                )
-                console.log("adding annotation", annotation)
+            if (annotation) {
                 annotation.positionOnScreen = [event.clientX, event.clientY]
                 this.$store.commit("setAnnotationBeingEdited", annotation)
-            } else {
-                this.$store.commit("setAnnotationBeingEdited", null)
             }
+        },
+        clicked(tag) {
+            console.log("clicked", tag)
         }
     }
 }

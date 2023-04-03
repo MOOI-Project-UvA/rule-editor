@@ -1,37 +1,23 @@
 <template>
   <div id="frame-type-buttons" class="q-pa-md q-gutter-sm">
     Add:
-    <q-btn
-      color="primary"
-      :icon="icons['complexFact']"
-      label="complex fact"
-      @click="$store.dispatch('createComplexFact')"
-    />
-    <q-btn
-      color="primary"
-      :icon="icons['act']"
-      label="act"
-      @click="$store.dispatch('createAct')"
-    />
-    <q-btn
-      color="primary"
-      :icon="icons['duty']"
-      label="duty"
-      @click="startNewFrame('duty')"
-    />
+    <q-btn color="primary" :icon="icons['complexFact']" label="complex fact"
+      @click="$store.dispatch('createComplexFact')" />
+    <q-btn color="primary" :icon="icons['act']" label="act" @click="$store.dispatch('createAct')" />
+    <q-btn color="primary" :icon="icons['duty']" label="duty" @click="startNewFrame('duty')" disabled />
   </div>
   <div id="current-frame" v-if="frameBeingEdited">
     <template v-if="frameBeingEdited.type == 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type == 'fact'">
-      <AtomicFactFrameForm @closed="closeActiveFrame"/>
+      <AtomicFactFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type == 'complexFact'">
-      <ComplexFactFrameForm @closed="closeActiveFrame"/>
+      <ComplexFactFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type == 'duty'">
-      <DutyFrameForm @closed="closeActiveFrame"/>
+      <DutyFrameForm @closed="closeActiveFrame" />
     </template>
   </div>
 </template>

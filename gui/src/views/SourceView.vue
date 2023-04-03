@@ -1,5 +1,8 @@
 <template>
   <q-card flat class="my-card q-ma-sm">
+    <!-- <div>
+      <span @click="console.log('asdf')">test</span>
+    </div> -->
     <q-card-section>
       <!-- <upload-decomposed-source></upload-decomposed-source> -->
       <SourceLoader />

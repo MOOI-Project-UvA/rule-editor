@@ -1,9 +1,11 @@
 class AtomicFact {
   constructor() {
     this._type = "fact"
-    this._name = "";
+    this._label = ""
+    this._fact = "";
     this._annotation = null;
     this._id = null //set when fact is saved
+    this._booleanConstruct = null //subdivision of fact in smaller parts
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -13,8 +15,17 @@ class AtomicFact {
 
   get type() { return this._type }
 
-  get name() { return this._name.length > 0 ? this._name : this._annotation.annotatedText }
-  set name(name) { this._name = name }
+  get label() {
+    return this._label && this._label.length > 0
+      ? this._label
+      : this.fact.length > 15
+        ? this.fact.substring(0, 12) + "..."
+        : this.fact
+  }
+  set label(label) { this._label = label }
+
+  get fact() { return this._fact.length > 0 ? this._fact : this._annotation.annotatedText }
+  set fact(fact) { this._fact = fact }
 
   get subClass() { //derived from annotation tag
     return this._annotation.tag
@@ -23,6 +34,9 @@ class AtomicFact {
   get sources() {
     return [this._annotation]
   }
+
+  get booleanConstruct() { return this._booleanConstruct }
+  set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
 
   toFlatObject() {
     return {
@@ -50,10 +64,43 @@ class AtomicFact {
   }
 }
 
+class BooleanConstruct {
+  constructor() {
+    this._frame = null
+    this._isNegated = false
+    this._children = [] // list of BooleanConstructs if _frame is null
+    this._operandToJoinChildren = "and"
+  }
+  get operandToJoinChildren() { return this._operandToJoinChildren }
+  set operandToJoinChildren(operand) { this._operandToJoinChildren = operand }
+
+  addMember(member) {
+    this._members.push(member)
+  }
+
+  removeMember(member) {
+    const index = this._members.indexOf(member)
+    if (index != -1) {
+      this._members.splice(index, 1)
+    }
+  }
+
+  get frame() { return this._frame }
+  set frame(frame) { this._frame = frame }
+
+  get isNegated() { return this._isNegated }
+  set isNegated(isNegated) { this._isNegated = isNegated }
+
+  get allFrames() {
+    return []
+  }
+
+}
+
 class ComplexFact {
   constructor() {
     this._type = "complexFact"
-    this._name = ""
+    this._name = "Complex fact"
     this._operator = "and" //default value
     this._factList = []
     this._id = null //set when fact is saved
@@ -116,8 +163,8 @@ class ComplexFact {
 class Act {
   constructor() {
     this._type = "act"
-    this._name = ""
-    this._activeField = ""
+    this._name = "Act"
+    this._activeField = "action"
     this._action = null
     this._actor = null
     this._object = null
@@ -131,6 +178,9 @@ class Act {
   set id(id) { this._id = id }
 
   get type() { return this._type }
+
+  get name() { return this._name }
+  set name(name) { this._name = name }
 
   get activeField() { return this._activeField }
   set activeField(activeField) { this._activeField = activeField }
@@ -259,7 +309,7 @@ class Annotation {
     this._characterRange = characterRange
     this._annotatedText = annotatedText
     this._tag = null
-    this._frame = null
+    //this._frame = null
     this._positionOnScreen = null
   }
   get documentId() { return this._documentId }
@@ -277,8 +327,8 @@ class Annotation {
   get tag() { return this._tag }
   set tag(tag) { this._tag = tag }
 
-  get frame() { return this._frame }
-  set frame(frame) { this._frame = frame }
+  // get frame() { return this._frame }
+  // set frame(frame) { this._frame = frame }
 
   //returns flat object, with references to other objects by ID
   toFlatObject() {
@@ -287,7 +337,7 @@ class Annotation {
       sentenceId: this._sentenceId,
       characterRange: this._characterRange,
       annotatedText: this._annotatedText,
-      frameId: this._frame.id,
+      //frameId: this._frame.id,
       tag: this._tag
     }
   }
@@ -298,5 +348,6 @@ export {
   AtomicFact,
   ComplexFact,
   Act,
-  Annotation
+  Annotation,
+  BooleanConstruct
 }

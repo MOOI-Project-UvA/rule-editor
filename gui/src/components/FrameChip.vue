@@ -1,20 +1,12 @@
 <template>
-  <q-chip
-    class="chip"
-    :removable="removable"
-    :disable="disable"
-    @remove="onRemove"
-    :color="
-      disable
-        ? 'grey-5'
-        : frame.type === 'fact'
+  <q-chip class="chip" :removable="removable" :disable="disable" @remove="onRemove" :color="
+    disable
+      ? 'grey-5'
+      : frame.type === 'fact'
         ? colors[frame.subClass]
         : 'primary'
-    "
-    text-color="white"
-    :icon="icons[frame.type]"
-  >
-    {{ frame.name }}
+  " text-color="white" :icon="icons[frame.type]">
+    {{ frame.type !== 'fact' ? frame.name : frame.label }}
   </q-chip>
 </template>
 

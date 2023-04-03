@@ -205,7 +205,6 @@ const store = createStore({
     addAtomicFact(context, annotation) {
       const frame = new AtomicFact()
       frame.annotation = annotation
-      annotation.frame = frame
       context.commit("addFrame", frame)
       console.log("added atomic fact", frame)
     },
