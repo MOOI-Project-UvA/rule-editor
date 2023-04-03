@@ -180,7 +180,7 @@ const store = createStore({
   actions: {
     readAvailableSources(context) {
       console.log("reading available sources")
-      json('public/sources.json').then(data => {
+      json('/sources.json').then(data => {
         context.state.availableSources = data
       })
     },

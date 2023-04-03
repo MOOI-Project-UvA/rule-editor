@@ -2,16 +2,36 @@
     {
         "id": "http://choppr.app/documents/1674741091539/document",
         "title": "Algemene wet bestuursrecht",
-        "fileName": "public/sources/AWB.json"
+        "fileName": "/sources/AWB.json"
     },
     {
         "id": "http://choppr.app/documents/1674740141704/document",
         "title": "General Data Protection Regulation",
-        "fileName": "public/sources/GDPR.json"
+        "fileName": "/sources/GDPR.json"
     },
     {
         "id": "http://choppr.app/documents/1674743664661/document",
         "title": "Rules for Tic-Tac-Toe",
-        "fileName": "public/sources/tictactoe.json"
+        "fileName": "/sources/tictactoe.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1678785424991/document",
+        "title": "Wet inkomstenbelasting 2001",
+        "fileName": "/sources/Inkomstenbelasting.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1680508254065/document",
+        "title": "Provinciewet",
+        "fileName": "/sources/Provinciewet.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1678786097984/document",
+        "title": "Rijksbelastingen",
+        "fileName": "/sources/Rijksbelastingen.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1674744197514/document",
+        "title": "Subsidieregeling IMF 2020 Fryslân",
+        "fileName": "/sources/Subsidieregeling IMF 2020 Fryslân.json"
     }
 ]
