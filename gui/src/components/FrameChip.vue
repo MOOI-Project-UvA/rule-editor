@@ -12,7 +12,7 @@
         : 'primary'
     "
     text-color="white"
-    :icon="icons[frame.type]"
+    :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
   >
     {{ frame.name }}
   </q-chip>
@@ -44,7 +44,6 @@ export default {
   methods: {
     onRemove: function () {
       if (this.functionality === "chip-container") {
-        console.log("remove chip from list!");
         this.deleteFact();
       } else {
         this.$emit("remove");
