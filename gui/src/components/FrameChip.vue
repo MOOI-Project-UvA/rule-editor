@@ -6,7 +6,7 @@
         ? colors[frame.subClass]
         : 'primary'
   " text-color="white" :icon="icons[frame.type]">
-    {{ frame.label }}
+    {{ frame.type !== 'fact' ? frame.name : frame.label }}
   </q-chip>
 </template>
 
