@@ -34,7 +34,7 @@ function getHtmlWithHighlights(text, annotations) {
         htmlText = htmlText.substring(0, annotation.characterRange[0])
             + '<span class="text-white bg-'
             + colors[annotation.tag]
-            + '" style="cursor:pointer">'
+            + '" style="cursor:pointer" @click="console.log(\'' + annotation.tag + '\')">'
             + htmlText.substring(annotation.characterRange[0])
     })
     return htmlText
