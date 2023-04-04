@@ -1,16 +1,46 @@
 <template>
-  <div id="frame-chip-container">
-    <div id="status">{{ message }}</div>
-    <div id="chip-container">
-      <div v-for="frame in frames" @click="onClick(frame)">
-        <FrameChip :frame="frame" :disable="
-          allowedSubTypes &&
-          frame.type === 'fact' &&
-          !allowedSubTypes.includes(frame.subClass)
-        " :removable="message === 'Click to edit'" functionality="chip-container" />
+  <q-card flat bordered class="my-card q-ma-sm">
+    <q-item>
+      <q-item-section>
+        <q-item-label>Source view</q-item-label>
+      </q-item-section>
+      <q-item-section avatar>
+        <q-avatar>
+          <q-icon
+            name="mdi-information-outline"
+            class="cursor-pointer"
+          ></q-icon>
+          <q-tooltip>
+            <div style="max-width: 300px">
+              In this view, you can see the annotations made in the source view.
+              The annotations are facts and are grouped by type. By clicking on
+              a fact, you can add them to complex facts or acts (right view).
+            </div>
+          </q-tooltip>
+        </q-avatar>
+      </q-item-section>
+    </q-item>
+    <q-separator />
+    <q-item>
+      <div id="frame-chip-container">
+        <div id="status">{{ message }}</div>
+        <div id="chip-container">
+          <div v-for="frame in frames" @click="onClick(frame)">
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </q-item>
+  </q-card>
 </template>
 
 <script>
@@ -25,20 +55,19 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     allowedSubTypes() {
-
-      console.log("frameBeingEdited", this.$store.state.frameBeingEdited)
-      return this.$store.state.frameBeingEdited && this.$store.state.frameBeingEdited.type != 'fact'
-        ? this.$store.state
-          .frameBeingEdited
-          .allowedSubClassesForActiveField
-        : false
+      console.log("frameBeingEdited", this.$store.state.frameBeingEdited);
+      return this.$store.state.frameBeingEdited &&
+        this.$store.state.frameBeingEdited.type != "fact"
+        ? this.$store.state.frameBeingEdited.allowedSubClassesForActiveField
+        : false;
     },
     message() {
-      return this.frameBeingEdited && this.frameBeingEdited.type != 'fact'
+      return this.frameBeingEdited && this.frameBeingEdited.type != "fact"
         ? "Add to frame"
-        : this.frames.length > 0 ? "Click to edit" : ""
-    }
-
+        : this.frames.length > 0
+        ? "Click to edit"
+        : "";
+    },
   },
 
   components: {
@@ -46,7 +75,7 @@ export default {
   },
   methods: {
     onClick(frame) {
-      console.log("clicked frame", frame)
+      console.log("clicked frame", frame);
       console.log("this.frameBeingEdited", this.frameBeingEdited);
       if (this.frameBeingEdited && this.frameBeingEdited.type !== "fact") {
         // it adds a chip into a form to the FrameEditorView
