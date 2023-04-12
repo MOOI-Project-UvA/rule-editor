@@ -5,17 +5,15 @@
       <!-- <q-icon :name="frame.subClass in icons ? icons[frame.subClass] : icons['other']"/> -->
     </q-card-section>
     <q-card-section>
-      <q-input v-model="frame.label" label="label" input-style="font-size: 16pt; font-weight:bold" />
-    </q-card-section>
-    <q-card-section class="q-pa-md q-gutter-sm">
-      <q-input v-model="frame.fact" label="Fact" autogrow />
-      <!-- <q-input v-model="frame.function" label="Function" /> -->
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
     </q-card-section>
     <q-card-section>
-      <q-toggle v-model="subdivided" label="Opdelen in facts" @update:model-value="subdivisionToggled" />
-      <div v-if="subdivided" class="q-ml-xs">
-        <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" />
-      </div>
+      <q-input v-model="frame.fact" label="Fact" autogrow />
+    </q-card-section>
+    <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="subdivisionToggled" />
+    <q-card-section v-if="subdivided">
+      <q-input class="pb-sm" v-model="frame.annotation.annotatedText" label="Source" autogrow readonly />
+      <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
     </q-card-section>
     <q-card-actions>
       <q-btn flat @click="cancelClicked">Cancel</q-btn>
@@ -49,10 +47,12 @@ export default {
       this.$emit("closed");
     },
     subdivisionToggled() {
-      console.log("subdiv")
-      this.frame.booleanConstruct = this.subdivided
-        ? new BooleanConstruct()
-        : null
+      if (this.subdivided) {
+        this.frame.booleanConstruct = new BooleanConstruct()
+        this.frame.booleanConstruct.addEmptyChild()
+      } else {
+        this.frame.booleanConstruct = null
+      }
     }
   },
   components: { BooleanConstructPanel }

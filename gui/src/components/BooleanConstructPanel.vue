@@ -1,20 +1,127 @@
 <template>
-    <q-card flat>
-        <q-card-section>
-            <q-btn-toggle size="sm" v-model="booleanConstruct" toggle-color="primary" :options="[
-                { label: 'AND', value: 'and' },
-                { label: 'OR', value: 'or' }
-            ]" />
+    <div>
+        <template v-if="booleanConstruct.frame">
+            <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
+            <div>
+                <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
+                    :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
+                    @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>
+                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" />
+            </div>
 
-        </q-card-section>
+        </template>
+        <template v-if="booleanConstruct.children.length > 0">
+            <!-- boolean construct is not atomic: it has one or more children joined by a boolean operator. -->
+            <!-- each child is a boolean construct -->
+            <div class="bordered-panel">
+                <div v-for="child, i in booleanConstruct.children">
+                    <BooleanConstructPanel :booleanConstruct="child" />
+                    <template v-if="i < booleanConstruct.children.length - 1">
+                        <div class="operator-label">{{ booleanConstruct.operatorToJoinChildren }}</div>
+                    </template>
 
-    </q-card>
+                    <template v-else>
+                        <!-- after last child -->
+                        <!-- show button(s) for adding another child if the last child has a value -->
+                        <!-- show multiple buttons if this BC has no operator set yet -->
+                        <!-- else show one button with this BC's operator -->
+                        <template v-if="child.frame || child.children.length > 0">
+
+                            <template v-if="booleanConstruct.operatorToJoinChildren">
+                                <q-btn size="sm" color="primary" dense flat
+                                    @click="addChild(booleanConstruct.operatorToJoinChildren)">{{
+                                        booleanConstruct.operatorToJoinChildren }}</q-btn>
+                            </template>
+                            <template v-else>
+                                <q-btn-group flat>
+                                    <q-btn v-for="option in booleanOptions" size="sm" color="primary" dense flat
+                                        @click="addChild(option.value)">{{
+                                            option.label }}</q-btn>
+                                </q-btn-group>
+                            </template>
+                        </template>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <!-- show text input field if BC is empty -->
+        <template v-if="!booleanConstruct.frame && booleanConstruct.children.length == 0">
+            <div>
+                <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent" />
+                <q-input dense v-model="textSnippet" label="Text snippet" autogrow>
+                    <template v-slot:after>
+                        <q-btn-group flat>
+                            <q-btn v-for="tag in tags" size="sm" :color="colors[tag.value]" dense flat icon="mdi-text-box"
+                                @click="createFact(tag.value)" :disabled="textSnippet.length == 0" />
+                        </q-btn-group>
+                    </template></q-input>
+            </div>
+        </template>
+
+
+    </div>
 </template>
 
 <script>
+import { colors } from "../helpers/config.js"
+import { AtomicFact } from "../helpers/flint.js"
+import FrameChip from "./FrameChip.vue"
 export default {
+    name: "booleanConstructPanel",
+    data: () => ({
+        textSnippet: "",
+        tags: [
+            { label: "Agent", value: "agent" },
+            { label: "Action", value: "action" },
+            { label: "Object", value: "object" },
+            { label: "Context", value: "context" }
+        ],
+        booleanOptions: [
+            { label: 'AND', value: 'and' },
+            { label: 'OR', value: 'or' }
+        ],
+        colors: colors
+    }),
     props: {
-        booleanConstruct: Object
+        booleanConstruct: Object,
+        frame: Object
+    },
+    components: {
+        FrameChip
+    },
+    methods: {
+        createFact(tag) {
+            let frame = new AtomicFact()
+            frame.annotation = {
+                sentence: "",
+                characterRange: [],
+                tag: tag,
+                positionOnScreen: [],
+                annotatedText: this.textSnippet
+            }
+            frame.fact = this.textSnippet
+            this.$store.commit("addFrame", frame)
+            this.booleanConstruct.frame = frame
+        },
+        addParent() {
+            this.booleanConstruct.addParent()
+        },
+        addChild(operator) {
+            this.booleanConstruct.operatorToJoinChildren = operator
+            this.booleanConstruct.addEmptyChild()
+        }
     }
 }
 </script>
+
+<style>
+.bordered-panel {
+    border-left: 2px solid #007bc6;
+    padding-left: 14px;
+}
+
+.operator-label {
+    color: #007bc6;
+    text-transform: uppercase;
+}
+</style>

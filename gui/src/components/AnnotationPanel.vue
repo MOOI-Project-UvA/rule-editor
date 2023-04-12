@@ -26,7 +26,7 @@ export default {
             { label: "Agent", value: "agent" },
             { label: "Action", value: "action" },
             { label: "Object", value: "object" },
-            { label: "Other", value: "other" }
+            { label: "Context", value: "context" }
         ],
         selectedTag: null,
         colors: colors

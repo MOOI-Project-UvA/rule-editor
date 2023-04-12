@@ -66,23 +66,55 @@ class AtomicFact {
 
 class BooleanConstruct {
   constructor() {
-    this._frame = null
+    this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
     this._isNegated = false
     this._children = [] // list of BooleanConstructs if _frame is null
-    this._operandToJoinChildren = "and"
-  }
-  get operandToJoinChildren() { return this._operandToJoinChildren }
-  set operandToJoinChildren(operand) { this._operandToJoinChildren = operand }
-
-  addMember(member) {
-    this._members.push(member)
+    this._operatorToJoinChildren = null
+    this._parent = null
   }
 
-  removeMember(member) {
-    const index = this._members.indexOf(member)
+  get isNegated() { return this._isNegated }
+  set isNegated(isNegated) { this._isNegated = isNegated }
+
+  get operatorToJoinChildren() { return this._operatorToJoinChildren }
+  set operatorToJoinChildren(operator) { this._operatorToJoinChildren = operator }
+
+  get children() { return this._children }
+
+  get parent() { return this._parent }
+  set parent(parent) { this._parent = parent }
+
+  get level() { return this._parent ? this._parent.level + 1 : 0 }
+
+  addChild(child) {
+    console.log("addChild")
+    this._children.push(child)
+  }
+
+  addEmptyChild() {
+    let child = new BooleanConstruct()
+    this._children.push(child)
+    child.parent = this
+  }
+
+  removeChild(child) {
+    const index = this._children.indexOf(child)
     if (index != -1) {
-      this._members.splice(index, 1)
+      this._children.splice(index, 1)
     }
+  }
+
+  addParent() {
+    let newParent = new BooleanConstruct()
+    const oldParent = this.parent
+    //replace child of existing parent by new parent
+    if (this.parent) {
+      const index = this.parent.children.indexOf(this)
+      oldParent.children[index] = newParent
+      newParent.parent = oldParent
+    }
+    newParent.addChild(this)
+    this.parent = newParent
   }
 
   get frame() { return this._frame }
@@ -94,6 +126,8 @@ class BooleanConstruct {
   get allFrames() {
     return []
   }
+
+
 
 }
 
