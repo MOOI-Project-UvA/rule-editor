@@ -134,41 +134,27 @@ class BooleanConstruct {
 class ComplexFact {
   constructor() {
     this._type = "complexFact"
-    this._name = "Complex fact"
-    this._operator = "and" //default value
-    this._factList = []
-    this._id = null //set when fact is saved
+    this._fact = "Complex fact"
   }
   get id() { return this._id }
   set id(id) { this._id = id }
 
   get type() { return this._type }
-  get subClass() { return this._subClass }
 
-  get name() { return this._name }
-  set name(name) { this._name = name }
-
-  get operator() { return this._operator }
-  set operator(operator) { this._operator = operator }
-
-  get factList() { return this._factList }
-  set factList(factList) { this._factList = factList }
-
-  get sources() {
-    return this._factList.map(f => f.sources).flat()
+  get label() {
+    return this._label && this._label.length > 0
+      ? this._label
+      : this.fact.length > 15
+        ? this.fact.substring(0, 12) + "..."
+        : this.fact
   }
+  set label(label) { this._label = label }
 
-  addFrame(fact) {
-    this._factList.push(fact)
-  }
+  get fact() { return this._fact }
+  set fact(fact) { this._fact = fact }
 
-  removeFrame(fact) {
-    console.log("from object: remove", fact)
-    const index = this._factList.indexOf(fact)
-    if (index != -1) {
-      this._factList.splice(index, 1)
-    }
-  }
+  get booleanConstruct() { return this._booleanConstruct }
+  set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
 
   //returns object with references to other frames by id
   toFlatObject() {
