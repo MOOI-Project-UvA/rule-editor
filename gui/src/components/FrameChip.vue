@@ -10,6 +10,8 @@
     :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
   >
     {{ frame.type !== 'fact' ? frame.name : frame.label }}
+    <!-- contexts which have been subdivided contain has a badge on top-right -->
+    <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
   </q-chip>
 </template>
 
