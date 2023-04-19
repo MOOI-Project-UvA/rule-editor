@@ -37,13 +37,21 @@ export default {
     mounted() {
         this.selectedTag = this.annotation.tag
     },
+    computed: {
+        frameForThisAnnotation() {
+            return this.$store.state.frames.find(f => f.annotation == this.annotation)
+        }
+    },
     methods: {
         saveAnnotation() {
-            //create atomic fact for the annotation that is being edited
+            //create fact for the annotation that is being edited
             //and add the annotation to that fact
             this.annotation.tag = this.selectedTag
-            console.log("saving this.annotation", this.annotation)
-            this.$store.dispatch("addAtomicFact", this.annotation)
+            console.log("saving this.annotation", this.annotation, "that is part of this frame:", this.frameForThisAnnotation)
+            //create fact if this is a new annotation
+            if (!this.frameForThisAnnotation) {
+                this.$store.dispatch("addFact", this.annotation)
+            }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {

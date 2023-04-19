@@ -1,11 +1,12 @@
-class AtomicFact {
+class Fact {
   constructor() {
+    this._id = null //set when fact is saved
     this._type = "fact"
     this._label = ""
     this._fact = "";
     this._annotation = null;
-    this._id = null //set when fact is saved
-    this._booleanConstruct = null //subdivision of fact in smaller parts
+    this._booleanConstruct = null //optional subdivision of fact in smaller parts
+    this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -38,28 +39,51 @@ class AtomicFact {
   get booleanConstruct() { return this._booleanConstruct }
   set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
 
+  //keep track of which (part of the) boolean construct the user is editing.
+  //when the user clicks a frame from the list, we know where to put that frame in
+  //the boolean construct 
+  set booleanConstructBeingEdited(booleanConstructBeingEdited) {
+    this._booleanConstructBeingEdited = booleanConstructBeingEdited
+  }
+
+  // called when the user clicked a frame in the frame list
+  addFrame(frame) {
+    if (this._booleanConstructBeingEdited) {
+      this._booleanConstructBeingEdited.frame = frame
+    }
+  }
+
   toFlatObject() {
     return {
       id: this._id,
       type: this._type,
-      name: this._name,
-      annotation: this._annotation.toFlatObject()
+      label: this._label,
+      fact: this._fact,
+      annotation: this._annotation?.toFlatObject(),
+      booleanConstruct: this._booleanConstruct?.toFlatObject()
     }
   }
 
   //fills frame object with data from json frameData
-  //annotations will be added separately
-  fillWithData(frameData) {
-    this._name = frameData.name
-    const annotation = new Annotation(
+  //in flat data, frames in boolean construct are referenced by ID
+  //we need allFrames to convert those IDs to object references
+  fromFlatObject(frameData, allFrames) {
+    this._type = frameData.type
+    this._label = frameData.label
+    this._fact = frameData.fact
+
+    this._annotation = new Annotation(
       frameData.annotation.documentId,
       frameData.annotation.sentenceId,
       frameData.annotation.characterRange,
       frameData.annotation.annotatedText
     )
-    annotation.frame = this
-    annotation.tag = frameData.annotation.tag
-    this._annotation = annotation
+    this._annotation.tag = frameData.annotation.tag
+
+    if ('booleanConstruct' in frameData) {
+      this._booleanConstruct = new BooleanConstruct()
+      this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
+    }
 
   }
 }
@@ -69,7 +93,7 @@ class BooleanConstruct {
     this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
     this._isNegated = false
     this._children = [] // list of BooleanConstructs if _frame is null
-    this._operatorToJoinChildren = null
+    this._operatorToJoinChildren = null //"and" or "or"
     this._parent = null
   }
 
@@ -86,8 +110,8 @@ class BooleanConstruct {
 
   get level() { return this._parent ? this._parent.level + 1 : 0 }
 
+
   addChild(child) {
-    console.log("addChild")
     this._children.push(child)
   }
 
@@ -123,81 +147,59 @@ class BooleanConstruct {
   get isNegated() { return this._isNegated }
   set isNegated(isNegated) { this._isNegated = isNegated }
 
-  get allFrames() {
-    return []
-  }
-
-
-
-}
-
-class ComplexFact {
-  constructor() {
-    this._type = "complexFact"
-    this._name = "Complex fact"
-    this._operator = "and" //default value
-    this._factList = []
-    this._id = null //set when fact is saved
-  }
-  get id() { return this._id }
-  set id(id) { this._id = id }
-
-  get type() { return this._type }
-  get subClass() { return this._subClass }
-
-  get name() { return this._name }
-  set name(name) { this._name = name }
-
-  get operator() { return this._operator }
-  set operator(operator) { this._operator = operator }
-
-  get factList() { return this._factList }
-  set factList(factList) { this._factList = factList }
-
-  get sources() {
-    return this._factList.map(f => f.sources).flat()
-  }
-
-  addFrame(fact) {
-    this._factList.push(fact)
-  }
-
-  removeFrame(fact) {
-    console.log("from object: remove", fact)
-    const index = this._factList.indexOf(fact)
-    if (index != -1) {
-      this._factList.splice(index, 1)
+  removeFrame(frame) {
+    if (this._frame == frame) {
+      this._frame = null
+      //remove itself from the children of the parent, unless
+      //the parent is the top of the tree, and this is its last child
+      if (this._parent) {
+        if (this._parent.parent || this._parent.children.length > 1) {
+          const childIndex = this._parent.children.indexOf(this)
+          this._parent.children.splice(childIndex, 1)
+        }
+        if (this._parent.children.length <= 1) {
+          this._parent.operatorToJoinChildren = null
+        }
+      }
+    } else {
+      this._children.forEach(c => {
+        c.removeFrame(frame)
+      })
     }
   }
 
   //returns object with references to other frames by id
   toFlatObject() {
     return {
-      id: this._id,
-      type: this._type,
-      subClass: this.subClass,
-      name: this._name,
-      operator: this._operator,
-      factList: this._factList.map(f => f.id)
+      frame: this.frame?.id,
+      isNegated: this.isNegated,
+      children: this._children
+        .filter(c => c.frame || c.children.length > 0)
+        .map(c => c.toFlatObject()),
+      operatorToJoinChildren: this._operatorToJoinChildren
     }
   }
 
-  //fill frame with data in frameData: frameData has references by ID, those
-  //need to be replaced by references to objects. FramesDict is a lookup-table
-  //to get a frame by ID
-  fillWithData(frameData, allFrames) {
-    console.log("fillWithData", frameData, allFrames)
-    this._subClass = frameData.subClass
-    this._name = frameData.name
-    this._operator = frameData.operator
-    this._factList = frameData.factList.map(id => allFrames.find(f => f.id == id))
+  //populate the attributes of this object with the given data
+  fromFlatObject(bcData, allFrames) {
+    this._frame = bcData.frame ? allFrames.find(f => f.id == bcData.frame) : null
+    this._isNegated = bcData.isNegated
+    this._operatorToJoinChildren = bcData.operatorToJoinChildren
+    this._children = bcData.children.map(cData => {
+      let child = new BooleanConstruct()
+      //populate child with data
+      child.fromFlatObject(cData, allFrames)
+      child._parent = this
+      return child
+    })
   }
 }
 
 class Act {
   constructor() {
     this._type = "act"
-    this._name = "Act"
+    this._label = ""
+    this._act = ""
     this._activeField = "action"
     this._action = null
     this._actor = null
@@ -213,8 +215,17 @@ class Act {
 
   get type() { return this._type }
 
-  get name() { return this._name }
-  set name(name) { this._name = name }
+  get label() {
+    return this._label && this._label.length > 0
+      ? this._label
+      : this.fact.length > 15
+        ? this.fact.substring(0, 12) + "..."
+        : this.fact
+  }
+  set label(label) { this._label = label }
+
+  get act() { return this._act }
+  set act(act) { this._act = act }
 
   get activeField() { return this._activeField }
   set activeField(activeField) { this._activeField = activeField }
@@ -276,7 +287,6 @@ class Act {
       ...this._creates,
       ...this._terminates
     ]
-    console.log("facts", facts)
     return facts.filter(f => f)
       .map(f => f.sources).flat()
   }
@@ -324,7 +334,6 @@ class Act {
   }
 
   fillWithData(frameData, allFrames) {
-    console.log("fillWithData", frameData, allFrames)
     this._name = frameData.name
     this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
     this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
@@ -343,7 +352,6 @@ class Annotation {
     this._characterRange = characterRange
     this._annotatedText = annotatedText
     this._tag = null
-    //this._frame = null
     this._positionOnScreen = null
   }
   get documentId() { return this._documentId }
@@ -361,8 +369,7 @@ class Annotation {
   get tag() { return this._tag }
   set tag(tag) { this._tag = tag }
 
-  // get frame() { return this._frame }
-  // set frame(frame) { this._frame = frame }
+
 
   //returns flat object, with references to other objects by ID
   toFlatObject() {
@@ -371,7 +378,6 @@ class Annotation {
       sentenceId: this._sentenceId,
       characterRange: this._characterRange,
       annotatedText: this._annotatedText,
-      //frameId: this._frame.id,
       tag: this._tag
     }
   }
@@ -379,8 +385,7 @@ class Annotation {
 
 
 export {
-  AtomicFact,
-  ComplexFact,
+  Fact,
   Act,
   Annotation,
   BooleanConstruct

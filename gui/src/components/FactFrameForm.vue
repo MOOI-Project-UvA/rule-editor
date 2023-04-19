@@ -37,6 +37,11 @@ export default {
       return this.$store.state.frameBeingEdited;
     }
   },
+  mounted() {
+    if (this.frame.booleanConstruct) {
+      this.subdivided = true
+    }
+  },
   methods: {
     cancelClicked() {
       this.$emit("closed");
@@ -48,8 +53,11 @@ export default {
     },
     subdivisionToggled() {
       if (this.subdivided) {
-        this.frame.booleanConstruct = new BooleanConstruct()
-        this.frame.booleanConstruct.addEmptyChild()
+        if (!this.frame.booleanConstruct) {
+          this.frame.booleanConstruct = new BooleanConstruct()
+          this.frame.booleanConstruct.addEmptyChild()
+        }
+
       } else {
         this.frame.booleanConstruct = null
       }

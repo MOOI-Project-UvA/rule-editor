@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
+import { Fact, Act } from "../helpers/flint.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -76,20 +76,24 @@ const store = createStore({
       // remove the fact from an act or a complexFact
       // case1: complex fact
       // get the generated ids (frame._id) of the complexFrames, which contain the AtomicFact
-      const complexFramesIds = state.frames
-        .filter((fr) => fr._type === "complexFact")
-        .filter((fr) => fr._factList.find((d) => d._id === frame._id))
-        .map((fr) => fr._id);
-      console.log("id of complexFrames:", complexFramesIds);
 
-      if (complexFramesIds.length > 0) {
-        complexFramesIds.forEach((id) => {
-          const index = state.frames.findIndex((d) => d._id === id);
-          state.frames[index]._factList = state.frames[index]._factList.filter(
-            (fr) => fr._id !== frame._id
-          );
-        });
-      }
+      state.frames.filter(f => f.type == 'fact' && f.booleanConstruct).forEach(f => {
+        f.booleanConstruct.removeFrame(frame)
+      })
+      // const complexFramesIds = state.frames
+      //   .filter((fr) => fr._type === "complexFact")
+      //   .filter((fr) => fr._factList.find((d) => d._id === frame._id))
+      //   .map((fr) => fr._id);
+      // console.log("id of complexFrames:", complexFramesIds);
+
+      // if (complexFramesIds.length > 0) {
+      //   complexFramesIds.forEach((id) => {
+      //     const index = state.frames.findIndex((d) => d._id === id);
+      //     state.frames[index]._factList = state.frames[index]._factList.filter(
+      //       (fr) => fr._id !== frame._id
+      //     );
+      //   });
+      // }
       // get the generated ids of the acts that contain the AtomicFact to be deleted
       const actFrameIds = state.frames
         .filter((fr) => fr._type === "act")
@@ -187,6 +191,7 @@ const store = createStore({
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
     addSource(context, sourceId) {
+      console.log("addSource", sourceId)
       const source = this.state.availableSources.find(s => s.id == sourceId)
       console.log("reading", source.fileName)
       json(source.fileName).then(data => {
@@ -202,19 +207,14 @@ const store = createStore({
     },
     //if annotation has a corresponding fact, update the fact frame.
     //otherwise, show an empty factframe for a new fact
-    addAtomicFact(context, annotation) {
-      const frame = new AtomicFact()
+    addFact(context, annotation) {
+      const frame = new Fact()
       frame.annotation = annotation
       context.commit("addFrame", frame)
-      console.log("added atomic fact", frame)
     },
     createAct(context) {
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
-    },
-    createComplexFact(context) {
-      console.log("create complex fact")
-      context.state.frameBeingEdited = new ComplexFact()
     },
     saveInterpretation(context) {
       console.log("saving interpretation")
@@ -232,10 +232,6 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
-    },
-    deleteComplexFact(context, frame) {
-      console.log("index.js-complexFact:", frame);
-      context.commit("remove");
     },
 
   }
