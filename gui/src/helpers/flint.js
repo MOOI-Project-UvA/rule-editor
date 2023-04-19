@@ -173,18 +173,18 @@ class BooleanConstruct {
     }
   }
 
+  //populate the attributes of this object with the given data
   fromFlatObject(bcData, allFrames) {
-    console.log("fromFlatObject bcData", bcData, "allFrames", allFrames)
-    const children = bcData.children.map(c => this.fromFlatObject(c, allFrames))
-    console.log("children", children)
-    return {
-      'frame': 'frame' in bcData
-        ? allFrames.find(f => f.id == bcData.frame)
-        : null,
-      'isNegated': bcData.isNegated,
-      'operatorToJoinChildren': bcData.operatorToJoinChildren,
-      'children': children
-    }
+    this._frame = bcData.frame ? allFrames.find(f => f.id == bcData.frame) : null
+    this._isNegated = bcData.isNegated
+    this._operatorToJoinChildren = bcData.operatorToJoinChildren
+    this._children = bcData.children.map(cData => {
+      let child = new BooleanConstruct()
+      //populate child with data
+      child.fromFlatObject(cData, allFrames)
+      child._parent = this
+      return child
+    })
   }
 }
 
