@@ -19,9 +19,9 @@ class Fact {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this._fact.length > 15
-        ? this._fact.substring(0, 12) + "..."
-        : this._fact
+      : this.fact.length > 15
+        ? this.fact.substring(0, 12) + "..."
+        : this.fact
   }
   set label(label) { this._label = label }
 
@@ -43,7 +43,6 @@ class Fact {
   //when the user clicks a frame from the list, we know where to put that frame in
   //the boolean construct 
   set booleanConstructBeingEdited(booleanConstructBeingEdited) {
-    console.log("setting to", booleanConstructBeingEdited);
     this._booleanConstructBeingEdited = booleanConstructBeingEdited
   }
 
@@ -69,7 +68,6 @@ class Fact {
   //in flat data, frames in boolean construct are referenced by ID
   //we need allFrames to convert those IDs to object references
   fromFlatObject(frameData, allFrames) {
-    console.log("frameData", frameData, "allFrames", allFrames)
     this._type = frameData.type
     this._label = frameData.label
     this._fact = frameData.fact
@@ -95,7 +93,7 @@ class BooleanConstruct {
     this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
     this._isNegated = false
     this._children = [] // list of BooleanConstructs if _frame is null
-    this._operatorToJoinChildren = null
+    this._operatorToJoinChildren = null //"and" or "or"
     this._parent = null
   }
 
@@ -112,12 +110,8 @@ class BooleanConstruct {
 
   get level() { return this._parent ? this._parent.level + 1 : 0 }
 
-  //TODO
-  removeFrame(id) {
 
-  }
   addChild(child) {
-    console.log("addChild")
     this._children.push(child)
   }
 
@@ -153,8 +147,18 @@ class BooleanConstruct {
   get isNegated() { return this._isNegated }
   set isNegated(isNegated) { this._isNegated = isNegated }
 
-  get allFrames() {
-    return []
+  removeFrame(frame) {
+    if (this._frame == frame) {
+      this._frame = null
+      if (this._parent) {
+        const childIndex = this._parent.children.indexOf(this)
+        this._parent.children.splice(childIndex, 1)
+      }
+    } else {
+      this._children.forEach(c => {
+        c.removeFrame(frame)
+      })
+    }
   }
 
   //returns object with references to other frames by id
@@ -170,14 +174,16 @@ class BooleanConstruct {
   }
 
   fromFlatObject(bcData, allFrames) {
-    console.log("bcData", bcData, "allFrames", allFrames)
+    console.log("fromFlatObject bcData", bcData, "allFrames", allFrames)
+    const children = bcData.children.map(c => this.fromFlatObject(c, allFrames))
+    console.log("children", children)
     return {
       'frame': 'frame' in bcData
         ? allFrames.find(f => f.id == bcData.frame)
         : null,
       'isNegated': bcData.isNegated,
       'operatorToJoinChildren': bcData.operatorToJoinChildren,
-      'children': bcData.children.map(c => this.fromFlatObject(c, allFrames))
+      'children': children
     }
   }
 }
@@ -274,7 +280,6 @@ class Act {
       ...this._creates,
       ...this._terminates
     ]
-    console.log("facts", facts)
     return facts.filter(f => f)
       .map(f => f.sources).flat()
   }
@@ -322,7 +327,6 @@ class Act {
   }
 
   fillWithData(frameData, allFrames) {
-    console.log("fillWithData", frameData, allFrames)
     this._name = frameData.name
     this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
     this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null

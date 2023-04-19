@@ -117,6 +117,7 @@ export default {
             frame.fact = this.textSnippet
             this.$store.commit("addFrame", frame)
             this.booleanConstruct.frame = frame
+            this.textSnippet = ""
         },
         addParent() {
             this.booleanConstruct.addParent()
@@ -127,7 +128,6 @@ export default {
         },
         onFocus() {
             this.frameBeingEdited.booleanConstructBeingEdited = this.booleanConstruct
-            console.log("onfocus", this.frameBeingEdited)
         },
         onBlur() {
             //this.frameBeingEdited.booleanContructBeingEdited = null
