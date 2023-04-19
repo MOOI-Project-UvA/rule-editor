@@ -48,10 +48,13 @@ export default {
     onClick(frame) {
       console.log("clicked frame", frame)
       console.log("this.frameBeingEdited", this.frameBeingEdited);
-      if (this.frameBeingEdited && this.frameBeingEdited.type !== "fact") {
+      //add frame to field in frame being edited
+      if (this.frameBeingEdited) {
         // it adds a chip into a form to the FrameEditorView
+        console.log("adding frame to", this.frameBeingEdited)
         this.frameBeingEdited.addFrame(frame);
       } else {
+        console.log("setting frame being edited")
         // it opens the frame form in the middle
         this.$store.commit("setFrameBeingEdited", frame);
       }

@@ -187,6 +187,7 @@ const store = createStore({
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
     addSource(context, sourceId) {
+      console.log("addSource", sourceId)
       const source = this.state.availableSources.find(s => s.id == sourceId)
       console.log("reading", source.fileName)
       json(source.fileName).then(data => {

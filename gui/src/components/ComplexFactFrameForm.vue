@@ -9,7 +9,9 @@
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
-    <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
+    <template v-if="frame && frame.booleanConstruct">
+      <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
+    </template>
     <q-card-actions>
       <q-btn flat @click="cancelClicked">Cancel</q-btn>
       <q-btn color="primary" @click="saveClicked">Save</q-btn>
@@ -18,12 +20,19 @@
 </template>
 
 <script>
+import { BooleanConstruct } from '../helpers/flint';
 import BooleanConstructPanel from './BooleanConstructPanel.vue';
 export default {
   data: () => ({
   }),
   components: {
     BooleanConstructPanel,
+  },
+  mounted() {
+    if (!this.frame.booleanConstruct) {
+      this.frame.booleanConstruct = new BooleanConstruct()
+      this.frame.booleanConstruct.addEmptyChild()
+    }
   },
   computed: {
     frame() {
@@ -35,6 +44,7 @@ export default {
       this.$emit("closed");
     },
     saveClicked() {
+      console.log("saving", this.frame.booleanConstruct.toFlatObject())
       //store frame
       this.$store.commit("addFrame", this.frame);
       this.$emit("closed");

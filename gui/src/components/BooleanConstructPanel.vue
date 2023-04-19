@@ -21,14 +21,14 @@
                     </template>
 
                     <template v-else>
-                        <!-- after last child -->
+                        <!-- after last child: -->
                         <!-- show button(s) for adding another child if the last child has a value -->
                         <!-- show multiple buttons if this BC has no operator set yet -->
                         <!-- else show one button with this BC's operator -->
                         <template v-if="child.frame || child.children.length > 0">
 
                             <template v-if="booleanConstruct.operatorToJoinChildren">
-                                <q-btn size="sm" color="primary" dense flat
+                                <q-btn class="q-mt-sm" size="sm" color="primary" dense
                                     @click="addChild(booleanConstruct.operatorToJoinChildren)">{{
                                         booleanConstruct.operatorToJoinChildren }}</q-btn>
                             </template>
@@ -48,23 +48,26 @@
         <template v-if="!booleanConstruct.frame && booleanConstruct.children.length == 0">
             <div>
                 <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent" />
-                <q-input dense v-model="textSnippet" label="Text snippet" autogrow>
+                <q-input dense v-model="textSnippet" label="Enter source text or select existing frame" autogrow
+                    @focus="onFocus()" @blur="onBlur()">
                     <template v-slot:after>
                         <q-btn-group flat>
                             <q-btn v-for="tag in tags" size="sm" :color="colors[tag.value]" dense flat icon="mdi-text-box"
-                                @click="createFact(tag.value)" :disabled="textSnippet.length == 0" />
+                                @click="createFact(tag.value)" :disabled="textSnippet.length == 0">
+                                <q-tooltip class="text-subtitle2">
+                                    Create frame of type {{ tag.label }}
+                                </q-tooltip>
+                            </q-btn>
                         </q-btn-group>
                     </template></q-input>
             </div>
         </template>
-
-
     </div>
 </template>
 
 <script>
 import { colors } from "../helpers/config.js"
-import { AtomicFact } from "../helpers/flint.js"
+import { Annotation, AtomicFact } from "../helpers/flint.js"
 import FrameChip from "./FrameChip.vue"
 export default {
     name: "booleanConstructPanel",
@@ -86,19 +89,24 @@ export default {
         booleanConstruct: Object,
         frame: Object
     },
+    computed: {
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
+        }
+    },
     components: {
         FrameChip
     },
     methods: {
         createFact(tag) {
             let frame = new AtomicFact()
-            frame.annotation = {
-                sentence: "",
-                characterRange: [],
-                tag: tag,
-                positionOnScreen: [],
-                annotatedText: this.textSnippet
-            }
+            frame.annotation = new Annotation(
+                null, //documentId
+                null, //sentenceId
+                [], //characterRange
+                this.textSnippet //annotatedText
+            )
+            frame.annotation.tag = tag
             frame.fact = this.textSnippet
             this.$store.commit("addFrame", frame)
             this.booleanConstruct.frame = frame
@@ -109,6 +117,13 @@ export default {
         addChild(operator) {
             this.booleanConstruct.operatorToJoinChildren = operator
             this.booleanConstruct.addEmptyChild()
+        },
+        onFocus() {
+            this.frameBeingEdited.booleanConstructBeingEdited = this.booleanConstruct
+            console.log("onfocus", this.frameBeingEdited)
+        },
+        onBlur() {
+            //this.frameBeingEdited.booleanContructBeingEdited = null
         }
     }
 }

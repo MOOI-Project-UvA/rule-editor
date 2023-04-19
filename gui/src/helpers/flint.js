@@ -1,11 +1,12 @@
 class AtomicFact {
   constructor() {
+    this._id = null //set when fact is saved
     this._type = "fact"
     this._label = ""
     this._fact = "";
     this._annotation = null;
-    this._id = null //set when fact is saved
     this._booleanConstruct = null //subdivision of fact in smaller parts
+    this._booleanConstructBeingEdited = null
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -38,28 +39,52 @@ class AtomicFact {
   get booleanConstruct() { return this._booleanConstruct }
   set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
 
+  //keep track of which (part of the) boolean construct the user is editing.
+  //when the user clicks a frame from the list, we know where to put that frame in
+  //the boolean construct 
+  set booleanConstructBeingEdited(booleanConstructBeingEdited) {
+    console.log("setting to", booleanConstructBeingEdited);
+    this._booleanConstructBeingEdited = booleanConstructBeingEdited
+  }
+
+  addFrame(frame) {
+    if (this._booleanConstructBeingEdited) {
+      this._booleanConstructBeingEdited.frame = frame
+    }
+  }
+
   toFlatObject() {
     return {
       id: this._id,
       type: this._type,
-      name: this._name,
-      annotation: this._annotation.toFlatObject()
+      label: this._label,
+      fact: this._fact,
+      annotation: this._annotation?.toFlatObject(),
+      booleanConstruct: this._booleanConstruct?.toFlatObject()
     }
   }
 
   //fills frame object with data from json frameData
-  //annotations will be added separately
-  fillWithData(frameData) {
-    this._name = frameData.name
-    const annotation = new Annotation(
+  //in flat data, frames in boolean construct are referenced by ID
+  //we need allFrames to convert those IDs to object references
+  fromFlatObject(frameData, allFrames) {
+    console.log("frameData", frameData, "allFrames", allFrames)
+    this._type = frameData.type
+    this._label = frameData.label
+    this._fact = frameData.fact
+
+    this._annotation = new Annotation(
       frameData.annotation.documentId,
       frameData.annotation.sentenceId,
       frameData.annotation.characterRange,
       frameData.annotation.annotatedText
     )
-    annotation.frame = this
-    annotation.tag = frameData.annotation.tag
-    this._annotation = annotation
+    this._annotation.tag = frameData.annotation.tag
+
+    if ('booleanConstruct' in frameData) {
+      this._booleanConstruct = new BooleanConstruct()
+      this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
+    }
 
   }
 }
@@ -86,6 +111,10 @@ class BooleanConstruct {
 
   get level() { return this._parent ? this._parent.level + 1 : 0 }
 
+  //TODO
+  removeFrame(id) {
+
+  }
   addChild(child) {
     console.log("addChild")
     this._children.push(child)
@@ -127,14 +156,37 @@ class BooleanConstruct {
     return []
   }
 
+  //returns object with references to other frames by id
+  toFlatObject() {
+    return {
+      frame: this.frame?.id,
+      isNegated: this.isNegated,
+      children: this._children
+        .filter(c => c.frame || c.children.length > 0)
+        .map(c => c.toFlatObject()),
+      operatorToJoinChildren: this._operatorToJoinChildren
+    }
+  }
 
-
+  fromFlatObject(bcData, allFrames) {
+    console.log("bcData", bcData, "allFrames", allFrames)
+    return {
+      'frame': 'frame' in bcData
+        ? allFrames.find(f => f.id == bcData.frame)
+        : null,
+      'isNegated': bcData.isNegated,
+      'operatorToJoinChildren': bcData.operatorToJoinChildren,
+      'children': bcData.children.map(c => this.fromFlatObject(c, allFrames))
+    }
+  }
 }
 
 class ComplexFact {
   constructor() {
     this._type = "complexFact"
     this._fact = "Complex fact"
+    this._booleanConstruct = null
+    this._booleanConstructBeingEdited = null
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -155,6 +207,20 @@ class ComplexFact {
 
   get booleanConstruct() { return this._booleanConstruct }
   set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
+
+  //keep track of which (part of the) boolean construct the user is editing.
+  //when the user clicks a frame from the list, we know where to put that frame in
+  //the boolean construct 
+  set booleanConstructBeingEdited(booleanConstructBeingEdited) {
+    console.log("setting to", booleanConstructBeingEdited);
+    this._booleanConstructBeingEdited = booleanConstructBeingEdited
+  }
+
+  addFrame(frame) {
+    if (this._booleanConstructBeingEdited) {
+      this._booleanConstructBeingEdited.frame = frame
+    }
+  }
 
   //returns object with references to other frames by id
   toFlatObject() {
@@ -329,7 +395,6 @@ class Annotation {
     this._characterRange = characterRange
     this._annotatedText = annotatedText
     this._tag = null
-    //this._frame = null
     this._positionOnScreen = null
   }
   get documentId() { return this._documentId }
@@ -347,8 +412,7 @@ class Annotation {
   get tag() { return this._tag }
   set tag(tag) { this._tag = tag }
 
-  // get frame() { return this._frame }
-  // set frame(frame) { this._frame = frame }
+
 
   //returns flat object, with references to other objects by ID
   toFlatObject() {
@@ -357,7 +421,6 @@ class Annotation {
       sentenceId: this._sentenceId,
       characterRange: this._characterRange,
       annotatedText: this._annotatedText,
-      //frameId: this._frame.id,
       tag: this._tag
     }
   }
