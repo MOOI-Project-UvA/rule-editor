@@ -2,7 +2,7 @@
   <q-card flat bordered class="my-card q-ma-sm">
     <q-item>
       <q-item-section>
-        <q-item-label>Source view</q-item-label>
+        <q-item-label>Interpretation view</q-item-label>
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
@@ -24,8 +24,10 @@
     <q-item>
       <div id="frame-chip-container">
         <div id="status">{{ message }}</div>
-        <div id="chip-container">
-          <div v-for="frame in frames" @click="onClick(frame)">
+        <div id="agent-container">
+          <div v-for="frame in agents" @click="onClick(frame)">
+
+
             <FrameChip
               :frame="frame"
               :disable="
@@ -36,6 +38,92 @@
               :removable="message === 'Click to edit'"
               functionality="chip-container"
             />
+
+          </div>
+        </div>
+        <div id="action-container">
+          <div v-for="frame in actions" @click="onClick(frame)">
+
+
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+
+          </div>
+        </div>
+        <div id="object-container">
+          <div v-for="frame in objects" @click="onClick(frame)">
+
+
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+
+          </div>
+        </div>
+        <div id="context-container">
+          <div v-for="frame in contexts" @click="onClick(frame)">
+
+
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+
+          </div>
+        </div>
+        <div id="complexFact-container">
+          <div v-for="frame in complexFacts" @click="onClick(frame)">
+
+
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+
+          </div>
+        </div>
+         <div id="act-container">
+          <div v-for="frame in acts" @click="onClick(frame)">
+
+
+            <FrameChip
+              :frame="frame"
+              :disable="
+                allowedSubTypes &&
+                frame.type === 'fact' &&
+                !allowedSubTypes.includes(frame.subClass)
+              "
+              :removable="message === 'Click to edit'"
+              functionality="chip-container"
+            />
+
           </div>
         </div>
       </div>
@@ -50,6 +138,24 @@ export default {
   computed: {
     frames() {
       return this.$store.state.frames;
+    },
+    agents() {
+      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'agent')
+    },
+    actions() {
+      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'action')
+    },
+    objects() {
+      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'object')
+    },
+    contexts() {
+      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'other')
+    },
+    complexFacts(){
+      return this.$store.state.frames.filter(d=> d._type === 'complexFact')
+    },
+    acts(){
+      return this.$store.state.frames.filter(d=> d._type === 'act')
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
