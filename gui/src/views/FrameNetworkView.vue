@@ -22,9 +22,13 @@
     </q-item>
     <q-separator />
     <q-item>
-      <div id="frame-chip-container">
+
+
+      <div id="frame-chip-container" >
         <div id="status">{{ message }}</div>
-        <div id="agent-container">
+        <div id="fact-container">
+          <div id="agent-container" class="chip-container">
+          <span><b>Agents</b></span>
           <div v-for="frame in agents" @click="onClick(frame)">
 
 
@@ -41,7 +45,8 @@
 
           </div>
         </div>
-        <div id="action-container">
+          <div id="action-container" class="chip-container">
+           <span><b>Actions</b></span>
           <div v-for="frame in actions" @click="onClick(frame)">
 
 
@@ -58,9 +63,9 @@
 
           </div>
         </div>
-        <div id="object-container">
+          <div id="object-container" class="chip-container">
+          <span><b>Objects</b></span>
           <div v-for="frame in objects" @click="onClick(frame)">
-
 
             <FrameChip
               :frame="frame"
@@ -75,7 +80,8 @@
 
           </div>
         </div>
-        <div id="context-container">
+          <div id="context-container" class="chip-container">
+          <span><b>Context</b></span>
           <div v-for="frame in contexts" @click="onClick(frame)">
 
 
@@ -92,24 +98,8 @@
 
           </div>
         </div>
-        <div id="complexFact-container">
-          <div v-for="frame in complexFacts" @click="onClick(frame)">
-
-
-            <FrameChip
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-            />
-
-          </div>
-        </div>
-         <div id="act-container">
+          <div id="act-container" class="chip-container">
+          <span><b>Acts</b></span>
           <div v-for="frame in acts" @click="onClick(frame)">
 
 
@@ -126,6 +116,27 @@
 
           </div>
         </div>
+        </div>
+
+
+<!--        <div id="complexFact-container">-->
+<!--          <div v-for="frame in complexFacts" @click="onClick(frame)">-->
+
+
+<!--            <FrameChip-->
+<!--              :frame="frame"-->
+<!--              :disable="-->
+<!--                allowedSubTypes &&-->
+<!--                frame.type === 'fact' &&-->
+<!--                !allowedSubTypes.includes(frame.subClass)-->
+<!--              "-->
+<!--              :removable="message === 'Click to edit'"-->
+<!--              functionality="chip-container"-->
+<!--            />-->
+
+<!--          </div>-->
+<!--        </div>-->
+
       </div>
     </q-item>
   </q-card>
@@ -198,12 +209,27 @@ export default {
 <style lang="css" scoped>
 #frame-chip-container {
   margin: 20px 0px;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+ #fact-container {
+  margin: 20px 0px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 #chip-container {
   display: flex;
-  flex-wrap: wrap;
+
+}
+.chip-container{
+  min-width: 200px;
+  height: 200px;
+  margin-right: 5px;
+  overflow-y: auto;
+
 }
 
 .message {
