@@ -1,4 +1,4 @@
-import { AtomicFact, ComplexFact, Act } from './flint.js'
+import { Fact, Act } from './flint.js'
 import { store } from "../store/index.js"
 
 function parseJsonToFrames(jsonText) {
@@ -10,10 +10,7 @@ function parseJsonToFrames(jsonText) {
         //create empty frame of correct type
         switch (d.type) {
             case 'fact':
-                frame = new AtomicFact()
-                break
-            case 'complexFact':
-                frame = new ComplexFact()
+                frame = new Fact()
                 break
             case 'act':
                 frame = new Act()

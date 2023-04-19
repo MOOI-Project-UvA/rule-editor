@@ -1,12 +1,12 @@
-class AtomicFact {
+class Fact {
   constructor() {
     this._id = null //set when fact is saved
     this._type = "fact"
     this._label = ""
     this._fact = "";
     this._annotation = null;
-    this._booleanConstruct = null //subdivision of fact in smaller parts
-    this._booleanConstructBeingEdited = null
+    this._booleanConstruct = null //optional subdivision of fact in smaller parts
+    this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -19,9 +19,9 @@ class AtomicFact {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
-        : this.fact
+      : this._fact.length > 15
+        ? this._fact.substring(0, 12) + "..."
+        : this._fact
   }
   set label(label) { this._label = label }
 
@@ -47,6 +47,7 @@ class AtomicFact {
     this._booleanConstructBeingEdited = booleanConstructBeingEdited
   }
 
+  // called when the user clicked a frame in the frame list
   addFrame(frame) {
     if (this._booleanConstructBeingEdited) {
       this._booleanConstructBeingEdited.frame = frame
@@ -181,75 +182,11 @@ class BooleanConstruct {
   }
 }
 
-class ComplexFact {
-  constructor() {
-    this._type = "complexFact"
-    this._fact = "Complex fact"
-    this._booleanConstruct = null
-    this._booleanConstructBeingEdited = null
-  }
-  get id() { return this._id }
-  set id(id) { this._id = id }
-
-  get type() { return this._type }
-
-  get label() {
-    return this._label && this._label.length > 0
-      ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
-        : this.fact
-  }
-  set label(label) { this._label = label }
-
-  get fact() { return this._fact }
-  set fact(fact) { this._fact = fact }
-
-  get booleanConstruct() { return this._booleanConstruct }
-  set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
-
-  //keep track of which (part of the) boolean construct the user is editing.
-  //when the user clicks a frame from the list, we know where to put that frame in
-  //the boolean construct 
-  set booleanConstructBeingEdited(booleanConstructBeingEdited) {
-    console.log("setting to", booleanConstructBeingEdited);
-    this._booleanConstructBeingEdited = booleanConstructBeingEdited
-  }
-
-  addFrame(frame) {
-    if (this._booleanConstructBeingEdited) {
-      this._booleanConstructBeingEdited.frame = frame
-    }
-  }
-
-  //returns object with references to other frames by id
-  toFlatObject() {
-    return {
-      id: this._id,
-      type: this._type,
-      subClass: this.subClass,
-      name: this._name,
-      operator: this._operator,
-      factList: this._factList.map(f => f.id)
-    }
-  }
-
-  //fill frame with data in frameData: frameData has references by ID, those
-  //need to be replaced by references to objects. FramesDict is a lookup-table
-  //to get a frame by ID
-  fillWithData(frameData, allFrames) {
-    console.log("fillWithData", frameData, allFrames)
-    this._subClass = frameData.subClass
-    this._name = frameData.name
-    this._operator = frameData.operator
-    this._factList = frameData.factList.map(id => allFrames.find(f => f.id == id))
-  }
-}
-
 class Act {
   constructor() {
     this._type = "act"
-    this._name = "Act"
+    this._label = ""
+    this._act = ""
     this._activeField = "action"
     this._action = null
     this._actor = null
@@ -265,8 +202,17 @@ class Act {
 
   get type() { return this._type }
 
-  get name() { return this._name }
-  set name(name) { this._name = name }
+  get label() {
+    return this._label && this._label.length > 0
+      ? this._label
+      : this.fact.length > 15
+        ? this.fact.substring(0, 12) + "..."
+        : this.fact
+  }
+  set label(label) { this._label = label }
+
+  get act() { return this._act }
+  set act(act) { this._act = act }
 
   get activeField() { return this._activeField }
   set activeField(activeField) { this._activeField = activeField }
@@ -428,8 +374,7 @@ class Annotation {
 
 
 export {
-  AtomicFact,
-  ComplexFact,
+  Fact,
   Act,
   Annotation,
   BooleanConstruct

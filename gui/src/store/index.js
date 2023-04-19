@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { AtomicFact, ComplexFact, Act } from "../helpers/flint.js";
+import { Fact, Act } from "../helpers/flint.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -203,19 +203,14 @@ const store = createStore({
     },
     //if annotation has a corresponding fact, update the fact frame.
     //otherwise, show an empty factframe for a new fact
-    addAtomicFact(context, annotation) {
-      const frame = new AtomicFact()
+    addFact(context, annotation) {
+      const frame = new Fact()
       frame.annotation = annotation
       context.commit("addFrame", frame)
-      console.log("added atomic fact", frame)
     },
     createAct(context) {
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
-    },
-    createComplexFact(context) {
-      console.log("create complex fact")
-      context.state.frameBeingEdited = new ComplexFact()
     },
     saveInterpretation(context) {
       console.log("saving interpretation")
@@ -233,10 +228,6 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
-    },
-    deleteComplexFact(context, frame) {
-      console.log("index.js-complexFact:", frame);
-      context.commit("remove");
     },
 
   }

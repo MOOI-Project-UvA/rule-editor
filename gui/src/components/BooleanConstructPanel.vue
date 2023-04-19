@@ -34,7 +34,7 @@
                             </template>
                             <template v-else>
                                 <q-btn-group flat>
-                                    <q-btn v-for="option in booleanOptions" size="sm" color="primary" dense flat
+                                    <q-btn v-for="option in booleanOptions" size="sm" color="primary" dense
                                         @click="addChild(option.value)">{{
                                             option.label }}</q-btn>
                                 </q-btn-group>
@@ -49,10 +49,10 @@
             <div>
                 <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent" />
                 <q-input dense v-model="textSnippet" label="Enter source text or select existing frame" autogrow
-                    @focus="onFocus()" @blur="onBlur()">
+                    @focus="onFocus()" @blur="onBlur()" ref="textInputField">
                     <template v-slot:after>
                         <q-btn-group flat>
-                            <q-btn v-for="tag in tags" size="sm" :color="colors[tag.value]" dense flat icon="mdi-text-box"
+                            <q-btn v-for="tag in tags" size="sm" :color="colors[tag.value]" dense :icon="icons[tag.value]"
                                 @click="createFact(tag.value)" :disabled="textSnippet.length == 0">
                                 <q-tooltip class="text-subtitle2">
                                     Create frame of type {{ tag.label }}
@@ -66,8 +66,8 @@
 </template>
 
 <script>
-import { colors } from "../helpers/config.js"
-import { Annotation, AtomicFact } from "../helpers/flint.js"
+import { colors, icons } from "../helpers/config.js"
+import { Annotation, Fact } from "../helpers/flint.js"
 import FrameChip from "./FrameChip.vue"
 export default {
     name: "booleanConstructPanel",
@@ -83,11 +83,18 @@ export default {
             { label: 'AND', value: 'and' },
             { label: 'OR', value: 'or' }
         ],
-        colors: colors
+        colors: colors,
+        icons: icons
     }),
     props: {
         booleanConstruct: Object,
         frame: Object
+    },
+    mounted() {
+        //set focus to text field so you can start typing (or select a frame) immediately
+        if ('textInputField' in this.$refs) {
+            this.$refs.textInputField.focus();
+        }
     },
     computed: {
         frameBeingEdited() {
@@ -99,7 +106,7 @@ export default {
     },
     methods: {
         createFact(tag) {
-            let frame = new AtomicFact()
+            let frame = new Fact()
             frame.annotation = new Annotation(
                 null, //documentId
                 null, //sentenceId
