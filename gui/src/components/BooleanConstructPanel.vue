@@ -6,7 +6,7 @@
                 <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
                     :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
                     @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>
-                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" />
+                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" functionality="editor-form" @remove="removeChipFromContext" />
             </div>
 
         </template>
@@ -131,6 +131,9 @@ export default {
         },
         onBlur() {
             //this.frameBeingEdited.booleanContructBeingEdited = null
+        },
+        removeChipFromContext(){
+          this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
         }
     }
 }
