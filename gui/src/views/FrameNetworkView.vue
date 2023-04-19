@@ -34,11 +34,10 @@ export default {
         : false
     },
     message() {
-      return this.frameBeingEdited && this.frameBeingEdited.type != 'fact'
+      return this.frameBeingEdited && this.frameBeingEdited.type !== 'fact'
         ? "Add to frame"
         : this.frames.length > 0 ? "Click to edit" : ""
     }
-
   },
 
   components: {
