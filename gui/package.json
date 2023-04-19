@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.15.5",
-    "@recogito/recogito-js": "^1.8.1",
     "d3-array": "^3.2.2",
     "d3-fetch": "^3.0.1",
     "file-saver": "^2.0.5",

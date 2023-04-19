@@ -5,8 +5,13 @@
       : frame.type === 'fact'
         ? colors[frame.subClass]
         : 'primary'
-  " text-color="white" :icon="icons[frame.type]">
+    "
+    text-color="white"
+    :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
+  >
     {{ frame.type !== 'fact' ? frame.name : frame.label }}
+    <!-- contexts which have been subdivided contain has a badge on top-right -->
+    <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
   </q-chip>
 </template>
 
@@ -36,7 +41,6 @@ export default {
   methods: {
     onRemove: function () {
       if (this.functionality === "chip-container") {
-        console.log("remove chip from list!");
         this.deleteFact();
       } else {
         this.$emit("remove");
