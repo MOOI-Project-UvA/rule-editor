@@ -150,9 +150,16 @@ class BooleanConstruct {
   removeFrame(frame) {
     if (this._frame == frame) {
       this._frame = null
+      //remove itself from the children of the parent, unless
+      //the parent is the top of the tree, and this is its last child
       if (this._parent) {
-        const childIndex = this._parent.children.indexOf(this)
-        this._parent.children.splice(childIndex, 1)
+        if (this._parent.parent || this._parent.children.length > 1) {
+          const childIndex = this._parent.children.indexOf(this)
+          this._parent.children.splice(childIndex, 1)
+        }
+        if (this._parent.children.length <= 1) {
+          this._parent.operatorToJoinChildren = null
+        }
       }
     } else {
       this._children.forEach(c => {
