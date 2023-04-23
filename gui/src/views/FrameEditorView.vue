@@ -1,12 +1,12 @@
 <template>
   <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
-    <template v-if="frameBeingEdited.type == 'act'">
+    <template v-if="frameBeingEdited.type === 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type == 'fact'">
+    <template v-if="frameBeingEdited.type === 'fact'">
       <FactFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type == 'duty'">
+    <template v-if="frameBeingEdited.type === 'duty'">
       <DutyFrameForm @closed="closeActiveFrame" />
     </template>
   </q-card>

@@ -22,17 +22,16 @@
     </q-item>
     <q-separator />
     <q-item>
-
-
       <div id="frame-chip-container" >
         <div id="status">{{ message }}</div>
         <div id="fact-container">
-          <div id="agent-container" class="chip-container">
-          <span><b>Agents</b></span>
-          <div v-for="frame in agents" @click="onClick(frame)">
+          <div id="agent-container" class="chip-container" >
+            <div><b>Agents</b></div>
+            <div v-if="agents.length ===0">No available agents!</div>
+            <div class="chips">
+               <div v-for="frame in agents" @click="onClick(frame)" >
+              <FrameChip
 
-
-            <FrameChip
               :frame="frame"
               :disable="
                 allowedSubTypes &&
@@ -41,16 +40,18 @@
               "
               :removable="message === 'Click to edit'"
               functionality="chip-container"
-            />
 
+            />
           </div>
-        </div>
+            </div>
+          </div>
+
           <div id="action-container" class="chip-container">
-           <span><b>Actions</b></span>
-          <div v-for="frame in actions" @click="onClick(frame)">
-
-
-            <FrameChip
+            <div><b>Actions</b></div>
+            <div v-if="actions.length ===0">No available actions!</div>
+            <div class="chips">
+              <div v-for="frame in actions" @click="onClick(frame)">
+              <FrameChip
               :frame="frame"
               :disable="
                 allowedSubTypes &&
@@ -60,64 +61,61 @@
               :removable="message === 'Click to edit'"
               functionality="chip-container"
             />
-
           </div>
-        </div>
+            </div>
+          </div>
+
           <div id="object-container" class="chip-container">
-          <span><b>Objects</b></span>
-          <div v-for="frame in objects" @click="onClick(frame)">
-
-            <FrameChip
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-            />
-
+            <div><b>Objects</b></div>
+            <div v-if="objects.length ===0">No available objects!</div>
+            <div v-for="frame in objects" @click="onClick(frame)">
+              <div class="chips">
+                <FrameChip
+                    :frame="frame"
+                    :disable="allowedSubTypes && frame.type === 'fact' && !allowedSubTypes.includes(frame.subClass)"
+                    :removable="message === 'Click to edit'"
+                    functionality="chip-container"
+                />
+              </div>
           </div>
-        </div>
+          </div>
           <div id="context-container" class="chip-container">
-          <span><b>Context</b></span>
-          <div v-for="frame in contexts" @click="onClick(frame)">
-
-
-            <FrameChip
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-            />
-
+            <div><b>Context</b></div>
+            <div v-if="contexts.length ===0">No available contexts!</div>
+            <div class="chips">
+              <div v-for="frame in contexts" @click="onClick(frame)">
+                <FrameChip
+                :frame="frame"
+                :disable="
+                  allowedSubTypes &&
+                  frame.type === 'fact' &&
+                  !allowedSubTypes.includes(frame.subClass)
+                "
+                :removable="message === 'Click to edit'"
+                functionality="chip-container"
+              />
+            </div>
+            </div>
           </div>
-        </div>
           <div id="act-container" class="chip-container">
-          <span><b>Acts</b></span>
-          <div v-for="frame in acts" @click="onClick(frame)">
-
-
-            <FrameChip
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-            />
-
+            <div><b>Acts</b></div>
+            <div v-if="acts.length ===0">No available acts!</div>
+            <div class="chips">
+              <div v-for="frame in acts" @click="onClick(frame)">
+                <FrameChip
+                :frame="frame"
+                :disable="
+                  allowedSubTypes &&
+                  frame.type === 'fact' &&
+                  !allowedSubTypes.includes(frame.subClass)
+                "
+                :removable="message === 'Click to edit'"
+                functionality="chip-container"
+              />
+            </div>
+            </div>
           </div>
         </div>
-        </div>
-
 
 <!--        <div id="complexFact-container">-->
 <!--          <div v-for="frame in complexFacts" @click="onClick(frame)">-->
@@ -160,7 +158,7 @@ export default {
       return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'object')
     },
     contexts() {
-      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'other')
+      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'context')
     },
     complexFacts(){
       return this.$store.state.frames.filter(d=> d._type === 'complexFact')
@@ -208,31 +206,94 @@ export default {
 </script>
 
 <style lang="css" scoped>
+#status {
+  min-height: 25px;
+}
 #frame-chip-container {
-  margin: 20px 0px;
+  /*height: calc(100vh - 180px);*/
+  margin: 10px 0px;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+
 }
- #fact-container {
-  margin: 20px 0px;
+#fact-container {
+  /*height: calc(100vh - 180px);*/
+  margin: 10px 0px;
+  display: flex;
+  /*flex-direction: row;*/
+  /*flex-wrap: wrap;*/
+  /*justify-content: space-between;*/
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+/*#chip-container {*/
+/*  display: flex;*/
+/*}*/
+/*#fact-container{*/
+/*  !*min-width: 200px;*!*/
+/*  !*width:100%;*!*/
+/*  !*min-height: 100px;*!*/
+/*}*/
+
+/*#agent-container{*/
+/*  !*min-width: 200px;*!*/
+/*  min-height: 100px;*/
+/*}*/
+
+/*#action-container{*/
+/*  !*min-width: 200px;*!*/
+/*  !*display:flex;*!*/
+/*  !*flex-direction: row;*!*/
+/*  !*flex-wrap: wrap;*!*/
+/*  min-height: 100px;*/
+/*}*/
+/*#act-container{*/
+/*  !*min-width: 200px;*!*/
+/*  !*display:flex;*!*/
+/*  !*flex-direction: row;*!*/
+/*  !*flex-wrap: wrap;*!*/
+/*  min-height: 100px;*/
+/*}*/
+/*#object-container{*/
+/*  !*min-width: 200px;*!*/
+/*  !*display:flex;*!*/
+/*  !*flex-direction: row;*!*/
+/*  !*flex-wrap: wrap;*!*/
+/*  min-height: 100px;*/
+/*}*/
+/*#context-container{*/
+/*  !*min-width: 200px;*!*/
+/*  !*display:flex;*!*/
+/*  !*flex-direction: row;*!*/
+/*  !*flex-wrap: wrap;*!*/
+/*  min-height: 100px;*/
+/*}*/
+
+.chip-container{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: flex-start;
+  min-height: 120px !important;
+}
+
+.chips {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-}
 
-#chip-container {
-  display: flex;
-
-}
-.chip-container{
-  min-width: 200px;
-  height: 200px;
-  margin-right: 5px;
-  overflow-y: auto;
 
 }
 
+/*.chip-container{*/
+/*  min-width: 200px;*/
+/*  min-height: 100px;*/
+
+/*  !*margin-right: 5px;*!*/
+/*  !*overflow-y: auto;*!*/
+/*}*/
 .message {
   /* margin-top: 10px; */
 }
