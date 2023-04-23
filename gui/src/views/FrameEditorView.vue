@@ -1,5 +1,5 @@
 <template>
-  <div id="current-frame" v-if="frameBeingEdited">
+  <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
     <template v-if="frameBeingEdited.type == 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
@@ -9,7 +9,7 @@
     <template v-if="frameBeingEdited.type == 'duty'">
       <DutyFrameForm @closed="closeActiveFrame" />
     </template>
-  </div>
+  </q-card>
 </template>
 
 <script>
@@ -45,4 +45,8 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+#current-frame{
+  width: 600px;
+}
+</style>

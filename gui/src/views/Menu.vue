@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm">
+  <q-card flat bordered class="my-card q-ma-sm" id="menu-card">
     <q-item>
       <q-item-section>
         <q-item-label>Interpretation actions</q-item-label>
@@ -171,4 +171,9 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+#menu-card{
+  width: 600px;
+
+}
+</style>

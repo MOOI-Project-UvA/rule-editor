@@ -15,9 +15,8 @@
       </div>
       <div class="row">
         <!-- frame editor view -->
-        <div class="col column">
-          <FrameEditorView />
-        </div>
+        <FrameEditorView />
+
         <!--        &lt;!&ndash; chip view &ndash;&gt;-->
         <!--        <div class="col-4 column">-->
         <!--          <FrameNetworkView />-->
