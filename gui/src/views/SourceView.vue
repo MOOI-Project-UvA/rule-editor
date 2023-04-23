@@ -60,14 +60,6 @@
                 <TextElement :textPiece="sourceDocument" />
               </q-card-section>
             </q-card>
-
-            <!-- <q-separator /> -->
-            <!-- <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
-            <q-card-section class="q-pt-none">
-              <annotation-component :document="reconstructedData">
-              </annotation-component>
-            </q-card-section>
-          </q-card> -->
           </q-expansion-item>
         </q-list>
       </q-card-section>
@@ -76,16 +68,10 @@
 </template>
 
 <script>
-import AnnotationComponent from "../components/AnnotationComponent.vue";
-import AnnotationTools from "../components/AnnotationTools.vue";
-// import UploadDecomposedSource from "../components/UploadDecomposedSource.vue";
-import TextElement from "../components/TextElement.vue";
-import SourceLoader from "../components/SourceLoader.vue";
+import TextElement from "../components/TextElement.vue"
+import SourceLoader from "../components/SourceLoader.vue"
 export default {
   components: {
-    AnnotationComponent,
-    AnnotationTools,
-    // UploadDecomposedSource,
     TextElement,
     SourceLoader,
   },

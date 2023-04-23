@@ -4,10 +4,7 @@
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type == 'fact'">
-      <AtomicFactFrameForm @closed="closeActiveFrame" />
-    </template>
-    <template v-if="frameBeingEdited.type == 'complexFact'">
-      <ComplexFactFrameForm @closed="closeActiveFrame" />
+      <FactFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type == 'duty'">
       <DutyFrameForm @closed="closeActiveFrame" />
@@ -16,17 +13,18 @@
 </template>
 
 <script>
-import ActFrameForm from "../components/ActFrameForm.vue";
-import AtomicFactFrameForm from "../components/AtomicFactFrameForm.vue";
-import ComplexFactFrameForm from "../components/ComplexFactFrameForm.vue";
-import DutyFrameForm from "../components/DutyFrameForm.vue";
+import ActFrameForm from '../components/ActFrameForm.vue'
+import FactFrameForm from '../components/FactFrameForm.vue'
+import DutyFrameForm from '../components/DutyFrameForm.vue'
+import { icons, colors } from '../helpers/config.js'
+import { Fact, Annotation } from '../helpers/flint.js'
 
 export default {
+  data: () => ({}),
   components: {
     ActFrameForm,
-    AtomicFactFrameForm,
-    ComplexFactFrameForm,
-    DutyFrameForm,
+    FactFrameForm,
+    DutyFrameForm
   },
   computed: {
     activeFrameData() {

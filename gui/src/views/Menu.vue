@@ -15,6 +15,7 @@
       </q-item-section>
     </q-item>
     <q-separator />
+    <!-- add -->
     <q-item class="q-pt-md">
       <div
         id="frame-type-buttons"
@@ -26,13 +27,20 @@
           </div>
         </div>
         <div class="btn-area">
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            :icon="icons['complexFact']"
-            label="complex fact"
-            @click="$store.dispatch('createComplexFact')"
-          />
+          <q-btn-group class="q-mr-sm">
+            <q-btn v-for="tag in tags" :color="colors[tag.value]" :icon="icons[tag.value]" @click="createFact(tag.value)">
+              <q-tooltip class="text-subtitle2">
+                Create fact of type {{ tag.label }}
+              </q-tooltip>
+            </q-btn>
+          </q-btn-group>
+          <!--          <q-btn-->
+          <!--            class="q-mr-sm"-->
+          <!--            color="primary"-->
+          <!--            :icon="icons['complexFact']"-->
+          <!--            label="complex fact"-->
+          <!--            @click="$store.dispatch('createComplexFact')"-->
+          <!--          />-->
           <q-btn
             class="q-mr-sm"
             color="primary"
@@ -51,6 +59,7 @@
         </div>
       </div>
     </q-item>
+    <!-- functions -->
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
@@ -82,6 +91,7 @@
         </div>
       </div>
     </q-item>
+    <!-- show -->
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
@@ -104,14 +114,34 @@
 </template>
 
 <script>
+
 import { icons, colors } from "../helpers/config.js";
+import { Fact, Annotation } from '../helpers/flint.js'
 
 export default {
   data: () => ({
     icons: icons,
     colors: colors,
+     tags: [
+      { label: "Agent", value: "agent" },
+      { label: "Action", value: "action" },
+      { label: "Object", value: "object" },
+      { label: "Context", value: "context" }
+    ],
   }),
   methods: {
+    createFact(tag) {
+      let frame = new Fact()
+      frame.annotation = new Annotation(
+        null, //documentId
+        null, //sentenceId
+        [], //characterRange
+        "" //annotatedText
+      )
+      frame.annotation.tag = tag
+      this.$store.commit("addFrame", frame)
+      this.$store.commit("setFrameBeingEdited", frame)
+    },
     saveInterpretationClicked() {
       this.$store.dispatch("saveInterpretation");
     },
