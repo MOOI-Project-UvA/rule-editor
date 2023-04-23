@@ -47,15 +47,19 @@
             :icon="icons['act']"
             label="act"
             @click="$store.dispatch('createAct')"
-          />
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            :icon="icons['duty']"
-            label="duty"
-            @click="startNewFrame('duty')"
-            disabled
-          />
+          >
+          <q-tooltip class="text-subtitle2">
+                Create an Act
+          </q-tooltip>
+          </q-btn>
+            <!--          <q-btn-->
+<!--            class="q-mr-sm"-->
+<!--            color="primary"-->
+<!--            :icon="icons['duty']"-->
+<!--            label="duty"-->
+<!--            @click="startNewFrame('duty')"-->
+<!--            disabled-->
+<!--          />-->
         </div>
       </div>
     </q-item>
