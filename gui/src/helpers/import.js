@@ -3,6 +3,7 @@ import { store } from "../store/index.js"
 
 function parseJsonToFrames(jsonText) {
     let frameData = JSON.parse(jsonText)
+    console.log("jsonText:", frameData)
     let frames = []
 
     frameData.forEach(d => {
@@ -22,12 +23,16 @@ function parseJsonToFrames(jsonText) {
     })
     //fill with data and replace references by ID with reference to object
     frameData.forEach(d => {
-        let frame = frames.find(f => f.id == d.id)
+        let frame = frames.find(f => f.id === d.id)
+        console.log("frame found: ", frame)
+        console.log("frame type: ", frame.type)
+
         frame.fromFlatObject(d, frames)
+        console.log("done!")
     })
 
     //read source texts that are used by this interpretation
-    const annotations = frames.filter(f => f.type == "fact").map(f => f.annotation)
+    const annotations = frames.filter(f => f.type === "fact").map(f => f.annotation)
     const documentIds = annotations
         .map(a => a.documentId)
         .filter((value, index, array) => array.indexOf(value) === index) //keep unique values

@@ -1,5 +1,6 @@
 <template>
   <q-card flat bordered class="my-card q-ma-sm">
+    <!-- card title section -->
     <q-item>
       <q-item-section>
         <q-item-label>Interpretation view</q-item-label>
@@ -21,6 +22,7 @@
       </q-item-section>
     </q-item>
     <q-separator />
+    <!-- main content of the card  -->
     <q-item>
       <div id="frame-chip-container" >
         <div id="status">{{ message }}</div>
@@ -137,6 +139,7 @@
 
       </div>
     </q-item>
+<!--    {{frames}}-->
   </q-card>
 </template>
 
