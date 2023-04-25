@@ -1,11 +1,11 @@
 <template>
   <q-card flat bordered v-if="frame">
     <q-card-section>
-      <div class="text-h6">{{ frame.name }}</div>
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
       <div>
-        <q-input v-model="frame.name" label="Act" />
+        <q-input v-model="frame.act" label="Act" />
         <FactInputField label="Action" :active="frame.activeField === 'action'"
           :facts="frame.action ? [frame.action] : []" @factRemoveClicked="frame.action = null"
           @click="frame.activeField = 'action'" />
@@ -23,23 +23,21 @@
         <div class="label">Postcondition</div>
         <div class="indent">
           <FactInputField label="Creates" :active="frame.activeField === 'creates'" :facts="frame.creates"
-            @factRemoveClicked="
-              (fact) => {
+            @factRemoveClicked="(fact) => {
                 const index = frame.creates.indexOf(fact);
                 if (index !== -1) {
                   frame.creates.splice(index, 1);
                 }
               }
-            " @click="frame.activeField = 'creates'" />
+              " @click="frame.activeField = 'creates'" />
           <FactInputField label="Terminates" :active="frame.activeField === 'terminates'" :facts="frame.terminates"
-            @factRemoveClicked="
-              (fact) => {
+            @factRemoveClicked="(fact) => {
                 const index = frame.terminates.indexOf(fact);
                 if (index !== -1) {
                   frame.terminates.splice(index, 1);
                 }
               }
-            " @click="frame.activeField = 'terminates'" />
+              " @click="frame.activeField = 'terminates'" />
         </div>
       </div>
     </q-card-section>

@@ -218,9 +218,9 @@ class Act {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
-        : this.fact
+      : this.act.length > 15
+        ? this.act.substring(0, 12) + "..."
+        : this.act
   }
   set label(label) { this._label = label }
 
@@ -254,25 +254,25 @@ class Act {
   get allowedSubClassesForActiveField() {
     switch (this._activeField) {
       case 'action':
-        return ['action', 'other', 'complex']
+        return ['action', 'context']
         break
       case 'actor':
-        return ['agent', 'other', 'complex']
+        return ['agent', 'context']
         break
       case 'object':
-        return ['object', 'other', 'complex']
+        return ['object', 'context']
         break
       case 'recipient':
-        return ['agent', 'other', 'complex']
+        return ['agent', 'context']
         break
       case 'precondition':
-        return ['agent', 'action', 'object', 'other', 'complex']
+        return ['agent', 'action', 'object', 'context']
         break
       case 'creates':
-        return ['agent', 'action', 'object', 'other', 'complex']
+        return ['agent', 'action', 'object', 'context']
         break
       case 'terminates':
-        return ['agent', 'action', 'object', 'other', 'complex']
+        return ['agent', 'action', 'object', 'context']
         break;
     }
   }
@@ -322,7 +322,8 @@ class Act {
     return {
       id: this._id,
       type: this._type,
-      name: this._name,
+      label: this._label,
+      act: this._act,
       action: this._action ? this._action.id : null,
       actor: this._actor ? this._actor.id : null,
       object: this._object ? this._object.id : null,
@@ -333,8 +334,11 @@ class Act {
     }
   }
 
-  fillWithData(frameData, allFrames) {
-    this._name = frameData.name
+  fromFlatObject(frameData, allFrames) {
+    this._id = frameData.id
+    this._type = frameData.type
+    this._label = frameData.label
+    this._act = frameData.act
     this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
     this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
     this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
