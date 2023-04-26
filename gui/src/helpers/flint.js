@@ -7,6 +7,7 @@ class Fact {
     this._annotation = null;
     this._booleanConstruct = null //optional subdivision of fact in smaller parts
     this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
+    this._highlight = false
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -86,6 +87,46 @@ class Fact {
     }
 
   }
+
+  checkFrameExistance(element) {
+
+    console.log("fact", this)
+    console.log("hoveredElement", element)
+    const exist = []
+    if (this._booleanConstruct.children.length > 0) {
+      console.log("it has children")
+      this.checkChildren(this._booleanConstruct, element, exist)
+      // this._booleanConstruct.children.forEach(bc=> {
+        // if( bc._frame !== null){
+        //   bc._frame._id === element._id ? exist.push(true) : exist.push(false);
+        // }
+        // else {
+        //   this.checkChildren(bc)
+        // }
+      // })
+    }
+
+    if (exist.some((d) => d )){
+       this._highlight = false
+     }else {
+        this._highlight = true
+     }
+    return exist.some((d) => d )
+  }
+  checkChildren(pBc, element, exist){
+    console.log("pBc: ", pBc, pBc.children)
+    pBc.children.forEach(bc=> {
+      console.log("bc: ", bc)
+        if( bc._frame !== null){
+          console.log("bc._frame._id: ", bc._frame._id)
+          console.log("element._id: ", element._id)
+          bc._frame._id === element._id ? exist.push(true) : exist.push(false);
+        }else {
+          this.checkChildren(bc, element, exist)
+        }
+      })
+  }
+
 }
 
 class BooleanConstruct {
@@ -95,6 +136,7 @@ class BooleanConstruct {
     this._children = [] // list of BooleanConstructs if _frame is null
     this._operatorToJoinChildren = null //"and" or "or"
     this._parent = null
+    this._highlight = false
   }
 
   get isNegated() { return this._isNegated }
@@ -209,6 +251,7 @@ class Act {
     this._creates = []
     this._terminates = []
     this._id = null //set when fact is saved
+    this._highlight = false
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -342,6 +385,47 @@ class Act {
     this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
     this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
     this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+  }
+
+  checkFrameExistance(act,element) {
+
+    console.log("act", act)
+    console.log("element", element)
+
+     const term = act._terminates.find((d) => act._id === element._id) ? true : false;
+     const creates = act._creates.find((d) => act._id === element._id) ? true : false;
+     const action =  act._action !== null && act._action._id === element._id ? true : false;
+     const actor =  act._actor !== null && act._actor._id == element._id
+              ? true
+              : false;
+     const object = act._object !== null && act._object._id == element._id
+              ? true
+              : false;
+     const precondition = act._precondition !== null && act._precondition._id == element._id
+              ? true
+              : false;
+     const recipient = (act._recipient !== null && act._recipient._id == element._id)
+              ? true
+              : false;
+
+     const exist = [
+            term,
+            creates,
+            action,
+            actor,
+            object,
+            precondition,
+            recipient,
+          ];
+     if (exist.some((d) => d )){
+       act._highlight = false
+     }else {
+        act._highlight = true
+     }
+    console.log("exist in Act:", exist)
+     return exist.some((d) => d )
+
+
   }
 }
 

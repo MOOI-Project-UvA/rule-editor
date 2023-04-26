@@ -233,6 +233,41 @@ const store = createStore({
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
     },
+    // gets the id of the hovered frame
+    // and updates the frames array, which contain
+    highlightElements(context, hoveredElement){
+
+      console.log("in highlightElements:", hoveredElement)
+
+      // First approach: Hovering over a fact
+      if (hoveredElement._type==="fact"){
+        // TODO: check acts
+        let actIds = []
+        context.state.frames.filter(d => d._type==='act')
+            .forEach( d=> d.checkFrameExistance(d,hoveredElement)? actIds.push(d._id): null)
+        console.log("actIds without contexts:", actIds)
+
+        //TODO: the surrounding facts
+        // context.state.frames.filter(d=> d._type === 'fact' && !d._booleanConstruct && d._id !== hoveredElement._id)
+        //     .forEach(d=> actIds.push(d._id) : null)
+
+        // TODO: check contexts
+        context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
+            .forEach(d=> d.checkFrameExistance(hoveredElement) ? actIds.push(d._id) : null)
+        console.log("actIds with contexts:", actIds)
+      }
+
+
+
+      // TODO: check contexts
+      //
+      // Second approach: Hovering over an act, highlight the corresponding facts
+
+      // Third approach: Hover over a context: Highlight the related facts
+
+
+
+    }
 
   }
 });
