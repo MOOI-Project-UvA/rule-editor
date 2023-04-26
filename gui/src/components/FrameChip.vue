@@ -1,5 +1,5 @@
 <template>
-  <q-chip :class="{ chip: true, active: hover, notActive: !hover}" :removable="removable" :disable="disable" @remove="onRemove" :color="
+  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight']}" :removable="removable" :disable="disable" @remove="onRemove" :color="
     disable
       ? 'grey-5'
       : frame.type === 'fact'
@@ -76,13 +76,14 @@ export default {
     },
     onOver: function (fact) {
       console.log("I am over this fact: ", fact )
-      this.hover = true
+      this.$store.dispatch('highlightElements', fact)
+      // this.hover = true
 
 
     },
     onLeave: function (fact) {
       console.log("I just left from this fact: ", fact)
-      this.hover = false
+      // this.hover = false
 
     }
   }

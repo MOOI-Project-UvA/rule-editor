@@ -139,7 +139,7 @@
 
       </div>
     </q-item>
-<!--    {{frames}}-->
+
   </q-card>
 </template>
 
