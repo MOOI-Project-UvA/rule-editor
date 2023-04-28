@@ -386,7 +386,6 @@ class Act {
     this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
     this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
   }
-
   checkFrameExistance(act,element) {
 
     console.log("act", act)
@@ -427,6 +426,20 @@ class Act {
      return exist.some((d) => d )
 
 
+  }
+
+  get childrenIds() {
+    const facts = [
+      this._action,
+      this._actor,
+      this._object,
+      this._precondition,
+      this._recipient,
+      ...this._creates,
+      ...this._terminates
+    ]
+
+    return facts.filter(f => f).map(f => f._id)
   }
 }
 

@@ -239,35 +239,44 @@ const store = createStore({
 
       console.log("in highlightElements:", hoveredElement._id)
 
+      // array with ids of the related elements ...
+      let relatedIds = new Array(hoveredElement._id)
+
+      console.log("actIds with hoveredElement:", relatedIds)
+
       // First approach: Hovering over a fact
       if (hoveredElement._type==="fact"){
+
         // TODO: check acts
-        let actIds = []
         context.state.frames.filter(d => d._type==='act')
-            .forEach( d=> d.checkFrameExistance(d,hoveredElement)? actIds.push(d._id): null)
-        console.log("actIds without contexts:", actIds)
+            .forEach( d=> d.checkFrameExistance(d,hoveredElement)? relatedIds.push(d._id): null)
+        console.log("actIds without contexts:", relatedIds)
 
         // TODO: check contexts
         context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
-            .forEach(d=> d.checkFrameExistance(hoveredElement) ? actIds.push(d._id) : null)
-        console.log("actIds with contexts:", actIds)
-
-        // add the id of the hoveredElement
-        actIds.push(hoveredElement._id)
-        console.log("actIds with hoveredElement:", actIds)
-
-        // TODO: change the transparecy of the non-related atomic facts
-        context.state.frames.forEach( (d)=> {
-          console.log("actIds.includes(d._id):", actIds.includes(d._id))
-            return actIds.includes(d._id)? d._highlight = false : d._highlight = true;
-
-        });
+            .forEach(d=> d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
+        console.log("actIds with contexts:", relatedIds)
         console.log("context.state.frames: ", context.state.frames)
       }
 
       // TODO: Case 2: if the hovered element is an Act, highlight the corresponding facts
+      if (hoveredElement._type === "act"){
+        console.log("I am in this act clause!", typeof hoveredElement)
+
+        relatedIds = relatedIds.concat(hoveredElement.childrenIds)
+        console.log("show me the relevant Ids: ", relatedIds)
+
+      }
       // TODO: Case 3: Hover over a context: Highlight the related facts
 
+
+
+
+      // change the transparecy of the non-related atomic facts
+      context.state.frames.forEach( (d)=> {
+        console.log("actIds.includes(d._id):", relatedIds.includes(d._id))
+        return relatedIds.includes(d._id)? d._highlight = false : d._highlight = true;
+      });
 
 
 
@@ -275,7 +284,6 @@ const store = createStore({
     },
      // TODO: Mouseout restore
     unhighlightElements(context){
-
         context.state.frames.forEach(d => d._highlight = false );
     }
 
