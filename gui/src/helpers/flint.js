@@ -417,12 +417,13 @@ class Act {
             precondition,
             recipient,
           ];
+
      if (exist.some((d) => d )){
        act._highlight = false
      }else {
         act._highlight = true
      }
-    console.log("exist in Act:", exist)
+     console.log("exist in Act:", exist)
      return exist.some((d) => d )
 
 

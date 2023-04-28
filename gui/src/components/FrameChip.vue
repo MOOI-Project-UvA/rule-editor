@@ -83,6 +83,7 @@ export default {
     },
     onLeave: function (fact) {
       console.log("I just left from this fact: ", fact)
+      this.$store.dispatch('unhighlightElements')
       // this.hover = false
 
     }
