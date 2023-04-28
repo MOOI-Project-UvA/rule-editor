@@ -247,9 +247,6 @@ const store = createStore({
             .forEach( d=> d.checkFrameExistance(d,hoveredElement)? actIds.push(d._id): null)
         console.log("actIds without contexts:", actIds)
 
-        //TODO: the surrounding facts
-        // context.state.frames.filter(d=> d._type === 'fact' && !d._booleanConstruct && d._id !== hoveredElement._id)
-        //     .forEach(d=> actIds.push(d._id) : null)
 
         // TODO: check contexts
         context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
@@ -258,12 +255,11 @@ const store = createStore({
       }
 
 
+      // TODO: change the transparecy of the non-related atomic facts
+      // TODO: Case 2: if the hovered element is an Act, highlight the corresponding facts
+      // TODO: Case 3: Hover over a context: Highlight the related facts
+      // TODO: Mouseout restore
 
-      // TODO: check contexts
-      //
-      // Second approach: Hovering over an act, highlight the corresponding facts
-
-      // Third approach: Hover over a context: Highlight the related facts
 
 
 
