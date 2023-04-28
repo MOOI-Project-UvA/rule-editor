@@ -89,21 +89,9 @@ class Fact {
   }
 
   checkFrameExistance(element) {
-
-    console.log("fact", this)
-    console.log("hoveredElement", element)
     const exist = []
     if (this._booleanConstruct.children.length > 0) {
-      console.log("it has children")
       this.checkChildren(this._booleanConstruct, element, exist)
-      // this._booleanConstruct.children.forEach(bc=> {
-        // if( bc._frame !== null){
-        //   bc._frame._id === element._id ? exist.push(true) : exist.push(false);
-        // }
-        // else {
-        //   this.checkChildren(bc)
-        // }
-      // })
     }
 
     if (exist.some((d) => d )){
@@ -113,20 +101,30 @@ class Fact {
      }
     return exist.some((d) => d )
   }
+
   checkChildren(pBc, element, exist){
-    console.log("pBc: ", pBc, pBc.children)
     pBc.children.forEach(bc=> {
-      console.log("bc: ", bc)
         if( bc._frame !== null){
-          console.log("bc._frame._id: ", bc._frame._id)
-          console.log("element._id: ", element._id)
           bc._frame._id === element._id ? exist.push(true) : exist.push(false);
         }else {
           this.checkChildren(bc, element, exist)
         }
       })
   }
-
+  getChildren(pBc, listOfChildren){
+    pBc.children.forEach(bc=> {
+        if( bc._frame !== null){
+          listOfChildren.push(bc._frame)
+        }else {
+          this.getChildren(bc,listOfChildren)
+        }
+      })
+    return listOfChildren.filter(d=>d).map(d=> d._id)
+  }
+  get retrieveChildrenIds(){
+    const listOfChildren = []
+    return this.getChildren(this._booleanConstruct, listOfChildren)
+  }
 }
 
 class BooleanConstruct {
@@ -428,6 +426,7 @@ class Act {
 
   }
 
+  // returns the ids of the containing facts
   get childrenIds() {
     const facts = [
       this._action,

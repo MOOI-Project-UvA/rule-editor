@@ -237,52 +237,38 @@ const store = createStore({
     // and updates the frames array, which contain
     highlightElements(context, hoveredElement){
 
-      console.log("in highlightElements:", hoveredElement._id)
-
       // array with ids of the related elements ...
       let relatedIds = new Array(hoveredElement._id)
-
-      console.log("actIds with hoveredElement:", relatedIds)
-
-      // First approach: Hovering over a fact
-      if (hoveredElement._type==="fact"){
-
-        // TODO: check acts
+      // Case 1: Hovering over an atomic fact, higlight the related parents
+      if (hoveredElement._type==="fact" && !hoveredElement._booleanConstruct){
+        // check if acts contain this element
         context.state.frames.filter(d => d._type==='act')
             .forEach( d=> d.checkFrameExistance(d,hoveredElement)? relatedIds.push(d._id): null)
         console.log("actIds without contexts:", relatedIds)
 
-        // TODO: check contexts
+        // check if contexts contain this element
         context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
             .forEach(d=> d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
         console.log("actIds with contexts:", relatedIds)
         console.log("context.state.frames: ", context.state.frames)
       }
-
-      // TODO: Case 2: if the hovered element is an Act, highlight the corresponding facts
+      // Case 2: if the hovered element is an Act, highlight the corresponding facts
       if (hoveredElement._type === "act"){
-        console.log("I am in this act clause!", typeof hoveredElement)
-
         relatedIds = relatedIds.concat(hoveredElement.childrenIds)
-        console.log("show me the relevant Ids: ", relatedIds)
-
       }
-      // TODO: Case 3: Hover over a context: Highlight the related facts
-
-
-
+      // Case 3: if the hovered element is a context, highlight the corresponding facts
+      // check if a booleanConstruct could contain acts or other complex structures.
+      if (hoveredElement._type==="fact" && hoveredElement._booleanConstruct){
+        // give me all the children
+        relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds)
+      }
 
       // change the transparecy of the non-related atomic facts
       context.state.frames.forEach( (d)=> {
-        console.log("actIds.includes(d._id):", relatedIds.includes(d._id))
         return relatedIds.includes(d._id)? d._highlight = false : d._highlight = true;
       });
-
-
-
-
     },
-     // TODO: Mouseout restore
+    // Mouseout restore
     unhighlightElements(context){
         context.state.frames.forEach(d => d._highlight = false );
     }
