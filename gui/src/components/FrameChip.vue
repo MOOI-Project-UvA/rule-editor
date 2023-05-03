@@ -60,7 +60,7 @@ export default {
      * Deletes a fact/Act from store
      */
     deleteFact: function () {
-      console.log("frame to be deleted: ", this.frame);
+      // console.log("frame to be deleted: ", this.frame);
       // case1: delete a complex fact.
       switch (this.frame._type) {
         case "complexFact":
@@ -75,16 +75,13 @@ export default {
       }
     },
     onOver: function (fact) {
-      console.log("I am over this fact: ", fact )
+      // console.log("I am over this fact: ", fact )
       this.$store.dispatch('highlightElements', fact)
-      // this.hover = true
-
 
     },
     onLeave: function (fact) {
-      console.log("I just left from this fact: ", fact)
+      // console.log("I just left from this fact: ", fact)
       this.$store.dispatch('unhighlightElements')
-      // this.hover = false
 
     }
   }

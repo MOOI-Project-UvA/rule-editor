@@ -65,12 +65,12 @@ const store = createStore({
     },
     removeComplexFact(state, frame) {
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
     removeAct(state, frame) {
       // removed the act from the list of frames
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
@@ -130,12 +130,12 @@ const store = createStore({
             precondition,
             recipient,
           ];
-          console.log("exist?:", exist);
-          console.log("exist?:", !exist.every((d) => d === undefined));
+          // console.log("exist?:", exist);
+          // console.log("exist?:", !exist.every((d) => d === undefined));
           return !exist.every((d) => d === undefined);
         })
         .map((fr) => fr._id);
-      console.log("ids of acts:", actFrameIds);
+      // console.log("ids of acts:", actFrameIds);
 
       if (actFrameIds.length > 0) {
         actFrameIds.forEach((id) => {
@@ -177,7 +177,7 @@ const store = createStore({
 
       // remove the Atomicfact from the list of frames
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
 
   },
@@ -191,9 +191,9 @@ const store = createStore({
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
     addSource(context, sourceId) {
-      console.log("addSource", sourceId)
+      // console.log("addSource", sourceId)
       const source = this.state.availableSources.find(s => s.id == sourceId)
-      console.log("reading", source.fileName)
+      // console.log("reading", source.fileName)
       json(source.fileName).then(data => {
         const document = data['@graph'].find(d => 'document' in d).document
         document.title = source.title
@@ -202,7 +202,7 @@ const store = createStore({
         //add attribute to each sentence to store annotations
         getSentencesInDocument(document).forEach(s => s['annotations'] = [])
         context.state.sourceDocuments = [...context.state.sourceDocuments, document]
-        console.log("context.state.sourceDocuments", context.state.sourceDocuments)
+        // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
       })
     },
     //if annotation has a corresponding fact, update the fact frame.
@@ -244,13 +244,13 @@ const store = createStore({
         // check if acts contain this element
         context.state.frames.filter(d => d._type==='act')
             .forEach( d=> d.checkFrameExistance(d,hoveredElement)? relatedIds.push(d._id): null)
-        console.log("actIds without contexts:", relatedIds)
+        // console.log("actIds without contexts:", relatedIds)
 
         // check if contexts contain this element
         context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
             .forEach(d=> d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
-        console.log("actIds with contexts:", relatedIds)
-        console.log("context.state.frames: ", context.state.frames)
+        // console.log("actIds with contexts:", relatedIds)
+        // console.log("context.state.frames: ", context.state.frames)
       }
       // Case 2: if the hovered element is an Act, highlight the corresponding facts
       if (hoveredElement._type === "act"){
