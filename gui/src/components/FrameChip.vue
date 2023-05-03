@@ -1,5 +1,5 @@
 <template>
-  <q-chip class="chip" :removable="removable" :disable="disable" @remove="onRemove" :color="
+  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight']}" :removable="removable" :disable="disable" @remove="onRemove" :color="
     disable
       ? 'grey-5'
       : frame.type === 'fact'
@@ -8,6 +8,9 @@
     "
     text-color="white"
     :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
+    v-on:mouseover="onOver(frame)"
+    v-on:mouseleave="onLeave(frame)"
+
   >
     {{ frame.type !== 'fact' ? frame.name : frame.label }}
     <!-- contexts which have been subdivided contain has a badge on top-right -->
@@ -21,6 +24,7 @@ export default {
   data: () => ({
     icons: icons,
     colors: colors,
+    hover: false,
   }),
   props: {
     frame: Object,
@@ -70,12 +74,31 @@ export default {
           break;
       }
     },
-  },
+    onOver: function (fact) {
+      console.log("I am over this fact: ", fact )
+      this.$store.dispatch('highlightElements', fact)
+      // this.hover = true
+
+
+    },
+    onLeave: function (fact) {
+      console.log("I just left from this fact: ", fact)
+      this.$store.dispatch('unhighlightElements')
+      // this.hover = false
+
+    }
+  }
 };
 </script>
 
 <style lang="css" scoped>
 .chip {
   user-select: none;
+}
+.active {
+  opacity: 0.2;
+}
+.notActive {
+  opacity: 1;
 }
 </style>
