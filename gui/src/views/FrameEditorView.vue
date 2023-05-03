@@ -1,27 +1,15 @@
 <template>
-  <div id="frame-type-buttons" class="q-pa-md q-gutter-sm">
-    Add:
-    <q-btn-group>
-      <q-btn v-for="tag in tags" :color="colors[tag.value]" :icon="icons[tag.value]" @click="createFact(tag.value)">
-        <q-tooltip class="text-subtitle2">
-          Create fact of type {{ tag.label }}
-        </q-tooltip>
-      </q-btn>
-    </q-btn-group>
-    <q-btn color="primary" :icon="icons['act']" label="act" @click="$store.dispatch('createAct')" />
-    <!-- <q-btn color="primary" :icon="icons['duty']" label="duty" @click="startNewFrame('duty')" disabled /> -->
-  </div>
-  <div id="current-frame" v-if="frameBeingEdited">
-    <template v-if="frameBeingEdited.type == 'act'">
+  <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
+    <template v-if="frameBeingEdited.type === 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type == 'fact'">
+    <template v-if="frameBeingEdited.type === 'fact'">
       <FactFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type == 'duty'">
+    <template v-if="frameBeingEdited.type === 'duty'">
       <DutyFrameForm @closed="closeActiveFrame" />
     </template>
-  </div>
+  </q-card>
 </template>
 
 <script>
@@ -32,16 +20,7 @@ import { icons, colors } from '../helpers/config.js'
 import { Fact, Annotation } from '../helpers/flint.js'
 
 export default {
-  data: () => ({
-    icons: icons,
-    colors: colors,
-    tags: [
-      { label: "Agent", value: "agent" },
-      { label: "Action", value: "action" },
-      { label: "Object", value: "object" },
-      { label: "Context", value: "context" }
-    ],
-  }),
+  data: () => ({}),
   components: {
     ActFrameForm,
     FactFrameForm,
@@ -49,30 +28,25 @@ export default {
   },
   computed: {
     activeFrameData() {
-      return this.$store.state.activeFrameData
+      return this.$store.state.activeFrameData;
     },
     frameBeingEdited() {
-      return this.$store.state.frameBeingEdited
-    }
+      return this.$store.state.frameBeingEdited;
+    },
   },
   methods: {
-    createFact(tag) {
-      let frame = new Fact()
-      frame.annotation = new Annotation(
-        null, //documentId
-        null, //sentenceId
-        [], //characterRange
-        "" //annotatedText
-      )
-      frame.annotation.tag = tag
-      this.$store.commit("addFrame", frame)
-      this.$store.commit("setFrameBeingEdited", frame)
+    startNewFrame(type) {
+      this.$store.dispatch("startNewFrame", type);
     },
     closeActiveFrame() {
-      this.$store.commit("setFrameBeingEdited", null)
-    }
-  }
+      this.$store.commit("setFrameBeingEdited", null);
+    },
+  },
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+#current-frame{
+  width: 600px;
+}
+</style>

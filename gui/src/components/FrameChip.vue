@@ -1,5 +1,5 @@
 <template>
-  <q-chip class="chip" :removable="removable" :disable="disable" @remove="onRemove" :color="
+  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight']}" :removable="removable" :disable="disable" @remove="onRemove" :color="
     disable
       ? 'grey-5'
       : frame.type === 'fact'
@@ -8,8 +8,11 @@
     "
     text-color="white"
     :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
+    v-on:mouseover="onOver(frame)"
+    v-on:mouseleave="onLeave(frame)"
+
   >
-    {{ frame.type !== 'fact' ? frame.name : frame.label }}
+    {{ frame.type !== 'fact' ? frame._act : frame.label }}
     <!-- contexts which have been subdivided contain has a badge on top-right -->
     <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
   </q-chip>
@@ -21,6 +24,7 @@ export default {
   data: () => ({
     icons: icons,
     colors: colors,
+    hover: false,
   }),
   props: {
     frame: Object,
@@ -56,7 +60,7 @@ export default {
      * Deletes a fact/Act from store
      */
     deleteFact: function () {
-      console.log("frame to be deleted: ", this.frame);
+      // console.log("frame to be deleted: ", this.frame);
       // case1: delete a complex fact.
       switch (this.frame._type) {
         case "complexFact":
@@ -70,12 +74,28 @@ export default {
           break;
       }
     },
-  },
+    onOver: function (fact) {
+      // console.log("I am over this fact: ", fact )
+      this.$store.dispatch('highlightElements', fact)
+
+    },
+    onLeave: function (fact) {
+      // console.log("I just left from this fact: ", fact)
+      this.$store.dispatch('unhighlightElements')
+
+    }
+  }
 };
 </script>
 
 <style lang="css" scoped>
 .chip {
   user-select: none;
+}
+.active {
+  opacity: 0.2;
+}
+.notActive {
+  opacity: 1;
 }
 </style>

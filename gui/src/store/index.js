@@ -65,12 +65,12 @@ const store = createStore({
     },
     removeComplexFact(state, frame) {
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
     removeAct(state, frame) {
       // removed the act from the list of frames
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
@@ -130,12 +130,12 @@ const store = createStore({
             precondition,
             recipient,
           ];
-          console.log("exist?:", exist);
-          console.log("exist?:", !exist.every((d) => d === undefined));
+          // console.log("exist?:", exist);
+          // console.log("exist?:", !exist.every((d) => d === undefined));
           return !exist.every((d) => d === undefined);
         })
         .map((fr) => fr._id);
-      console.log("ids of acts:", actFrameIds);
+      // console.log("ids of acts:", actFrameIds);
 
       if (actFrameIds.length > 0) {
         actFrameIds.forEach((id) => {
@@ -177,7 +177,7 @@ const store = createStore({
 
       // remove the Atomicfact from the list of frames
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      console.log("updated list of frames:", state.frames.length, state.frames);
+      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
 
   },
@@ -191,9 +191,9 @@ const store = createStore({
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
     addSource(context, sourceId) {
-      console.log("addSource", sourceId)
+      // console.log("addSource", sourceId)
       const source = this.state.availableSources.find(s => s.id == sourceId)
-      console.log("reading", source.fileName)
+      // console.log("reading", source.fileName)
       json(source.fileName).then(data => {
         const document = data['@graph'].find(d => 'document' in d).document
         document.title = source.title
@@ -202,7 +202,7 @@ const store = createStore({
         //add attribute to each sentence to store annotations
         getSentencesInDocument(document).forEach(s => s['annotations'] = [])
         context.state.sourceDocuments = [...context.state.sourceDocuments, document]
-        console.log("context.state.sourceDocuments", context.state.sourceDocuments)
+        // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
       })
     },
     //if annotation has a corresponding fact, update the fact frame.
@@ -233,6 +233,45 @@ const store = createStore({
       context.state.frames = parseJsonToFrames(jsonText)
       console.log("loaded interpretation", context.state.frames)
     },
+    // gets the id of the hovered frame
+    // and updates the frames array, which contain
+    highlightElements(context, hoveredElement){
+
+      // array with ids of the related elements ...
+      let relatedIds = new Array(hoveredElement._id)
+      // Case 1: Hovering over an atomic fact, higlight the related parents
+      if (hoveredElement._type==="fact" && !hoveredElement._booleanConstruct){
+        // check if acts contain this element
+        context.state.frames.filter(d => d._type==='act')
+            .forEach( d=> d.checkFrameExistance(d,hoveredElement)? relatedIds.push(d._id): null)
+        // console.log("actIds without contexts:", relatedIds)
+
+        // check if contexts contain this element
+        context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
+            .forEach(d=> d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
+        // console.log("actIds with contexts:", relatedIds)
+        // console.log("context.state.frames: ", context.state.frames)
+      }
+      // Case 2: if the hovered element is an Act, highlight the corresponding facts
+      if (hoveredElement._type === "act"){
+        relatedIds = relatedIds.concat(hoveredElement.childrenIds)
+      }
+      // Case 3: if the hovered element is a context, highlight the corresponding facts
+      // check if a booleanConstruct could contain acts or other complex structures.
+      if (hoveredElement._type==="fact" && hoveredElement._booleanConstruct){
+        // give me all the children
+        relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds)
+      }
+
+      // change the transparecy of the non-related atomic facts
+      context.state.frames.forEach( (d)=> {
+        return relatedIds.includes(d._id)? d._highlight = false : d._highlight = true;
+      });
+    },
+    // Mouseout restore
+    unhighlightElements(context){
+        context.state.frames.forEach(d => d._highlight = false );
+    }
 
   }
 });
