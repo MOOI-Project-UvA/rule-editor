@@ -12,7 +12,7 @@
     v-on:mouseleave="onLeave(frame)"
 
   >
-    {{ frame.type !== 'fact' ? frame.name : frame.label }}
+    {{ frame.type !== 'fact' ? frame._act : frame.label }}
     <!-- contexts which have been subdivided contain has a badge on top-right -->
     <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
   </q-chip>
