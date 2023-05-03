@@ -9,7 +9,7 @@
           <q-icon name="mdi-information-outline" class="cursor-pointer">
           </q-icon>
           <q-tooltip>
-            <dv style="max-width: 300px"> Description.. </dv>
+            <div style="max-width: 300px"> Description.. </div>
           </q-tooltip>
         </q-avatar>
       </q-item-section>
@@ -17,10 +17,7 @@
     <q-separator />
     <!-- add -->
     <q-item class="q-pt-md">
-      <div
-        id="frame-type-buttons"
-        class="row inline justify-start items-baseline no-wrap"
-      >
+      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
           <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
             Add:
@@ -41,25 +38,19 @@
           <!--            label="complex fact"-->
           <!--            @click="$store.dispatch('createComplexFact')"-->
           <!--          />-->
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            :icon="icons['act']"
-            label="act"
-            @click="$store.dispatch('createAct')"
-          >
-          <q-tooltip class="text-subtitle2">
-                Create an Act
-          </q-tooltip>
+          <q-btn class="q-mr-sm" color="primary" :icon="icons['act']" label="act" @click="$store.dispatch('createAct')">
+            <q-tooltip class="text-subtitle2">
+              Create an Act
+            </q-tooltip>
           </q-btn>
-            <!--          <q-btn-->
-<!--            class="q-mr-sm"-->
-<!--            color="primary"-->
-<!--            :icon="icons['duty']"-->
-<!--            label="duty"-->
-<!--            @click="startNewFrame('duty')"-->
-<!--            disabled-->
-<!--          />-->
+          <!--          <q-btn-->
+          <!--            class="q-mr-sm"-->
+          <!--            color="primary"-->
+          <!--            :icon="icons['duty']"-->
+          <!--            label="duty"-->
+          <!--            @click="startNewFrame('duty')"-->
+          <!--            disabled-->
+          <!--          />-->
         </div>
       </div>
     </q-item>
@@ -72,26 +63,10 @@
           </div>
         </div>
         <div class="btn-area">
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            icon="mdi-content-save"
-            label="Save interpretation"
-            @click="saveInterpretationClicked"
-          />
-          <q-btn
-            color="primary"
-            @click="chooseFile()"
-            icon="mdi-file-upload-outline"
-            label="Load interpretation"
-          />
-          <input
-            id="fileUpload"
-            type="file"
-            @change="handleFileSelection"
-            hidden
-            ref="fileUpload"
-          />
+          <q-btn class="q-mr-sm" color="primary" icon="mdi-content-save" label="Save interpretation"
+            @click="saveInterpretationClicked" />
+          <q-btn color="primary" @click="chooseFile()" icon="mdi-file-upload-outline" label="Load interpretation" />
+          <input id="fileUpload" type="file" @change="handleFileSelection" hidden ref="fileUpload" />
         </div>
       </div>
     </q-item>
@@ -104,13 +79,7 @@
           </div>
         </div>
         <div class="btn-area">
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            icon="mdi-source-branch"
-            label="relations"
-            disable
-          />
+          <q-btn class="q-mr-sm" color="primary" icon="mdi-source-branch" label="relations" disable />
         </div>
       </div>
     </q-item>
@@ -126,7 +95,7 @@ export default {
   data: () => ({
     icons: icons,
     colors: colors,
-     tags: [
+    tags: [
       { label: "Agent", value: "agent" },
       { label: "Action", value: "action" },
       { label: "Object", value: "object" },
@@ -173,7 +142,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#menu-card{
+#menu-card {
   width: 600px;
 
 }
