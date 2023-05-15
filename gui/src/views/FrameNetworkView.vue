@@ -7,10 +7,7 @@
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
-          <q-icon
-            name="mdi-information-outline"
-            class="cursor-pointer"
-          ></q-icon>
+          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip>
             <div style="max-width: 300px">
               In this view, you can see the annotations made in the source view.
@@ -24,118 +21,89 @@
     <q-separator />
     <!-- main content of the card  -->
     <q-item>
-      <div id="frame-chip-container" >
+      <div id="frame-chip-container">
         <div id="status">{{ message }}</div>
         <div id="fact-container">
-          <div id="agent-container" class="chip-container" >
+          <div id="agent-container" class="chip-container">
             <div><b>Agents</b></div>
-            <div v-if="agents.length ===0">No available agents!</div>
+            <div class="message" v-if="agents.length === 0">No available agents</div>
             <div class="chips">
-               <div v-for="frame in agents" @click="onClick(frame)" >
-              <FrameChip
-
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-
-            />
-          </div>
+              <div v-for="frame in agents" @click="onClick(frame)">
+                <FrameChip :frame="frame" :disable="allowedSubTypes &&
+                  frame.type === 'fact' &&
+                  !allowedSubTypes.includes(frame.subClass)
+                  " :removable="message === 'Click to edit'" functionality="chip-container" />
+              </div>
             </div>
           </div>
 
           <div id="action-container" class="chip-container">
             <div><b>Actions</b></div>
-            <div v-if="actions.length ===0">No available actions!</div>
+            <div class="message" v-if="actions.length === 0">No available actions</div>
             <div class="chips">
               <div v-for="frame in actions" @click="onClick(frame)">
-              <FrameChip
-              :frame="frame"
-              :disable="
-                allowedSubTypes &&
-                frame.type === 'fact' &&
-                !allowedSubTypes.includes(frame.subClass)
-              "
-              :removable="message === 'Click to edit'"
-              functionality="chip-container"
-            />
-          </div>
+                <FrameChip :frame="frame" :disable="allowedSubTypes &&
+                  frame.type === 'fact' &&
+                  !allowedSubTypes.includes(frame.subClass)
+                  " :removable="message === 'Click to edit'" functionality="chip-container" />
+              </div>
             </div>
           </div>
 
           <div id="object-container" class="chip-container">
             <div><b>Objects</b></div>
-            <div v-if="objects.length ===0">No available objects!</div>
+            <div class="message" v-if="objects.length === 0">No available objects</div>
             <div v-for="frame in objects" @click="onClick(frame)">
               <div class="chips">
-                <FrameChip
-                    :frame="frame"
-                    :disable="allowedSubTypes && frame.type === 'fact' && !allowedSubTypes.includes(frame.subClass)"
-                    :removable="message === 'Click to edit'"
-                    functionality="chip-container"
-                />
+                <FrameChip :frame="frame"
+                  :disable="allowedSubTypes && frame.type === 'fact' && !allowedSubTypes.includes(frame.subClass)"
+                  :removable="message === 'Click to edit'" functionality="chip-container" />
               </div>
-          </div>
+            </div>
           </div>
           <div id="context-container" class="chip-container">
             <div><b>Context</b></div>
-            <div v-if="contexts.length ===0">No available contexts!</div>
+            <div class="message" v-if="contexts.length === 0">No available contexts</div>
             <div class="chips">
               <div v-for="frame in contexts" @click="onClick(frame)">
-                <FrameChip
-                :frame="frame"
-                :disable="
-                  allowedSubTypes &&
+                <FrameChip :frame="frame" :disable="allowedSubTypes &&
                   frame.type === 'fact' &&
                   !allowedSubTypes.includes(frame.subClass)
-                "
-                :removable="message === 'Click to edit'"
-                functionality="chip-container"
-              />
-            </div>
+                  " :removable="message === 'Click to edit'" functionality="chip-container" />
+              </div>
             </div>
           </div>
           <div id="act-container" class="chip-container">
             <div><b>Acts</b></div>
-            <div v-if="acts.length ===0">No available acts!</div>
+            <div class="message" v-if="acts.length === 0">No available acts</div>
             <div class="chips">
               <div v-for="frame in acts" @click="onClick(frame)">
-                <FrameChip
-                :frame="frame"
-                :disable="
-                  allowedSubTypes &&
+                <FrameChip :frame="frame" :disable="allowedSubTypes &&
                   frame.type === 'fact' &&
                   !allowedSubTypes.includes(frame.subClass)
-                "
-                :removable="message === 'Click to edit'"
-                functionality="chip-container"
-              />
-            </div>
+                  " :removable="message === 'Click to edit'" functionality="chip-container" />
+              </div>
             </div>
           </div>
         </div>
 
-<!--        <div id="complexFact-container">-->
-<!--          <div v-for="frame in complexFacts" @click="onClick(frame)">-->
+        <!--        <div id="complexFact-container">-->
+        <!--          <div v-for="frame in complexFacts" @click="onClick(frame)">-->
 
 
-<!--            <FrameChip-->
-<!--              :frame="frame"-->
-<!--              :disable="-->
-<!--                allowedSubTypes &&-->
-<!--                frame.type === 'fact' &&-->
-<!--                !allowedSubTypes.includes(frame.subClass)-->
-<!--              "-->
-<!--              :removable="message === 'Click to edit'"-->
-<!--              functionality="chip-container"-->
-<!--            />-->
+        <!--            <FrameChip-->
+        <!--              :frame="frame"-->
+        <!--              :disable="-->
+        <!--                allowedSubTypes &&-->
+        <!--                frame.type === 'fact' &&-->
+        <!--                !allowedSubTypes.includes(frame.subClass)-->
+        <!--              "-->
+        <!--              :removable="message === 'Click to edit'"-->
+        <!--              functionality="chip-container"-->
+        <!--            />-->
 
-<!--          </div>-->
-<!--        </div>-->
+        <!--          </div>-->
+        <!--        </div>-->
 
       </div>
     </q-item>
@@ -152,22 +120,22 @@ export default {
       return this.$store.state.frames;
     },
     agents() {
-      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'agent')
+      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'agent')
     },
     actions() {
-      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'action')
+      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'action')
     },
     objects() {
-      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'object')
+      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'object')
     },
     contexts() {
-      return this.$store.state.frames.filter(d=> d._type === 'fact' && d._annotation._tag === 'context')
+      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'context')
     },
-    complexFacts(){
-      return this.$store.state.frames.filter(d=> d._type === 'complexFact')
+    complexFacts() {
+      return this.$store.state.frames.filter(d => d._type === 'complexFact')
     },
-    acts(){
-      return this.$store.state.frames.filter(d=> d._type === 'act')
+    acts() {
+      return this.$store.state.frames.filter(d => d._type === 'act')
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
@@ -212,6 +180,7 @@ export default {
 #status {
   min-height: 25px;
 }
+
 #frame-chip-container {
   /*height: calc(100vh - 180px);*/
   margin: 10px 0px;
@@ -220,6 +189,7 @@ export default {
   flex-wrap: nowrap;
 
 }
+
 #fact-container {
   /*height: calc(100vh - 180px);*/
   margin: 10px 0px;
@@ -231,6 +201,7 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
 }
+
 /*#chip-container {*/
 /*  display: flex;*/
 /*}*/
@@ -274,7 +245,7 @@ export default {
 /*  min-height: 100px;*/
 /*}*/
 
-.chip-container{
+.chip-container {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -298,6 +269,7 @@ export default {
 /*  !*overflow-y: auto;*!*/
 /*}*/
 .message {
-  /* margin-top: 10px; */
+  font-size: 9pt;
+  color: #333333;
 }
 </style>
