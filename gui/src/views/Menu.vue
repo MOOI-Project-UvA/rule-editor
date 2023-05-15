@@ -8,7 +8,7 @@
         <q-avatar>
           <q-icon name="mdi-information-outline" class="cursor-pointer">
           </q-icon>
-          <q-tooltip>
+          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px"> Description.. </div>
           </q-tooltip>
         </q-avatar>
