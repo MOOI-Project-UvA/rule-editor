@@ -13,9 +13,20 @@
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
+    <q-card-section>
+      <template v-if="frame.annotation.annotatedText.trim().length > 0">
+        <q-input class="pb-sm" v-model="frame.annotation.annotatedText" label="Source" autogrow readonly />
+      </template>
+      <template v-else>
+        <q-btn size="md" color="primary" icon="mdi-comment-text-outline"
+          :label="frame.addingAnnotation ? 'Cancel' : 'Select source'"
+          @click="() => { frame.addingAnnotation = !frame.addingAnnotation }">
+        </q-btn>
+      </template>
+    </q-card-section>
+
     <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     <q-card-section v-if="subdivided">
-      <q-input class="pb-sm" v-model="frame.annotation.annotatedText" label="Source" autogrow readonly />
       <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
     </q-card-section>
     <q-card-actions>
