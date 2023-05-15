@@ -64,7 +64,8 @@ class Fact {
       label: this._label,
       fact: this._fact,
       annotation: this._annotation?.toFlatObject(),
-      booleanConstruct: this._booleanConstruct?.toFlatObject()
+      booleanConstruct: this._booleanConstruct?.toFlatObject(),
+      comments: this._comments
     }
   }
 
@@ -88,6 +89,8 @@ class Fact {
       this._booleanConstruct = new BooleanConstruct()
       this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
     }
+
+    this._comments = frameData.comments
 
   }
 
@@ -377,7 +380,8 @@ class Act {
       precondition: this._precondition ? this._precondition.id : null,
       recipient: this._recipient ? this._recipient.id : null,
       creates: this._creates.map(f => f.id),
-      terminates: this._terminates.map(f => f.id)
+      terminates: this._terminates.map(f => f.id),
+      comments: this._comments
     }
   }
 
@@ -393,6 +397,7 @@ class Act {
     this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
     this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
     this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+    this._comments = frameData.comments
   }
   checkFrameExistance(act, element) {
 
