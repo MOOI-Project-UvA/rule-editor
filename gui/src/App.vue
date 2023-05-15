@@ -1,14 +1,14 @@
 <template>
   <div class="row">
     <!-- source view column -->
-    <div class="col-md-5 column fill-height">
+    <div class="col-5 q-p-2 fill-height">
       <SourceView />
     </div>
-    <div class="col-md-3 column">
+    <div class="col-3 q-p-2">
       <FrameNetworkView />
     </div>
     <!-- chip view + editor forms column-->
-    <div class="col-md-4 column">
+    <div class="col-4 q-p-2">
       <!-- save and load interpretation buttons -->
       <div class="row">
         <Menu />
@@ -24,14 +24,10 @@
       </div>
     </div>
   </div>
-  <div
-    id="annotationPanel"
-    v-if="annotationBeingEdited"
-    :style="{
-      left: annotationBeingEdited.positionOnScreen[0] + 'px',
-      top: annotationBeingEdited.positionOnScreen[1] + 'px',
-    }"
-  >
+  <div id="annotationPanel" v-if="annotationBeingEdited" :style="{
+    left: annotationBeingEdited.positionOnScreen[0] + 'px',
+    top: annotationBeingEdited.positionOnScreen[1] + 'px',
+  }">
     <AnnotationPanel :annotation="annotationBeingEdited" />
   </div>
 </template>
@@ -68,10 +64,6 @@ export default {
 </script>
 
 <style>
-.column {
-  padding: 3px;
-}
-
 #annotationPanel {
   position: absolute;
 }
