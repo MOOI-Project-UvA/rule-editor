@@ -8,7 +8,7 @@
       <q-item-section avatar>
         <q-avatar>
           <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
-          <q-tooltip>
+          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you can see the annotations made in the source view.
               The annotations are facts and are grouped by type. By clicking on
