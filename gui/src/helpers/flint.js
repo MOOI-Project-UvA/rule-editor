@@ -8,8 +8,7 @@ class Fact {
     this._booleanConstruct = null //optional subdivision of fact in smaller parts
     this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
     this._highlight = false
-    this._comments = [],
-      this._addingAnnotation = false //state in which the user is selecting a source for this fact
+    this._comments = []
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -50,9 +49,6 @@ class Fact {
   }
 
   get comments() { return this._comments }
-
-  get addingAnnotation() { return this._addingAnnotation }
-  set addingAnnotation(addingAnnotation) { this._addingAnnotation = addingAnnotation }
 
   // called when the user clicked a frame in the frame list
   addFrame(frame) {
@@ -259,8 +255,8 @@ class Act {
     this._creates = []
     this._terminates = []
     this._id = null //set when fact is saved
-    this._highlight = false,
-      this._comments = []
+    this._highlight = false
+    this._comments = []
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -471,7 +467,10 @@ class Annotation {
     this._positionOnScreen = null
   }
   get documentId() { return this._documentId }
+  set documentId(documentId) { this._documentId = documentId }
+
   get sentenceId() { return this._sentenceId }
+  set sentenceId(sentenceId) { this._sentenceId = sentenceId }
 
   get annotatedText() { return this._annotatedText }
   set annotatedText(annotatedText) { this._annotatedText = annotatedText }

@@ -18,10 +18,7 @@
         <q-input class="pb-sm" v-model="frame.annotation.annotatedText" label="Source" autogrow readonly />
       </template>
       <template v-else>
-        <q-btn size="md" color="primary" icon="mdi-comment-text-outline"
-          :label="frame.addingAnnotation ? 'Cancel' : 'Select source'"
-          @click="() => { frame.addingAnnotation = !frame.addingAnnotation }">
-        </q-btn>
+        <div class="text-primary">Fact has no source yet. Select source in source view.</div>
       </template>
     </q-card-section>
 

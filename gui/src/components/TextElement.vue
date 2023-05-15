@@ -38,16 +38,32 @@ export default {
         },
         htmlText() {
             return getHtmlWithHighlights(this.textPiece.content, this.annotations)
+        },
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
         }
     },
     methods: {
         handleSelection(event) {
             console.log("handleSelection")
+            console.log("frameBeingEdited", this.frameBeingEdited)
             const selection = window.getSelection()
             const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-            //check if there is an existing annotation at the selected range
-            let annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
+            let annotation = null
+            //if there is a frame being edited, use the (empty) annotation of that frame
+            if (this.frameBeingEdited) {
+                console.log("frame being edited", this.frameBeingEdited)
+                annotation = this.frameBeingEdited.annotation
+                annotation.documentId = this.documentId
+                annotation.sentenceId = this.textPiece.id
+                annotation.characterRange = range
+                annotation.annotatedText = selection.toString()
+            } else {
+                //check if there is an existing annotation at the selected range
+                annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
+            }
             console.log("found existing annotation", annotation)
+            //if there is no existing annotation, create a new one
             if (!annotation && (range[0] != range[1])) {
                 //create new annotation
                 annotation = new Annotation(
