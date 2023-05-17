@@ -54,10 +54,7 @@ export default {
             if (this.frameBeingEdited) {
                 console.log("frame being edited", this.frameBeingEdited)
                 annotation = this.frameBeingEdited.annotation
-                annotation.documentId = this.documentId
-                annotation.sentenceId = this.textPiece.id
-                annotation.characterRange = range
-                annotation.annotatedText = selection.toString()
+                annotation.addSnippet(this.documentId, this.textPiece.id, range, selection.toString())
             } else {
                 //check if there is an existing annotation at the selected range
                 annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
@@ -66,8 +63,8 @@ export default {
             //if there is no existing annotation, create a new one
             if (!annotation && (range[0] != range[1])) {
                 //create new annotation
-                annotation = new Annotation(
-                    this.documentId,
+                annotation = new Annotation()
+                annotation.addSnippet(this.documentId,
                     this.textPiece.id, //sentence ID
                     range, //characterRange
                     selection.toString() //selected text
