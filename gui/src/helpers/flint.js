@@ -21,13 +21,13 @@ class Fact {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
+      : this.fact.length > 65
+        ? this.fact.substring(0, 62) + "..."
         : this.fact
   }
   set label(label) { this._label = label }
 
-  get fact() { return this._fact.length > 0 ? this._fact : this._annotation.annotatedText }
+  get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
   set fact(fact) { this._fact = fact }
 
   get subClass() { //derived from annotation tag
@@ -36,6 +36,10 @@ class Fact {
 
   get sources() {
     return [this._annotation]
+  }
+
+  get sourceText() {
+    return this.annotation.snippets.map(s => s.annotatedText.trim()).join(" ")
   }
 
   get booleanConstruct() { return this._booleanConstruct }
@@ -266,8 +270,8 @@ class Act {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.act.length > 15
-        ? this.act.substring(0, 12) + "..."
+      : this.act.length > 65
+        ? this.act.substring(0, 62) + "..."
         : this.act
   }
   set label(label) { this._label = label }
@@ -457,17 +461,19 @@ class Act {
   }
 }
 
-class Annotation {
+class Snippet {
   constructor(documentId, sentenceId, characterRange, annotatedText) {
     this._documentId = documentId
     this._sentenceId = sentenceId
     this._characterRange = characterRange
     this._annotatedText = annotatedText
-    this._tag = null
-    this._positionOnScreen = null
   }
+
   get documentId() { return this._documentId }
   set documentId(documentId) { this._documentId = documentId }
+
+  get characterRange() { return this._characterRange }
+  set characterRange(characterRange) { this._characterRange = characterRange }
 
   get sentenceId() { return this._sentenceId }
   set sentenceId(sentenceId) { this._sentenceId = sentenceId }
@@ -475,8 +481,15 @@ class Annotation {
   get annotatedText() { return this._annotatedText }
   set annotatedText(annotatedText) { this._annotatedText = annotatedText }
 
-  get characterRange() { return this._characterRange }
-  set characterRange(characterRange) { this._characterRange = characterRange }
+
+}
+class Annotation {
+  constructor() {
+    this._snippets = []
+    this._tag = null
+    this._positionOnScreen = null
+    this._addingSnippets = false //true if user is in process of adding snippets to this annotation
+  }
 
   get positionOnScreen() { return this._positionOnScreen }
   set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
@@ -484,7 +497,14 @@ class Annotation {
   get tag() { return this._tag }
   set tag(tag) { this._tag = tag }
 
+  get addingSnippets() { return this._addingSnippets }
+  set addingSnippets(addingSnippets) { this._addingSnippets = addingSnippets }
 
+  get snippets() { return this._snippets }
+
+  addSnippet(documentId, sentenceId, characterRange, annotatedText) {
+    this._snippets.push(new Snippet(documentId, sentenceId, characterRange, annotatedText))
+  }
 
   //returns flat object, with references to other objects by ID
   toFlatObject() {

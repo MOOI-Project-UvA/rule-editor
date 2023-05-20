@@ -22,20 +22,25 @@ function getSelectedCharacterRange(sentenceElement, selection) {
     return indexRange
 }
 
-function getHtmlWithHighlights(text, annotations) {
+function getHtmlWithHighlights(text, highlights) {
+    if (highlights.length > 0) {
+        console.log("highlights", highlights)
+    }
+    //sort snippets from back of sentence to front
+    //because inserting html-tags changes character positions
+    highlights = highlights.sort((h1, h2) => h2.snippet.characterRange[1] - h1.snippet.characterRange[1])
+
     let htmlText = text
-    //from back to front of sentence, because inserting html-tags
-    //changes character positions
-    annotations = annotations.sort((a1, a2) => a2.characterRange[1] - a1.characterRange[1])
-    annotations.forEach(annotation => {
-        htmlText = htmlText.substring(0, annotation.characterRange[1])
+
+    highlights.forEach(highlight => {
+        htmlText = htmlText.substring(0, highlight.snippet.characterRange[1])
             + "</span>"
-            + htmlText.substring(annotation.characterRange[1])
-        htmlText = htmlText.substring(0, annotation.characterRange[0])
+            + htmlText.substring(highlight.snippet.characterRange[1])
+        htmlText = htmlText.substring(0, highlight.snippet.characterRange[0])
             + '<span class="text-white bg-'
-            + colors[annotation.tag]
-            + '" style="cursor:pointer" @click="console.log(\'' + annotation.tag + '\')">'
-            + htmlText.substring(annotation.characterRange[0])
+            + colors[highlight.annotation.tag]
+            + '" style="cursor:pointer" @click="console.log(\'' + highlight.annotation.tag + '\')">'
+            + htmlText.substring(highlight.snippet.characterRange[0])
     })
     return htmlText
 }

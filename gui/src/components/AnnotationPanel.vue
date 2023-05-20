@@ -13,6 +13,7 @@
             <q-card-actions>
                 <q-btn color="primary" @click="saveAnnotation" :disabled="!selectedTag">Save</q-btn>
                 <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
+                <q-btn size="sm" flat @click="addSnippet" :disabled="!selectedTag">Add another snippet</q-btn>
             </q-card-actions>
         </q-card>
     </div>
@@ -53,9 +54,15 @@ export default {
                 this.$store.dispatch("addFact", this.annotation)
             }
             this.$store.commit("setAnnotationBeingEdited", null)
+            this.annotation.addingSnippet = false
         },
         cancelAnnotation() {
             this.$store.commit("setAnnotationBeingEdited", null)
+            this.annotation.addingSnippet = false
+        },
+        addSnippet() {
+            console.log("add snippet")
+            this.annotation.addingSnippet = true
         }
     }
 }

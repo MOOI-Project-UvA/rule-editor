@@ -19,7 +19,7 @@
     <q-item class="q-pt-md">
       <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
             Add:
           </div>
         </div>
@@ -58,14 +58,14 @@
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
-            Functions:
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
+            Interpretation:
           </div>
         </div>
         <div class="btn-area">
-          <q-btn class="q-mr-sm" color="primary" icon="mdi-content-save" label="Save interpretation"
+          <q-btn class="q-mr-sm" color="primary" icon="mdi-content-save" label="Save"
             @click="saveInterpretationClicked" />
-          <q-btn color="primary" @click="chooseFile()" icon="mdi-file-upload-outline" label="Load interpretation" />
+          <q-btn color="primary" @click="chooseFile()" icon="mdi-file-upload-outline" label="Load" />
           <input id="fileUpload" type="file" @change="handleFileSelection" hidden ref="fileUpload" />
         </div>
       </div>
@@ -74,7 +74,7 @@
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
             Show:
           </div>
         </div>
