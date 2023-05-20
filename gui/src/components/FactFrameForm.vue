@@ -14,8 +14,9 @@
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
     <q-card-section>
-      <template v-if="frame.annotation.annotatedText.trim().length > 0">
-        <q-input class="pb-sm" v-model="frame.annotation.annotatedText" label="Source" autogrow readonly />
+      <template v-if="frame.sourceText.length > 0">
+        <div>Source</div>
+        <div class="pb-sm">{{ frame.sourceText }}</div>
       </template>
       <template v-else>
         <div class="text-primary">Fact has no source yet. Select source in source view.</div>

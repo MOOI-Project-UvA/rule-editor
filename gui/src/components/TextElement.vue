@@ -26,18 +26,23 @@ export default {
         documentId() {
             return getDocumentForTextPiece(this.textPiece)['@id']
         },
-        //annotations for this sentence, so we know what to highlight
-        annotations() {
+        //highlights for this sentence, so we can color the snippets according to annotation type
+        highlights() {
             if (this.isSentence) {
                 const factFrames = this.$store.state.frames.filter(f => f.type == "fact")
                 const annotations = factFrames.map(f => f.annotation)
-                return annotations.filter(a => a.documentId == this.documentId && a.sentenceId == this.textPiece.id)
+                //get each snippet together with its annotation
+                return annotations
+                    .map(a => a.snippets
+                        .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id)
+                        .map(s => ({ annotation: a, snippet: s })))
+                    .flat()
             } else {
                 return []
             }
         },
         htmlText() {
-            return getHtmlWithHighlights(this.textPiece.content, this.annotations)
+            return getHtmlWithHighlights(this.textPiece.content, this.highlights)
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
@@ -54,10 +59,15 @@ export default {
             if (this.frameBeingEdited) {
                 console.log("frame being edited", this.frameBeingEdited)
                 annotation = this.frameBeingEdited.annotation
-                annotation.addSnippet(this.documentId, this.textPiece.id, range, selection.toString())
+                //if the annotation has no snippet yet, add the selected one
+                if (this.frameBeingEdited.sourceText.length == 0) {
+                    annotation.addSnippet(this.documentId, this.textPiece.id, range, selection.toString())
+                }
+
             } else {
                 //check if there is an existing annotation at the selected range
-                annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
+                const highlight = this.highlights.find(h => (h.snippet.characterRange[0] <= range[0]) && (h.snippet.characterRange[1] >= range[1]))
+                annotation = highlight ? highlight.annotation : null
             }
             console.log("found existing annotation", annotation)
             //if there is no existing annotation, create a new one

@@ -21,13 +21,13 @@ class Fact {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
+      : this.fact.length > 65
+        ? this.fact.substring(0, 62) + "..."
         : this.fact
   }
   set label(label) { this._label = label }
 
-  get fact() { return this._fact.length > 0 ? this._fact : this._annotation.annotatedText }
+  get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
   set fact(fact) { this._fact = fact }
 
   get subClass() { //derived from annotation tag
@@ -36,6 +36,10 @@ class Fact {
 
   get sources() {
     return [this._annotation]
+  }
+
+  get sourceText() {
+    return this.annotation.snippets.map(s => s.annotatedText.trim()).join(" ")
   }
 
   get booleanConstruct() { return this._booleanConstruct }
@@ -266,8 +270,8 @@ class Act {
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.act.length > 15
-        ? this.act.substring(0, 12) + "..."
+      : this.act.length > 65
+        ? this.act.substring(0, 62) + "..."
         : this.act
   }
   set label(label) { this._label = label }
