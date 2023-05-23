@@ -38,5 +38,10 @@
         "id": "http://choppr.app/documents/1680529928570/document",
         "title": "Aanwijzingen voor de regelgeving",
         "fileName": "/sources/Aanwijzingen voor de regelgeving.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1683553921643/document",
+        "title": "CSRD Corporate Sustainability Reporting Directive",
+        "fileName": "/sources/CSRD Corporate Sustainability Reporting Directive.json"
     }
 ]
