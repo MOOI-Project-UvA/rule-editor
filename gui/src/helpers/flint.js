@@ -8,6 +8,7 @@ class Fact {
     this._booleanConstruct = null //optional subdivision of fact in smaller parts
     this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
     this._highlight = false
+    this._comments = []
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -47,6 +48,8 @@ class Fact {
     this._booleanConstructBeingEdited = booleanConstructBeingEdited
   }
 
+  get comments() { return this._comments }
+
   // called when the user clicked a frame in the frame list
   addFrame(frame) {
     if (this._booleanConstructBeingEdited) {
@@ -61,7 +64,8 @@ class Fact {
       label: this._label,
       fact: this._fact,
       annotation: this._annotation?.toFlatObject(),
-      booleanConstruct: this._booleanConstruct?.toFlatObject()
+      booleanConstruct: this._booleanConstruct?.toFlatObject(),
+      comments: this._comments
     }
   }
 
@@ -86,6 +90,8 @@ class Fact {
       this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
     }
 
+    this._comments = frameData.comments
+
   }
 
   checkFrameExistance(element) {
@@ -94,34 +100,34 @@ class Fact {
       this.checkChildren(this._booleanConstruct, element, exist)
     }
 
-    if (exist.some((d) => d )){
-       this._highlight = false
-     }else {
-        this._highlight = true
-     }
-    return exist.some((d) => d )
+    if (exist.some((d) => d)) {
+      this._highlight = false
+    } else {
+      this._highlight = true
+    }
+    return exist.some((d) => d)
   }
 
-  checkChildren(pBc, element, exist){
-    pBc.children.forEach(bc=> {
-        if( bc._frame !== null){
-          bc._frame._id === element._id ? exist.push(true) : exist.push(false);
-        }else {
-          this.checkChildren(bc, element, exist)
-        }
-      })
+  checkChildren(pBc, element, exist) {
+    pBc.children.forEach(bc => {
+      if (bc._frame !== null) {
+        bc._frame._id === element._id ? exist.push(true) : exist.push(false);
+      } else {
+        this.checkChildren(bc, element, exist)
+      }
+    })
   }
-  getChildren(pBc, listOfChildren){
-    pBc.children.forEach(bc=> {
-        if( bc._frame !== null){
-          listOfChildren.push(bc._frame)
-        }else {
-          this.getChildren(bc,listOfChildren)
-        }
-      })
-    return listOfChildren.filter(d=>d).map(d=> d._id)
+  getChildren(pBc, listOfChildren) {
+    pBc.children.forEach(bc => {
+      if (bc._frame !== null) {
+        listOfChildren.push(bc._frame)
+      } else {
+        this.getChildren(bc, listOfChildren)
+      }
+    })
+    return listOfChildren.filter(d => d).map(d => d._id)
   }
-  get retrieveChildrenIds(){
+  get retrieveChildrenIds() {
     const listOfChildren = []
     return this.getChildren(this._booleanConstruct, listOfChildren)
   }
@@ -249,7 +255,8 @@ class Act {
     this._creates = []
     this._terminates = []
     this._id = null //set when fact is saved
-    this._highlight = false
+    this._highlight = false,
+      this._comments = []
   }
   get id() { return this._id }
   set id(id) { this._id = id }
@@ -332,6 +339,8 @@ class Act {
       .map(f => f.sources).flat()
   }
 
+  get comments() { return this._comments }
+
   addFrame(fact) {
     switch (this._activeField) {
       case 'action':
@@ -371,7 +380,8 @@ class Act {
       precondition: this._precondition ? this._precondition.id : null,
       recipient: this._recipient ? this._recipient.id : null,
       creates: this._creates.map(f => f.id),
-      terminates: this._terminates.map(f => f.id)
+      terminates: this._terminates.map(f => f.id),
+      comments: this._comments
     }
   }
 
@@ -387,45 +397,46 @@ class Act {
     this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
     this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
     this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+    this._comments = frameData.comments
   }
-  checkFrameExistance(act,element) {
+  checkFrameExistance(act, element) {
 
     console.log("act", act)
     console.log("element", element)
 
-     const term = act._terminates.find((d) => act._id === element._id) ? true : false;
-     const creates = act._creates.find((d) => act._id === element._id) ? true : false;
-     const action =  act._action !== null && act._action._id === element._id ? true : false;
-     const actor =  act._actor !== null && act._actor._id == element._id
-              ? true
-              : false;
-     const object = act._object !== null && act._object._id == element._id
-              ? true
-              : false;
-     const precondition = act._precondition !== null && act._precondition._id == element._id
-              ? true
-              : false;
-     const recipient = (act._recipient !== null && act._recipient._id == element._id)
-              ? true
-              : false;
+    const term = act._terminates.find((d) => act._id === element._id) ? true : false;
+    const creates = act._creates.find((d) => act._id === element._id) ? true : false;
+    const action = act._action !== null && act._action._id === element._id ? true : false;
+    const actor = act._actor !== null && act._actor._id == element._id
+      ? true
+      : false;
+    const object = act._object !== null && act._object._id == element._id
+      ? true
+      : false;
+    const precondition = act._precondition !== null && act._precondition._id == element._id
+      ? true
+      : false;
+    const recipient = (act._recipient !== null && act._recipient._id == element._id)
+      ? true
+      : false;
 
-     const exist = [
-            term,
-            creates,
-            action,
-            actor,
-            object,
-            precondition,
-            recipient,
-          ];
+    const exist = [
+      term,
+      creates,
+      action,
+      actor,
+      object,
+      precondition,
+      recipient,
+    ];
 
-     if (exist.some((d) => d )){
-       act._highlight = false
-     }else {
-        act._highlight = true
-     }
-     console.log("exist in Act:", exist)
-     return exist.some((d) => d )
+    if (exist.some((d) => d)) {
+      act._highlight = false
+    } else {
+      act._highlight = true
+    }
+    console.log("exist in Act:", exist)
+    return exist.some((d) => d)
 
 
   }
