@@ -43,5 +43,20 @@
         "id": "http://choppr.app/documents/1683553921643/document",
         "title": "CSRD Corporate Sustainability Reporting Directive",
         "fileName": "/sources/CSRD Corporate Sustainability Reporting Directive.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1686734299646/Document",
+        "title": "Voorschrift Vreemdelingen",
+        "fileName": "/sources/Voorschrift Vreemdelingen.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1686734551749/Document",
+        "title": "Vreemdelingenbesluit",
+        "fileName": "/sources/Vreemdelingenbesluit.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1686734486621/Document",
+        "title": "Vreemdelingenwet",
+        "fileName": "/sources/Vreemdelingenwet.json"
     }
 ]
