@@ -1,7 +1,7 @@
 <template>
-    <!--
+  <!--
     Copyright 2023 Nederlandse Organisatie voor Toegepast Natuur-
-    wetenschappelijk Onderzoek TNO / TNO, Netherlands Organisation for
+    wetenschappelijk Onderzoek TNO / TNO, Netherlands Organisation for 
     applied scientific research
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
     limitations under the License.
   */
   -->
-
   <div class="row">
     <!-- source view column -->
     <div class="col-5 q-p-2 fill-height">
