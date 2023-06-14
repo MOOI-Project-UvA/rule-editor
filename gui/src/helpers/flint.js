@@ -302,25 +302,25 @@ class Act {
   get allowedSubClassesForActiveField() {
     switch (this._activeField) {
       case 'action':
-        return ['action', 'context']
+        return ['action', 'conditions']
         break
       case 'actor':
-        return ['agent', 'context']
+        return ['agent', 'conditions']
         break
       case 'object':
-        return ['object', 'context']
+        return ['object', 'conditions']
         break
       case 'recipient':
-        return ['agent', 'context']
+        return ['agent', 'conditions']
         break
       case 'precondition':
-        return ['agent', 'action', 'object', 'context']
+        return ['agent', 'action', 'object', 'conditions']
         break
       case 'creates':
-        return ['agent', 'action', 'object', 'context']
+        return ['agent', 'action', 'object', 'conditions']
         break
       case 'terminates':
-        return ['agent', 'action', 'object', 'context']
+        return ['agent', 'action', 'object', 'conditions']
         break;
     }
   }

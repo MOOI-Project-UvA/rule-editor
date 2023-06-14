@@ -99,7 +99,7 @@ export default {
       { label: "Agent", value: "agent" },
       { label: "Action", value: "action" },
       { label: "Object", value: "object" },
-      { label: "Context", value: "context" }
+      { label: "Conditions", value: "conditions" }
     ],
   }),
   methods: {
