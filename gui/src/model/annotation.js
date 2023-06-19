@@ -1,26 +1,25 @@
 class Annotation {
     constructor() {
-        this._referencesToSourceText = [] //multiple references of the same fact
-        this._tag = null
+        this._occurences = [] //multiple occurences of the same annotation text. Each 
+        this._tag = null //the type of annotation (Agent, Action, etc.)
     }
 
     get tag() { return this._tag }
     set tag(tag) { this._tag = tag }
 
-    addTextReference(
+    addOccurence(
         documentId,
         sentenceId,
         characterRange,
         annotatedText) {
-        this._referencesToSourceText.push(new SourceTextReference(documentId,
+        this._occurences.push(new AnnotationOccurence(documentId,
             sentenceId,
             characterRange,
             annotatedText))
     }
 
-    // go through the document and look for occurences of the source text.
-    // add those as references
-    addSimilarReferences(document) {
+    // go through the document and look for occurences of the annotation text.
+    addSimilarOccurences(document) {
 
     }
 
@@ -37,11 +36,11 @@ class Annotation {
 }
 
 //a piece of text in the source, can consist of multiple snippets
-class SourceTextReference {
+class AnnotationOccurence {
     constructor(documentId,
         sentenceId,
         characterRange,
-        annotatedText) {
+        annotatedText) { //text from all snippets together
         this._documentId = documentId
         this._snippets = [new Snippet(sentenceId,
             characterRange,
