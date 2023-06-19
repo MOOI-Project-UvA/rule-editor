@@ -89,7 +89,8 @@
 <script>
 
 import { icons, colors } from "../helpers/config.js";
-import { Fact, Annotation } from '../helpers/flint.js'
+import { Fact } from '../helpers/flint.js'
+import { Annotation } from '../model/annotation.js'
 
 export default {
   data: () => ({
@@ -105,12 +106,7 @@ export default {
   methods: {
     createFact(tag) {
       let frame = new Fact()
-      frame.annotation = new Annotation(
-        null, //documentId
-        null, //sentenceId
-        [], //characterRange
-        "" //annotatedText
-      )
+      frame.annotation = new Annotation()
       frame.annotation.tag = tag
       this.$store.commit("addFrame", frame)
       this.$store.commit("setFrameBeingEdited", frame)

@@ -1,3 +1,5 @@
+import { Annotation } from '../model/annotation.js'
+
 class Fact {
   constructor() {
     this._id = null //set when fact is saved
@@ -29,18 +31,6 @@ class Fact {
 
   get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
   set fact(fact) { this._fact = fact }
-
-  get subClass() { //derived from annotation tag
-    return this._annotation.tag
-  }
-
-  get sources() {
-    return [this._annotation]
-  }
-
-  get sourceText() {
-    return this.annotation.snippets.map(s => s.annotatedText.trim()).join(" ")
-  }
 
   get booleanConstruct() { return this._booleanConstruct }
   set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
@@ -483,45 +473,10 @@ class Snippet {
 
 
 }
-class Annotation {
-  constructor() {
-    this._snippets = []
-    this._tag = null
-    this._positionOnScreen = null
-    this._addingSnippets = false //true if user is in process of adding snippets to this annotation
-  }
-
-  get positionOnScreen() { return this._positionOnScreen }
-  set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
-
-  get tag() { return this._tag }
-  set tag(tag) { this._tag = tag }
-
-  get addingSnippets() { return this._addingSnippets }
-  set addingSnippets(addingSnippets) { this._addingSnippets = addingSnippets }
-
-  get snippets() { return this._snippets }
-
-  addSnippet(documentId, sentenceId, characterRange, annotatedText) {
-    this._snippets.push(new Snippet(documentId, sentenceId, characterRange, annotatedText))
-  }
-
-  //returns flat object, with references to other objects by ID
-  toFlatObject() {
-    return {
-      documentId: this._documentId,
-      sentenceId: this._sentenceId,
-      characterRange: this._characterRange,
-      annotatedText: this._annotatedText,
-      tag: this._tag
-    }
-  }
-}
 
 
 export {
   Fact,
   Act,
-  Annotation,
   BooleanConstruct
 }

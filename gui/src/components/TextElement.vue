@@ -11,7 +11,7 @@
 
 <script>
 import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js'
-import { Annotation } from "../helpers/flint.js"
+import { Annotation } from "../model/annotation.js"
 import { getDocumentForTextPiece } from '../helpers/document'
 import { max } from 'd3-array'
 export default {

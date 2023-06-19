@@ -16,8 +16,6 @@
 import ActFrameForm from '../components/ActFrameForm.vue'
 import FactFrameForm from '../components/FactFrameForm.vue'
 import DutyFrameForm from '../components/DutyFrameForm.vue'
-import { icons, colors } from '../helpers/config.js'
-import { Fact, Annotation } from '../helpers/flint.js'
 
 export default {
   data: () => ({}),
@@ -46,7 +44,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#current-frame{
+#current-frame {
   width: 600px;
 }
 </style>
