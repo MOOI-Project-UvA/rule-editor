@@ -37,8 +37,8 @@ function getHtmlWithHighlights(text, highlights) {
             + "</span>"
             + htmlText.substring(highlight.snippet.characterRange[1])
         htmlText = htmlText.substring(0, highlight.snippet.characterRange[0])
-            + '<span class="text-white bg-'
-            + colors[highlight.annotation.tag]
+            + '<span class="text-white bg-warning'
+            //+ colors[highlight.annotation.tag]
             + '" style="cursor:pointer" @click="console.log(\'' + highlight.annotation.tag + '\')">'
             + htmlText.substring(highlight.snippet.characterRange[0])
     })

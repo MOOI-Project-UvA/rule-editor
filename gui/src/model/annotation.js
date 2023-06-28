@@ -1,27 +1,23 @@
 class Annotation {
     constructor() {
-        this._occurences = [] //multiple occurences of the same annotation text. Each 
-        this._tag = null //the type of annotation (Agent, Action, etc.)
+        this._snippets = [] //an annotation is a sequence of text snippets 
+        this._frame //fact, act, or duty that is annotation is the source of
+        this._positionOnScreen = null
     }
 
-    get tag() { return this._tag }
-    set tag(tag) { this._tag = tag }
+    get frame() { return this._frame }
+    set frame(frame) { this._frame = frame }
 
-    addOccurence(
-        documentId,
-        sentenceId,
-        characterRange,
-        annotatedText) {
-        this._occurences.push(new AnnotationOccurence(documentId,
-            sentenceId,
-            characterRange,
-            annotatedText))
+    get snippets() { return this._snippets }
+
+    addSnippet(snippet) {
+        console.log("adding snippet")
+        snippet.annotation = this
+        this._snippets = [...this._snippets, snippet]
     }
 
-    // go through the document and look for occurences of the annotation text.
-    addSimilarOccurences(document) {
-
-    }
+    get positionOnScreen() { return this._positionOnScreen }
+    set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
 
     //returns flat object, with references to other objects by ID
     toFlatObject() {
@@ -33,49 +29,33 @@ class Annotation {
             tag: this._tag
         }
     }
-}
-
-//a piece of text in the source, can consist of multiple snippets
-class AnnotationOccurence {
-    constructor(documentId,
-        sentenceId,
-        characterRange,
-        annotatedText) { //text from all snippets together
-        this._documentId = documentId
-        this._snippets = [new Snippet(sentenceId,
-            characterRange,
-            annotatedText)]
-        this._addingSnippets = false //true if user is in process of adding snippets to this reference
-        this._positionOnScreen = null
-    }
-
-    addSnippet(sentenceId, characterRange, text) {
-        this._snippets.push(new Snippet(sentenceId, characterRange, text))
-    }
-
-    get snippets() { return this._snippets }
-
-    get addingSnippets() { return this._addingSnippets }
-    set addingSnippets(addingSnippets) { this._addingSnippets = addingSnippets }
-
-    get positionOnScreen() { return this._positionOnScreen }
-    set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
 
 }
 
-// piece of text in the source text, contains of a sentence and a character range
+// piece of consecutive text within a sentence in the source text, contains of a sentence and a character range
 class Snippet {
-    constructor(sentenceId, characterRange, text) {
-        this._sentenceId = sentenceId,
-            this._characterRange = characterRange,
-            this._text = text
+    constructor(documentId, sentenceId, characterRange, text) {
+        this._documentId = documentId
+        this._sentenceId = sentenceId
+        this._characterRange = characterRange
+        this._text = text
+        this._annotation = null //annotation that this snippet is part of
     }
 
+    get documentId() { return this._documentId }
     get sentenceId() { return this._sentenceId }
     get characterRange() { return this._characterRange }
     get text() { return this._text }
+
+    set annotation(annotation) { this._annotation = annotation }
+
+
+    toFlatObject() {
+        return {}
+    }
 }
 
 export {
-    Annotation
+    Annotation,
+    Snippet
 }

@@ -11,9 +11,9 @@
 
 <script>
 import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js'
-import { Annotation } from "../model/annotation.js"
+import { Annotation, Snippet } from "../model/annotation.js"
 import { getDocumentForTextPiece } from '../helpers/document'
-import { max } from 'd3-array'
+
 export default {
     props: {
         textPiece: Object
@@ -26,13 +26,17 @@ export default {
         documentId() {
             return getDocumentForTextPiece(this.textPiece)['@id']
         },
-        //highlights for this sentence, so we can color the snippets according to annotation type
-        highlights() {
+        annotations() {
+            return this.$store.state.annotations
+        },
+        annotationBeingEdited() {
+            return this.$store.state.annotationBeingEdited
+        },
+        //snippets for this sentence, so we can color them to annotation type
+        snippets() {
             if (this.isSentence) {
-                const factFrames = this.$store.state.frames.filter(f => f.type == "fact")
-                const annotations = factFrames.map(f => f.annotation)
                 //get each snippet together with its annotation
-                return annotations
+                return this.annotations
                     .map(a => a.snippets
                         .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id)
                         .map(s => ({ annotation: a, snippet: s })))
@@ -42,51 +46,60 @@ export default {
             }
         },
         htmlText() {
-            return getHtmlWithHighlights(this.textPiece.content, this.highlights)
-        },
-        frameBeingEdited() {
-            return this.$store.state.frameBeingEdited
+            return getHtmlWithHighlights(this.textPiece.content, this.snippets)
         }
     },
     methods: {
         handleSelection(event) {
             console.log("handleSelection")
-            console.log("frameBeingEdited", this.frameBeingEdited)
             const selection = window.getSelection()
             const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-            let annotation = null
-            //if there is a frame being edited, use the (empty) annotation of that frame
-            if (this.frameBeingEdited) {
-                console.log("frame being edited", this.frameBeingEdited)
-                annotation = this.frameBeingEdited.annotation
-                //if the annotation has no snippet yet, add the selected one
-                if (this.frameBeingEdited.sourceText.length == 0) {
-                    annotation.addSnippet(this.documentId, this.textPiece.id, range, selection.toString())
-                }
 
+            const snippet = new Snippet(
+                this.documentId,
+                this.sentenceId,
+                range,
+                selection.toString()
+            )
+
+            //if there is an active annotation being edited, add snippet to that annotation
+            //create annotation or use existing one
+
+            if (this.annotationBeingEdited) {
+                this.annotationBeingEdited.addSnippet(snippet)
             } else {
-                //check if there is an existing annotation at the selected range
-                const highlight = this.highlights.find(h => (h.snippet.characterRange[0] <= range[0]) && (h.snippet.characterRange[1] >= range[1]))
-                annotation = highlight ? highlight.annotation : null
-            }
-            console.log("found existing annotation", annotation)
-            //if there is no existing annotation, create a new one
-            if (!annotation && (range[0] != range[1])) {
-                //create new annotation
-                annotation = new Annotation()
-                annotation.addSnippet(this.documentId,
-                    this.textPiece.id, //sentence ID
-                    range, //characterRange
-                    selection.toString() //selected text
+                //see if there is an existing annotation containing this snippet
+                //go through all snippets in this sentence and find any at the clicked position
+                const existingSnippet = this.snippets.find(
+                    h => (h.snippet.characterRange[0] <= range[0]) && (h.snippet.characterRange[1] >= range[1])
                 )
-            }
-            if (annotation) {
-                annotation.positionOnScreen = [event.clientX, event.clientY]
+                //if there is a snippet at this location, use the associated annotation
+                //else create a new annotation
+                let annotation
+                if (existingSnippet) {
+                    annotation = existingSnippet.annotation
+                } else {
+                    annotation = new Annotation()
+                    annotation.addSnippet(snippet) //this should trigger re-rendering the sentence
+                    annotation.positionOnScreen = [event.clientX, event.clientY]
+                    this.$store.commit("addAnnotation", annotation)
+                }
                 this.$store.commit("setAnnotationBeingEdited", annotation)
             }
+
+            //coupling of annotation to frame will is done in Annotation panel
+            console.log("annotationBeingEdited", this.annotationBeingEdited)
+        }
+    },
+    watch: {
+        annotations() {
+            console.log("annotations are updated")
         },
-        clicked(tag) {
-            console.log("clicked", tag)
+        snippets() {
+            console.log("snippets are updated")
+        },
+        htmlText() {
+            console.log("htmlText is updated", this.htmlText)
         }
     }
 }

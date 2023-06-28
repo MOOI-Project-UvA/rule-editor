@@ -11,6 +11,7 @@ const store = createStore({
   state() {
     return {
       frames: [],
+      annotations: [],
       annotationMode: null,
       frameBeingEdited: null,
       fieldBeingEdited: null,
@@ -60,6 +61,13 @@ const store = createStore({
     //   state.reconstructedData.docID = data.fileName
     //   console.log("reconstuct")
     // },
+    addAnnotation(state, annotation) {
+      console.log("adding annotation")
+      state.annotations = [...state.annotations, annotation];
+    },
+    removeAnnotation(state, annotation) {
+      //todo
+    },
     setAnnotationBeingEdited(state, annotation) {
       state.annotationBeingEdited = annotation
     },
@@ -235,42 +243,42 @@ const store = createStore({
     },
     // gets the id of the hovered frame
     // and updates the frames array, which contain
-    highlightElements(context, hoveredElement){
+    highlightElements(context, hoveredElement) {
 
       // array with ids of the related elements ...
       let relatedIds = new Array(hoveredElement._id)
       // Case 1: Hovering over an atomic fact, higlight the related parents
-      if (hoveredElement._type==="fact" && !hoveredElement._booleanConstruct){
+      if (hoveredElement._type === "fact" && !hoveredElement._booleanConstruct) {
         // check if acts contain this element
-        context.state.frames.filter(d => d._type==='act')
-            .forEach( d=> d.checkFrameExistance(d,hoveredElement)? relatedIds.push(d._id): null)
+        context.state.frames.filter(d => d._type === 'act')
+          .forEach(d => d.checkFrameExistance(d, hoveredElement) ? relatedIds.push(d._id) : null)
         // console.log("actIds without contexts:", relatedIds)
 
         // check if contexts contain this element
-        context.state.frames.filter(d=> d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
-            .forEach(d=> d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
+        context.state.frames.filter(d => d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
+          .forEach(d => d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
         // console.log("actIds with contexts:", relatedIds)
         // console.log("context.state.frames: ", context.state.frames)
       }
       // Case 2: if the hovered element is an Act, highlight the corresponding facts
-      if (hoveredElement._type === "act"){
+      if (hoveredElement._type === "act") {
         relatedIds = relatedIds.concat(hoveredElement.childrenIds)
       }
       // Case 3: if the hovered element is a context, highlight the corresponding facts
       // check if a booleanConstruct could contain acts or other complex structures.
-      if (hoveredElement._type==="fact" && hoveredElement._booleanConstruct){
+      if (hoveredElement._type === "fact" && hoveredElement._booleanConstruct) {
         // give me all the children
         relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds)
       }
 
       // change the transparecy of the non-related atomic facts
-      context.state.frames.forEach( (d)=> {
-        return relatedIds.includes(d._id)? d._highlight = false : d._highlight = true;
+      context.state.frames.forEach((d) => {
+        return relatedIds.includes(d._id) ? d._highlight = false : d._highlight = true;
       });
     },
     // Mouseout restore
-    unhighlightElements(context){
-        context.state.frames.forEach(d => d._highlight = false );
+    unhighlightElements(context) {
+      context.state.frames.forEach(d => d._highlight = false);
     }
 
   }

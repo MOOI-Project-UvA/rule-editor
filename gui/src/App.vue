@@ -24,12 +24,7 @@
       </div>
     </div>
   </div>
-  <div id="annotationPanel" v-if="annotationBeingEdited" :style="{
-    left: annotationBeingEdited.positionOnScreen[0] + 'px',
-    top: annotationBeingEdited.positionOnScreen[1] + 'px',
-  }">
-    <AnnotationPanel :annotation="annotationBeingEdited" />
-  </div>
+  <AnnotationPanel />
 </template>
 
 <script>
@@ -51,20 +46,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch("readAvailableSources");
-  },
-  computed: {
-    frameBeingEdited() {
-      return this.$store.state.frameBeingEdited;
-    },
-    annotationBeingEdited() {
-      return this.$store.state.annotationBeingEdited;
-    },
-  },
+  }
 };
 </script>
 
-<style>
-#annotationPanel {
-  position: absolute;
-}
-</style>

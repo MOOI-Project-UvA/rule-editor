@@ -16,7 +16,7 @@ const colors = {
   'agent': 'warning',
   'action': 'secondary',
   'object': 'accent',
-  'context': 'info'
+  'other': 'info'
 }
 
 export {
