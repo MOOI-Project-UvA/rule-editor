@@ -1,12 +1,16 @@
 <template>
-    <!-- displays recursively the content fields ('sentences') mmmin a document -->
-    <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
-    </div>
-    <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
-    </div> -->
-    <div v-for="child in textPiece.children">
-        <TextElement :textPiece="child" />
-    </div>
+    <!--
+        displays recursively the content fields ('sentences') in a document.
+        Hides itself if showFrameSource is true and this sentence is not part of the source of the
+        frame that is currently being edited
+    -->
+    <template v-if="!isLeafElement || !showFrameSource || frameBeingEditedHasAnnotationsInThisSentence">
+        <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
+        </div>
+        <div v-for="child in textPiece.children">
+            <TextElement :textPiece="child" />
+        </div>
+    </template>
 </template>
 
 <script>
@@ -19,12 +23,21 @@ export default {
         textPiece: Object
     },
     computed: {
+        showFrameSource() {
+            return this.$store.state.showFrameSource
+        },
         isSentence() {
             return 'content' in this.textPiece
+        },
+        isLeafElement() {
+            return this.textPiece.class == "src:LeafElement"
         },
         //id of document that this textPiece is part of
         documentId() {
             return getDocumentForTextPiece(this.textPiece)['@id']
+        },
+        sentenceId() {
+            return this.isSentence ? this.textPiece['id'] : null
         },
         annotations() {
             return this.$store.state.annotations
@@ -38,12 +51,20 @@ export default {
                 //get each snippet together with its annotation
                 return this.annotations
                     .map(a => a.snippets
-                        .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id)
-                        .map(s => ({ annotation: a, snippet: s })))
+                        .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id))
+                    //.map(s => ({ annotation: a, snippet: s })))
                     .flat()
             } else {
                 return []
             }
+        },
+        frameBeingEditedHasAnnotationsInThisSentence() {
+            const frameBeingEdited = this.$store.state.frameBeingEdited
+            if (!frameBeingEdited) {
+                return false
+            }
+            const snippetsOfFrame = frameBeingEdited.annotations.map(a => a.snippets).flat()
+            return snippetsOfFrame.some(s => (s.sentenceId == this.sentenceId && s.documentId == this.documentId))
         },
         htmlText() {
             return getHtmlWithHighlights(this.textPiece.content, this.snippets)
@@ -62,16 +83,19 @@ export default {
                 selection.toString()
             )
 
+            console.log("snippet", snippet)
+
             //if there is an active annotation being edited, add snippet to that annotation
             //create annotation or use existing one
 
             if (this.annotationBeingEdited) {
-                this.annotationBeingEdited.addSnippet(snippet)
+                this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
             } else {
-                //see if there is an existing annotation containing this snippet
+                //see if there is an existing annotation containing this snippet.
                 //go through all snippets in this sentence and find any at the clicked position
+                console.log("this.snippets", this.snippets)
                 const existingSnippet = this.snippets.find(
-                    h => (h.snippet.characterRange[0] <= range[0]) && (h.snippet.characterRange[1] >= range[1])
+                    s => (s.characterRange[0] <= range[0]) && (s.characterRange[1] >= range[1])
                 )
                 //if there is a snippet at this location, use the associated annotation
                 //else create a new annotation
@@ -80,26 +104,12 @@ export default {
                     annotation = existingSnippet.annotation
                 } else {
                     annotation = new Annotation()
-                    annotation.addSnippet(snippet) //this should trigger re-rendering the sentence
+                    annotation.addSnippet(snippet) //this also sets snippet.annotation
                     annotation.positionOnScreen = [event.clientX, event.clientY]
                     this.$store.commit("addAnnotation", annotation)
                 }
                 this.$store.commit("setAnnotationBeingEdited", annotation)
             }
-
-            //coupling of annotation to frame will is done in Annotation panel
-            console.log("annotationBeingEdited", this.annotationBeingEdited)
-        }
-    },
-    watch: {
-        annotations() {
-            console.log("annotations are updated")
-        },
-        snippets() {
-            console.log("snippets are updated")
-        },
-        htmlText() {
-            console.log("htmlText is updated", this.htmlText)
         }
     }
 }

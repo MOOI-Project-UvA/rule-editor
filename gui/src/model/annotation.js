@@ -3,12 +3,21 @@ class Annotation {
         this._snippets = [] //an annotation is a sequence of text snippets 
         this._frame //fact, act, or duty that is annotation is the source of
         this._positionOnScreen = null
+        this._addingToExistingFrame = false //true if user wants to add this annotation to an existing frame
     }
 
     get frame() { return this._frame }
     set frame(frame) { this._frame = frame }
 
+    get positionOnScreen() { return this._positionOnScreen }
+    set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
+
+    get addingToExistingFrame() { return this._addingToExistingFrame }
+    set addingToExistingFrame(addingToExistingFrame) { this._addingToExistingFrame = addingToExistingFrame }
+
     get snippets() { return this._snippets }
+
+    get sourceText() { return this._snippets.map(s => s.text).join(" ") }
 
     addSnippet(snippet) {
         console.log("adding snippet")
@@ -16,8 +25,7 @@ class Annotation {
         this._snippets = [...this._snippets, snippet]
     }
 
-    get positionOnScreen() { return this._positionOnScreen }
-    set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
+
 
     //returns flat object, with references to other objects by ID
     toFlatObject() {
@@ -28,6 +36,10 @@ class Annotation {
             annotatedText: this._annotatedText,
             tag: this._tag
         }
+    }
+
+    addSimilarAnnotationsToFrame() {
+
     }
 
 }
@@ -46,7 +58,7 @@ class Snippet {
     get sentenceId() { return this._sentenceId }
     get characterRange() { return this._characterRange }
     get text() { return this._text }
-
+    get annotation() { return this._annotation }
     set annotation(annotation) { this._annotation = annotation }
 
 

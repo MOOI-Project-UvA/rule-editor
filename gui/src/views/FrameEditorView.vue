@@ -3,7 +3,7 @@
     <template v-if="frameBeingEdited.type === 'act'">
       <ActFrameForm @closed="closeActiveFrame" />
     </template>
-    <template v-if="frameBeingEdited.type === 'fact'">
+    <template v-if="['agent', 'action', 'other'].includes(frameBeingEdited.type)">
       <FactFrameForm @closed="closeActiveFrame" />
     </template>
     <template v-if="frameBeingEdited.type === 'duty'">

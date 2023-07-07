@@ -4,33 +4,49 @@
         top: annotation.positionOnScreen[1] + 'px',
     }">
         <q-card bordered>
-            <template v-if="selectingFrameForAnnotation">
-                Select existing frame
+            <q-card-section>
+                <div>
+                    {{ annotation.sourceText }}
+                </div>
+            </q-card-section>
+
+
+
+            <template v-if="annotation.addingToExistingFrame">
+                <q-card-section>
+                    <div class="message">Select existing frame</div>
+                </q-card-section>
             </template>
             <template v-else>
-                <q-card-section>
-                    <div v-for="snippet in annotation.snippets">
-                        {{ snippet.text }}
-                    </div>
-                </q-card-section>
                 <q-card-actions>
-                    <div class="q-gutter-sm">
-                        <q-radio dense v-model="creatingNewFrame" :val="true" label="New frame" />
-                        <q-radio dense v-model="creatingNewFrame" :val="false" label="Existing frame" />
-                    </div>
-                </q-card-actions>
-                <q-card-actions>
+                    <template v-if="annotation.frame">
+                        <div class="label">Change frame type</div>
+                    </template>
+                    <template v-else>
+                        <div class="label">Create new frame</div>
+                    </template>
                     <q-btn-group>
                         <q-btn v-for="tag in tags" :label="tag.label"
-                            :color="tag.value == selectedTag ? colors[tag.value] : 'grey-6'"
-                            @click="selectedTag = tag.value" />
+                            :color="(!annotation.frame || annotation.frame.type == tag.value) ? colors[tag.value] : 'grey-6'"
+                            @click="frameTypeButtonClicked(tag.value)" />
                     </q-btn-group>
                 </q-card-actions>
                 <q-card-actions>
-                    <q-btn color="primary" @click="saveAnnotation" :disabled="!selectedTag">Save</q-btn>
-                    <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
+                    <div class="label">Or</div>
+                    <template v-if="annotation.frame">
+                        <q-btn @click="removeAnnotation" color="negative">Remove annotation</q-btn>
+                    </template>
+                    <template v-else>
+                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary">
+                            Add to existing frame
+                        </q-btn>
+                    </template>
                 </q-card-actions>
             </template>
+
+            <q-card-actions>
+                <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
+            </q-card-actions>
         </q-card>
     </div>
 </template>
@@ -42,43 +58,59 @@ export default {
         tags: [
             { label: "Agent", value: "agent" },
             { label: "Action", value: "action" },
-            { label: "Other", value: "other" }
+            { label: "Other", value: "other" },
+            { label: "Act", value: "act" },
+            { label: "Duty", value: "duty" }
         ],
-        selectedTag: null,
-        colors: colors,
-        creatingNewFrame: true,
-        selectingFrameForAnnotation: false
+        colors: colors
     }),
-    mounted() {
-        console.log("***mounted")
-        //this.selectedTag = this.annotation.tag
-    },
     computed: {
         annotation() {
             return this.$store.state.annotationBeingEdited
         }
     },
     methods: {
-        saveAnnotation() {
-            //create fact for the annotation that is being edited
-            //and add the annotation to that fact
-            this.annotation.tag = this.selectedTag
-            console.log("saving this.annotation", this.annotation, "that is part of this frame:", this.frameForThisAnnotation)
-            //create fact if this is a new annotation
-            if (!this.frameForThisAnnotation) {
-                this.$store.dispatch("addFact", this.annotation)
+        frameTypeButtonClicked(frameType) {
+            if (!this.annotation.frame) {
+                //there is no frame attached to this 
+                this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
+                //this.annotation.addSimilarAnnotationsToFrame()
+            } else {
+                //there is a frame attached to this, change it type according to the selected type
+                this.annotation.frame.type = frameType
             }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {
+            //remmove annotation if it is not connected to a frame
+            if (!this.annotation.frame) {
+                this.$store.commit("removeAnnotation", this.annotation)
+            }
+            this.$store.commit("setAnnotationBeingEdited", null)
+        },
+        removeAnnotation() {
+            this.annotation.frame.removeAnnotation(this.annotation)
+            if (this.annotation.frame.annotations.length == 0) {
+                this.$store.commit("removeFrame", this.annotation.frame)
+            }
+            this.$store.commit("removeAnnotation", this.annotation)
             this.$store.commit("setAnnotationBeingEdited", null)
         }
-    }
+    },
 }
 </script>
 
 <style lang="css" scoped>
 #annotationPanel {
     position: absolute;
+    width: 400px;
+}
+
+.message {
+    font-weight: bold;
+}
+
+.label {
+    margin-right: 10px;
 }
 </style>

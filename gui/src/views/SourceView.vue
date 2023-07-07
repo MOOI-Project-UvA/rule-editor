@@ -66,9 +66,13 @@ export default {
     },
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
-    },
+    }
   },
-  methods: {},
+  watch: {
+    sourceDocuments() {
+      console.log("sourceDocuments", this.sourceDocuments)
+    }
+  }
 };
 </script>
 

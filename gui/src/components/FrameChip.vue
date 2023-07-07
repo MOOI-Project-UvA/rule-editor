@@ -1,19 +1,12 @@
 <template>
-  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight']}" :removable="removable" :disable="disable" @remove="onRemove" :color="
-    disable
+  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight'] }" :removable="removable"
+    :disable="disable" @remove="onRemove" :color="disable
       ? 'grey-5'
-      : frame.type === 'fact'
-        ? colors[frame.subClass]
-        : 'primary'
-    "
-    text-color="white"
-    :icon="frame.type==='fact' ? icons[frame.subClass] : icons[frame.type]"
-    v-on:mouseover="onOver(frame)"
-    v-on:mouseleave="onLeave(frame)"
-
-  >
-    {{ frame.type !== 'fact' ? frame._act : frame.label }}
-    <!-- contexts which have been subdivided contain has a badge on top-right -->
+      : colors[frame.type]
+      " text-color="white" :icon="frame.type === 'fact' ? icons[frame.subClass] : icons[frame.type]"
+    v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
+    {{ frame.label }}
+    <!-- contexts which have been subdivided contain have a badge on top-right -->
     <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
   </q-chip>
 </template>
@@ -92,9 +85,11 @@ export default {
 .chip {
   user-select: none;
 }
+
 .active {
   opacity: 0.2;
 }
+
 .notActive {
   opacity: 1;
 }

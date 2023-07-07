@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { Fact, Act } from "../helpers/flint.js";
+import { Fact } from "../model/fact.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -40,6 +40,27 @@ const store = createStore({
         state.frames = [...state.frames, frame];
       }
     },
+    addNewFrame(state, { frameType, annotation }) {
+      let frame
+      switch (frameType) {
+        case 'agent':
+        case 'action':
+        case 'other':
+          frame = new Fact()
+          frame.type = frameType
+          break;
+        case 'act':
+          break;
+        case 'duty':
+          break;
+      }
+      frame["id"] = uuid4();
+      if (annotation) {
+        frame.addAnnotation(annotation) //this also sets annotation.frame
+      }
+      state.frames = [...state.frames, frame];
+      console.log("state.frames", state.frames)
+    },
     // setAnnotationMode(state, selectedMode) {
     //   state.annotationMode = selectedMode;
     // },
@@ -62,14 +83,23 @@ const store = createStore({
     //   console.log("reconstuct")
     // },
     addAnnotation(state, annotation) {
-      console.log("adding annotation")
+      console.log("adding annotation", annotation)
       state.annotations = [...state.annotations, annotation];
     },
     removeAnnotation(state, annotation) {
-      //todo
+      console.log("removeAnnotations")
+      const index = state.annotations.indexOf(annotation)
+      if (index != -1) {
+        state.annotations.splice(index, 1)
+        console.log("state.annotations", state.annotations)
+      }
     },
     setAnnotationBeingEdited(state, annotation) {
       state.annotationBeingEdited = annotation
+    },
+    removeFrame(state, frame) {
+      const index = state.frames.indexOf(frame)
+      state.frames.splice(index, 1)
     },
     removeComplexFact(state, frame) {
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
@@ -212,13 +242,6 @@ const store = createStore({
         context.state.sourceDocuments = [...context.state.sourceDocuments, document]
         // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
       })
-    },
-    //if annotation has a corresponding fact, update the fact frame.
-    //otherwise, show an empty factframe for a new fact
-    addFact(context, annotation) {
-      const frame = new Fact()
-      frame.annotation = annotation
-      context.commit("addFrame", frame)
     },
     createAct(context) {
       console.log("create act frame");

@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered class="my-card">
     <q-card-section>
-      FACT of type <i>{{ frame.subClass }}</i>
+      FACT of type <i>{{ frame.type }}</i>
       <div class="float-right">
         <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
         </q-btn>
@@ -14,16 +14,9 @@
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
     <q-card-section>
-      <template v-if="frame.sourceText.length > 0">
-        <div>Source</div>
-        <div class="pb-sm">{{ frame.sourceText }}</div>
-      </template>
-      <template v-else>
-        <div class="text-primary">Fact has no source yet. Select source in source view.</div>
-      </template>
+      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" />
+      <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     </q-card-section>
-
-    <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     <q-card-section v-if="subdivided">
       <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
     </q-card-section>
@@ -39,7 +32,7 @@
 import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
-import { BooleanConstruct } from '../helpers/flint';
+import { BooleanConstruct } from '../model/booleanconstruct.js';
 
 
 export default {
@@ -48,6 +41,7 @@ export default {
     icons: icons,
     colors: colors,
     subdivided: false,
+    showSource: false,
     showComments: false
   }),
   computed: {
@@ -79,6 +73,9 @@ export default {
       } else {
         this.frame.booleanConstruct = null
       }
+    },
+    toggleShowSource() {
+      this.$store.commit("setShowFrameSource", this.showSource)
     },
     toggleComments() {
       this.showComments = !this.showComments
