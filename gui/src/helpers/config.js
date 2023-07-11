@@ -7,7 +7,7 @@ const icons = {
   'agent': 'mdi-account-switch',
   'object': 'mdi-account-arrow-left-outline',
   'action': 'mdi-gesture-tap',
-  'context': 'mdi-circle-small',
+  'conditions': 'mdi-circle-small',
   'other': 'mdi-circle-small'
 }
 
@@ -16,7 +16,7 @@ const colors = {
   'agent': 'warning',
   'action': 'secondary',
   'object': 'accent',
-  'context': 'info'
+  'conditions': 'info'
 }
 
 export {

@@ -16,7 +16,7 @@
               After selection, a legal source is reconstructed and you are able
               to start the interpretation process by selected text snippets and
               assigning one of the four supported labels: 1) Agent, 2) Action,
-              3) Object, 4) Context.
+              3) Object, 4) Conditions.
             </div>
           </q-tooltip>
         </q-avatar>

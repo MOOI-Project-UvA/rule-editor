@@ -61,11 +61,11 @@
               </div>
             </div>
           </div>
-          <div id="context-container" class="chip-container">
-            <div><b>Context</b></div>
-            <div class="message" v-if="contexts.length === 0">No available contexts</div>
+          <div id="conditions-container" class="chip-container">
+            <div><b>Conditions</b></div>
+            <div class="message" v-if="conditions.length === 0">No available conditions</div>
             <div class="chips">
-              <div v-for="frame in contexts" @click="onClick(frame)">
+              <div v-for="frame in conditions" @click="onClick(frame)">
                 <FrameChip :frame="frame" :disable="allowedSubTypes &&
                   frame.type === 'fact' &&
                   !allowedSubTypes.includes(frame.subClass)
@@ -128,8 +128,8 @@ export default {
     objects() {
       return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'object')
     },
-    contexts() {
-      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'context')
+    conditions() {
+      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'conditions')
     },
     complexFacts() {
       return this.$store.state.frames.filter(d => d._type === 'complexFact')
