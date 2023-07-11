@@ -1,8 +1,50 @@
-# Interpretation editor
+# Norm editor
+
+Tne Norm Editor is an application, built using web-based
+technologies, which allows a user to create interpretations of sources of norms in FLINT in a
+user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
+
+## Running the Norm editor locally
+
+To run the editor locally for development purposes. You can do the following:
+
+### Install node.js
+
+Make sure that you have installed [node.js](https://nodejs.org/en).
+
+### Go to the project directory
+```bash
+cd interpration-editor/
+```
+
+### Install the necessary dependencies
+```
+npm install
+```
+
+### Compile the code and hot-reloads for development
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+### Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+## Deploying the application on the server
 
 ## Maintainers information
 
-Building and deployment of the appication is done using a gitlab-runner. We first build a docker container and store it in the gitlab project container registry. Then we push changes to the cluster environment which picks up the container from the registry and starts serving it.
+Building and deployment of the application is done using a gitlab-runner. We first build a docker container and store it in the gitlab project container registry. Then we push changes to the cluster environment which picks up the container from the registry and starts serving it.
 
 ## Building the container
 
