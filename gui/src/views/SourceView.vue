@@ -27,7 +27,7 @@
       <span @click="console.log('asdf')">test</span>
     </div> -->
     <q-card-section>
-      <!-- <upload-decomposed-source></upload-decomposed-source> -->
+       <!-- <upload-decomposed-source></upload-decomposed-source> -->
       <SourceLoader />
     </q-card-section>
     <!-- controllers for the annotation part -->
@@ -57,27 +57,41 @@
                 class="q-pt-none scrollable"
                 style="max-height: 70vh"
               >
-                <TextElement :textPiece="sourceDocument" />
+            
+                <TextElement :textPiece="sourceDocument" @mouseup="handleMouseUp" />
+                
               </q-card-section>
             </q-card>
           </q-expansion-item>
         </q-list>
       </q-card-section>
     </div>
+    <q-card-section>
+      
+      <div class="row justify-center">
+        <q-btn color="primary" label="Automatic Annotation" @click="annotateText" />
+      </div>
+      
+    </q-card-section>
   </q-card>
 </template>
 
 <script>
-import TextElement from "../components/TextElement.vue"
-import SourceLoader from "../components/SourceLoader.vue"
+import TextElement from "../components/TextElement.vue";
+import SourceLoader from "../components/SourceLoader.vue";
+import { makePrediction } from "./api.js"; 
+
 export default {
   components: {
     TextElement,
     SourceLoader,
   },
-  data: () => ({
-    expanded: [],
-  }),
+  data() {
+    return {
+      expanded: [],
+      selectedText: "", 
+    };
+  },
   computed: {
     reconstructedData() {
       return this.$store.getters.reconstructedData;
@@ -86,8 +100,29 @@ export default {
       return this.$store.state.sourceDocuments;
     },
   },
-  methods: {},
+ 
+  methods: {
+    async annotateText() {
+      if (!this.selectedText) {
+        console.log("No text selected");
+        return;
+      }
+
+      try {
+        const response = await makePrediction(this.selectedText);
+        console.log("Annotated Text:", response.text);
+        console.log("Predicted Entities:", response.predicted_entities);
+      } catch (error) {
+        console.error("Error occurred during annotation:", error);
+      }
+    },
+    handleMouseUp(event) {
+      const selectedText = window.getSelection().toString().trim();
+      this.selectedText = selectedText;
+    },
+  },
 };
+
 </script>
 
 <style lang="css" scoped>

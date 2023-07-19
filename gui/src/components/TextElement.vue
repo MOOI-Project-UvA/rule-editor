@@ -1,76 +1,85 @@
 <template>
-    <!-- displays recursively the content fields ('sentences') mmmin a document -->
-    <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
-    </div>
-    <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
-    </div> -->
-    <div v-for="child in textPiece.children">
-        <TextElement :textPiece="child" />
-    </div>
+  <!-- displays recursively the content fields ('sentences') in a document -->
+  <div
+    class="text-chunk"
+    v-if="isSentence"
+    ref="sentenceElement"
+    @mousedown="handleMouseDown"
+  >
+    <span v-html="htmlText"></span>
+  </div>
+  <div v-else>
+    <TextElement v-for="child in textPiece.children" :textPiece="child" :key="child.id" />
+  </div>
 </template>
 
 <script>
-import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js'
-import { Annotation } from "../helpers/flint.js"
-import { getDocumentForTextPiece } from '../helpers/document'
-import { max } from 'd3-array'
+import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js';
+import { Annotation } from "../helpers/flint.js";
+import { getDocumentForTextPiece } from '../helpers/document';
+
+
 export default {
-    props: {
-        textPiece: Object
+  props: {
+    textPiece: Object
+  },
+  computed: {
+    isSentence() {
+      return 'content' in this.textPiece;
     },
-    computed: {
-        isSentence() {
-            return 'content' in this.textPiece
-        },
-        //id of document that this textPiece is part of
-        documentId() {
-            return getDocumentForTextPiece(this.textPiece)['@id']
-        },
-        //annotations for this sentence, so we know what to highlight
-        annotations() {
-            if (this.isSentence) {
-                const factFrames = this.$store.state.frames.filter(f => f.type == "fact")
-                const annotations = factFrames.map(f => f.annotation)
-                return annotations.filter(a => a.documentId == this.documentId && a.sentenceId == this.textPiece.id)
-            } else {
-                return []
-            }
-        },
-        htmlText() {
-            return getHtmlWithHighlights(this.textPiece.content, this.annotations)
-        }
+    //id of document that this textPiece is part of
+    documentId() {
+      return getDocumentForTextPiece(this.textPiece)['@id'];
     },
-    methods: {
-        handleSelection(event) {
-            console.log("handleSelection")
-            const selection = window.getSelection()
-            const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-            //check if there is an existing annotation at the selected range
-            let annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]))
-            console.log("found existing annotation", annotation)
-            if (!annotation && (range[0] != range[1])) {
-                //create new annotation
-                annotation = new Annotation(
-                    this.documentId,
-                    this.textPiece.id, //sentence ID
-                    range, //characterRange
-                    selection.toString() //selected text
-                )
-            }
-            if (annotation) {
-                annotation.positionOnScreen = [event.clientX, event.clientY]
-                this.$store.commit("setAnnotationBeingEdited", annotation)
-            }
-        },
-        clicked(tag) {
+    //annotations for this sentence, so we know what to highlight
+    annotations() {
+      if (this.isSentence) {
+        const factFrames = this.$store.state.frames.filter(f => f.type === "fact");
+        const annotations = factFrames.map(f => f.annotation);
+        return annotations.filter(a => a.documentId === this.documentId && a.sentenceId === this.textPiece.id);
+      } else {
+        return [];
+      }
+    },
+    htmlText() {
+      return getHtmlWithHighlights(this.textPiece.content, this.annotations);
+    }
+  },
+  methods: {
+    handleMouseDown() {
+      document.addEventListener('mouseup', this.handleMouseUp);
+    },
+    handleMouseUp(event) {
+      document.removeEventListener('mouseup', this.handleMouseUp);
+
+      const selection = window.getSelection();
+      const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection);
+      //check if there is an existing annotation at the selected range
+      let annotation = this.annotations.find(a => (a.characterRange[0] <= range[0]) && (a.characterRange[1] >= range[1]));
+      console.log("found existing annotation", annotation);
+      if (!annotation && (range[0] !== range[1])) {
+        //create new annotation
+        annotation = new Annotation(
+          this.documentId,
+          this.textPiece.id, //sentence ID
+          range, //characterRange
+          selection.toString() //selected text
+        );
+      }
+      if (annotation) {
+        annotation.positionOnScreen = [event.clientX, event.clientY];
+        this.$store.commit("setAnnotationBeingEdited", annotation);
+      }
+    },
+    clicked(tag) {
             console.log("clicked", tag)
         }
-    }
-}
+  }
+};
 </script>
 
 <style lang="css" scoped>
 .text-chunk {
-    margin: 10px 0px;
+  margin: 10px 0px;
 }
 </style>
