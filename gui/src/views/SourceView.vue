@@ -23,7 +23,7 @@
       </q-item-section>
     </q-item>
     <q-separator />
-    <!-- <div>
+        <!-- <div>
       <span @click="console.log('asdf')">test</span>
     </div> -->
     <q-card-section>
