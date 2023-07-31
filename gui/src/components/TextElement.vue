@@ -90,18 +90,22 @@ export default {
                 //no existing annotation at the clicked location
                 const selection = window.getSelection()
                 const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-
+                console.log("this.documentId: ",this.documentId, "this.sentenceId: ", this.sentenceId, "range: ", range, "selection.String()", selection.toString() )
                 const snippet = new Snippet(
                     this.documentId,
                     this.sentenceId,
                     range,
                     selection.toString()
+
                 )
+              console.log("snippet: ", snippet)
                 //if there is an active annotation being edited, add snippet to that annotation
                 //else create new annotation and add snippet
                 if (this.annotationBeingEdited) {
+                  console.log("there is an active annotation!")
                     this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
                 } else {
+                  console.log("creating a new annotation!")
                     let annotation = new Annotation()
                     annotation.addSnippet(snippet) //this also sets snippet.annotation
                     annotation.positionOnScreen = [event.clientX, event.clientY]
