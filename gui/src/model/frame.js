@@ -21,6 +21,11 @@ const frameTypes =
             'label': 'Duty'
         },
         {
+            'id': 'other',
+            'class': 'fact',
+            'label': 'Other'
+        },
+        {
             'id': 'act',
             'class': 'relation',
             'label': 'Act'

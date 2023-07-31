@@ -27,7 +27,6 @@ export default {
       this.$store.state.frameBeingEdited = null;
     },
     link(field, annotation) {
-      console.log("link", field, annotation)
       const text = annotation.target.selector
         .find(s => s.type == 'TextQuoteSelector')
         .exact

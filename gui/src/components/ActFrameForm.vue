@@ -47,7 +47,7 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-toggle label="Show sources" color="primary" v-model="showSource" />
+      <q-toggle label="Show source" color="primary" v-model="showSource" />
     </q-card-section>
     <q-card-actions>
       <q-btn color="primary" @click="closeForm">Close</q-btn>
