@@ -1,14 +1,14 @@
 <template>
   <div class="row">
     <!-- source view column -->
-    <div class="col-5 q-p-2 fill-height">
+    <div class="col-4 fill-height">
       <SourceView />
     </div>
-    <div class="col-3 q-p-2">
+    <div class="col-3">
       <FrameNetworkView />
     </div>
     <!-- chip view + editor forms column-->
-    <div class="col-4 q-p-2">
+    <div class="col-5">
       <!-- save and load interpretation buttons -->
       <div class="row">
         <Menu />
@@ -16,11 +16,6 @@
       <div class="row">
         <!-- frame editor view -->
         <FrameEditorView />
-
-        <!--        &lt;!&ndash; chip view &ndash;&gt;-->
-        <!--        <div class="col-4 column">-->
-        <!--          <FrameNetworkView />-->
-        <!--        </div>-->
       </div>
     </div>
   </div>

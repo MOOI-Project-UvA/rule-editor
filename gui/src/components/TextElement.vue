@@ -7,6 +7,8 @@
     <template v-if="!isLeafElement || !showFrameSource || frameBeingEditedHasAnnotationsInThisSentence">
         <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
         </div>
+        <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
+        </div> -->
         <div v-for="child in textPiece.children">
             <TextElement :textPiece="child" />
         </div>
@@ -19,6 +21,9 @@ import { Annotation, Snippet } from "../model/annotation.js"
 import { getDocumentForTextPiece } from '../helpers/document'
 
 export default {
+    data: () => ({
+        hoveredSnippetId: null
+    }),
     props: {
         textPiece: Object
     },
@@ -67,49 +72,64 @@ export default {
             return snippetsOfFrame.some(s => (s.sentenceId == this.sentenceId && s.documentId == this.documentId))
         },
         htmlText() {
-            return getHtmlWithHighlights(this.textPiece.content, this.snippets)
+            return getHtmlWithHighlights(this.textPiece.content, this.snippets, this.sentenceId)
         }
     },
     methods: {
         handleSelection(event) {
             console.log("handleSelection")
-            const selection = window.getSelection()
-            const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-
-            const snippet = new Snippet(
-                this.documentId,
-                this.sentenceId,
-                range,
-                selection.toString()
-            )
-
-            console.log("snippet", snippet)
-
-            //if there is an active annotation being edited, add snippet to that annotation
-            //create annotation or use existing one
-
-            if (this.annotationBeingEdited) {
-                this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
+            //check if there is an annotation at the clicked location
+            if (this.hoveredSnippetId) {
+                //if there is no annotation being edited, show the annotation associated with the clicked snippet
+                //else do nothing
+                if (!this.annotationBeingEdited) {
+                    const snippet = this.snippets.find(s => s.id == this.hoveredSnippetId)
+                    this.$store.commit("setAnnotationBeingEdited", snippet.annotation)
+                }
             } else {
-                //see if there is an existing annotation containing this snippet.
-                //go through all snippets in this sentence and find any at the clicked position
-                console.log("this.snippets", this.snippets)
-                const existingSnippet = this.snippets.find(
-                    s => (s.characterRange[0] <= range[0]) && (s.characterRange[1] >= range[1])
+                //no existing annotation at the clicked location
+                const selection = window.getSelection()
+                const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
+
+                const snippet = new Snippet(
+                    this.documentId,
+                    this.sentenceId,
+                    range,
+                    selection.toString()
                 )
-                //if there is a snippet at this location, use the associated annotation
-                //else create a new annotation
-                let annotation
-                if (existingSnippet) {
-                    annotation = existingSnippet.annotation
+                //if there is an active annotation being edited, add snippet to that annotation
+                //else create new annotation and add snippet
+                if (this.annotationBeingEdited) {
+                    this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
                 } else {
-                    annotation = new Annotation()
+                    let annotation = new Annotation()
                     annotation.addSnippet(snippet) //this also sets snippet.annotation
                     annotation.positionOnScreen = [event.clientX, event.clientY]
                     this.$store.commit("addAnnotation", annotation)
+                    this.$store.commit("setAnnotationBeingEdited", annotation)
                 }
-                this.$store.commit("setAnnotationBeingEdited", annotation)
             }
+        }
+    },
+    watch: {
+        //add listeners to highlighted snippets in html
+        //https://stackoverflow.com/questions/24775725/loop-through-childnodes
+        htmlText() {
+            //add this point, htmlText is not yet rendered, so childnodes is still one textnode
+            //we need to wait for the next renderstep before adding mouseover events
+            this.$nextTick(() => {
+                const nodes = this.$refs['sentenceElement'].childNodes
+                for (let i = 0; i < nodes.length; i++) {
+                    let node = nodes[i]
+                    if (node.nodeName == "SPAN") {
+                        node.onmouseover = () => { this.hoveredSnippetId = node.id }
+                        node.onmouseout = () => { this.hoveredSnippetId = null }
+                    }
+                }
+            })
+        },
+        hoveredSnippetId() {
+            console.log(this.hoveredSnippetId)
         }
     }
 }

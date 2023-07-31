@@ -68,7 +68,7 @@
 
 <script>
 import { colors, icons } from "../helpers/config.js"
-import { Fact } from "../helpers/flint.js"
+import { Fact } from "../model/fact.js"
 import { Annotation } from "../model/annotation.js"
 import FrameChip from "./FrameChip.vue"
 export default {

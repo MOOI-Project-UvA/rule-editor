@@ -2,9 +2,9 @@
   <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight'] }" :removable="removable"
     :disable="disable" @remove="onRemove" :color="disable
       ? 'grey-5'
-      : colors[frame.type]
-      " text-color="white" :icon="frame.type === 'fact' ? icons[frame.subClass] : icons[frame.type]"
-    v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
+      : colors[frame.type.id]
+      " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)"
+    v-on:mouseleave="onLeave(frame)">
     {{ frame.label }}
     <!-- contexts which have been subdivided contain have a badge on top-right -->
     <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
@@ -37,6 +37,7 @@ export default {
   emits: ["remove"],
   methods: {
     onRemove: function () {
+      console.log("on remove")
       if (this.functionality === "chip-container") {
         this.deleteFact();
       } else {
@@ -52,30 +53,16 @@ export default {
     /*
      * Deletes a fact/Act from store
      */
-    deleteFact: function () {
-      // console.log("frame to be deleted: ", this.frame);
-      // case1: delete a complex fact.
-      switch (this.frame._type) {
-        case "complexFact":
-          this.$store.commit("removeComplexFact", this.frame);
-          break;
-        case "act":
-          this.$store.commit("removeAct", this.frame);
-          break;
-        case "fact":
-          this.$store.commit("removeAtomicFact", this.frame);
-          break;
-      }
+    deleteFact() {
+      console.log("delete fact")
+      this.$store.commit("removeFrame", this.frame);
+      this.$store.commit("setFrameBeingEdited", null)
     },
     onOver: function (fact) {
-      // console.log("I am over this fact: ", fact )
       this.$store.dispatch('highlightElements', fact)
-
     },
     onLeave: function (fact) {
-      // console.log("I just left from this fact: ", fact)
       this.$store.dispatch('unhighlightElements')
-
     }
   }
 };

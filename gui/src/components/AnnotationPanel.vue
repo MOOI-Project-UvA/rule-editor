@@ -20,15 +20,15 @@
             <template v-else>
                 <q-card-actions>
                     <template v-if="annotation.frame">
-                        <div class="label">Change frame type</div>
+                        <div class="label">Change type of fact frame</div>
                     </template>
                     <template v-else>
-                        <div class="label">Create new frame</div>
+                        <div class="label">Create new fact frame</div>
                     </template>
                     <q-btn-group>
-                        <q-btn v-for="tag in tags" :label="tag.label"
-                            :color="(!annotation.frame || annotation.frame.type == tag.value) ? colors[tag.value] : 'grey-6'"
-                            @click="frameTypeButtonClicked(tag.value)" />
+                        <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" :label="frameType.label"
+                            :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
+                            @click="frameTypeButtonClicked(frameType)" />
                     </q-btn-group>
                 </q-card-actions>
                 <q-card-actions>
@@ -38,7 +38,7 @@
                     </template>
                     <template v-else>
                         <q-btn @click="annotation.addingToExistingFrame = true" color="primary">
-                            Add to existing frame
+                            Add to existing fact
                         </q-btn>
                     </template>
                 </q-card-actions>
@@ -52,16 +52,11 @@
 </template>
 
 <script>
+import { frameTypes } from '../model/frame.js'
 import { colors } from '../helpers/config.js'
 export default {
     data: () => ({
-        tags: [
-            { label: "Agent", value: "agent" },
-            { label: "Action", value: "action" },
-            { label: "Other", value: "other" },
-            { label: "Act", value: "act" },
-            { label: "Duty", value: "duty" }
-        ],
+        frameTypes: frameTypes,
         colors: colors
     }),
     computed: {
@@ -72,12 +67,13 @@ export default {
     methods: {
         frameTypeButtonClicked(frameType) {
             if (!this.annotation.frame) {
-                //there is no frame attached to this 
+                //there is no frame attached to this.
+                //create new frame and add annotation to it
                 this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
-                //this.annotation.addSimilarAnnotationsToFrame()
+                //this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
             } else {
                 //there is a frame attached to this, change it type according to the selected type
-                this.annotation.frame.type = frameType
+                this.annotation.frame.type = frameType.id
             }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
@@ -89,10 +85,9 @@ export default {
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         removeAnnotation() {
+            //this is only called if annotation has a frame.
+            //remove the annotaiton from the frame, and from the store
             this.annotation.frame.removeAnnotation(this.annotation)
-            if (this.annotation.frame.annotations.length == 0) {
-                this.$store.commit("removeFrame", this.annotation.frame)
-            }
             this.$store.commit("removeAnnotation", this.annotation)
             this.$store.commit("setAnnotationBeingEdited", null)
         }

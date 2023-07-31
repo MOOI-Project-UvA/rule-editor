@@ -1,24 +1,22 @@
-// icons per subtype of fact frame
+// icons per frame type
 const icons = {
   'act': 'mdi-autorenew',
-  'duty': 'mdi-square',
-  'complexFact': 'mdi-google-circles-extended',
-  'fact': 'mdi-circle-small',
+  'claim_duty': 'mdi-square',
   'agent': 'mdi-account-switch',
   'object': 'mdi-account-arrow-left-outline',
   'action': 'mdi-gesture-tap',
-  'context': 'mdi-circle-small',
-  'other': 'mdi-circle-small'
+  'duty': 'mdi-circle-small'
 }
 
 // colors per frame type
 const colors = {
-  'agent': 'warning',
-  'action': 'secondary',
-  'object': 'accent',
-  'other': 'info',
   'act': 'primary',
-  'duty': 'primary'
+  'claim_duty': 'primary',
+  'agent': 'warning',
+  'object': 'accent',
+  'action': 'secondary',
+  'duty': 'info',
+
 }
 
 export {

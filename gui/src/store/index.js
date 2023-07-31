@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
+import { Act, ClaimDuty } from "../helpers/flint.js"
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -22,7 +23,7 @@ const store = createStore({
       //   docID: "Example docID",
       //   text: "",
       // },
-      sourceDocuments: [], // documents that the current interpretation is using as a source
+      sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
       availableSources: [] //list of sources that the user can choose from
     };
@@ -42,24 +43,29 @@ const store = createStore({
     },
     addNewFrame(state, { frameType, annotation }) {
       let frame
-      switch (frameType) {
-        case 'agent':
-        case 'action':
-        case 'other':
+      switch (frameType.class) {
+        case 'fact':
           frame = new Fact()
-          frame.type = frameType
+          if (annotation) {
+            frame.addAnnotation(annotation) //this also sets annotation.frame
+          }
           break;
-        case 'act':
-          break;
-        case 'duty':
+        case 'relation':
+          switch (frameType.id) {
+            case 'act':
+              frame = new Act()
+              break;
+            case 'claim_duty':
+              frame = new ClaimDuty()
+              break;
+          }
           break;
       }
+      frame.type = frameType
       frame["id"] = uuid4();
-      if (annotation) {
-        frame.addAnnotation(annotation) //this also sets annotation.frame
-      }
       state.frames = [...state.frames, frame];
-      console.log("state.frames", state.frames)
+      state.frameBeingEdited = frame
+      console.log("frameBeingEdited", frame)
     },
     // setAnnotationMode(state, selectedMode) {
     //   state.annotationMode = selectedMode;
@@ -100,15 +106,6 @@ const store = createStore({
     removeFrame(state, frame) {
       const index = state.frames.indexOf(frame)
       state.frames.splice(index, 1)
-    },
-    removeComplexFact(state, frame) {
-      state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      // console.log("updated list of frames:", state.frames.length, state.frames);
-    },
-    removeAct(state, frame) {
-      // removed the act from the list of frames
-      state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      // console.log("updated list of frames:", state.frames.length, state.frames);
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact

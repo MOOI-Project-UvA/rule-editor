@@ -3,7 +3,7 @@
     <!-- card title section -->
     <q-item>
       <q-item-section>
-        <q-item-label>Interpretation view</q-item-label>
+        <q-item-label>Frames <span v-if="message">({{ message }})</span></q-item-label>
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
@@ -22,21 +22,21 @@
     <!-- main content of the card  -->
     <q-item>
       <div id="frame-chip-container">
-        <div id="status">{{ message }}</div>
-
-        <div class="fact-container" v-for="frameType in frameTypes">
-          <div class="chip-container">
-            <div><b>{{ frameType.label }}</b></div>
-            <div class="chips">
-              <div v-for="frame in frames.filter(f => f.type == frameType.id)" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="allowedSubTypes &&
-                  !allowedSubTypes.includes(frameType.id)" :removable="message === 'Click to edit'"
-                  functionality="chip-container" />
+        <template v-for="frameClass in ['fact', 'relation']">
+          <div class="class-label">{{ frameClass }}</div>
+          <div class="fact-container" v-for="frameType in frameTypes.filter(t => t.class == frameClass)">
+            <div class="chip-container">
+              <div><b>{{ frameType.label }}</b></div>
+              <div class="chips">
+                <div v-for="frame in frames.filter(f => f.type.id == frameType.id)" @click="onClick(frame)">
+                  <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
+                    && !allowedSubTypes.includes(frameType.id)" :removable="message === 'Click to edit'"
+                    functionality="chip-container" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
+        </template>
       </div>
     </q-item>
 
@@ -45,15 +45,11 @@
 
 <script>
 import FrameChip from "../components/FrameChip.vue";
+import { frameTypes } from "../model/frame";
 
 export default {
   data: () => ({
-    frameTypes: [
-      { id: 'agent', label: 'Agents' },
-      { id: 'action', label: 'Actions' },
-      { id: 'other', label: 'Other' },
-      { id: 'act', label: 'Acts' }
-    ]
+    frameTypes: frameTypes
   }),
   computed: {
     frames() {
@@ -68,12 +64,12 @@ export default {
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        ['act', 'duty'].includes(this.frameBeingEdited.type)
+        this.frameBeingEdited.type.class == 'relation'
         ? this.frameBeingEdited.allowedSubClassesForActiveField
-        : null;
+        : [];
     },
     message() {
-      return this.frameBeingEdited && ['act', 'duty'].includes(this.frameBeingEdited)
+      return this.frameBeingEdited && ['act', 'claim_duty'].includes(this.frameBeingEdited)
         ? "Add to frame"
         : this.frames.length > 0 ? "Click to edit" : ""
     }
@@ -111,12 +107,17 @@ export default {
   min-height: 25px;
 }
 
-.frame-chip-container {
+
+#frame-chip-container {
   margin: 10px 0px;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
 
+}
+
+.class-label {
+  text-transform: uppercase;
 }
 
 .fact-container {
@@ -134,7 +135,6 @@ export default {
   flex-wrap: wrap;
   flex-direction: column;
   align-content: flex-start;
-  min-height: 120px !important;
 }
 
 .chips {

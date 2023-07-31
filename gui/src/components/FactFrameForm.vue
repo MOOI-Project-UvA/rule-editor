@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered class="my-card">
     <q-card-section>
-      FACT of type <i>{{ frame.type }}</i>
+      FACT of type <i>{{ frame.type.label }}</i>
       <div class="float-right">
         <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
         </q-btn>
@@ -15,14 +15,13 @@
     </q-card-section>
     <q-card-section>
       <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" />
-      <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
+      <!-- <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" /> -->
     </q-card-section>
-    <q-card-section v-if="subdivided">
+    <!-- <q-card-section v-if="subdivided">
       <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
-    </q-card-section>
+    </q-card-section> -->
     <q-card-actions>
-      <q-btn flat @click="cancelClicked">Cancel</q-btn>
-      <q-btn color="primary" @click="saveClicked">Save</q-btn>
+      <q-btn color="primary" @click="closeForm">Close</q-btn>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -32,7 +31,7 @@
 import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
-import { BooleanConstruct } from '../model/booleanconstruct.js';
+import { BooleanConstruct } from '../model/booleanConstruct.js';
 
 
 export default {
@@ -55,13 +54,8 @@ export default {
     }
   },
   methods: {
-    cancelClicked() {
-      this.$emit("closed");
-    },
-    saveClicked() {
-      //store frame
-      this.$store.commit("addFrame", this.frame);
-      this.$emit("closed");
+    closeForm() {
+      this.$store.state.frameBeingEdited = null;
     },
     toggleSubdivision() {
       if (this.subdivided) {

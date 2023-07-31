@@ -6,7 +6,7 @@ export class Fact {
         this._id = uuid4() //unique ID
         this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
-        this._type = null
+        this._type = null //type object (id, class, label)
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._booleanConstruct = null //optional subdivision of fact in other facts. Of type BooleanConstruct
         //this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist. TODO put in store, because it is about the state of the program
@@ -31,7 +31,8 @@ export class Fact {
     get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
     set fact(fact) { this._fact = fact }
 
-    get sourceText() { return this._annotations.map(a => a.sourceText).join(" ") }
+    //get sourceText() { return this._annotations.map(a => a.sourceText).join(" ") }
+    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
     get booleanConstruct() { return this._booleanConstruct }
 
