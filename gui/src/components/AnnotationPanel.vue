@@ -66,7 +66,9 @@ export default {
     },
     methods: {
         frameTypeButtonClicked(frameType) {
+
             if (!this.annotation.frame) {
+              console.log("creating a new frame!")
                 //there is no frame attached to this.
                 //create new frame and add annotation to it
                 this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
@@ -75,6 +77,7 @@ export default {
                 //there is a frame attached to this, change it type according to the selected type
                 this.annotation.frame.type = frameType.id
             }
+            console.log("setting active annotation to being edited!")
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {
