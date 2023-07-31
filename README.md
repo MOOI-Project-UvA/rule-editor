@@ -1,38 +1,41 @@
-# Interpretation editor
+# Norm editor
 
-## Maintainers information
+Tne Norm Editor is an application, built using web-based
+technologies, which allows a user to create interpretations of sources of norms in FLINT in a
+user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
 
-Building and deployment of the appication is done using a gitlab-runner. We first build a docker container and store it in the gitlab project container registry. Then we push changes to the cluster environment which picks up the container from the registry and starts serving it.
+## Running the Norm editor locally
 
-## Building the container
+To run the editor locally for development purposes. You can do the following:
 
-The container can be built using a gitlab-runner (to be set up). The runner can run `Kaniko`. This can be emulated/tested on a local machine as such
+### Install node.js
 
-```shell
-docker run -ti --rm --entrypoint="" \
-  -v $HOME/.docker/config.json:/kaniko/.docker/config.json  \
-  -v $PWD:/workspace gcr.io/kaniko-project/executor:v1.9.1-debug \
-  /kaniko/executor \
-    --context gui \
-    --dockerfile gui/Dockerfile \
-    --destination ci.tno.nl/calculemus/ui/interpretation-editor:test
+Make sure that you have installed [node.js](https://nodejs.org/en).
+
+### Go to the project directory
+```bash
+cd interpration-editor/
 ```
 
-## Deployment
-
-For deployment we need to link the gitlab project and the kubernetes cluster. Deploy tokens need to be added to Kubernetes to pull images and service account tokens need to be added to the project to allow it to push changes to the cluster.
-
-Deploy tokens can be set up at https://ci.tno.nl/gitlab/ds/lab/-/settings/repository and CI/CD Variables can be configured at https://ci.tno.nl/gitlab/calculemus/ui/interpretation-editor/-/settings/ci_cd.
-
-Given a deploy token named `gitlab-k8s-deploy` and password `XXX`, it should be added to kubernetes as `kubectl -n create secret docker-registry gitlab-k8s-deploy --docker-server=ci.tno.nl --docker-username=gitlab-k8s-deploy --docker-password="XXX"`.
-d
-and can be used to allow images in Kubernetes to be downloaded, such as described in the [docs](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)d, e.g. by setting it under `pod.spec.imagePullSecrets`.
-
-Likewise, a service account (user) should be added to kubernetes that allows creation of deployments.
-
-```shell
-kubectl create serviceaccount gitlab-deploy
-kubectl create token gitlab-deploy
+### Install the necessary dependencies
+```
+npm install
 ```
 
-The output of the latter should be stored as a CI/CD token in Gitlab, e.g. as `K8S_TOKEN` and can be used in a deploy script to authenticate to the server (currently at `https://api.k8s.tnods.nl`).
+### Compile the code and hot-reloads for development
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+### Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
