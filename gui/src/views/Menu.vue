@@ -8,64 +8,61 @@
         <q-avatar>
           <q-icon name="mdi-information-outline" class="cursor-pointer">
           </q-icon>
-          <q-tooltip>
+          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px"> Description.. </div>
           </q-tooltip>
         </q-avatar>
       </q-item-section>
     </q-item>
     <q-separator />
-    <!-- add -->
-    <q-item class="q-pt-md">
+    <!-- add fact -->
+    <q-item>
       <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
-            Add:
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
+            Add fact:
           </div>
         </div>
-        <div class="btn-area">
-          <q-btn-group class="q-mr-sm">
-            <q-btn v-for="tag in tags" :color="colors[tag.value]" :icon="icons[tag.value]" @click="createFact(tag.value)">
-              <q-tooltip class="text-subtitle2">
-                Create fact of type {{ tag.label }}
-              </q-tooltip>
-            </q-btn>
-          </q-btn-group>
-          <!--          <q-btn-->
-          <!--            class="q-mr-sm"-->
-          <!--            color="primary"-->
-          <!--            :icon="icons['complexFact']"-->
-          <!--            label="complex fact"-->
-          <!--            @click="$store.dispatch('createComplexFact')"-->
-          <!--          />-->
-          <q-btn class="q-mr-sm" color="primary" :icon="icons['act']" label="act" @click="$store.dispatch('createAct')">
+        <div>
+          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'fact')" class="q-mr-sm"
+            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
             <q-tooltip class="text-subtitle2">
-              Create an Act
+              Add fact of type {{ frameType.label }}
             </q-tooltip>
           </q-btn>
-          <!--          <q-btn-->
-          <!--            class="q-mr-sm"-->
-          <!--            color="primary"-->
-          <!--            :icon="icons['duty']"-->
-          <!--            label="duty"-->
-          <!--            @click="startNewFrame('duty')"-->
-          <!--            disabled-->
-          <!--          />-->
         </div>
       </div>
     </q-item>
-    <!-- functions -->
+    <!-- add relation -->
+    <q-item>
+      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
+        <div class="area-label">
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
+            Add relation:
+          </div>
+        </div>
+        <div>
+          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'relation')" class="q-mr-sm"
+            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
+            <q-tooltip class="text-subtitle2">
+              Add relation of type {{ frameType.label }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+    </q-item>
+    <!-- load and save interpretation -->
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
-            Functions:
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
+            Interpretation:
           </div>
         </div>
         <div class="btn-area">
-          <q-btn class="q-mr-sm" color="primary" icon="mdi-content-save" label="Save interpretation"
+          <q-btn class="q-mr-sm" color="primary" icon="mdi-content-save" label="Save"
             @click="saveInterpretationClicked" />
-          <q-btn color="primary" @click="chooseFile()" icon="mdi-file-upload-outline" label="Load interpretation" />
+          <q-btn color="primary" @click="chooseFile()" icon="mdi-file-upload-outline" label="Load" />
           <input id="fileUpload" type="file" @change="handleFileSelection" hidden ref="fileUpload" />
         </div>
       </div>
@@ -74,7 +71,7 @@
     <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 80px">
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
             Show:
           </div>
         </div>
@@ -89,31 +86,20 @@
 <script>
 
 import { icons, colors } from "../helpers/config.js";
-import { Fact, Annotation } from '../helpers/flint.js'
+import { Fact } from "../model/fact.js"
+import { Act, ClaimDuty } from '../helpers/flint.js'
+import { frameTypes } from "../model/frame";
 
 export default {
   data: () => ({
     icons: icons,
     colors: colors,
-    tags: [
-      { label: "Agent", value: "agent" },
-      { label: "Action", value: "action" },
-      { label: "Object", value: "object" },
-      { label: "Conditions", value: "conditions" }
-    ],
+    frameTypes: frameTypes
   }),
   methods: {
-    createFact(tag) {
-      let frame = new Fact()
-      frame.annotation = new Annotation(
-        null, //documentId
-        null, //sentenceId
-        [], //characterRange
-        "" //annotatedText
-      )
-      frame.annotation.tag = tag
-      this.$store.commit("addFrame", frame)
-      this.$store.commit("setFrameBeingEdited", frame)
+    createFrame(frameType) {
+      //add frame with empty annotation
+      this.$store.commit("addNewFrame", { frameType: frameType, annotation: null })
     },
     saveInterpretationClicked() {
       this.$store.dispatch("saveInterpretation");

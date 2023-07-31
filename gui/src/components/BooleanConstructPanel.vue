@@ -6,7 +6,8 @@
                 <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
                     :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
                     @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>
-                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" functionality="editor-form" @remove="removeChipFromContext" />
+                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" functionality="editor-form"
+                    @remove="removeChipFromContext" />
             </div>
 
         </template>
@@ -67,7 +68,8 @@
 
 <script>
 import { colors, icons } from "../helpers/config.js"
-import { Annotation, Fact } from "../helpers/flint.js"
+import { Fact } from "../model/fact.js"
+import { Annotation } from "../model/annotation.js"
 import FrameChip from "./FrameChip.vue"
 export default {
     name: "booleanConstructPanel",
@@ -132,8 +134,8 @@ export default {
         onBlur() {
             //this.frameBeingEdited.booleanContructBeingEdited = null
         },
-        removeChipFromContext(){
-          this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
+        removeChipFromContext() {
+            this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
         }
     }
 }

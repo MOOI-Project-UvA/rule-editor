@@ -1,5 +1,6 @@
 <template>
   <q-card flat bordered v-if="frame">
+    <!--test2 -->
 
     <q-card-section>
       <div class="float-right"><q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
@@ -46,11 +47,10 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-toggle label="Show sources" color="primary" v-model="showSource" />
+      <q-toggle label="Show source" color="primary" v-model="showSource" />
     </q-card-section>
     <q-card-actions>
-      <q-btn flat @click="cancelClicked">Cancel</q-btn>
-      <q-btn color="primary" @click="saveClicked">Save</q-btn>
+      <q-btn color="primary" @click="closeForm">Close</q-btn>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -74,14 +74,8 @@ export default {
     // }
   },
   methods: {
-    cancelClicked() {
-      this.$emit("closed");
-    },
-    saveClicked() {
-
-      //store frame if it is a new frame
-      this.$store.commit("addFrame", this.frame);
-      this.$emit("closed");
+    closeForm() {
+      this.$store.state.frameBeingEdited = null;
     },
     toggleComments() {
       this.showComments = !this.showComments

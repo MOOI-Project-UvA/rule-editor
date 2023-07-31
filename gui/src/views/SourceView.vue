@@ -6,11 +6,8 @@
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
-          <q-icon
-            name="mdi-information-outline"
-            class="cursor-pointer"
-          ></q-icon>
-          <q-tooltip>
+          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
+          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you can select legal sources from the repository.
               After selection, a legal source is reconstructed and you are able
@@ -38,25 +35,10 @@
     <div v-for="(sourceDocument, docIndex) in sourceDocuments">
       <q-card-section>
         <q-list bordered class="rounded-borders q-pa-md">
-          <q-expansion-item
-            v-model="expanded[docIndex]"
-            expand-icon-toggle
-            switch-toggle-side
-            expand-separator
-            icon="mdi-book-search-outline"
-            :caption="sourceDocument.title"
-            default-opened
-          >
-            <q-card
-              flat
-              square
-              class="q-ma-sm q-pa-sm"
-              style="max-height: 80vh"
-            >
-              <q-card-section
-                class="q-pt-none scrollable"
-                style="max-height: 70vh"
-              >
+          <q-expansion-item v-model="expanded[docIndex]" expand-icon-toggle switch-toggle-side expand-separator
+            icon="mdi-book-search-outline" :caption="sourceDocument.title" default-opened>
+            <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
+              <q-card-section class="q-pt-none scrollable" style="max-height: 70vh">
                 <TextElement :textPiece="sourceDocument" />
               </q-card-section>
             </q-card>
@@ -84,9 +66,13 @@ export default {
     },
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
-    },
+    }
   },
-  methods: {},
+  watch: {
+    sourceDocuments() {
+      console.log("sourceDocuments", this.sourceDocuments)
+    }
+  }
 };
 </script>
 

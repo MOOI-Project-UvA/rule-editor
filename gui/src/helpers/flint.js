@@ -1,249 +1,136 @@
-class Fact {
-  constructor() {
-    this._id = null //set when fact is saved
-    this._type = "fact"
-    this._label = ""
-    this._fact = "";
-    this._annotation = null;
-    this._booleanConstruct = null //optional subdivision of fact in smaller parts
-    this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
-    this._highlight = false
-    this._comments = []
-  }
-  get id() { return this._id }
-  set id(id) { this._id = id }
+import { Annotation } from '../model/annotation.js'
+import { BooleanConstruct } from '../model/booleanConstruct.js'
 
-  get annotation() { return this._annotation }
-  set annotation(annotation) { this._annotation = annotation }
+// class Fact {
+//   constructor() {
+//     this._id = null //set when fact is saved
+//     this._type = "fact"
+//     this._label = ""
+//     this._fact = "";
+//     this._annotation = null;
+//     this._booleanConstruct = null //optional subdivision of fact in smaller parts
+//     this._booleanConstructBeingEdited = null //needed to know where to put a frame, if the user clicks a frame in the framelist
+//     this._highlight = false
+//     this._comments = []
+//   }
+//   get id() { return this._id }
+//   set id(id) { this._id = id }
 
-  get type() { return this._type }
+//   get annotation() { return this._annotation }
+//   set annotation(annotation) { this._annotation = annotation }
 
-  get label() {
-    return this._label && this._label.length > 0
-      ? this._label
-      : this.fact.length > 15
-        ? this.fact.substring(0, 12) + "..."
-        : this.fact
-  }
-  set label(label) { this._label = label }
+//   get type() { return this._type }
 
-  get fact() { return this._fact.length > 0 ? this._fact : this._annotation.annotatedText }
-  set fact(fact) { this._fact = fact }
+//   get label() {
+//     return this._label && this._label.length > 0
+//       ? this._label
+//       : this.fact.length > 65
+//         ? this.fact.substring(0, 62) + "..."
+//         : this.fact
+//   }
+//   set label(label) { this._label = label }
 
-  get subClass() { //derived from annotation tag
-    return this._annotation.tag
-  }
+//   get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
+//   set fact(fact) { this._fact = fact }
 
-  get sources() {
-    return [this._annotation]
-  }
+//   get booleanConstruct() { return this._booleanConstruct }
+//   set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
 
-  get booleanConstruct() { return this._booleanConstruct }
-  set booleanConstruct(booleanConstruct) { this._booleanConstruct = booleanConstruct }
+//   //keep track of which (part of the) boolean construct the user is editing.
+//   //when the user clicks a frame from the list, we know where to put that frame in
+//   //the boolean construct 
+//   set booleanConstructBeingEdited(booleanConstructBeingEdited) {
+//     this._booleanConstructBeingEdited = booleanConstructBeingEdited
+//   }
 
-  //keep track of which (part of the) boolean construct the user is editing.
-  //when the user clicks a frame from the list, we know where to put that frame in
-  //the boolean construct 
-  set booleanConstructBeingEdited(booleanConstructBeingEdited) {
-    this._booleanConstructBeingEdited = booleanConstructBeingEdited
-  }
+//   get comments() { return this._comments }
 
-  get comments() { return this._comments }
+//   // called when the user clicked a frame in the frame list
+//   addFrame(frame) {
+//     if (this._booleanConstructBeingEdited) {
+//       this._booleanConstructBeingEdited.frame = frame
+//     }
+//   }
 
-  // called when the user clicked a frame in the frame list
-  addFrame(frame) {
-    if (this._booleanConstructBeingEdited) {
-      this._booleanConstructBeingEdited.frame = frame
-    }
-  }
+//   toFlatObject() {
+//     return {
+//       id: this._id,
+//       type: this._type,
+//       label: this._label,
+//       fact: this._fact,
+//       annotation: this._annotation?.toFlatObject(),
+//       booleanConstruct: this._booleanConstruct?.toFlatObject(),
+//       comments: this._comments
+//     }
+//   }
 
-  toFlatObject() {
-    return {
-      id: this._id,
-      type: this._type,
-      label: this._label,
-      fact: this._fact,
-      annotation: this._annotation?.toFlatObject(),
-      booleanConstruct: this._booleanConstruct?.toFlatObject(),
-      comments: this._comments
-    }
-  }
+//   //fills frame object with data from json frameData
+//   //in flat data, frames in boolean construct are referenced by ID
+//   //we need allFrames to convert those IDs to object references
+//   fromFlatObject(frameData, allFrames) {
+//     this._type = frameData.type
+//     this._label = frameData.label
+//     this._fact = frameData.fact
 
-  //fills frame object with data from json frameData
-  //in flat data, frames in boolean construct are referenced by ID
-  //we need allFrames to convert those IDs to object references
-  fromFlatObject(frameData, allFrames) {
-    this._type = frameData.type
-    this._label = frameData.label
-    this._fact = frameData.fact
+//     this._annotation = new Annotation(
+//       frameData.annotation.documentId,
+//       frameData.annotation.sentenceId,
+//       frameData.annotation.characterRange,
+//       frameData.annotation.annotatedText
+//     )
+//     this._annotation.tag = frameData.annotation.tag
 
-    this._annotation = new Annotation(
-      frameData.annotation.documentId,
-      frameData.annotation.sentenceId,
-      frameData.annotation.characterRange,
-      frameData.annotation.annotatedText
-    )
-    this._annotation.tag = frameData.annotation.tag
+//     if ('booleanConstruct' in frameData) {
+//       this._booleanConstruct = new BooleanConstruct()
+//       this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
+//     }
 
-    if ('booleanConstruct' in frameData) {
-      this._booleanConstruct = new BooleanConstruct()
-      this._booleanConstruct.fromFlatObject(frameData.booleanConstruct, allFrames)
-    }
+//     this._comments = frameData.comments
 
-    this._comments = frameData.comments
+//   }
 
-  }
+//   checkFrameExistance(element) {
+//     const exist = []
+//     if (this._booleanConstruct.children.length > 0) {
+//       this.checkChildren(this._booleanConstruct, element, exist)
+//     }
 
-  checkFrameExistance(element) {
-    const exist = []
-    if (this._booleanConstruct.children.length > 0) {
-      this.checkChildren(this._booleanConstruct, element, exist)
-    }
+//     if (exist.some((d) => d)) {
+//       this._highlight = false
+//     } else {
+//       this._highlight = true
+//     }
+//     return exist.some((d) => d)
+//   }
 
-    if (exist.some((d) => d)) {
-      this._highlight = false
-    } else {
-      this._highlight = true
-    }
-    return exist.some((d) => d)
-  }
-
-  checkChildren(pBc, element, exist) {
-    pBc.children.forEach(bc => {
-      if (bc._frame !== null) {
-        bc._frame._id === element._id ? exist.push(true) : exist.push(false);
-      } else {
-        this.checkChildren(bc, element, exist)
-      }
-    })
-  }
-  getChildren(pBc, listOfChildren) {
-    pBc.children.forEach(bc => {
-      if (bc._frame !== null) {
-        listOfChildren.push(bc._frame)
-      } else {
-        this.getChildren(bc, listOfChildren)
-      }
-    })
-    return listOfChildren.filter(d => d).map(d => d._id)
-  }
-  get retrieveChildrenIds() {
-    const listOfChildren = []
-    return this.getChildren(this._booleanConstruct, listOfChildren)
-  }
-}
-
-class BooleanConstruct {
-  constructor() {
-    this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
-    this._isNegated = false
-    this._children = [] // list of BooleanConstructs if _frame is null
-    this._operatorToJoinChildren = null //"and" or "or"
-    this._parent = null
-    this._highlight = false
-  }
-
-  get isNegated() { return this._isNegated }
-  set isNegated(isNegated) { this._isNegated = isNegated }
-
-  get operatorToJoinChildren() { return this._operatorToJoinChildren }
-  set operatorToJoinChildren(operator) { this._operatorToJoinChildren = operator }
-
-  get children() { return this._children }
-
-  get parent() { return this._parent }
-  set parent(parent) { this._parent = parent }
-
-  get level() { return this._parent ? this._parent.level + 1 : 0 }
-
-
-  addChild(child) {
-    this._children.push(child)
-  }
-
-  addEmptyChild() {
-    let child = new BooleanConstruct()
-    this._children.push(child)
-    child.parent = this
-  }
-
-  removeChild(child) {
-    const index = this._children.indexOf(child)
-    if (index != -1) {
-      this._children.splice(index, 1)
-    }
-  }
-
-  addParent() {
-    let newParent = new BooleanConstruct()
-    const oldParent = this.parent
-    //replace child of existing parent by new parent
-    if (this.parent) {
-      const index = this.parent.children.indexOf(this)
-      oldParent.children[index] = newParent
-      newParent.parent = oldParent
-    }
-    newParent.addChild(this)
-    this.parent = newParent
-  }
-
-  get frame() { return this._frame }
-  set frame(frame) { this._frame = frame }
-
-  get isNegated() { return this._isNegated }
-  set isNegated(isNegated) { this._isNegated = isNegated }
-
-  removeFrame(frame) {
-    if (this._frame == frame) {
-      this._frame = null
-      //remove itself from the children of the parent, unless
-      //the parent is the top of the tree, and this is its last child
-      if (this._parent) {
-        if (this._parent.parent || this._parent.children.length > 1) {
-          const childIndex = this._parent.children.indexOf(this)
-          this._parent.children.splice(childIndex, 1)
-        }
-        if (this._parent.children.length <= 1) {
-          this._parent.operatorToJoinChildren = null
-        }
-      }
-    } else {
-      this._children.forEach(c => {
-        c.removeFrame(frame)
-      })
-    }
-  }
-
-  //returns object with references to other frames by id
-  toFlatObject() {
-    return {
-      frame: this.frame?.id,
-      isNegated: this.isNegated,
-      children: this._children
-        .filter(c => c.frame || c.children.length > 0)
-        .map(c => c.toFlatObject()),
-      operatorToJoinChildren: this._operatorToJoinChildren
-    }
-  }
-
-  //populate the attributes of this object with the given data
-  fromFlatObject(bcData, allFrames) {
-    this._frame = bcData.frame ? allFrames.find(f => f.id == bcData.frame) : null
-    this._isNegated = bcData.isNegated
-    this._operatorToJoinChildren = bcData.operatorToJoinChildren
-    this._children = bcData.children.map(cData => {
-      let child = new BooleanConstruct()
-      //populate child with data
-      child.fromFlatObject(cData, allFrames)
-      child._parent = this
-      return child
-    })
-  }
-}
+//   checkChildren(pBc, element, exist) {
+//     pBc.children.forEach(bc => {
+//       if (bc._frame !== null) {
+//         bc._frame._id === element._id ? exist.push(true) : exist.push(false);
+//       } else {
+//         this.checkChildren(bc, element, exist)
+//       }
+//     })
+//   }
+//   getChildren(pBc, listOfChildren) {
+//     pBc.children.forEach(bc => {
+//       if (bc._frame !== null) {
+//         listOfChildren.push(bc._frame)
+//       } else {
+//         this.getChildren(bc, listOfChildren)
+//       }
+//     })
+//     return listOfChildren.filter(d => d).map(d => d._id)
+//   }
+//   get retrieveChildrenIds() {
+//     const listOfChildren = []
+//     return this.getChildren(this._booleanConstruct, listOfChildren)
+//   }
+// }
 
 class Act {
   constructor() {
-    this._type = "act"
+    this._type = null
     this._label = ""
     this._act = ""
     this._activeField = "action"
@@ -255,19 +142,20 @@ class Act {
     this._creates = []
     this._terminates = []
     this._id = null //set when fact is saved
-    this._highlight = false,
-      this._comments = []
+    this._highlight = false
+    this._comments = []
   }
   get id() { return this._id }
   set id(id) { this._id = id }
 
   get type() { return this._type }
+  set type(type) { this._type = type }
 
   get label() {
     return this._label && this._label.length > 0
       ? this._label
-      : this.act.length > 15
-        ? this.act.substring(0, 12) + "..."
+      : this.act.length > 65
+        ? this.act.substring(0, 62) + "..."
         : this.act
   }
   set label(label) { this._label = label }
@@ -302,25 +190,25 @@ class Act {
   get allowedSubClassesForActiveField() {
     switch (this._activeField) {
       case 'action':
-        return ['action', 'conditions']
+        return ['action']
         break
       case 'actor':
-        return ['agent', 'conditions']
+        return ['agent']
         break
       case 'object':
-        return ['object', 'conditions']
+        return ['object']
         break
       case 'recipient':
-        return ['agent', 'conditions']
+        return ['agent']
         break
       case 'precondition':
-        return ['agent', 'action', 'object', 'conditions']
+        return ['agent', 'action', 'object']
         break
       case 'creates':
-        return ['agent', 'action', 'object', 'conditions']
+        return ['agent', 'action', 'object']
         break
       case 'terminates':
-        return ['agent', 'action', 'object', 'conditions']
+        return ['agent', 'action', 'object']
         break;
     }
   }
@@ -457,48 +345,11 @@ class Act {
   }
 }
 
-class Annotation {
-  constructor(documentId, sentenceId, characterRange, annotatedText) {
-    this._documentId = documentId
-    this._sentenceId = sentenceId
-    this._characterRange = characterRange
-    this._annotatedText = annotatedText
-    this._tag = null
-    this._positionOnScreen = null
-  }
-  get documentId() { return this._documentId }
-  get sentenceId() { return this._sentenceId }
-
-  get annotatedText() { return this._annotatedText }
-  set annotatedText(annotatedText) { this._annotatedText = annotatedText }
-
-  get characterRange() { return this._characterRange }
-  set characterRange(characterRange) { this._characterRange = characterRange }
-
-  get positionOnScreen() { return this._positionOnScreen }
-  set positionOnScreen(positionOnScreen) { this._positionOnScreen = positionOnScreen }
-
-  get tag() { return this._tag }
-  set tag(tag) { this._tag = tag }
-
-
-
-  //returns flat object, with references to other objects by ID
-  toFlatObject() {
-    return {
-      documentId: this._documentId,
-      sentenceId: this._sentenceId,
-      characterRange: this._characterRange,
-      annotatedText: this._annotatedText,
-      tag: this._tag
-    }
-  }
+class ClaimDuty {
+  constructor() { }
 }
 
-
 export {
-  Fact,
   Act,
-  Annotation,
-  BooleanConstruct
+  ClaimDuty
 }

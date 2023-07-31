@@ -3,12 +3,12 @@
     <!-- card title section -->
     <q-item>
       <q-item-section>
-        <q-item-label>Interpretation view</q-item-label>
+        <q-item-label>Frames <span v-if="message">({{ message }})</span></q-item-label>
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
           <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
-          <q-tooltip>
+          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you can see the annotations made in the source view.
               The annotations are facts and are grouped by type. By clicking on
@@ -22,89 +22,21 @@
     <!-- main content of the card  -->
     <q-item>
       <div id="frame-chip-container">
-        <div id="status">{{ message }}</div>
-        <div id="fact-container">
-          <div id="agent-container" class="chip-container">
-            <div><b>Agents</b></div>
-            <div class="message" v-if="agents.length === 0">No available agents</div>
-            <div class="chips">
-              <div v-for="frame in agents" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="allowedSubTypes &&
-                  frame.type === 'fact' &&
-                  !allowedSubTypes.includes(frame.subClass)
-                  " :removable="message === 'Click to edit'" functionality="chip-container" />
-              </div>
-            </div>
-          </div>
-
-          <div id="action-container" class="chip-container">
-            <div><b>Actions</b></div>
-            <div class="message" v-if="actions.length === 0">No available actions</div>
-            <div class="chips">
-              <div v-for="frame in actions" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="allowedSubTypes &&
-                  frame.type === 'fact' &&
-                  !allowedSubTypes.includes(frame.subClass)
-                  " :removable="message === 'Click to edit'" functionality="chip-container" />
-              </div>
-            </div>
-          </div>
-
-          <div id="object-container" class="chip-container">
-            <div><b>Objects</b></div>
-            <div class="message" v-if="objects.length === 0">No available objects</div>
-            <div v-for="frame in objects" @click="onClick(frame)">
+        <template v-for="frameClass in ['fact', 'relation']">
+          <div class="class-label">{{ frameClass }}</div>
+          <div class="fact-container" v-for="frameType in frameTypes.filter(t => t.class == frameClass)">
+            <div class="chip-container">
+              <div><b>{{ frameType.label }}</b></div>
               <div class="chips">
-                <FrameChip :frame="frame"
-                  :disable="allowedSubTypes && frame.type === 'fact' && !allowedSubTypes.includes(frame.subClass)"
-                  :removable="message === 'Click to edit'" functionality="chip-container" />
+                <div v-for="frame in frames.filter(f => f.type.id == frameType.id)" @click="onClick(frame)">
+                  <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
+                    && !allowedSubTypes.includes(frameType.id)" :removable="message === 'Click to edit'"
+                    functionality="chip-container" />
+                </div>
               </div>
             </div>
           </div>
-          <div id="conditions-container" class="chip-container">
-            <div><b>Conditions</b></div>
-            <div class="message" v-if="conditions.length === 0">No available conditions</div>
-            <div class="chips">
-              <div v-for="frame in conditions" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="allowedSubTypes &&
-                  frame.type === 'fact' &&
-                  !allowedSubTypes.includes(frame.subClass)
-                  " :removable="message === 'Click to edit'" functionality="chip-container" />
-              </div>
-            </div>
-          </div>
-          <div id="act-container" class="chip-container">
-            <div><b>Acts</b></div>
-            <div class="message" v-if="acts.length === 0">No available acts</div>
-            <div class="chips">
-              <div v-for="frame in acts" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="allowedSubTypes &&
-                  frame.type === 'fact' &&
-                  !allowedSubTypes.includes(frame.subClass)
-                  " :removable="message === 'Click to edit'" functionality="chip-container" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!--        <div id="complexFact-container">-->
-        <!--          <div v-for="frame in complexFacts" @click="onClick(frame)">-->
-
-
-        <!--            <FrameChip-->
-        <!--              :frame="frame"-->
-        <!--              :disable="-->
-        <!--                allowedSubTypes &&-->
-        <!--                frame.type === 'fact' &&-->
-        <!--                !allowedSubTypes.includes(frame.subClass)-->
-        <!--              "-->
-        <!--              :removable="message === 'Click to edit'"-->
-        <!--              functionality="chip-container"-->
-        <!--            />-->
-
-        <!--          </div>-->
-        <!--        </div>-->
-
+        </template>
       </div>
     </q-item>
 
@@ -113,42 +45,31 @@
 
 <script>
 import FrameChip from "../components/FrameChip.vue";
+import { frameTypes } from "../model/frame";
 
 export default {
+  data: () => ({
+    frameTypes: frameTypes
+  }),
   computed: {
     frames() {
       return this.$store.state.frames;
     },
-    agents() {
-      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'agent')
-    },
-    actions() {
-      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'action')
-    },
-    objects() {
-      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'object')
-    },
-    conditions() {
-      return this.$store.state.frames.filter(d => d._type === 'fact' && d._annotation._tag === 'conditions')
-    },
-    complexFacts() {
-      return this.$store.state.frames.filter(d => d._type === 'complexFact')
-    },
-    acts() {
-      return this.$store.state.frames.filter(d => d._type === 'act')
-    },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
     },
+    annotationBeingEdited() {
+      return this.$store.state.annotationBeingEdited
+    },
     allowedSubTypes() {
-      console.log("frameBeingEdited", this.$store.state.frameBeingEdited);
+      console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        this.$store.state.frameBeingEdited.type != "fact"
-        ? this.$store.state.frameBeingEdited.allowedSubClassesForActiveField
-        : false;
+        this.frameBeingEdited.type.class == 'relation'
+        ? this.frameBeingEdited.allowedSubClassesForActiveField
+        : [];
     },
     message() {
-      return this.frameBeingEdited && this.frameBeingEdited.type !== 'fact'
+      return this.frameBeingEdited && ['act', 'claim_duty'].includes(this.frameBeingEdited)
         ? "Add to frame"
         : this.frames.length > 0 ? "Click to edit" : ""
     }
@@ -161,9 +82,14 @@ export default {
     onClick(frame) {
       console.log("clicked frame", frame)
       console.log("this.frameBeingEdited", this.frameBeingEdited);
-      //add frame to field in frame being edited
-      if (this.frameBeingEdited) {
-        // it adds a chip into a form to the FrameEditorView
+      console.log("this.annotationBeingEdited", this.annotationBeingEdited);
+
+      if (this.annotationBeingEdited && this.annotationBeingEdited.addingToExistingFrame) {
+        frame.addAnnotation(this.annotationBeingEdited)
+        this.annotationBeingEdited.addingToExistingFrame = false
+        this.$store.state.annotationBeingEdited = null
+      } else if (this.frameBeingEdited) {
+        //add frame to field in frame being edited
         console.log("adding frame to", this.frameBeingEdited)
         this.frameBeingEdited.addFrame(frame);
       } else {
@@ -181,8 +107,8 @@ export default {
   min-height: 25px;
 }
 
+
 #frame-chip-container {
-  /*height: calc(100vh - 180px);*/
   margin: 10px 0px;
   display: flex;
   flex-direction: column;
@@ -190,67 +116,25 @@ export default {
 
 }
 
-#fact-container {
-  /*height: calc(100vh - 180px);*/
+.class-label {
+  text-transform: uppercase;
+}
+
+.fact-container {
   margin: 10px 0px;
   display: flex;
-  /*flex-direction: row;*/
-  /*flex-wrap: wrap;*/
-  /*justify-content: space-between;*/
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
 
-/*#chip-container {*/
-/*  display: flex;*/
-/*}*/
-/*#fact-container{*/
-/*  !*min-width: 200px;*!*/
-/*  !*width:100%;*!*/
-/*  !*min-height: 100px;*!*/
-/*}*/
 
-/*#agent-container{*/
-/*  !*min-width: 200px;*!*/
-/*  min-height: 100px;*/
-/*}*/
-
-/*#action-container{*/
-/*  !*min-width: 200px;*!*/
-/*  !*display:flex;*!*/
-/*  !*flex-direction: row;*!*/
-/*  !*flex-wrap: wrap;*!*/
-/*  min-height: 100px;*/
-/*}*/
-/*#act-container{*/
-/*  !*min-width: 200px;*!*/
-/*  !*display:flex;*!*/
-/*  !*flex-direction: row;*!*/
-/*  !*flex-wrap: wrap;*!*/
-/*  min-height: 100px;*/
-/*}*/
-/*#object-container{*/
-/*  !*min-width: 200px;*!*/
-/*  !*display:flex;*!*/
-/*  !*flex-direction: row;*!*/
-/*  !*flex-wrap: wrap;*!*/
-/*  min-height: 100px;*/
-/*}*/
-/*#context-container{*/
-/*  !*min-width: 200px;*!*/
-/*  !*display:flex;*!*/
-/*  !*flex-direction: row;*!*/
-/*  !*flex-wrap: wrap;*!*/
-/*  min-height: 100px;*/
-/*}*/
 
 .chip-container {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   align-content: flex-start;
-  min-height: 120px !important;
 }
 
 .chips {
@@ -261,13 +145,7 @@ export default {
 
 }
 
-/*.chip-container{*/
-/*  min-width: 200px;*/
-/*  min-height: 100px;*/
 
-/*  !*margin-right: 5px;*!*/
-/*  !*overflow-y: auto;*!*/
-/*}*/
 .message {
   font-size: 9pt;
   color: #333333;
