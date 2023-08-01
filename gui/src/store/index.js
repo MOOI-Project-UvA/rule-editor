@@ -4,9 +4,13 @@ import { Act, ClaimDuty } from "../helpers/flint.js"
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
-import { json } from 'd3-fetch'
+import { json, text } from 'd3-fetch'
 import { addParentReferencesToDocument, getSentencesInDocument } from "../helpers/document.js"
 import { v4 as uuid4 } from 'uuid'
+import {rdfConfig, jsonld2turtle, parseInterpretation, reconstructTextFromRdf} from "../helpers/ontologyServices.js";
+import * as rdf from "rdflib"
+// import { parseInterpretation } from "../helpers/ontologyServices.js";
+
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -25,12 +29,16 @@ const store = createStore({
       // },
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
-      availableSources: [] //list of sources that the user can choose from
+      availableSources: [], //list of sources that the user can choose from
+      rdfStore: rdf.graph(),
+      docUri: "http://ontology.tno.nl/normengineering/choppr",
+      jsonString: ""
     };
   },
   getters: {
     getFileContent: (state) => state.fileContent,
     reconstructedData: (state) => state.reconstructedData,
+    rdfStore: (state)=> state.rdfStore
   },
   mutations: {
     addFrame(state, frame) {
@@ -225,20 +233,63 @@ const store = createStore({
     },
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
-    addSource(context, sourceId) {
+    async addSource(context, sourceId) {
       // console.log("addSource", sourceId)
       const source = this.state.availableSources.find(s => s.id == sourceId)
-      // console.log("reading", source.fileName)
-      json(source.fileName).then(data => {
-        const document = data['@graph'].find(d => 'document' in d).document
+      console.log("source", source)
+      console.log("context.state: ", context.state.rdfStore)
+      await json(source.fileName).then(data=>{
+
+        console.log("data", data)
+        context.state.jsonString = JSON.stringify(data)
+         // console.log("string", context.state.jsonString)
+         const document = data['@graph'].find(d => 'document' in d).document
         document.title = source.title
+        console.log("document", document)
         //add parent references to each part of the document
         addParentReferencesToDocument(document)
-        //add attribute to each sentence to store annotations
+        console.log("afterAddParentRefs", document)
+        // add attribute to each sentence to store annotations
         getSentencesInDocument(document).forEach(s => s['annotations'] = [])
-        context.state.sourceDocuments = [...context.state.sourceDocuments, document]
-        // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
+
+
       })
+      console.log("after:", context.state.jsonString)
+       // await rdf.parse(context.state.jsonString, context.state.rdfStore, context.state.docUri, "application/ld+json")
+      const resp = await parseInterpretation(context.state.jsonString,context.state.rdfStore, context.state.docUri)
+      // rdf.parse(context.state.jsonString, context.state.rdfStore, context.state.docUri, "application/ld+json")
+      console.log("resp", resp)
+      console.log("statements: ", context.state.rdfStore.statementsMatching(null,null,null).length)
+      const docObject = context.state.rdfStore.statementsMatching(null, rdfConfig.namespaces.RDF('type'), rdfConfig.namespaces.SRC('Document') )
+      console.log("docObject", docObject)
+      reconstructTextFromRdf(docObject[0].subject,context.state.rdfStore)
+      context.state.sourceDocuments = [...context.state.sourceDocuments, document]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // const document = data['@graph'].find(d => 'document' in d).document
+        // document.title = source.title
+        // console.log("document", document)
+        // //add parent references to each part of the document
+        // addParentReferencesToDocument(document)
+        // console.log("afterAddParentRefs", document)
+        //add attribute to each sentence to store annotations
+        // getSentencesInDocument(document).forEach(s => s['annotations'] = [])
+        // context.state.sourceDocuments = [...context.state.sourceDocuments, document]
+        // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
+      // })
     },
     createAct(context) {
       console.log("create act frame");
