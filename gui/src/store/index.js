@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
-import { Act, ClaimDuty } from "../helpers/flint.js"
+import { Act } from "../model/act.js"
+import { ClaimDuty } from "../helpers/flint.js"
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -33,22 +34,19 @@ const store = createStore({
     reconstructedData: (state) => state.reconstructedData,
   },
   mutations: {
-    addFrame(state, frame) {
-      //add frame if it does not exist yet
-      if (!(state.frames.includes(frame))) {
-        //set unique id for this frame
-        frame["id"] = uuid4();
-        state.frames = [...state.frames, frame];
-      }
-    },
+    // addFrame(state, frame) {
+    //   //add frame if it does not exist yet
+    //   if (!(state.frames.includes(frame))) {
+    //     //set unique id for this frame
+    //     frame["id"] = uuid4();
+    //     state.frames = [...state.frames, frame];
+    //   }
+    // },
     addNewFrame(state, { frameType, annotation }) {
       let frame
       switch (frameType.class) {
         case 'fact':
           frame = new Fact()
-          if (annotation) {
-            frame.addAnnotation(annotation) //this also sets annotation.frame
-          }
           break;
         case 'relation':
           switch (frameType.id) {
@@ -60,6 +58,9 @@ const store = createStore({
               break;
           }
           break;
+      }
+      if (annotation) {
+        frame.addAnnotation(annotation) //this also sets annotation.frame
       }
       frame.type = frameType
       frame["id"] = uuid4();

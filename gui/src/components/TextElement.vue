@@ -5,7 +5,13 @@
         frame that is currently being edited
     -->
     <template v-if="!isLeafElement || !showFrameSource || frameBeingEditedHasAnnotationsInThisSentence">
-        <div class="text-chunk" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
+        <!-- show colored bar and textual content -->
+        <div class="text-chunk">
+            <div class="relation-bar" :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
+                @click="relationBarClicked" />
+            <div class="text-piece" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement">
+
+            </div>
         </div>
         <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
         </div> -->
@@ -51,14 +57,26 @@ export default {
             return this.$store.state.annotationBeingEdited
         },
         //snippets for this sentence, so we can color them to annotation type
+        //only snippets of annotations of fact frames
         snippets() {
             if (this.isSentence) {
-                //get each snippet together with its annotation
-                return this.annotations
+                //get each snippet of frame type fact. these will be highlighted in the sentence
+                return this.annotations.filter(a => a.frame && a.frame.type.class == 'fact')
                     .map(a => a.snippets
                         .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id))
-                    //.map(s => ({ annotation: a, snippet: s })))
                     .flat()
+            } else {
+                return []
+            }
+        },
+        relationAnnotationsForSentence() {
+            if (this.isSentence) {
+                //get each snippet of frame type fact. these will be highlighted in the sentence
+                return this.annotations.filter(a => (
+                    a.frame &&
+                    a.frame.type.class == 'relation' &&
+                    a.snippets.some(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id)
+                ))
             } else {
                 return []
             }
@@ -109,6 +127,10 @@ export default {
                     this.$store.commit("setAnnotationBeingEdited", annotation)
                 }
             }
+        },
+        relationBarClicked() {
+            console.log("relationBarClicked", this.annotations)
+            this.$store.commit("setAnnotationBeingEdited", this.relationAnnotationsForSentence[0])
         }
     },
     watch: {
@@ -127,9 +149,6 @@ export default {
                     }
                 }
             })
-        },
-        hoveredSnippetId() {
-            console.log(this.hoveredSnippetId)
         }
     }
 }
@@ -138,5 +157,25 @@ export default {
 <style lang="css" scoped>
 .text-chunk {
     margin: 10px 0px;
+    display: grid;
+    grid-template-columns: 10px auto;
+}
+
+.relation-bar {
+    width: 3px;
+    margin-right: 2px;
+    /* height: 100%; */
+    display: inline-block;
+    pointer-events: none;
+}
+
+.text-piece {
+    display: inline-block;
+}
+
+.has-relation {
+    background-color: #1976d2;
+    cursor: pointer;
+    pointer-events: all;
 }
 </style>

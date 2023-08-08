@@ -22,16 +22,16 @@
     <!-- main content of the card  -->
     <q-item>
       <div id="frame-chip-container">
-        <template v-for="frameClass in ['fact', 'relation']">
+        <template v-for="frameClass in  ['fact', 'relation'] ">
           <div class="class-label">{{ frameClass }}</div>
-          <div class="fact-container" v-for="frameType in frameTypes.filter(t => t.class == frameClass)">
+          <div class="fact-container" v-for="frameType in  frameTypes.filter(t => t.class == frameClass) ">
             <div class="chip-container">
               <div><b>{{ frameType.label }}</b></div>
               <div class="chips">
-                <div v-for="frame in frames.filter(f => f.type.id == frameType.id)" @click="onClick(frame)">
+                <div v-for="frame in  frames.filter(f => f.type.id == frameType.id) " @click="onClick(frame)">
                   <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
-                    && !allowedSubTypes.includes(frameType.id)" :removable="message === 'Click to edit'"
-                    functionality="chip-container" />
+                    && frameBeingEdited.activeField && !allowedSubTypes.includes(frameType.id)"
+                    :removable="message === 'Click to edit'" functionality="chip-container" />
                 </div>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default {
         frame.addAnnotation(this.annotationBeingEdited)
         this.annotationBeingEdited.addingToExistingFrame = false
         this.$store.state.annotationBeingEdited = null
-      } else if (this.frameBeingEdited) {
+      } else if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation') {
         //add frame to field in frame being edited
         console.log("adding frame to", this.frameBeingEdited)
         this.frameBeingEdited.addFrame(frame);

@@ -1,16 +1,18 @@
 <template>
   <q-card flat bordered v-if="frame">
-    <!--test2 -->
 
     <q-card-section>
       <div class="float-right"><q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
           @click="toggleComments"></q-btn></div>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
-
+      <q-input v-model="frame.act" label="Act" autogrow />
+    </q-card-section>
+    <q-card-section>
+      <div class="source-text">{{ frame.sourceText }}</div>
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
       <div>
-        <q-input v-model="frame.act" label="Act" />
+
         <FactInputField label="Action" :active="frame.activeField === 'action'"
           :facts="frame.action ? [frame.action] : []" @factRemoveClicked="frame.action = null"
           @click="frame.activeField = 'action'" />
@@ -22,9 +24,10 @@
         <FactInputField label="Recipient" :active="frame.activeField === 'recipient'"
           :facts="frame.recipient ? [frame.recipient] : []" @factRemoveClicked="frame.recipient = null"
           @click="frame.activeField = 'recipient'" />
+        <div class="label">Precondition</div>
         <FactInputField label="Precondition" :active="frame.activeField === 'precondition'"
-          :facts="frame.precondition ? [frame.precondition] : []" @factRemoveClicked="frame.precondition = null"
           @click="frame.activeField = 'precondition'" />
+        <BooleanConstructPanel :booleanConstruct="frame.precondition" />
         <div class="label">Postcondition</div>
         <div class="indent">
           <FactInputField label="Creates" :active="frame.activeField === 'creates'" :facts="frame.creates"
@@ -47,7 +50,7 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-toggle label="Show source" color="primary" v-model="showSource" />
+      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary" />
     </q-card-section>
     <q-card-actions>
       <q-btn color="primary" @click="closeForm">Close</q-btn>
@@ -59,6 +62,8 @@
 <script>
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
+import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+
 export default {
   emits: ["closed"],
   data: () => ({
@@ -79,10 +84,13 @@ export default {
     },
     toggleComments() {
       this.showComments = !this.showComments
-    }
+    },
+    toggleShowSource() {
+      this.$store.commit("setShowFrameSource", this.showSource)
+    },
   },
   components: {
-    FactInputField, CommentsList
+    FactInputField, CommentsList, BooleanConstructPanel
   },
 };
 </script>
@@ -94,5 +102,9 @@ export default {
 
 .indent {
   margin-left: 30px;
+}
+
+.source-text {
+  font-style: italic;
 }
 </style>

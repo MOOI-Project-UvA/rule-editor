@@ -23,10 +23,17 @@
                         <div class="label">Change type of fact frame</div>
                     </template>
                     <template v-else>
-                        <div class="label">Create new fact frame</div>
+                        <div class="label">Create new frame</div>
                     </template>
+                    <div class="label bold">Fact</div>
                     <q-btn-group>
                         <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" :label="frameType.label"
+                            :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
+                            @click="frameTypeButtonClicked(frameType)" />
+                    </q-btn-group>
+                    <div class="label bold">Relation</div>
+                    <q-btn-group>
+                        <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'relation')" :label="frameType.label"
                             :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
                             @click="frameTypeButtonClicked(frameType)" />
                     </q-btn-group>
@@ -37,7 +44,8 @@
                         <q-btn @click="removeAnnotation" color="negative">Remove annotation</q-btn>
                     </template>
                     <template v-else>
-                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary">
+                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
+                            :disabled="frames.length == 0">
                             Add to existing fact
                         </q-btn>
                     </template>
@@ -62,6 +70,9 @@ export default {
     computed: {
         annotation() {
             return this.$store.state.annotationBeingEdited
+        },
+        frames() {
+            return this.$store.state.frames
         }
     },
     methods: {
@@ -73,7 +84,7 @@ export default {
                 //this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
             } else {
                 //there is a frame attached to this, change it type according to the selected type
-                this.annotation.frame.type = frameType.id
+                this.annotation.frame.type = frameType
             }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
@@ -107,5 +118,9 @@ export default {
 
 .label {
     margin-right: 10px;
+}
+
+.label.bold {
+    font-weight: bold;
 }
 </style>
