@@ -5,26 +5,40 @@
       <div class="float-right"><q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
           @click="toggleComments"></q-btn></div>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
-
+      <q-input v-model="frame.act" label="Act" autogrow />
+    </q-card-section>
+    <q-card-section>
+      <template v-if="frame.sourceText.trim().length > 0">
+        <div class="source-text">{{ frame.sourceText }}</div>
+      </template>
+      <template v-else>
+        <div class="source-text">No source added yet</div>
+      </template>
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
       <div>
-        <q-input v-model="frame.act" label="Act" />
+
         <FactInputField label="Action" :active="frame.activeField === 'action'"
           :facts="frame.action ? [frame.action] : []" @factRemoveClicked="frame.action = null"
-          @click="frame.activeField = 'action'" />
+          @click="frame.activeField = frame.activeField == 'action' ? null : 'action'" />
+
         <FactInputField label="Actor" :active="frame.activeField === 'actor'" :facts="frame.actor ? [frame.actor] : []"
-          @factRemoveClicked="frame.actor = null" @click="frame.activeField = 'actor'" />
+          @factRemoveClicked="frame.actor = null"
+          @click="frame.activeField = frame.activeField == 'actor' ? null : 'actor'" />
+
         <FactInputField label="Object" :active="frame.activeField === 'object'"
           :facts="frame.object ? [frame.object] : []" @factRemoveClicked="frame.object = null"
-          @click="frame.activeField = 'object'" />
+          @click="frame.activeField = frame.activeField == 'object' ? null : 'object'" />
+
         <FactInputField label="Recipient" :active="frame.activeField === 'recipient'"
           :facts="frame.recipient ? [frame.recipient] : []" @factRemoveClicked="frame.recipient = null"
-          @click="frame.activeField = 'recipient'" />
-        <FactInputField label="Precondition" :active="frame.activeField === 'precondition'"
-          :facts="frame.precondition ? [frame.precondition] : []" @factRemoveClicked="frame.precondition = null"
-          @click="frame.activeField = 'precondition'" />
+          @click="frame.activeField = frame.activeField == 'recipient' ? null : 'recipient'" />
+
+        <div class="label">Precondition</div>
+        <BooleanConstructPanel :booleanConstruct="frame.precondition" />
+
         <div class="label">Postcondition</div>
+
         <div class="indent">
           <FactInputField label="Creates" :active="frame.activeField === 'creates'" :facts="frame.creates"
             @factRemoveClicked="(fact) => {
@@ -33,7 +47,8 @@
                 frame.creates.splice(index, 1);
               }
             }
-              " @click="frame.activeField = 'creates'" />
+              " @click="frame.activeField = frame.activeField == 'creates' ? null : 'creates'" />
+
           <FactInputField label="Terminates" :active="frame.activeField === 'terminates'" :facts="frame.terminates"
             @factRemoveClicked="(fact) => {
               const index = frame.terminates.indexOf(fact);
@@ -41,16 +56,16 @@
                 frame.terminates.splice(index, 1);
               }
             }
-              " @click="frame.activeField = 'terminates'" />
+              " @click="frame.activeField = frame.activeField == 'terminates' ? null : 'terminates'" />
         </div>
       </div>
     </q-card-section>
     <q-card-section>
-      <q-toggle label="Show sources" color="primary" v-model="showSource" />
+      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
+        :disable="frame.sourceText.length == 0" />
     </q-card-section>
     <q-card-actions>
-      <q-btn flat @click="cancelClicked">Cancel</q-btn>
-      <q-btn color="primary" @click="saveClicked">Save</q-btn>
+      <q-btn color="primary" @click="closeForm">Close</q-btn>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -59,6 +74,8 @@
 <script>
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
+import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+
 export default {
   emits: ["closed"],
   data: () => ({
@@ -74,21 +91,18 @@ export default {
     // }
   },
   methods: {
-    cancelClicked() {
-      this.$emit("closed");
-    },
-    saveClicked() {
-
-      //store frame if it is a new frame
-      this.$store.commit("addFrame", this.frame);
-      this.$emit("closed");
+    closeForm() {
+      this.$store.state.frameBeingEdited = null;
     },
     toggleComments() {
       this.showComments = !this.showComments
-    }
+    },
+    toggleShowSource() {
+      this.$store.commit("setShowFrameSource", this.showSource)
+    },
   },
   components: {
-    FactInputField, CommentsList
+    FactInputField, CommentsList, BooleanConstructPanel
   },
 };
 </script>
@@ -100,5 +114,9 @@ export default {
 
 .indent {
   margin-left: 30px;
+}
+
+.source-text {
+  font-style: italic;
 }
 </style>

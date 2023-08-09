@@ -1,4 +1,6 @@
-import { Fact, Act } from './flint.js'
+import { ClaimDuty } from './flint.js'
+import { Fact } from '../model/fact.js'
+import { Act } from "../model/act.js"
 import { store } from "../store/index.js"
 
 function parseJsonToFrames(jsonText) {
@@ -24,11 +26,7 @@ function parseJsonToFrames(jsonText) {
     //fill with data and replace references by ID with reference to object
     frameData.forEach(d => {
         let frame = frames.find(f => f.id === d.id)
-        console.log("frame found: ", frame)
-        console.log("frame type: ", frame.type)
-
         frame.fromFlatObject(d, frames)
-        console.log("done!")
     })
 
     //read source texts that are used by this interpretation

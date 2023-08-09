@@ -1,13 +1,14 @@
 <template>
   <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
-    <template v-if="frameBeingEdited.type === 'act'">
-      <ActFrameForm @closed="closeActiveFrame" />
+
+    <template v-if="frameBeingEdited.type.class == 'fact'">
+      <FactFrameForm />
     </template>
-    <template v-if="frameBeingEdited.type === 'fact'">
-      <FactFrameForm @closed="closeActiveFrame" />
+    <template v-else-if="frameBeingEdited.type.id == 'act'">
+      <ActFrameForm />
     </template>
-    <template v-if="frameBeingEdited.type === 'duty'">
-      <DutyFrameForm @closed="closeActiveFrame" />
+    <template v-else-if="frameBeingEdited.type.id == 'claim_duty'">
+      <DutyFrameForm />
     </template>
   </q-card>
 </template>
@@ -16,8 +17,6 @@
 import ActFrameForm from '../components/ActFrameForm.vue'
 import FactFrameForm from '../components/FactFrameForm.vue'
 import DutyFrameForm from '../components/DutyFrameForm.vue'
-import { icons, colors } from '../helpers/config.js'
-import { Fact, Annotation } from '../helpers/flint.js'
 
 export default {
   data: () => ({}),
@@ -27,26 +26,15 @@ export default {
     DutyFrameForm
   },
   computed: {
-    activeFrameData() {
-      return this.$store.state.activeFrameData;
-    },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
-    },
-  },
-  methods: {
-    startNewFrame(type) {
-      this.$store.dispatch("startNewFrame", type);
-    },
-    closeActiveFrame() {
-      this.$store.commit("setFrameBeingEdited", null);
     },
   },
 };
 </script>
 
 <style lang="css" scoped>
-#current-frame{
+#current-frame {
   width: 600px;
 }
 </style>
