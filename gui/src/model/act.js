@@ -219,10 +219,10 @@ class Act {
 
 //construct label [action] [object] [actor] [recipient]
 function constructActLabel(act) {
-    const actLabel = act.action ? act.action.label : ''
-    const objectLabel = act.object ? act.object.label : ''
-    const actorLabel = act.actor ? act.actor.label : ''
-    const recipientLabel = act.recipient ? act.recipient.label : ''
+    const actLabel = act.action ? act.action.label : '.'
+    const objectLabel = act.object ? act.object.label : '.'
+    const actorLabel = act.actor ? act.actor.label : '.'
+    const recipientLabel = act.recipient ? act.recipient.label : '.'
 
     return `${actLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
 }
