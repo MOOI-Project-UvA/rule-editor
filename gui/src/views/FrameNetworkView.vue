@@ -61,6 +61,9 @@ export default {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited
     },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited
+    },
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
@@ -88,10 +91,12 @@ export default {
         frame.addAnnotation(this.annotationBeingEdited)
         this.annotationBeingEdited.addingToExistingFrame = false
         this.$store.state.annotationBeingEdited = null
-      } else if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation') {
+      } else if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation' && this.frameBeingEdited.activeField) {
         //add frame to field in frame being edited
         console.log("adding frame to", this.frameBeingEdited)
         this.frameBeingEdited.addFrame(frame);
+      } else if (this.booleanConstructBeingEdited) {
+        this.booleanConstructBeingEdited.frame = frame
       } else {
         console.log("setting frame being edited")
         // it opens the frame form in the middle

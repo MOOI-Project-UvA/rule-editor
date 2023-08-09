@@ -16,14 +16,8 @@ const store = createStore({
       annotations: [],
       annotationMode: null,
       frameBeingEdited: null,
-      fieldBeingEdited: null,
+      booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
-      // fileContent: null, // the decomposed data will be stored to this one
-      // reconstructedData: {
-      //   label: "Example title",
-      //   docID: "Example docID",
-      //   text: "",
-      // },
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
       availableSources: [] //list of sources that the user can choose from
@@ -65,8 +59,15 @@ const store = createStore({
       frame.type = frameType
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
-      state.frameBeingEdited = frame
-      console.log("frameBeingEdited", frame)
+      //if a booleanconstruct is being edited, add the new frame to it
+      if (state.booleanConstructBeingEdited) {
+        state.booleanConstructBeingEdited.frame = frame
+        //if frame is being edited and is has an active field, add frame to that field
+      } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
+        state.frameBeingEdited.addFrame(frame)
+      } else {
+        state.frameBeingEdited = frame
+      }
     },
     // setAnnotationMode(state, selectedMode) {
     //   state.annotationMode = selectedMode;

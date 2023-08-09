@@ -46,23 +46,25 @@
                 </div>
             </div>
         </template>
-        <!-- show text input field if BC is empty -->
+        <!-- show button for adding frame if BC is empty and is a leaf node -->
         <template v-if="!booleanConstruct.frame && booleanConstruct.children.length == 0">
             <div>
-                <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent">Bring one level
-                    down</q-btn>
-                <q-input dense v-model="textSnippet" label="Enter source text or select existing frame" autogrow
-                    @focus="onFocus()" @blur="onBlur()" ref="textInputField">
-                </q-input>
+                <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent">
+                    Bring one level down
+                </q-btn>
+                <div>
+                    <q-btn class="button" round :color="isBeingEdited ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"
+                        @click="isBeingEdited = !isBeingEdited" />
+                    <div v-if="isBeingEdited" class="button-label">
+                        Select existing frame or select source and create new frame</div>
+                </div>
             </div>
         </template>
     </div>
 </template>
 
 <script>
-import { colors, icons } from "../helpers/config.js"
-import { Fact } from "../model/fact.js"
-import { Annotation } from "../model/annotation.js"
+
 import FrameChip from "./FrameChip.vue"
 export default {
     name: "booleanConstructPanel",
@@ -78,22 +80,20 @@ export default {
             { label: 'AND', value: 'and' },
             { label: 'OR', value: 'or' }
         ],
-        colors: colors,
-        icons: icons
+        isBeingEdited: false
     }),
     props: {
         booleanConstruct: Object
     },
     mounted() {
-        //set focus to text field so you can start typing (or select a frame) immediately
-        console.log("mounted, booleanConstruct", this.booleanConstruct)
-        if ('textInputField' in this.$refs) {
-            this.$refs.textInputField.focus();
-        }
+        this.isBeingEdited = this.booleanConstruct == this.booleanConstructBeingEdited
     },
     computed: {
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
         }
     },
     components: {
@@ -121,14 +121,21 @@ export default {
             this.booleanConstruct.operatorToJoinChildren = operator
             this.booleanConstruct.addEmptyChild()
         },
-        onFocus() {
-            this.frameBeingEdited.booleanConstructBeingEdited = this.booleanConstruct
-        },
-        onBlur() {
-            //this.frameBeingEdited.booleanContructBeingEdited = null
+        toggleSelection() {
+
         },
         removeChipFromContext() {
             this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
+        }
+    },
+    watch: {
+        isBeingEdited() {
+            if (this.isBeingEdited) {
+                this.$store.state.booleanConstructBeingEdited = this.booleanConstruct
+                this.frameBeingEdited.activeField = null
+            } else {
+                this.$store.state.booleanConstructBeingEdited = null
+            }
         }
     }
 }
@@ -143,5 +150,11 @@ export default {
 .operator-label {
     color: #007bc6;
     text-transform: uppercase;
+}
+
+.button-label {
+    display: inline-block;
+    font-style: italic;
+    margin-left: 5px;
 }
 </style>

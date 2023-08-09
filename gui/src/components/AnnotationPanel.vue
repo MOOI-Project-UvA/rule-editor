@@ -18,7 +18,7 @@
                 </q-card-section>
             </template>
             <template v-else>
-                <q-card-actions>
+                <q-card-section>
                     <template v-if="annotation.frame">
                         <div class="label">Change type of fact frame</div>
                     </template>
@@ -28,16 +28,16 @@
                     <div class="label bold">Fact</div>
                     <q-btn-group>
                         <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" :label="frameType.label"
-                            :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
+                            :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
                             @click="frameTypeButtonClicked(frameType)" />
                     </q-btn-group>
                     <div class="label bold">Relation</div>
                     <q-btn-group>
                         <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'relation')" :label="frameType.label"
-                            :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
+                            :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
                             @click="frameTypeButtonClicked(frameType)" />
                     </q-btn-group>
-                </q-card-actions>
+                </q-card-section>
                 <q-card-actions>
                     <div class="label">Or</div>
                     <template v-if="annotation.frame">
@@ -109,7 +109,7 @@ export default {
 <style lang="css" scoped>
 #annotationPanel {
     position: absolute;
-    width: 400px;
+    width: 440px;
 }
 
 .message {

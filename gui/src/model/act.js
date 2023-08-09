@@ -37,7 +37,11 @@ class Act {
     }
     set label(label) { this._label = label }
 
-    get act() { return this._act.length > 0 ? this._act : this.sourceText }
+    get act() {
+        return this._act.length > 0
+            ? this._act
+            : constructActLabel(this)
+    }
     set act(act) { this._act = act }
 
     get activeField() { return this._activeField }
@@ -88,8 +92,6 @@ class Act {
                 return ['object']
             case 'recipient':
                 return ['agent']
-            case 'precondition':
-                return ['agent', 'action', 'object', 'other']
             case 'creates':
                 return ['agent', 'action', 'object', 'other']
             case 'terminates':
@@ -112,9 +114,6 @@ class Act {
                 break
             case 'object':
                 this._object = fact
-                break
-            case 'precondition':
-                this._precondition = fact
                 break
             case 'recipient':
                 this._recipient = fact
@@ -216,6 +215,16 @@ class Act {
 
         return facts.filter(f => f).map(f => f._id)
     }
+}
+
+//construct label [action] [object] [actor] [recipient]
+function constructActLabel(act) {
+    const actLabel = act.action ? act.action.label : ''
+    const objectLabel = act.object ? act.object.label : ''
+    const actorLabel = act.actor ? act.actor.label : ''
+    const recipientLabel = act.recipient ? act.recipient.label : ''
+
+    return `${actLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
 }
 
 export {
