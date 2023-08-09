@@ -18,26 +18,34 @@
                 </q-card-section>
             </template>
             <template v-else>
-                <q-card-actions>
+                <q-card-section>
                     <template v-if="annotation.frame">
                         <div class="label">Change type of fact frame</div>
                     </template>
                     <template v-else>
-                        <div class="label">Create new fact frame</div>
+                        <div class="label">Create new frame</div>
                     </template>
+                    <div class="label bold">Fact</div>
                     <q-btn-group>
                         <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" :label="frameType.label"
-                            :color="(!annotation.frame || annotation.frame.type == frameType.id) ? colors[frameType.id] : 'grey-6'"
+                            :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
                             @click="frameTypeButtonClicked(frameType)" />
                     </q-btn-group>
-                </q-card-actions>
+                    <div class="label bold">Relation</div>
+                    <q-btn-group>
+                        <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'relation')" :label="frameType.label"
+                            :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
+                            @click="frameTypeButtonClicked(frameType)" />
+                    </q-btn-group>
+                </q-card-section>
                 <q-card-actions>
                     <div class="label">Or</div>
                     <template v-if="annotation.frame">
                         <q-btn @click="removeAnnotation" color="negative">Remove annotation</q-btn>
                     </template>
                     <template v-else>
-                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary">
+                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
+                            :disabled="frames.length == 0">
                             Add to existing fact
                         </q-btn>
                     </template>
@@ -62,6 +70,9 @@ export default {
     computed: {
         annotation() {
             return this.$store.state.annotationBeingEdited
+        },
+        frames() {
+            return this.$store.state.frames
         }
     },
     methods: {
@@ -70,10 +81,10 @@ export default {
                 //there is no frame attached to this.
                 //create new frame and add annotation to it
                 this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
-                //this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
+                this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
             } else {
                 //there is a frame attached to this, change it type according to the selected type
-                this.annotation.frame.type = frameType.id
+                this.annotation.frame.type = frameType
             }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
@@ -98,7 +109,7 @@ export default {
 <style lang="css" scoped>
 #annotationPanel {
     position: absolute;
-    width: 400px;
+    width: 440px;
 }
 
 .message {
@@ -107,5 +118,9 @@ export default {
 
 .label {
     margin-right: 10px;
+}
+
+.label.bold {
+    font-weight: bold;
 }
 </style>

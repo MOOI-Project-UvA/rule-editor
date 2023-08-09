@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
-import { Act, ClaimDuty } from "../helpers/flint.js"
+import { Act } from "../model/act.js"
+import { ClaimDuty } from "../helpers/flint.js"
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -15,14 +16,8 @@ const store = createStore({
       annotations: [],
       annotationMode: null,
       frameBeingEdited: null,
-      fieldBeingEdited: null,
+      booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
-      // fileContent: null, // the decomposed data will be stored to this one
-      // reconstructedData: {
-      //   label: "Example title",
-      //   docID: "Example docID",
-      //   text: "",
-      // },
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
       availableSources: [] //list of sources that the user can choose from
@@ -33,22 +28,11 @@ const store = createStore({
     reconstructedData: (state) => state.reconstructedData,
   },
   mutations: {
-    addFrame(state, frame) {
-      //add frame if it does not exist yet
-      if (!(state.frames.includes(frame))) {
-        //set unique id for this frame
-        frame["id"] = uuid4();
-        state.frames = [...state.frames, frame];
-      }
-    },
     addNewFrame(state, { frameType, annotation }) {
       let frame
       switch (frameType.class) {
         case 'fact':
           frame = new Fact()
-          if (annotation) {
-            frame.addAnnotation(annotation) //this also sets annotation.frame
-          }
           break;
         case 'relation':
           switch (frameType.id) {
@@ -61,33 +45,28 @@ const store = createStore({
           }
           break;
       }
+      if (annotation) {
+        frame.addAnnotation(annotation) //this also sets annotation.frame
+      }
       frame.type = frameType
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
-      state.frameBeingEdited = frame
-      console.log("frameBeingEdited", frame)
+      //if a booleanconstruct is being edited, add the new frame to it
+      if (state.booleanConstructBeingEdited) {
+        state.booleanConstructBeingEdited.frame = frame
+        //if frame is being edited and is has an active field, add frame to that field
+      } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
+        state.frameBeingEdited.addFrame(frame)
+      } else {
+        state.frameBeingEdited = frame
+      }
     },
-    // setAnnotationMode(state, selectedMode) {
-    //   state.annotationMode = selectedMode;
-    // },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
     },
-    // setFileContent(state, decomposedData) {
-    //   state.fileContent = decomposedData;
-    //   console.log("decomposedData: ", decomposedData);
-    // },
-    // setReconstructedData(state, data) {
-    //   state.reconstructedData.text = reconstructText(
-    //     "",
-    //     data.fileContent.document.children
-    //   );
-    //   state.reconstructedData.docID = data.fileName
-    //   console.log("reconstuct")
-    // },
     addAnnotation(state, annotation) {
       console.log("adding annotation", annotation)
       state.annotations = [...state.annotations, annotation];
@@ -104,8 +83,14 @@ const store = createStore({
       state.annotationBeingEdited = annotation
     },
     removeFrame(state, frame) {
+      if (frame == state.frameBeingEdited) {
+        state.frameBeingEdited = null
+        state.booleanConstructBeingEdited = null
+        state.showFrameSource = null
+      }
       const index = state.frames.indexOf(frame)
       state.frames.splice(index, 1)
+
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
@@ -115,21 +100,6 @@ const store = createStore({
       state.frames.filter(f => f.type == 'fact' && f.booleanConstruct).forEach(f => {
         f.booleanConstruct.removeFrame(frame)
       })
-      // const complexFramesIds = state.frames
-      //   .filter((fr) => fr._type === "complexFact")
-      //   .filter((fr) => fr._factList.find((d) => d._id === frame._id))
-      //   .map((fr) => fr._id);
-      // console.log("id of complexFrames:", complexFramesIds);
-
-      // if (complexFramesIds.length > 0) {
-      //   complexFramesIds.forEach((id) => {
-      //     const index = state.frames.findIndex((d) => d._id === id);
-      //     state.frames[index]._factList = state.frames[index]._factList.filter(
-      //       (fr) => fr._id !== frame._id
-      //     );
-      //   });
-      // }
-      // get the generated ids of the acts that contain the AtomicFact to be deleted
       const actFrameIds = state.frames
         .filter((fr) => fr._type === "act")
         .filter((act) => {

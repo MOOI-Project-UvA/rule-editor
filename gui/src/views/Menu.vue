@@ -9,7 +9,7 @@
           <q-icon name="mdi-information-outline" class="cursor-pointer">
           </q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px"> Description.. </div>
+            <div style="max-width: 300px"> Description... </div>
           </q-tooltip>
         </q-avatar>
       </q-item-section>
@@ -86,8 +86,6 @@
 <script>
 
 import { icons, colors } from "../helpers/config.js";
-import { Fact } from "../model/fact.js"
-import { Act, ClaimDuty } from '../helpers/flint.js'
 import { frameTypes } from "../model/frame";
 
 export default {
@@ -115,10 +113,6 @@ export default {
         this.$store.dispatch("loadInterpretation", evt.target.result);
       };
       reader.readAsText(evt.target.files[0]);
-    },
-
-    startNewFrame(type) {
-      this.$store.dispatch("startNewFrame", type);
     },
     closeActiveFrame() {
       this.$store.commit("setFrameBeingEdited", null);

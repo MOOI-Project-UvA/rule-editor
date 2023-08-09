@@ -6,8 +6,8 @@
       " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)"
     v-on:mouseleave="onLeave(frame)">
     {{ frame.label }}
-    <!-- contexts which have been subdivided contain have a badge on top-right -->
-    <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge>
+    <!-- contexts which have been subdivided contain have a badge on top-right. edit: not relevant since we don't have complex facts anymore -->
+    <!-- <q-badge v-if="!!frame._booleanConstruct" style="margin-top: -2px;" dense color="negative" rounded floating></q-badge> -->
   </q-chip>
 </template>
 
@@ -59,7 +59,8 @@ export default {
       this.$store.commit("setFrameBeingEdited", null)
     },
     onOver: function (fact) {
-      this.$store.dispatch('highlightElements', fact)
+      //disabled for now since it looks very restless
+      //this.$store.dispatch('highlightElements', fact)
     },
     onLeave: function (fact) {
       this.$store.dispatch('unhighlightElements')

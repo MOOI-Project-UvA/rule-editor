@@ -39,6 +39,7 @@
             icon="mdi-book-search-outline" :caption="sourceDocument.title" default-opened>
             <q-card flat square class="q-ma-sm q-pa-sm" style="max-height: 80vh">
               <q-card-section class="q-pt-none scrollable" style="max-height: 70vh">
+                <!-- show recursively all text leafs in the document tree -->
                 <TextElement :textPiece="sourceDocument" />
               </q-card-section>
             </q-card>

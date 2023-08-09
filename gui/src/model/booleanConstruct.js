@@ -21,7 +21,6 @@ export class BooleanConstruct {
 
     get level() { return this._parent ? this._parent.level + 1 : 0 }
 
-
     addChild(child) {
         this._children.push(child)
     }

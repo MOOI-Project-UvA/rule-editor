@@ -1,5 +1,6 @@
-import { Act, ClaimDuty } from './flint.js'
+import { ClaimDuty } from './flint.js'
 import { Fact } from '../model/fact.js'
+import { Act } from "../model/act.js"
 import { store } from "../store/index.js"
 
 function parseJsonToFrames(jsonText) {
