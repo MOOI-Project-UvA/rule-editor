@@ -28,14 +28,6 @@ const store = createStore({
     reconstructedData: (state) => state.reconstructedData,
   },
   mutations: {
-    // addFrame(state, frame) {
-    //   //add frame if it does not exist yet
-    //   if (!(state.frames.includes(frame))) {
-    //     //set unique id for this frame
-    //     frame["id"] = uuid4();
-    //     state.frames = [...state.frames, frame];
-    //   }
-    // },
     addNewFrame(state, { frameType, annotation }) {
       let frame
       switch (frameType.class) {
@@ -69,27 +61,12 @@ const store = createStore({
         state.frameBeingEdited = frame
       }
     },
-    // setAnnotationMode(state, selectedMode) {
-    //   state.annotationMode = selectedMode;
-    // },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
     },
-    // setFileContent(state, decomposedData) {
-    //   state.fileContent = decomposedData;
-    //   console.log("decomposedData: ", decomposedData);
-    // },
-    // setReconstructedData(state, data) {
-    //   state.reconstructedData.text = reconstructText(
-    //     "",
-    //     data.fileContent.document.children
-    //   );
-    //   state.reconstructedData.docID = data.fileName
-    //   console.log("reconstuct")
-    // },
     addAnnotation(state, annotation) {
       console.log("adding annotation", annotation)
       state.annotations = [...state.annotations, annotation];
@@ -106,8 +83,14 @@ const store = createStore({
       state.annotationBeingEdited = annotation
     },
     removeFrame(state, frame) {
+      if (frame == state.frameBeingEdited) {
+        state.frameBeingEdited = null
+        state.booleanConstructBeingEdited = null
+        state.showFrameSource = null
+      }
       const index = state.frames.indexOf(frame)
       state.frames.splice(index, 1)
+
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
@@ -117,21 +100,6 @@ const store = createStore({
       state.frames.filter(f => f.type == 'fact' && f.booleanConstruct).forEach(f => {
         f.booleanConstruct.removeFrame(frame)
       })
-      // const complexFramesIds = state.frames
-      //   .filter((fr) => fr._type === "complexFact")
-      //   .filter((fr) => fr._factList.find((d) => d._id === frame._id))
-      //   .map((fr) => fr._id);
-      // console.log("id of complexFrames:", complexFramesIds);
-
-      // if (complexFramesIds.length > 0) {
-      //   complexFramesIds.forEach((id) => {
-      //     const index = state.frames.findIndex((d) => d._id === id);
-      //     state.frames[index]._factList = state.frames[index]._factList.filter(
-      //       (fr) => fr._id !== frame._id
-      //     );
-      //   });
-      // }
-      // get the generated ids of the acts that contain the AtomicFact to be deleted
       const actFrameIds = state.frames
         .filter((fr) => fr._type === "act")
         .filter((act) => {

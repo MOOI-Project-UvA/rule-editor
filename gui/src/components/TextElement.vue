@@ -108,24 +108,27 @@ export default {
                 //no existing annotation at the clicked location
                 const selection = window.getSelection()
                 const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
-
-                const snippet = new Snippet(
-                    this.documentId,
-                    this.sentenceId,
-                    range,
-                    selection.toString()
-                )
-                //if there is an active annotation being edited, add snippet to that annotation
-                //else create new annotation and add snippet
-                if (this.annotationBeingEdited) {
-                    this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
-                } else {
-                    let annotation = new Annotation()
-                    annotation.addSnippet(snippet) //this also sets snippet.annotation
-                    annotation.positionOnScreen = [event.clientX, event.clientY]
-                    this.$store.commit("addAnnotation", annotation)
-                    this.$store.commit("setAnnotationBeingEdited", annotation)
+                //if the user actually selected something (and not just clicked)
+                if (range[0] != range[1]) {
+                    const snippet = new Snippet(
+                        this.documentId,
+                        this.sentenceId,
+                        range,
+                        selection.toString()
+                    )
+                    //if there is an active annotation being edited, add snippet to that annotation
+                    //else create new annotation and add snippet
+                    if (this.annotationBeingEdited) {
+                        this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
+                    } else {
+                        let annotation = new Annotation()
+                        annotation.addSnippet(snippet) //this also sets snippet.annotation
+                        annotation.positionOnScreen = [event.clientX, event.clientY]
+                        this.$store.commit("addAnnotation", annotation)
+                        this.$store.commit("setAnnotationBeingEdited", annotation)
+                    }
                 }
+
             }
         },
         relationBarClicked() {

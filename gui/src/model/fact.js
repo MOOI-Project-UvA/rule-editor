@@ -45,10 +45,5 @@ export class Fact {
         this._annotations.splice(index, 1)
 
     }
-
-    // go through the document and look for occurences of the annotation text. Add those as annotations for this fact
-    addSimilarAnnotations(document) {
-        console.log("looking for similar annotations")
-    }
 }
 

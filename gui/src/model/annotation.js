@@ -31,7 +31,7 @@ class Annotation {
     }
 
     addSimilarAnnotationsToFrame(documents) {
-        //for now: only add similar annotations, if current annotation consists of one snippet only
+        //for now: only add similar annotations, if current annotation consists of one snippet
         if (this.snippets.length == 1) {
             const searchSnippet = this.snippets[0]
             documents.forEach(document => {
