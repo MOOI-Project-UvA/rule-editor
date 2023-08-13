@@ -12,9 +12,12 @@ To run the editor locally for development purposes. You can do the following:
 
 Make sure that you have installed [node.js](https://nodejs.org/en).
 
-### Go to the project directory
+### Go to the gui directory
+
+From project root, navigate to the `gui` folder:
+
 ```bash
-cd interpration-editor/
+cd gui/
 ```
 
 ### Install the necessary dependencies
@@ -25,8 +28,16 @@ npm install
 ### Compile the code and hot-reloads for development
 ```bash
 npm run dev
+```
 
-# or start the server and open the app in a new browser tab
+By default, `vite` allocates `port 5137` to serve the application. Once the app is running, you can view the UI at `localhost:5137`. If you would like to use another port, you can also pass the additional `--port=XXXX`parameter: 
+```bash
+npm run dev -- --port=XXXX
+```
+
+You can also pass the `--open` parameter to have the UI automatically opened in a new browser tab:
+
+```bash
 npm run dev -- --open
 ```
 
