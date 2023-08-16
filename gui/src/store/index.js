@@ -259,6 +259,7 @@ const store = createStore({
         const document = data["@graph"].find((d) => "document" in d).document;
         document.title = source.title;
         docData.title = source.title;
+        docData.id = document["@id"]
         console.log("document", document);
         // add parent references to each part of the document
         // addParentReferencesToDocument(document)
@@ -276,16 +277,26 @@ const store = createStore({
         context.state.docUri,
       );
 
+      // const uri = context.state.rdfStore.sym(docData.id.split(/document$/,1)[0])
+      // const uris = context.state.rdfStore.match(null, null, null).map(d=>d.why)
+      // const uniqueUris=[...new Set(uris.map(item => item.value))].map( url=> { return uris.find(obj => obj.value === url) } )
+      docData.namedNode = rdf.sym(docData.id.split(/\/document$/,1)[0])
+      console.log("context.state.rdfStore: ", docData.namedNode)
+
       const docObject = context.state.rdfStore.statementsMatching(
         null,
         rdfConfig.namespaces.RDF("type"),
         rdfConfig.namespaces.SRC("Document"),
+          docData.namedNode
       );
+      console.log("docObject:", docObject)
 
       docData.children = reconstructDataStructureFromRDF(
         docObject[0].subject,
         context.state.rdfStore,
+          docData.namedNode
       );
+      console.log("docData", docData)
       // TODO: create a structure with queries similar to the following:
       context.state.sourceDocuments = [
         ...context.state.sourceDocuments,

@@ -94,12 +94,13 @@ function reconstructTextFromRdf(root, store) {
  * @returns {Array|*[]} An array of objects containing information per source element. The order of the objects
  * corresponds to the proper order of elements in the source.
  */
-function reconstructDataStructureFromRDF(root, store) {
-  console.log("store in function", store);
+function reconstructDataStructureFromRDF(root, store, docId) {
+  // console.log("store in function", store);
   const hasContent = store.statementsMatching(
     root,
     rdfConfig.namespaces.SRC("hasContent"),
     null,
+      docId
   );
   let sentences =
     hasContent.length > 0 ? sentenceData(hasContent, root, store) : [];
@@ -107,13 +108,14 @@ function reconstructDataStructureFromRDF(root, store) {
     root,
     rdfConfig.namespaces.SRC("hasChildElementOrdering"),
     null,
+      docId
   );
   if (hasChildren.length > 0) {
     hasChildren[0].object.elements.forEach((c) => {
       sentences = sentences.concat(reconstructDataStructureFromRDF(c, store));
     });
   }
-  console.log("sentences: ", sentences);
+  // console.log("sentences: ", sentences);
   return sentences;
 }
 
@@ -128,7 +130,7 @@ function reconstructDataStructureFromRDF(root, store) {
  * @param {Object} store THe RDF graph containing the triples for the document in question
  * @return {Array} An array containing the created object per element
  */
-function sentenceData(hasContent, root, store) {
+function sentenceData(hasContent, root, store,docId) {
   const structure = { id: "", content: "", annotations: [], type: "" };
   structure.content = hasContent[0].object.value;
   structure.id = getElementsId(root, store);
@@ -136,6 +138,7 @@ function sentenceData(hasContent, root, store) {
     root,
     rdfConfig.namespaces.SRC("hasTypeLabel"),
     null,
+      docId
   ).value;
   return [structure];
 }
@@ -146,14 +149,15 @@ function sentenceData(hasContent, root, store) {
  * @param {Object} store THe RDF graph containing the triples for the document in question
  * @returns {string}
  */
-function getElementsId(root, store) {
+function getElementsId(root, store,docId) {
   const result = store.statementsMatching(
     root,
     rdfConfig.namespaces.SRC("hasTypeLabel"),
     null,
+      docId
   );
   // const object = store.any(root, namespaces.SRC("hasTypeLabel"),null)
-  console.log("root", root);
+  // console.log("root", root);
   // console.log("object", object)
   if (result[0].object.value === "Document") {
     return result[0].subject.value;
