@@ -202,6 +202,7 @@ class Act {
     }
 
     // returns the ids of the containing facts
+    //TODO: do we need this? needs updating because precondition is a BooleanConstruct now
     get childrenIds() {
         const facts = [
             this._action,
@@ -214,6 +215,24 @@ class Act {
         ]
 
         return facts.filter(f => f).map(f => f._id)
+    }
+
+    toFlatObject() {
+        return {
+            id: this.id,
+            typeId: this.type.id, //type is an object {id, class, label}
+            label: this.label,
+            act: this.act,
+            actionId: this.action?.id, //take frame id instead of frame object
+            actorId: this.actor?.id,
+            objectId: this.object?.id,
+            precondition: this.precondition.toFlatObject(), //boolean construct
+            recipientId: this.recipient?.id,
+            creates: this.creates.map(c => c.toFlatObject()),
+            terminates: this.terminates.map(t => t.toFlatObject()),
+            comments: this.comments,
+            annotations: this.annotations.map(a => a.toFlatObject())
+        }
     }
 }
 

@@ -61,11 +61,8 @@ class Annotation {
     //returns flat object, with references to other objects by ID
     toFlatObject() {
         return {
-            documentId: this._documentId,
-            sentenceId: this._sentenceId,
-            characterRange: this._characterRange,
-            annotatedText: this._annotatedText,
-            tag: this._tag
+            snippets: this.snippets.map(s => s.toFlatObject()),
+            positionOnScreen: this.positionOnScreen
         }
     }
 
@@ -92,7 +89,12 @@ class Snippet {
 
 
     toFlatObject() {
-        return {}
+        return {
+            documentId: this.documentId,
+            sentenceId: this.sentenceId,
+            characterRange: this.characterRange,
+            text: this.text
+        }
     }
 }
 
