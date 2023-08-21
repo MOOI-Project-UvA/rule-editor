@@ -25,7 +25,6 @@ class Annotation {
     get sourceText() { return this._snippets.map(s => s.text).join(" ") }
 
     addSnippet(snippet) {
-        console.log("adding snippet")
         snippet.annotation = this
         this._snippets = [...this._snippets, snippet]
     }
@@ -66,6 +65,15 @@ class Annotation {
         }
     }
 
+    fromFlatObject(data) {
+        this.positionOnScreen = data.positionOnScreen
+        data.snippets.forEach(s => {
+            let snippet = new Snippet()
+            snippet.fromFlatObject(s)
+            this.addSnippet(snippet)
+        })
+    }
+
 }
 
 // piece of consecutive text within a sentence in the source text, contains of a sentence and a character range
@@ -95,6 +103,13 @@ class Snippet {
             characterRange: this.characterRange,
             text: this.text
         }
+    }
+
+    fromFlatObject(data) {
+        this._documentId = data.documentId
+        this._sentenceId = data.sentenceId
+        this._characterRange = data.characterRange
+        this._text = data.text
     }
 }
 

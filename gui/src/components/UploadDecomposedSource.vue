@@ -62,7 +62,6 @@ export default {
         // the actual content of the file in JSON
         const fileContent = await this.readJsonFile(this.file);
         const document = fileContent['@graph'].find(d => 'document' in d).document
-        console.log("document", document)
         this.$store.commit("addSourceDocument", document)
         this.file = null // clear input field
         // setTimeout(() => {

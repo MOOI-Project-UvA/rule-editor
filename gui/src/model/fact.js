@@ -1,4 +1,5 @@
 import { v4 as uuid4 } from 'uuid'
+import { Annotation } from './annotation'
 
 export class Fact {
     constructor() {
@@ -34,7 +35,6 @@ export class Fact {
 
     get annotations() { return this._annotations }
     addAnnotation(annotation) {
-        console.log("adding annotation", annotation, "to frame", this)
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this
     }
@@ -54,6 +54,17 @@ export class Fact {
             annotations: this.annotations.map(a => a.toFlatObject()),
             comments: this.comments
         }
+    }
+
+    //fiil frame with data
+    fromFlatObject(data) {
+        this.label = data.label,
+            this.fact = data.fact,
+            data.annotations.forEach(a => {
+                let annotation = new Annotation()
+                annotation.fromFlatObject(a)
+                this.addAnnotation(annotation)
+            })
     }
 }
 

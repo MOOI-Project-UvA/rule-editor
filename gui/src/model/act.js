@@ -26,7 +26,7 @@ class Act {
     set id(id) { this._id = id }
 
     get type() { return this._type }
-    set type(type) { this._type = type }
+    set type(type) { console.log("setting type to", type); this._type = type }
 
     get label() {
         return this._label && this._label.length > 0
@@ -147,22 +147,26 @@ class Act {
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
-        this._type = frameData.type
         this._label = frameData.label
         this._act = frameData.act
         this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
         this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
         this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
-        this._precondition = frameData.precondition ? allFrames.find(f => f.id == frameData.precondition) : null
         this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments
+
+
+        this._precondition = new BooleanConstruct()
+        if (frameData.precondition) {
+            this._precondition.fromFlatObject(frameData.precondition, allFrames)
+        } else {
+            this._precondition.addEmptyChild()
+        }
+
     }
     checkFrameExistance(act, element) {
-
-        console.log("act", act)
-        console.log("element", element)
 
         const term = act._terminates.find((d) => act._id === element._id) ? true : false;
         const creates = act._creates.find((d) => act._id === element._id) ? true : false;
@@ -195,7 +199,6 @@ class Act {
         } else {
             act._highlight = true
         }
-        console.log("exist in Act:", exist)
         return exist.some((d) => d)
 
 
