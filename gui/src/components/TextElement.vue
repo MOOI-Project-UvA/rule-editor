@@ -51,7 +51,7 @@ export default {
             return this.isSentence ? this.textPiece['id'] : null
         },
         annotations() {
-            return this.$store.state.annotations
+            return this.$store.state.frames.map(f => f.annotations).flat()
         },
         annotationBeingEdited() {
             return this.$store.state.annotationBeingEdited
@@ -124,7 +124,6 @@ export default {
                         let annotation = new Annotation()
                         annotation.addSnippet(snippet) //this also sets snippet.annotation
                         annotation.positionOnScreen = [event.clientX, event.clientY]
-                        this.$store.commit("addAnnotation", annotation)
                         this.$store.commit("setAnnotationBeingEdited", annotation)
                     }
                 }

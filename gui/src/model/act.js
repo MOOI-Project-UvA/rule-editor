@@ -26,7 +26,7 @@ class Act {
     set id(id) { this._id = id }
 
     get type() { return this._type }
-    set type(type) { this._type = type }
+    set type(type) { console.log("setting type to", type); this._type = type }
 
     get label() {
         return this._label && this._label.length > 0
@@ -147,22 +147,26 @@ class Act {
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
-        this._type = frameData.type
         this._label = frameData.label
         this._act = frameData.act
         this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
         this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
         this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
-        this._precondition = frameData.precondition ? allFrames.find(f => f.id == frameData.precondition) : null
         this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments
+
+
+        this._precondition = new BooleanConstruct()
+        if (frameData.precondition) {
+            this._precondition.fromFlatObject(frameData.precondition, allFrames)
+        } else {
+            this._precondition.addEmptyChild()
+        }
+
     }
     checkFrameExistance(act, element) {
-
-        console.log("act", act)
-        console.log("element", element)
 
         const term = act._terminates.find((d) => act._id === element._id) ? true : false;
         const creates = act._creates.find((d) => act._id === element._id) ? true : false;
@@ -195,13 +199,13 @@ class Act {
         } else {
             act._highlight = true
         }
-        console.log("exist in Act:", exist)
         return exist.some((d) => d)
 
 
     }
 
     // returns the ids of the containing facts
+    //TODO: do we need this? needs updating because precondition is a BooleanConstruct now
     get childrenIds() {
         const facts = [
             this._action,
@@ -214,6 +218,24 @@ class Act {
         ]
 
         return facts.filter(f => f).map(f => f._id)
+    }
+
+    toFlatObject() {
+        return {
+            id: this.id,
+            typeId: this.type.id, //type is an object {id, class, label}
+            label: this.label,
+            act: this.act,
+            actionId: this.action?.id, //take frame id instead of frame object
+            actorId: this.actor?.id,
+            objectId: this.object?.id,
+            precondition: this.precondition.toFlatObject(), //boolean construct
+            recipientId: this.recipient?.id,
+            creates: this.creates.map(c => c.toFlatObject()),
+            terminates: this.terminates.map(t => t.toFlatObject()),
+            comments: this.comments,
+            annotations: this.annotations.map(a => a.toFlatObject())
+        }
     }
 }
 
