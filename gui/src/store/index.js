@@ -12,10 +12,9 @@ import { v4 as uuid4 } from 'uuid'
 const store = createStore({
   state() {
     return {
-      frames: [],
-      annotations: [],
+      frames: [], //list of frames in interpretation
       annotationMode: null,
-      frameBeingEdited: null,
+      frameBeingEdited: null, //frame for which editor-pane is opened
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
@@ -66,10 +65,6 @@ const store = createStore({
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
-    },
-    addAnnotation(state, annotation) {
-      console.log("adding annotation", annotation)
-      state.annotations = [...state.annotations, annotation];
     },
     removeAnnotation(state, annotation) {
       console.log("removeAnnotations")

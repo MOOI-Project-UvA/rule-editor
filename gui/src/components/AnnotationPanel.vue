@@ -81,7 +81,8 @@ export default {
                 //there is no frame attached to this.
                 //create new frame and add annotation to it
                 this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
-                this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
+                // disabled because of performance problems. TODO: fix performance problems
+                //this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
             } else {
                 //there is a frame attached to this, change it type according to the selected type
                 this.annotation.frame.type = frameType

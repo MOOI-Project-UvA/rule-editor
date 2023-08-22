@@ -100,24 +100,11 @@ export default {
         FrameChip
     },
     methods: {
-        createFact(tag) {
-            let frame = new Fact()
-            frame.annotation = new Annotation(
-                null, //documentId
-                null, //sentenceId
-                [], //characterRange
-                this.textSnippet //annotatedText
-            )
-            frame.annotation.tag = tag
-            frame.fact = this.textSnippet
-            this.$store.commit("addFrame", frame)
-            this.booleanConstruct.frame = frame
-            this.textSnippet = ""
-        },
         addParent() {
             this.booleanConstruct.addParent()
         },
         addChild(operator) {
+            console.log("booleanConstruct adding child")
             this.booleanConstruct.operatorToJoinChildren = operator
             this.booleanConstruct.addEmptyChild()
         },

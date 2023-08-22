@@ -1,4 +1,5 @@
 import { v4 as uuid4 } from 'uuid'
+import { Annotation } from './annotation'
 
 export class Fact {
     constructor() {
@@ -7,7 +8,6 @@ export class Fact {
         this._fact = "" //longer description of the fact
         this._type = null //type object (id, class, label)
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
-        this._booleanConstruct = null //optional subdivision of fact in other facts. Of type BooleanConstruct
         this._comments = [] //comments from interpretor about this fact
     }
 
@@ -35,7 +35,6 @@ export class Fact {
 
     get annotations() { return this._annotations }
     addAnnotation(annotation) {
-        console.log("adding annotation", annotation, "to frame", this)
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this
     }
@@ -44,6 +43,28 @@ export class Fact {
         const index = this._annotations.indexOf(annotation)
         this._annotations.splice(index, 1)
 
+    }
+
+    toFlatObject() {
+        return {
+            id: this.id,
+            label: this.label,
+            fact: this.fact,
+            typeId: this.type.id,
+            annotations: this.annotations.map(a => a.toFlatObject()),
+            comments: this.comments
+        }
+    }
+
+    //fiil frame with data
+    fromFlatObject(data) {
+        this.label = data.label,
+            this.fact = data.fact,
+            data.annotations.forEach(a => {
+                let annotation = new Annotation()
+                annotation.fromFlatObject(a)
+                this.addAnnotation(annotation)
+            })
     }
 }
 

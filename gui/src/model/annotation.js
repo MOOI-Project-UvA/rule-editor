@@ -25,7 +25,6 @@ class Annotation {
     get sourceText() { return this._snippets.map(s => s.text).join(" ") }
 
     addSnippet(snippet) {
-        console.log("adding snippet")
         snippet.annotation = this
         this._snippets = [...this._snippets, snippet]
     }
@@ -61,12 +60,18 @@ class Annotation {
     //returns flat object, with references to other objects by ID
     toFlatObject() {
         return {
-            documentId: this._documentId,
-            sentenceId: this._sentenceId,
-            characterRange: this._characterRange,
-            annotatedText: this._annotatedText,
-            tag: this._tag
+            snippets: this.snippets.map(s => s.toFlatObject()),
+            positionOnScreen: this.positionOnScreen
         }
+    }
+
+    fromFlatObject(data) {
+        this.positionOnScreen = data.positionOnScreen
+        data.snippets.forEach(s => {
+            let snippet = new Snippet()
+            snippet.fromFlatObject(s)
+            this.addSnippet(snippet)
+        })
     }
 
 }
@@ -92,7 +97,19 @@ class Snippet {
 
 
     toFlatObject() {
-        return {}
+        return {
+            documentId: this.documentId,
+            sentenceId: this.sentenceId,
+            characterRange: this.characterRange,
+            text: this.text
+        }
+    }
+
+    fromFlatObject(data) {
+        this._documentId = data.documentId
+        this._sentenceId = data.sentenceId
+        this._characterRange = data.characterRange
+        this._text = data.text
     }
 }
 
