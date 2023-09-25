@@ -103,6 +103,7 @@ export default {
                 //else do nothing
                 if (!this.annotationBeingEdited) {
                     const snippet = this.snippets.find(s => s.id == this.hoveredSnippetId)
+                    snippet.annotation.positionOnScreen = [event.clientX, event.clientY]
                     this.$store.commit("setAnnotationBeingEdited", snippet.annotation)
                 }
             } else {
