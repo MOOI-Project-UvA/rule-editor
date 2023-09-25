@@ -66,14 +66,6 @@ const store = createStore({
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
     },
-    removeAnnotation(state, annotation) {
-      console.log("removeAnnotations")
-      const index = state.annotations.indexOf(annotation)
-      if (index != -1) {
-        state.annotations.splice(index, 1)
-        console.log("state.annotations", state.annotations)
-      }
-    },
     setAnnotationBeingEdited(state, annotation) {
       state.annotationBeingEdited = annotation
     },

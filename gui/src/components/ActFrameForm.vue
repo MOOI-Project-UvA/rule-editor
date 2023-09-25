@@ -8,8 +8,10 @@
       <q-input v-model="frame.act" label="Act" autogrow />
     </q-card-section>
     <q-card-section>
-      <template v-if="frame.sourceText.trim().length > 0">
-        <div class="source-text">{{ frame.sourceText }}</div>
+      <template v-if="frame.sentences.length > 0">
+        <div v-for="sentence in frame.sentences">
+          <TextElement :textPiece="sentence" />
+        </div>
       </template>
       <template v-else>
         <div class="source-text">No source added yet</div>
@@ -75,6 +77,7 @@
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+import TextElement from "./TextElement.vue"
 
 export default {
   emits: ["closed"],
@@ -102,7 +105,7 @@ export default {
     },
   },
   components: {
-    FactInputField, CommentsList, BooleanConstructPanel
+    FactInputField, CommentsList, BooleanConstructPanel, TextElement
   },
 };
 </script>
