@@ -9,9 +9,6 @@
                     {{ annotation.sourceText }}
                 </div>
             </q-card-section>
-
-
-
             <template v-if="annotation.addingToExistingFrame">
                 <q-card-section>
                     <div class="message">Select existing frame</div>
@@ -90,17 +87,12 @@ export default {
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {
-            //remmove annotation if it is not connected to a frame
-            if (!this.annotation.frame) {
-                this.$store.commit("removeAnnotation", this.annotation)
-            }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         removeAnnotation() {
             //this is only called if annotation has a frame.
             //remove the annotaiton from the frame, and from the store
             this.annotation.frame.removeAnnotation(this.annotation)
-            this.$store.commit("removeAnnotation", this.annotation)
             this.$store.commit("setAnnotationBeingEdited", null)
         }
     },

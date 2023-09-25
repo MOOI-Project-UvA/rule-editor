@@ -50,7 +50,7 @@
         <template v-if="!booleanConstruct.frame && booleanConstruct.children.length == 0">
             <div>
                 <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent">
-                    Bring one level down
+                    Indent
                 </q-btn>
                 <div>
                     <q-btn class="button" round :color="isBeingEdited ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"

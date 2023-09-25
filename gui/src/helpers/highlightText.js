@@ -22,7 +22,7 @@ function getSelectedCharacterRange(sentenceElement, selection) {
     return indexRange
 }
 
-function getHtmlWithHighlights(text, snippets, id) {
+function getHtmlWithHighlights(text, snippets) {
     //sort snippets from back of sentence to front
     //because inserting html-tags changes character positions
 
@@ -38,7 +38,7 @@ function getHtmlWithHighlights(text, snippets, id) {
             + htmlText.substring(snippet.characterRange[1])
         htmlText = htmlText.substring(0, snippet.characterRange[0])
             + '<span '
-            + 'id="' + snippet.id
+            + 'id="' + snippet.id //each snippet has a uuid
             + '" class="text-white bg-'
             + color
             + '" style="cursor:pointer">'

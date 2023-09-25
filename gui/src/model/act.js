@@ -20,7 +20,7 @@ class Act {
         this._highlight = false
         this._comments = []
 
-        this._annotations = [] //Typically one annotation
+        this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -81,6 +81,8 @@ class Act {
     }
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
+
+    get sentences() { return this.annotations.map(a => a.snippets.map(s => s.sentence)).flat() }
 
     get allowedSubClassesForActiveField() {
         switch (this._activeField) {
@@ -200,8 +202,6 @@ class Act {
             act._highlight = true
         }
         return exist.some((d) => d)
-
-
     }
 
     // returns the ids of the containing facts

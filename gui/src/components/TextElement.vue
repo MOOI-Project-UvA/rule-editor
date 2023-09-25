@@ -41,7 +41,7 @@ export default {
             return 'content' in this.textPiece
         },
         isLeafElement() {
-            return this.textPiece.class == "src:LeafElement"
+            return this.textPiece.class == "src:LeafElement" //class in chopper output
         },
         //id of document that this textPiece is part of
         documentId() {
@@ -60,10 +60,11 @@ export default {
         //only snippets of annotations of fact frames
         snippets() {
             if (this.isSentence) {
-                //get each snippet of frame type fact. these will be highlighted in the sentence
+                //get each snippet of frame type fact that are in this sentence.
+                //these will be highlighted in the sentence
                 return this.annotations.filter(a => a.frame && a.frame.type.class == 'fact')
                     .map(a => a.snippets
-                        .filter(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id))
+                        .filter(s => s.sentence == this.textPiece))
                     .flat()
             } else {
                 return []
@@ -75,7 +76,7 @@ export default {
                 return this.annotations.filter(a => (
                     a.frame &&
                     a.frame.type.class == 'relation' &&
-                    a.snippets.some(s => s.documentId == this.documentId && s.sentenceId == this.textPiece.id)
+                    a.snippets.some(s => s.sentence == this.textPiece)
                 ))
             } else {
                 return []
@@ -87,10 +88,10 @@ export default {
                 return false
             }
             const snippetsOfFrame = frameBeingEdited.annotations.map(a => a.snippets).flat()
-            return snippetsOfFrame.some(s => (s.sentenceId == this.sentenceId && s.documentId == this.documentId))
+            return snippetsOfFrame.some(s => (s.sentence == this.textPiece))
         },
         htmlText() {
-            return getHtmlWithHighlights(this.textPiece.content, this.snippets, this.sentenceId)
+            return getHtmlWithHighlights(this.textPiece.content, this.snippets)
         }
     },
     methods: {
@@ -110,11 +111,11 @@ export default {
                 const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
                 //if the user actually selected something (and not just clicked)
                 if (range[0] != range[1]) {
+                    console.log("textPiece", this.textPiece)
                     const snippet = new Snippet(
-                        this.documentId,
-                        this.sentenceId,
-                        range,
-                        selection.toString()
+                        this.textPiece, //sentence object
+                        range, //[start, end]
+                        selection.toString() //selected text
                     )
                     //if there is an active annotation being edited, add snippet to that annotation
                     //else create new annotation and add snippet
@@ -142,12 +143,14 @@ export default {
             //add this point, htmlText is not yet rendered, so childnodes is still one textnode
             //we need to wait for the next renderstep before adding mouseover events
             this.$nextTick(() => {
-                const nodes = this.$refs['sentenceElement'].childNodes
-                for (let i = 0; i < nodes.length; i++) {
-                    let node = nodes[i]
-                    if (node.nodeName == "SPAN") {
-                        node.onmouseover = () => { this.hoveredSnippetId = node.id }
-                        node.onmouseout = () => { this.hoveredSnippetId = null }
+                if (this.$refs['sentenceElement']) {
+                    const nodes = this.$refs['sentenceElement'].childNodes
+                    for (let i = 0; i < nodes.length; i++) {
+                        let node = nodes[i]
+                        if (node.nodeName == "SPAN") {
+                            node.onmouseover = () => { this.hoveredSnippetId = node.id }
+                            node.onmouseout = () => { this.hoveredSnippetId = null }
+                        }
                     }
                 }
             })

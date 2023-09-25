@@ -37,6 +37,7 @@ class Annotation {
                 getSentencesInDocument(document).forEach(sentence => {
                     const index = sentence.content.toLowerCase().indexOf(searchSnippet.text.toLowerCase())
                     if (index != -1 && (
+                        //TODO
                         searchSnippet.documentId != document['@id'] ||
                         searchSnippet.sentenceId != sentence['id'] //||
                         //searchSnippet.range[0] != index
@@ -78,18 +79,16 @@ class Annotation {
 
 // piece of consecutive text within a sentence in the source text, contains of a sentence and a character range
 class Snippet {
-    constructor(documentId, sentenceId, characterRange, text) {
+    constructor(sentence, characterRange, text) {
         this._id = uuid4() //unique ID
-        this._documentId = documentId
-        this._sentenceId = sentenceId
+        this._sentence = sentence
         this._characterRange = characterRange
         this._text = text
         this._annotation = null //annotation that this snippet is part of
     }
 
     get id() { return this._id }
-    get documentId() { return this._documentId }
-    get sentenceId() { return this._sentenceId }
+    get sentence() { return this._sentence }
     get characterRange() { return this._characterRange }
     get text() { return this._text }
     get annotation() { return this._annotation }
@@ -98,6 +97,7 @@ class Snippet {
 
     toFlatObject() {
         return {
+            //TODO!
             documentId: this.documentId,
             sentenceId: this.sentenceId,
             characterRange: this.characterRange,
@@ -106,6 +106,7 @@ class Snippet {
     }
 
     fromFlatObject(data) {
+        //TODO
         this._documentId = data.documentId
         this._sentenceId = data.sentenceId
         this._characterRange = data.characterRange
