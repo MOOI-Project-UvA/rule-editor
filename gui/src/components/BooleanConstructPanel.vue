@@ -1,65 +1,72 @@
 <template>
-    <div>
-        <template v-if="booleanConstruct.frame">
-            <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
-            <div>
-                <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
-                    :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
-                    @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>
-                <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true" functionality="editor-form"
-                    @remove="removeChipFromContext" />
-            </div>
+    <div class="panel flex flex-row" :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
+        @click="handleClick">
+        <div class="col">
 
-        </template>
-        <template v-if="booleanConstruct.children.length > 0">
-            <!-- boolean construct is not atomic: it has one or more children joined by a boolean operator. -->
-            <!-- each child is a boolean construct -->
-            <div class="bordered-panel">
-                <div v-for="child, i in booleanConstruct.children">
-                    <BooleanConstructPanel :booleanConstruct="child" />
-                    <template v-if="i < booleanConstruct.children.length - 1">
-                        <div class="operator-label">{{ booleanConstruct.operatorToJoinChildren }}</div>
-                    </template>
 
-                    <template v-else>
-                        <!-- after last child: -->
-                        <!-- show button(s) for adding another child if the last child has a value -->
-                        <!-- show multiple buttons if this BC has no operator set yet -->
-                        <!-- else show one button with this BC's operator -->
-                        <template v-if="child.frame || child.children.length > 0">
-
-                            <template v-if="booleanConstruct.operatorToJoinChildren">
-                                <q-btn class="q-mt-sm" size="sm" color="primary" dense
-                                    @click="addChild(booleanConstruct.operatorToJoinChildren)">{{
-                                        booleanConstruct.operatorToJoinChildren }}</q-btn>
-                            </template>
-                            <template v-else>
-                                <!-- show options for boolean operator -->
-                                <q-btn-group flat>
-                                    <q-btn v-for="option in booleanOptions" size="sm" color="primary" dense
-                                        @click="addChild(option.value)">{{
-                                            option.label }}</q-btn>
-                                </q-btn-group>
-                            </template>
-                        </template>
-                    </template>
-                </div>
-            </div>
-        </template>
-        <!-- show button for adding frame if BC is empty and is a leaf node -->
-        <template v-if="!booleanConstruct.frame && booleanConstruct.children.length == 0">
-            <div>
-                <q-btn size="sm" color="#333333" dense flat icon="mdi-arrow-right" @click="addParent">
-                    Indent
-                </q-btn>
+            <template v-if="booleanConstruct.frame">
+                <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
                 <div>
-                    <q-btn class="button" round :color="isBeingEdited ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"
-                        @click="isBeingEdited = !isBeingEdited" />
-                    <div v-if="isBeingEdited" class="button-label">
-                        Select existing frame or select source and create new frame</div>
+                    <!--<q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
+                    :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
+                    @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>-->
+                    <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true"
+                        functionality="editor-form" @remove="removeChipFromContext" />
                 </div>
+
+            </template>
+
+
+            <div v-for="child, i in booleanConstruct.children">
+                <BooleanConstructPanel :booleanConstruct="child" />
+
+                <!-- buttons for changing operator and adding another child -->
+
+                <!-- show options for boolean operator -->
+                <!-- <q-btn-group flat>
+                    <q-btn v-for="option in booleanOptions" size="sm"
+                        :color="booleanConstruct.operatorToJoinChildren == option.value ? 'primary' : 'grey'" dense
+                        @click="(event) => {
+                            event.stopPropagation()
+                            //set operator to clicked value
+                            booleanConstruct.operatorToJoinChildren = option.value
+                            //if this is the last child, add child
+                            if (i == booleanConstruct.children.length - 1) {
+                                addChild()
+                            }
+                        }">
+                        {{ option.label }}</q-btn>
+                </q-btn-group> -->
+
+                <q-btn-group class="q-ml-md" flat>
+                    <q-btn v-for="option in booleanOptions" size="sm"
+                        :color="booleanConstruct.operatorToJoinChildren == option.value ? 'primary' : 'grey'" dense @click="(event) => {
+                            event.stopPropagation()
+                            //set operator to clicked value
+                            booleanConstruct.operatorToJoinChildren = option.value
+                            //if this is the last child, add child
+                            if (i == booleanConstruct.children.length - 1) {
+                                addChild()
+                            }
+                        }">
+                        {{ option.value }}
+                    </q-btn>
+                </q-btn-group>
+
             </div>
-        </template>
+
+            <!-- if button is after last child, add new BC. Else change operator -->
+            <!-- show button for adding frame if BC is empty and is a leaf node -->
+            <div v-if="isBeingEdited" class="button-label">
+                Select existing frame or create a new frame by annotating the source {{
+                    booleanConstruct.operatorToJoinChildren }}
+            </div>
+        </div>
+        <div class="col-1">
+            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close" @click="deleteBooleanConstruct" /></div>
+            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square" @click="subdivide" />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -79,14 +86,10 @@ export default {
         booleanOptions: [
             { label: 'AND', value: 'and' },
             { label: 'OR', value: 'or' }
-        ],
-        isBeingEdited: false
+        ]
     }),
     props: {
         booleanConstruct: Object
-    },
-    mounted() {
-        this.isBeingEdited = this.booleanConstruct == this.booleanConstructBeingEdited
     },
     computed: {
         frameBeingEdited() {
@@ -94,34 +97,53 @@ export default {
         },
         booleanConstructBeingEdited() {
             return this.$store.state.booleanConstructBeingEdited
+        },
+        isBeingEdited() {
+            return this.booleanConstruct == this.booleanConstructBeingEdited
         }
     },
+
     components: {
         FrameChip
     },
     methods: {
-        addParent() {
+        addParent(event) {
+            event.stopPropagation()
             this.booleanConstruct.addParent()
         },
-        addChild(operator) {
-            console.log("booleanConstruct adding child")
-            this.booleanConstruct.operatorToJoinChildren = operator
-            this.booleanConstruct.addEmptyChild()
+        subdivide(event) {
+            event.stopPropagation()
+            this.booleanConstruct.subdivide()
         },
-        toggleSelection() {
-
+        addChild() {
+            console.log("booleanConstruct adding child")
+            const newChild = this.booleanConstruct.addEmptyChild()
+            //set focus to new child
+            this.$store.state.booleanConstructBeingEdited = newChild
+        },
+        handleClick(event) {
+            //prevent propagation to underlying panels
+            event.stopPropagation()
+            //if empty leaf node, select for adding frame
+            if ((!this.booleanConstruct.frame) && this.booleanConstruct.children.length == 0) {
+                this.$store.state.booleanConstructBeingEdited = this.isBeingEdited ? null : this.booleanConstruct
+            } else {
+                //toggle negation
+                this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
+            }
         },
         removeChipFromContext() {
             this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
-        }
-    },
-    watch: {
-        isBeingEdited() {
-            if (this.isBeingEdited) {
-                this.$store.state.booleanConstructBeingEdited = this.booleanConstruct
-                this.frameBeingEdited.activeField = null
+        },
+        deleteBooleanConstruct(event) {
+            event.stopPropagation()
+            //if bc has no parent, do not delete, since that would leave precondition empty
+            //instead: clean
+            if (this.booleanConstruct.parent) {
+                this.booleanConstruct.delete()
             } else {
-                this.$store.state.booleanConstructBeingEdited = null
+                console.log("no parent")
+                this.booleanConstruct.clean()
             }
         }
     }
@@ -129,6 +151,26 @@ export default {
 </script>
 
 <style>
+.panel {
+    /* border: 1px solid #333333; */
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 15px;
+    box-shadow: 0px 0px 4px #aaaaaa;
+    background-color: #ffffff;
+    border: solid 2px #ffffff;
+}
+
+.panel.active {
+    border: solid 2px rgb(25, 118, 210);
+}
+
+.panel.negated {
+    border: dotted 2px rgb(210, 77, 25);
+    background-color: rgb(255, 231, 222);
+    ;
+}
+
 .bordered-panel {
     border-left: 2px solid #007bc6;
     padding-left: 14px;

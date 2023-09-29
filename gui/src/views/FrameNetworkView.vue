@@ -26,7 +26,7 @@
           <div class="class-label">{{ frameClass }}</div>
           <div class="fact-container" v-for="frameType in  frameTypes.filter(t => t.class == frameClass) ">
             <div class="chip-container">
-              <div><b>{{ frameType.label }}</b></div>
+              <div v-if="frameType.id != 'other'"><b>{{ frameType.label }}</b></div>
               <div class="chips">
                 <div v-for="frame in  frames.filter(f => f.type.id == frameType.id) " @click="onClick(frame)">
                   <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
@@ -97,6 +97,7 @@ export default {
         this.frameBeingEdited.addFrame(frame);
       } else if (this.booleanConstructBeingEdited) {
         this.booleanConstructBeingEdited.frame = frame
+        this.$store.state.booleanConstructBeingEdited = null
       } else {
         console.log("setting frame being edited")
         // it opens the frame form in the middle
