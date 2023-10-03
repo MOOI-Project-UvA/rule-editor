@@ -43,7 +43,7 @@
                     <template v-else>
                         <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
                             :disabled="frames.length == 0">
-                            Add to existing fact
+                            Add to existing frame
                         </q-btn>
                     </template>
                 </q-card-actions>

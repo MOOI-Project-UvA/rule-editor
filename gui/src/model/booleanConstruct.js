@@ -3,9 +3,8 @@ export class BooleanConstruct {
         this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
         this._isNegated = false
         this._children = [] // list of BooleanConstructs if _frame is null
-        this._operatorToJoinChildren = null //"and" or "or"
+        this._operatorToJoinChildren = "and" // or "or"
         this._parent = null
-        this._highlight = false
     }
 
     get isNegated() { return this._isNegated }
@@ -15,6 +14,7 @@ export class BooleanConstruct {
     set operatorToJoinChildren(operator) { this._operatorToJoinChildren = operator }
 
     get children() { return this._children }
+    set children(children) { this._children = children }
 
     get parent() { return this._parent }
     set parent(parent) { this._parent = parent }
@@ -23,12 +23,12 @@ export class BooleanConstruct {
 
     addChild(child) {
         this._children.push(child)
+        child.parent = this
     }
 
     addEmptyChild() {
         let child = new BooleanConstruct()
-        this._children.push(child)
-        child.parent = this
+        this.addChild(child)
     }
 
     removeChild(child) {
@@ -46,10 +46,40 @@ export class BooleanConstruct {
             const index = this.parent.children.indexOf(this)
             oldParent.children[index] = newParent
             newParent.parent = oldParent
+        } else {
+
         }
         newParent.addChild(this)
         this.parent = newParent
+        console.log("added parent", this)
     }
+
+    subdivide() {
+        //create copy of current
+        let bcCopy = new BooleanConstruct()
+        bcCopy.frame = this.frame
+        bcCopy.children = [...this.children]
+        bcCopy.isNegated = this.isNegated
+        bcCopy.operatorToJoinChildren = this.operatorToJoinChildren
+        //clean current
+        this.clean()
+        this.addChild(bcCopy)
+        //this.addEmptyChild()
+    }
+
+    delete() {
+        const index = this.parent.children.indexOf(this)
+        console.log("index", index)
+        this.parent.children.splice(index, 1)
+    }
+
+    clean() {
+        this.frame = null
+        this.children = []
+        this.isNegated = false
+        this.operatorToJoinChildren = null
+    }
+
 
     get frame() { return this._frame }
     set frame(frame) { this._frame = frame }

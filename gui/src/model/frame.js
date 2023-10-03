@@ -1,30 +1,30 @@
 const frameTypes =
     [
         {
+            'id': 'other',
+            'class': 'fact',
+            'label': 'Fact'
+        },
+        {
             'id': 'agent',
             'class': 'fact',
             'label': 'Agent'
         },
-        {
-            'id': 'object',
-            'class': 'fact',
-            'label': 'Object'
-        },
+        // {
+        //     'id': 'object',
+        //     'class': 'fact',
+        //     'label': 'Object'
+        // },
         {
             'id': 'action',
             'class': 'fact',
             'label': 'Action'
         },
-        {
-            'id': 'duty',
-            'class': 'fact',
-            'label': 'Duty'
-        },
-        {
-            'id': 'other',
-            'class': 'fact',
-            'label': 'Other'
-        },
+        // {
+        //     'id': 'duty',
+        //     'class': 'fact',
+        //     'label': 'Duty'
+        // },
         {
             'id': 'act',
             'class': 'relation',

@@ -12,7 +12,8 @@ class Act {
         this._actor = null
         this._object = null
         this._precondition = new BooleanConstruct()
-        this._precondition.addEmptyChild()
+        console.log("boolean construct in act", this._precondition)
+        //this._precondition.addEmptyChild()
         this._recipient = null
         this._creates = []
         this._terminates = []

@@ -53,6 +53,7 @@ const store = createStore({
       //if a booleanconstruct is being edited, add the new frame to it
       if (state.booleanConstructBeingEdited) {
         state.booleanConstructBeingEdited.frame = frame
+        state.booleanConstructBeingEdited = null //deselect boolean construct
         //if frame is being edited and is has an active field, add frame to that field
       } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
         state.frameBeingEdited.addFrame(frame)
