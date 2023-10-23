@@ -9,13 +9,13 @@ const icons = {
   'claim_duty': 'mdi-square',
 }
 
-// colors per frame type
+// colors per frame type / frame subtype
 const colors = {
+  'fact': 'primary',
   'agent': 'warning',
   'object': 'accent',
   'action': 'secondary',
   'duty': 'info',
-  'other': 'primary',
   'act': 'primary',
   'claim_duty': 'primary'
 

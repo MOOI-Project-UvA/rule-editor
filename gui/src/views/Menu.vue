@@ -20,32 +20,14 @@
       <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
           <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
-            Add fact:
+            Add frame:
           </div>
         </div>
         <div>
-          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'fact')" class="q-mr-sm"
-            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
+          <q-btn v-for="frameType in frameTypes" class="q-mr-sm" :color="colors[frameType.id]" :label="frameType.label"
+            @click="createFrame(frameType)">
             <q-tooltip class="text-subtitle2">
-              Add fact of type {{ frameType.label }}
-            </q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-    </q-item>
-    <!-- add relation -->
-    <q-item>
-      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
-        <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
-            Add relation:
-          </div>
-        </div>
-        <div>
-          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'relation')" class="q-mr-sm"
-            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
-            <q-tooltip class="text-subtitle2">
-              Add relation of type {{ frameType.label }}
+              Add frame of type {{ frameType.label }}
             </q-tooltip>
           </q-btn>
         </div>
