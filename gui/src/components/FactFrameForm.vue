@@ -1,10 +1,24 @@
 <template>
   <q-card flat bordered class="my-card">
     <q-card-section>
-      FACT of type <i>{{ frame.type.label }}</i>
-      <div class="float-right">
-        <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
-        </q-btn>
+      <div class="row">
+        <div class="col">FACT {{ frame.subType ? "of sub-type " + frame.subType.label : "" }}</div>
+        <div class="col q-gutter-sm">
+          <q-btn size="sm" round v-for="subType in factSubTypes"
+            :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
+            :icon="icons[subType.id]" @click="setSubType(subType)">
+            <q-tooltip class="text-subtitle2">
+              Set subtype to {{ subType.label }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+        <div class="col-1">
+          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
+            <q-tooltip class="text-subtitle2">
+              Add comment
+            </q-tooltip>
+          </q-btn>
+        </div>
       </div>
     </q-card-section>
     <q-card-section>
@@ -32,6 +46,7 @@ import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
+import { frameTypes } from "../model/frame";
 
 
 export default {
@@ -46,6 +61,10 @@ export default {
   computed: {
     frame() {
       return this.$store.state.frameBeingEdited;
+    },
+    factSubTypes() {
+      const factType = frameTypes.find(f => f.id == "fact")
+      return factType.subTypes
     }
   },
   mounted() {
@@ -73,6 +92,10 @@ export default {
     },
     toggleComments() {
       this.showComments = !this.showComments
+    },
+    setSubType(subType) {
+      console.log("current", this.frame.subType, "new", subType)
+      this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType
     }
   },
   components: { BooleanConstructPanel, CommentsList }
