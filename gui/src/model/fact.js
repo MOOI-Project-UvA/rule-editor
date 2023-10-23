@@ -18,6 +18,9 @@ export class Fact {
     get type() { return this._type }
     set type(type) { this._type = type }
 
+    get subType() { return this._subType }
+    set subType(subType) { this._subType = subType }
+
     get label() {
         return this._label && this._label.length > 0
             ? this._label

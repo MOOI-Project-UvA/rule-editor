@@ -5,6 +5,7 @@ class Act {
     constructor() {
         this._id = uuid4() //unique ID
         this._type = null //{id, class, label}
+        this._subType = null
         this._label = ""
         this._act = ""
         this._activeField = null
