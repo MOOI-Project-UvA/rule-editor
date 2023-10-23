@@ -94,7 +94,6 @@ export default {
       this.showComments = !this.showComments
     },
     setSubType(subType) {
-      console.log("current", this.frame.subType, "new", subType)
       this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType
     }
   },
