@@ -45,6 +45,7 @@
         :done="step > 2"
         caption="Step 2"
       >
+        <SourceCollectionView></SourceCollectionView>
       </q-step>
       <q-step
         :name="3"
@@ -121,6 +122,7 @@ import FrameNetworkView from "./views/FrameNetworkView.vue";
 import Menu from "./views/Menu.vue";
 import AnnotationPanel from "./components/AnnotationPanel.vue";
 import TaskDefinitionView from "./views/TaskDefinitionView.vue";
+import SourceCollectionView from "./views/SourceCollectionView.vue";
 
 export default {
   name: "app",
@@ -129,6 +131,7 @@ export default {
   }),
 
   components: {
+    SourceCollectionView,
     TaskDefinitionView,
     SourceView,
     FrameEditorView,
