@@ -5,6 +5,23 @@ export default {
     description: null,
     title: null,
   }),
+  computed: {
+    validateForm() {
+      console.log(
+        "!this.description",
+        !this.description,
+        "!this.title",
+        !this.title,
+        "AND",
+        !this.description || !this.title,
+      );
+      return !this.description || !this.title;
+    },
+  },
+
+  methods: {
+    buttonValidation() {},
+  },
 };
 </script>
 
@@ -45,14 +62,21 @@ export default {
           lazy-rules
           hint="Define a description for the task"
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
+          clearable
         />
         <div></div>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-actions class="q-pa-md">
         <q-space></q-space>
-        <q-btn type="submit" color="primary">Continue</q-btn>
-        <!--       TODO: form validation and next step of process-->
+        <q-btn
+          type="submit"
+          color="primary"
+          @click="$emit('updateStepper')"
+          :disable="validateForm"
+          >Continue</q-btn
+        >
+        <!-- TODO: form validation and next step of process -->
       </q-card-actions>
     </q-card>
   </div>

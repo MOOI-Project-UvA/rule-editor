@@ -24,7 +24,6 @@
       animated
       color="primary"
       flat
-      bordered
       style="height: 94vh"
     >
       <q-step
@@ -35,7 +34,9 @@
         caption="Step 1"
         class="fill-height row justify-center content-center"
       >
-        <TaskDefinitionView></TaskDefinitionView>
+        <TaskDefinitionView
+          @update-stepper="updateStepperValue"
+        ></TaskDefinitionView>
       </q-step>
       <q-step
         :name="2"
@@ -135,8 +136,15 @@ export default {
     Menu,
     AnnotationPanel,
   },
+
   mounted() {
     this.$store.dispatch("readAvailableSources");
+  },
+  methods: {
+    updateStepperValue() {
+      console.log("I am updating the stepper value from step 1");
+      this.$refs.stepper.next();
+    },
   },
 };
 </script>
