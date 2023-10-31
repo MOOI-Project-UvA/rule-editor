@@ -1,13 +1,16 @@
 import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
-import { Act } from "../model/act.js"
-import { ClaimDuty } from "../helpers/flint.js"
+import { Act } from "../model/act.js";
+import { ClaimDuty } from "../helpers/flint.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
-import { json } from 'd3-fetch'
-import { addParentReferencesToDocument, getSentencesInDocument } from "../helpers/document.js"
-import { v4 as uuid4 } from 'uuid'
+import { json } from "d3-fetch";
+import {
+  addParentReferencesToDocument,
+  getSentencesInDocument,
+} from "../helpers/document.js";
+import { v4 as uuid4 } from "uuid";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -19,46 +22,51 @@ const store = createStore({
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
-      availableSources: [] //list of sources that the user can choose from
+      availableSources: [], //list of sources that the user can choose from
+      taskInformation: {
+        title: null,
+        description: null,
+      }, // information about the task
     };
   },
   getters: {
     getFileContent: (state) => state.fileContent,
     reconstructedData: (state) => state.reconstructedData,
+    getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
     addNewFrame(state, { frameType, annotation }) {
-      let frame
+      let frame;
       switch (frameType.class) {
-        case 'fact':
-          frame = new Fact()
+        case "fact":
+          frame = new Fact();
           break;
-        case 'relation':
+        case "relation":
           switch (frameType.id) {
-            case 'act':
-              frame = new Act()
+            case "act":
+              frame = new Act();
               break;
-            case 'claim_duty':
-              frame = new ClaimDuty()
+            case "claim_duty":
+              frame = new ClaimDuty();
               break;
           }
           break;
       }
       if (annotation) {
-        frame.addAnnotation(annotation) //this also sets annotation.frame
+        frame.addAnnotation(annotation); //this also sets annotation.frame
       }
-      frame.type = frameType
+      frame.type = frameType;
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
       //if a booleanconstruct is being edited, add the new frame to it
       if (state.booleanConstructBeingEdited) {
-        state.booleanConstructBeingEdited.frame = frame
-        state.booleanConstructBeingEdited = null //deselect boolean construct
+        state.booleanConstructBeingEdited.frame = frame;
+        state.booleanConstructBeingEdited = null; //deselect boolean construct
         //if frame is being edited and is has an active field, add frame to that field
       } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
-        state.frameBeingEdited.addFrame(frame)
+        state.frameBeingEdited.addFrame(frame);
       } else {
-        state.frameBeingEdited = frame
+        state.frameBeingEdited = frame;
       }
     },
     setFrameBeingEdited(state, frame) {
@@ -68,26 +76,27 @@ const store = createStore({
       state.showFrameSource = show;
     },
     setAnnotationBeingEdited(state, annotation) {
-      state.annotationBeingEdited = annotation
+      state.annotationBeingEdited = annotation;
     },
     removeFrame(state, frame) {
       if (frame == state.frameBeingEdited) {
-        state.frameBeingEdited = null
-        state.booleanConstructBeingEdited = null
-        state.showFrameSource = null
+        state.frameBeingEdited = null;
+        state.booleanConstructBeingEdited = null;
+        state.showFrameSource = null;
       }
-      const index = state.frames.indexOf(frame)
-      state.frames.splice(index, 1)
-
+      const index = state.frames.indexOf(frame);
+      state.frames.splice(index, 1);
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
       // case1: complex fact
       // get the generated ids (frame._id) of the complexFrames, which contain the AtomicFact
 
-      state.frames.filter(f => f.type == 'fact' && f.booleanConstruct).forEach(f => {
-        f.booleanConstruct.removeFrame(frame)
-      })
+      state.frames
+        .filter((f) => f.type == "fact" && f.booleanConstruct)
+        .forEach((f) => {
+          f.booleanConstruct.removeFrame(frame);
+        });
       const actFrameIds = state.frames
         .filter((fr) => fr._type === "act")
         .filter((act) => {
@@ -138,31 +147,31 @@ const store = createStore({
             index
           ]._terminates.filter((fr) => fr._id !== frame._id);
           state.frames[index]._creates = state.frames[index]._creates.filter(
-            (fr) => fr._id !== frame._id
+            (fr) => fr._id !== frame._id,
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-              state.frames[index]._action._id === frame._id
+            state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-              state.frames[index]._actor._id == frame._id
+            state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-              state.frames[index]._object._id == frame._id
+            state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-              state.frames[index]._precondition._id == frame._id
+            state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-              state.frames[index]._recipient._id == frame._id
+            state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
@@ -172,43 +181,54 @@ const store = createStore({
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
       // console.log("updated list of frames:", state.frames.length, state.frames);
     },
-
+    setTaskInformation(state, task) {
+      console.log("in index.js: ", task);
+      state.taskInformation.title = task.title;
+      state.taskInformation.description = task.description;
+    },
   },
   actions: {
     readAvailableSources(context) {
-      console.log("reading available sources")
-      json('/sources.json').then(data => {
-        context.state.availableSources = data
-      })
+      console.log("reading available sources");
+      json("/sources.json").then((data) => {
+        context.state.availableSources = data;
+      });
     },
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
     addSource(context, sourceId) {
       // console.log("addSource", sourceId)
-      const source = this.state.availableSources.find(s => s.id == sourceId)
+      const source = this.state.availableSources.find((s) => s.id == sourceId);
       // console.log("reading", source.fileName)
-      json(source.fileName).then(data => {
-        const document = data['@graph'].find(d => 'document' in d).document
-        document.title = source.title
+      json(source.fileName).then((data) => {
+        const document = data["@graph"].find((d) => "document" in d).document;
+        document.title = source.title;
         //add parent references to each part of the document
-        addParentReferencesToDocument(document)
+        addParentReferencesToDocument(document);
         //add attribute to each sentence to store annotations
-        getSentencesInDocument(document).forEach(s => s['annotations'] = [])
-        context.state.sourceDocuments = [...context.state.sourceDocuments, document]
+        getSentencesInDocument(document).forEach(
+          (s) => (s["annotations"] = []),
+        );
+        context.state.sourceDocuments = [
+          ...context.state.sourceDocuments,
+          document,
+        ];
         // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
-      })
+      });
     },
     createAct(context) {
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
     },
     saveInterpretation(context) {
-      console.log("saving interpretation")
+      console.log("saving interpretation");
       //convert frames to json string
       //replace object references by id's
-      console.log("frames", context.state.frames)
-      const string = JSON.stringify(context.state.frames.map(f => f.toFlatObject()))
-      console.log("string", string)
+      console.log("frames", context.state.frames);
+      const string = JSON.stringify(
+        context.state.frames.map((f) => f.toFlatObject()),
+      );
+      console.log("string", string);
       const blob = new Blob([string], {
         type: "text/plain;charset=utf-8",
       });
@@ -216,50 +236,68 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {
-      context.state.frames = parseJsonToFrames(jsonText)
-      console.log("loaded interpretation", context.state.frames)
+      context.state.frames = parseJsonToFrames(jsonText);
+      console.log("loaded interpretation", context.state.frames);
     },
     // gets the id of the hovered frame
     // and updates the frames array, which contain
     highlightElements(context, hoveredElement) {
-
       // array with ids of the related elements ...
-      let relatedIds = new Array(hoveredElement._id)
+      let relatedIds = new Array(hoveredElement._id);
       // Case 1: Hovering over an atomic fact, higlight the related parents
-      if (hoveredElement._type === "fact" && !hoveredElement._booleanConstruct) {
+      if (
+        hoveredElement._type === "fact" &&
+        !hoveredElement._booleanConstruct
+      ) {
         // check if acts contain this element
-        context.state.frames.filter(d => d._type === 'act')
-          .forEach(d => d.checkFrameExistance(d, hoveredElement) ? relatedIds.push(d._id) : null)
+        context.state.frames
+          .filter((d) => d._type === "act")
+          .forEach((d) =>
+            d.checkFrameExistance(d, hoveredElement)
+              ? relatedIds.push(d._id)
+              : null,
+          );
         // console.log("actIds without contexts:", relatedIds)
 
         // check if contexts contain this element
-        context.state.frames.filter(d => d._type === 'fact' && d._booleanConstruct && d._id !== hoveredElement._id)
-          .forEach(d => d.checkFrameExistance(hoveredElement) ? relatedIds.push(d._id) : null)
+        context.state.frames
+          .filter(
+            (d) =>
+              d._type === "fact" &&
+              d._booleanConstruct &&
+              d._id !== hoveredElement._id,
+          )
+          .forEach((d) =>
+            d.checkFrameExistance(hoveredElement)
+              ? relatedIds.push(d._id)
+              : null,
+          );
         // console.log("actIds with contexts:", relatedIds)
         // console.log("context.state.frames: ", context.state.frames)
       }
       // Case 2: if the hovered element is an Act, highlight the corresponding facts
       if (hoveredElement._type === "act") {
-        relatedIds = relatedIds.concat(hoveredElement.childrenIds)
+        relatedIds = relatedIds.concat(hoveredElement.childrenIds);
       }
       // Case 3: if the hovered element is a context, highlight the corresponding facts
       // check if a booleanConstruct could contain acts or other complex structures.
       if (hoveredElement._type === "fact" && hoveredElement._booleanConstruct) {
         // give me all the children
-        relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds)
+        relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds);
       }
 
       // change the transparecy of the non-related atomic facts
       context.state.frames.forEach((d) => {
-        return relatedIds.includes(d._id) ? d._highlight = false : d._highlight = true;
+        return relatedIds.includes(d._id)
+          ? (d._highlight = false)
+          : (d._highlight = true);
       });
     },
     // Mouseout restore
     unhighlightElements(context) {
-      context.state.frames.forEach(d => d._highlight = false);
-    }
-
-  }
+      context.state.frames.forEach((d) => (d._highlight = false));
+    },
+  },
 });
 
 export { store };

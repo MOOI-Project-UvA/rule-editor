@@ -20,7 +20,14 @@ export default {
   },
 
   methods: {
-    buttonValidation() {},
+    storeTaskData() {
+      this.$store.commit("setTaskInformation", {
+        title: this.title,
+        description: this.description,
+      });
+      // emit event to the parent component to update the store
+      this.$emit("updateStepper");
+    },
   },
 };
 </script>
@@ -72,7 +79,7 @@ export default {
         <q-btn
           type="submit"
           color="primary"
-          @click="$emit('updateStepper')"
+          @click="storeTaskData"
           :disable="validateForm"
           >Continue</q-btn
         >
