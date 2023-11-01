@@ -1,9 +1,14 @@
 <template>
   <div id="source-collection-view">
     <q-card flat bordered class="my-card q-ma-sm" style="width: 600px">
-      <q-item>
+      <q-item class="q-ma-sm">
+        <q-item-section avatar>
+          <q-avatar icon="mdi-bookmark-box-multiple-outline" rounded size="xl">
+          </q-avatar>
+        </q-item-section>
         <q-item-section>
-          <q-item-label>Source view</q-item-label>
+          <q-item-label>Collect sources</q-item-label>
+          <q-item-label caption>Step 2</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
@@ -23,6 +28,7 @@
           </q-avatar>
         </q-item-section>
       </q-item>
+
       <q-separator />
       <q-card-section>
         <SourceLoader />
@@ -58,7 +64,7 @@
         <q-btn type="submit" color="primary">Back</q-btn>
         <q-space></q-space>
         <q-btn type="submit" color="primary">Continue</q-btn>
-        <!-- TODO: form validation and next step of process -->
+        <!-- TODO: add events to continue and back buttons. Validation is needed as well (at least one selected sentence) -->
       </q-card-actions>
     </q-card>
   </div>
@@ -102,7 +108,7 @@ export default {
 }
 
 #source-collection-card-content {
-  height: 66vh;
+  height: 64vh;
   overflow-y: auto;
 }
 
