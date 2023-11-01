@@ -7,15 +7,13 @@
           <q-checkbox size="sm" v-model="frame.isComplex" label="Complex" />
         </div>
         <div class="col q-gutter-sm">
-          <template v-if="!frame.isComplex">
-            <q-btn size="sm" round v-for="subType in factSubTypes"
-              :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
-              :icon="icons[subType.id]" @click="setSubType(subType)">
-              <q-tooltip class="text-subtitle2">
-                Set subtype to {{ subType.label }}
-              </q-tooltip>
-            </q-btn>
-          </template>
+          <q-btn size="sm" round v-for="subType in factSubTypes"
+            :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
+            :icon="icons[subType.id]" @click="setSubType(subType)">
+            <q-tooltip class="text-subtitle2">
+              Set subtype to {{ subType.label }}
+            </q-tooltip>
+          </q-btn>
         </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
