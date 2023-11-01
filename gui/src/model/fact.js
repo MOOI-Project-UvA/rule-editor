@@ -40,7 +40,7 @@ export class Fact {
     set fact(fact) { this._fact = fact }
 
     get subdivision() { return this._subdivision }
-    set subdivision(subdivision) { this.subdivision = subdivision }
+    set subdivision(subdivision) { this._subdivision = subdivision }
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
@@ -64,20 +64,31 @@ export class Fact {
             label: this.label,
             fact: this.fact,
             typeId: this.type.id,
+            subTypeId: this.subType ? this.subType.id : null,
             annotations: this.annotations.map(a => a.toFlatObject()),
-            comments: this.comments
+            comments: this.comments,
+            isComplex: this.isComplex,
+            subdivision: this.subdivision.toFlatObject()
         }
     }
 
     //fiil frame with data
-    fromFlatObject(data) {
-        this.label = data.label,
-            this.fact = data.fact,
-            data.annotations.forEach(a => {
-                let annotation = new Annotation()
-                annotation.fromFlatObject(a)
-                this.addAnnotation(annotation)
-            })
+    fromFlatObject(data, allFrames) {
+        this.label = data.label
+        this.fact = data.fact
+        if (data.subTypeId) {
+            //this.type is instantiated in import.js
+            //find corresponding subtype in type
+            this.subType = this.type.subTypes.find(t => t.id == data.subTypeId)
+        }
+        data.annotations.forEach(a => {
+            let annotation = new Annotation()
+            annotation.fromFlatObject(a)
+            this.addAnnotation(annotation)
+        })
+        this.isComplex = data.isComplex
+        this.subdivision = new BooleanConstruct()
+        this.subdivision.fromFlatObject(data.subdivision, allFrames)
     }
 }
 
