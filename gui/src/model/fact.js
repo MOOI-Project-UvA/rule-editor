@@ -7,6 +7,7 @@ export class Fact {
         this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
         this._type = null //type object (id, class, label)
+        this._subType = null //optional subtype (id, class, label)
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
     }
@@ -16,6 +17,9 @@ export class Fact {
 
     get type() { return this._type }
     set type(type) { this._type = type }
+
+    get subType() { return this._subType }
+    set subType(subType) { this._subType = subType }
 
     get label() {
         return this._label && this._label.length > 0

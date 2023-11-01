@@ -2,7 +2,7 @@
   <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight'] }" :removable="removable"
     :disable="disable" @remove="onRemove" :color="disable
       ? 'grey-5'
-      : colors[frame.type.id]
+      : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
       " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)"
     v-on:mouseleave="onLeave(frame)">
     {{ frame.label }}
