@@ -141,7 +141,8 @@ class Act {
             action: this._action ? this._action.id : null,
             actor: this._actor ? this._actor.id : null,
             object: this._object ? this._object.id : null,
-            precondition: this._precondition ? this._precondition.id : null,
+            //precondition is never null, it has (a possibly empty) boolean construct
+            precondition: this._precondition.toFlatObject(),
             recipient: this._recipient ? this._recipient.id : null,
             creates: this._creates.map(f => f.id),
             terminates: this._terminates.map(f => f.id),
@@ -156,19 +157,12 @@ class Act {
         this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
         this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
         this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
+        this._precondition = new BooleanConstruct()
+        this._precondition.fromFlatObject(frameData.precondition, allFrames)
         this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments
-
-
-        this._precondition = new BooleanConstruct()
-        if (frameData.precondition) {
-            this._precondition.fromFlatObject(frameData.precondition, allFrames)
-        } else {
-            this._precondition.addEmptyChild()
-        }
-
     }
     checkFrameExistance(act, element) {
 
