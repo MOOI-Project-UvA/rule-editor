@@ -206,9 +206,13 @@ const store = createStore({
         //add parent references to each part of the document
         addParentReferencesToDocument(document);
         //add attribute to each sentence to store annotations
-        getSentencesInDocument(document).forEach(
-          (s) => (s["annotations"] = []),
-        );
+        getSentencesInDocument(document).forEach((s) => {
+          s["annotations"] = [];
+          s["checked"] = false;
+        });
+        const sentences = getSentencesInDocument(document);
+        document.sentences = sentences;
+
         context.state.sourceDocuments = [
           ...context.state.sourceDocuments,
           document,

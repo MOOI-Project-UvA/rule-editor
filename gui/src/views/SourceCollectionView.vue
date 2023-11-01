@@ -44,7 +44,7 @@
                 <q-card flat square class="q-ma-sm q-pa-sm">
                   <q-card-section class="q-pt-none scrollable">
                     <!-- show recursively all text leafs in the document tree -->
-                    <TextElement :textPiece="sourceDocument" />
+                    <ListComponent :textPiece="sourceDocument.sentences" />
                   </q-card-section>
                 </q-card>
               </q-expansion-item>
@@ -55,21 +55,9 @@
       <q-separator></q-separator>
 
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeTaskData"
-          :disable="validateForm"
-          >Back</q-btn
-        >
+        <q-btn type="submit" color="primary">Back</q-btn>
         <q-space></q-space>
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeTaskData"
-          :disable="validateForm"
-          >Continue</q-btn
-        >
+        <q-btn type="submit" color="primary">Continue</q-btn>
         <!-- TODO: form validation and next step of process -->
       </q-card-actions>
     </q-card>
@@ -77,11 +65,11 @@
 </template>
 
 <script>
-import TextElement from "../components/TextElement.vue";
 import SourceLoader from "../components/SourceLoader.vue";
+import ListComponent from "../components/ListComponent.vue";
 export default {
   components: {
-    TextElement,
+    ListComponent,
     SourceLoader,
   },
   data: () => ({
