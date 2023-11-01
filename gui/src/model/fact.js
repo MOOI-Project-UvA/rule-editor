@@ -12,7 +12,7 @@ export class Fact {
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
-        this._isComplex = false
+        this._isComplex = true
     }
 
     get id() { return this._id }
