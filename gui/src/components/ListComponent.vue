@@ -45,6 +45,7 @@ export default {
   methods: {
     toggleBox: function (val, evt) {
       console.log("toggling", val, this.checkedChunks);
+      console.log("toggling2: ", this.textPiece);
     },
   },
 };

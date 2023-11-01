@@ -45,7 +45,10 @@
         :done="step > 2"
         caption="Step 2"
       >
-        <SourceCollectionView></SourceCollectionView>
+        <SourceCollectionView
+          @update-stepper="updateStepperValue"
+          @decrease-stepper="decreaseStepperValue"
+        ></SourceCollectionView>
       </q-step>
       <q-step
         :name="3"
@@ -147,6 +150,10 @@ export default {
     updateStepperValue() {
       console.log("I am updating the stepper value from step 1");
       this.$refs.stepper.next();
+    },
+    decreaseStepperValue() {
+      console.log("I am decreasing the stepper's value from step 2");
+      this.$refs.stepper.previous();
     },
   },
 };

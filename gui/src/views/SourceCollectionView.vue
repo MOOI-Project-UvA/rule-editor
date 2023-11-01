@@ -7,7 +7,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label>Collect sources</q-item-label>
+          <q-item-label>Collect sources {{ activeSource }}</q-item-label>
           <q-item-label caption>Step 2</q-item-label>
         </q-item-section>
         <q-item-section avatar>
@@ -39,7 +39,7 @@
           <q-card-section>
             <q-list bordered class="rounded-borders q-pa-md">
               <q-expansion-item
-                v-model="expanded[docIndex]"
+                v-model="expandedSources[docIndex]"
                 expand-icon-toggle
                 switch-toggle-side
                 expand-separator
@@ -47,6 +47,7 @@
                 :caption="sourceDocument.title"
                 default-opened
               >
+                <!--                {{ (activeDocIndex = docIndex) }}-->
                 <q-card flat square class="q-ma-sm q-pa-sm">
                   <q-card-section class="q-pt-none scrollable">
                     <!-- show recursively all text leafs in the document tree -->
@@ -61,9 +62,13 @@
       <q-separator></q-separator>
 
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
-        <q-btn type="submit" color="primary">Back</q-btn>
+        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')"
+          >Back</q-btn
+        >
         <q-space></q-space>
-        <q-btn type="submit" color="primary">Continue</q-btn>
+        <q-btn type="submit" color="primary" @click="storeSelectSources"
+          >Continue</q-btn
+        >
         <!-- TODO: add events to continue and back buttons. Validation is needed as well (at least one selected sentence) -->
       </q-card-actions>
     </q-card>
@@ -79,14 +84,29 @@ export default {
     SourceLoader,
   },
   data: () => ({
-    expanded: [],
+    expandedSources: [],
   }),
   computed: {
-    reconstructedData() {
-      return this.$store.getters.reconstructedData;
-    },
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
+    },
+    activeSource() {
+      console.log("this.expandedSources", this.expandedSources);
+      return this.expandedSources;
+    },
+  },
+  methods: {
+    storeSelectSources: function () {
+      console.log(
+        "storing selected sources!",
+        this.sourceDocuments,
+        this.expandedSources,
+        this.activeDocIndex,
+        // this.sourceDocuments[this.activeDocIndex].selectedSentences,
+      );
+      // TODO: updated the selected sentences based on the checkedsentences
+      // emit event to the parent component to update the stepper
+      this.$emit("updateStepper");
     },
   },
   watch: {

@@ -212,6 +212,7 @@ const store = createStore({
         });
         const sentences = getSentencesInDocument(document);
         document.sentences = sentences;
+        document.selectedSentences = sentences;
 
         context.state.sourceDocuments = [
           ...context.state.sourceDocuments,
