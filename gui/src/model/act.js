@@ -84,7 +84,17 @@ class Act {
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
-    get sentences() { return this.annotations.map(a => a.snippets.map(s => s.sentence)).flat() }
+    get sentences() {
+        const sentences = this.annotations.map(a => a.snippets.map(s => s.sentence)).flat()
+        sentences.sort((s1, s2) => {
+            return (s1.id < s2.id)
+                ? -1
+                : s1.id > s2.id
+                    ? 1
+                    : 0
+        })
+        return sentences
+    }
 
     get allowedSubClassesForActiveField() {
         switch (this._activeField) {
