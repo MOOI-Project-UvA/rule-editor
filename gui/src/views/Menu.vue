@@ -50,7 +50,7 @@
       </div>
     </q-item>
     <!-- show -->
-    <q-item>
+    <!-- <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
           <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
@@ -61,7 +61,7 @@
           <q-btn class="q-mr-sm" color="primary" icon="mdi-source-branch" label="relations" disable />
         </div>
       </div>
-    </q-item>
+    </q-item> -->
   </q-card>
 </template>
 
