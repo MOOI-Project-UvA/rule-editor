@@ -2,15 +2,20 @@
   <q-card flat bordered class="my-card">
     <q-card-section>
       <div class="row">
-        <div class="col">FACT {{ frame.subType ? "of sub-type " + frame.subType.label : "" }}</div>
+        <div class="col">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}</div>
         <div class="col q-gutter-sm">
-          <q-btn size="sm" round v-for="subType in factSubTypes"
-            :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
-            :icon="icons[subType.id]" @click="setSubType(subType)">
-            <q-tooltip class="text-subtitle2">
-              Set subtype to {{ subType.label }}
-            </q-tooltip>
-          </q-btn>
+          <q-checkbox size="sm" v-model="frame.isComplex" label="Complex" />
+        </div>
+        <div class="col q-gutter-sm">
+          <template v-if="!frame.isComplex">
+            <q-btn size="sm" round v-for="subType in factSubTypes"
+              :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
+              :icon="icons[subType.id]" @click="setSubType(subType)">
+              <q-tooltip class="text-subtitle2">
+                Set subtype to {{ subType.label }}
+              </q-tooltip>
+            </q-btn>
+          </template>
         </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
@@ -27,13 +32,14 @@
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
+    <q-card-section v-if="frame.isComplex">
+      <div class="label">Subdivision</div>
+      <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />
+    </q-card-section>
     <q-card-section>
       <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" />
       <!-- <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" /> -->
     </q-card-section>
-    <!-- <q-card-section v-if="subdivided">
-      <BooleanConstructPanel :booleanConstruct="frame.booleanConstruct" :frame="frame" />
-    </q-card-section> -->
     <q-card-actions>
       <q-btn color="primary" @click="closeForm">Close</q-btn>
     </q-card-actions>
@@ -101,4 +107,8 @@ export default {
 }
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.label {
+  margin-left: 0px;
+}
+</style>

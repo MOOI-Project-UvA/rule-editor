@@ -58,12 +58,12 @@
             <!-- if button is after last child, add new BC. Else change operator -->
             <!-- show button for adding frame if BC is empty and is a leaf node -->
             <div v-if="isBeingEdited" class="button-label">
-                Select existing frame or create a new frame by annotating the source {{
-                    booleanConstruct.operatorToJoinChildren }}
+                Select existing frame or create a new frame by annotating the source.
             </div>
         </div>
         <div class="col-1">
-            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close" @click="deleteBooleanConstruct" /></div>
+            <div v-if="booleanConstruct.parent"><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close"
+                    @click="deleteBooleanConstruct" /></div>
             <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square" @click="subdivide" />
             </div>
         </div>

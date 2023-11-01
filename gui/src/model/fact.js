@@ -1,5 +1,6 @@
 import { v4 as uuid4 } from 'uuid'
 import { Annotation } from './annotation'
+import { BooleanConstruct } from './booleanConstruct.js'
 
 export class Fact {
     constructor() {
@@ -10,6 +11,8 @@ export class Fact {
         this._subType = null //optional subtype (id, class, label)
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
+        this._subdivision = new BooleanConstruct()
+        this._isComplex = false
     }
 
     get id() { return this._id }
@@ -20,6 +23,9 @@ export class Fact {
 
     get subType() { return this._subType }
     set subType(subType) { this._subType = subType }
+
+    get isComplex() { return this._isComplex }
+    set isComplex(isComplex) { this._isComplex = isComplex }
 
     get label() {
         return this._label && this._label.length > 0
@@ -32,6 +38,9 @@ export class Fact {
 
     get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
     set fact(fact) { this._fact = fact }
+
+    get subdivision() { return this._subdivision }
+    set subdivision(subdivision) { this.subdivision = subdivision }
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
