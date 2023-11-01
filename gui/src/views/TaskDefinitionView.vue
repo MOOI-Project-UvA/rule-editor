@@ -34,21 +34,44 @@ export default {
 
 <template>
   <div id="task-definition-view">
-    <q-card flat bordered style="max-width: 500px">
-      <q-item class="q-ma-sm">
+    <q-card flat bordered style="width: 500px; max-width: 600px">
+      <q-item class="q-ma-md">
         <q-item-section avatar>
           <q-avatar icon="mdi-head-dots-horizontal-outline" rounded size="xl">
           </q-avatar>
         </q-item-section>
-
         <q-item-section>
-          <q-item-label>Define task</q-item-label>
-          <q-item-label caption
-            >At this this step, you can define a task and its
-            description</q-item-label
-          >
+          <q-item-label>Define a task</q-item-label>
+          <q-item-label caption>Step 1</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon
+              name="mdi-information-outline"
+              class="cursor-pointer"
+            ></q-icon>
+            <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
+              <div style="max-width: 300px">
+                At this step, you can define a task and its description.
+              </div>
+            </q-tooltip>
+          </q-avatar>
         </q-item-section>
       </q-item>
+      <!--      <q-item class="q-ma-sm">-->
+      <!--        <q-item-section avatar>-->
+      <!--          <q-avatar icon="mdi-head-dots-horizontal-outline" rounded size="xl">-->
+      <!--          </q-avatar>-->
+      <!--        </q-item-section>-->
+
+      <!--        <q-item-section>-->
+      <!--          <q-item-label>Define task</q-item-label>-->
+      <!--          <q-item-label caption-->
+      <!--            >At this this step, you can define a task and its-->
+      <!--            description</q-item-label-->
+      <!--          >-->
+      <!--        </q-item-section>-->
+      <!--      </q-item>-->
       <q-separator></q-separator>
       <q-card-section>
         <q-input
