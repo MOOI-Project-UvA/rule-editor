@@ -57,27 +57,7 @@
         :done="step > 2"
         caption="Step 3"
       >
-        <div class="row" style="height: 100%">
-          <!-- source view column -->
-          <div class="col-4">
-            <SourceView />
-          </div>
-          <div class="col-3">
-            <FrameNetworkView />
-          </div>
-          <!-- chip view + editor forms column-->
-          <div class="col-5">
-            <!-- save and load interpretation buttons -->
-            <div class="row">
-              <Menu />
-            </div>
-            <div class="row">
-              <!-- frame editor view -->
-              <FrameEditorView />
-            </div>
-          </div>
-        </div>
-        <AnnotationPanel />
+        <interpretation-view></interpretation-view>
       </q-step>
       <q-step
         :name="4"
@@ -97,35 +77,14 @@
         caption="Step 5"
       >
       </q-step>
-      <template v-slot:navigation>
-        <q-stepper-navigation class="bottom: 0px;">
-          <q-btn
-            @click="$refs.stepper.next()"
-            color="primary"
-            :label="step === 4 ? 'Finish' : 'Continue'"
-          />
-          <q-btn
-            v-if="step > 1"
-            flat
-            color="primary"
-            @click="$refs.stepper.previous()"
-            label="Back"
-            class="q-ml-sm"
-          />
-        </q-stepper-navigation>
-      </template>
     </q-stepper>
   </div>
 </template>
 
 <script>
-import SourceView from "./views/SourceView.vue";
-import FrameEditorView from "./views/FrameEditorView.vue";
-import FrameNetworkView from "./views/FrameNetworkView.vue";
-import Menu from "./views/Menu.vue";
-import AnnotationPanel from "./components/AnnotationPanel.vue";
 import TaskDefinitionView from "./views/TaskDefinitionView.vue";
 import SourceCollectionView from "./views/SourceCollectionView.vue";
+import InterpretationView from "./views/InterpretationView.vue";
 
 export default {
   name: "app",
@@ -134,18 +93,11 @@ export default {
   }),
 
   components: {
+    InterpretationView,
     SourceCollectionView,
     TaskDefinitionView,
-    SourceView,
-    FrameEditorView,
-    FrameNetworkView,
-    Menu,
-    AnnotationPanel,
   },
 
-  mounted() {
-    this.$store.dispatch("readAvailableSources");
-  },
   methods: {
     updateStepperValue() {
       console.log("I am updating the stepper value from step 1");
