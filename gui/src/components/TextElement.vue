@@ -12,7 +12,7 @@
     "
   >
     <!-- show colored bar and textual content -->
-    <div class="text-chunk">
+    <div class="text-chunk" v-if="isChecked">
       <div
         class="relation-bar"
         :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
@@ -20,14 +20,13 @@
       />
       <div
         class="text-piece"
-        v-if="isSentence && isChecked"
+        v-if="isSentence"
         @mouseup="handleSelection"
         v-html="htmlText"
         ref="sentenceElement"
       ></div>
     </div>
-    <!-- <div class="text-chunk" v-if="isSentence" v-html="htmlText" ref="sentenceElement">
-        </div> -->
+
     <div v-for="child in textPiece.children">
       <TextElement :textPiece="child" />
     </div>
