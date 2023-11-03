@@ -17,68 +17,75 @@
     limitations under the License.
   */
   -->
-  <div class="q-pa-md q-ma-md">
-    <q-stepper
-      v-model="step"
-      ref="stepper"
-      animated
-      color="primary"
-      flat
-      style="height: 94vh"
-    >
-      <q-step
-        :name="1"
-        title="Define a task"
-        icon="mdi-head-dots-horizontal-outline"
-        :done="step > 1"
-        caption="Step 1"
-        class="fill-height row justify-center content-center"
-      >
-        <TaskDefinitionView
-          @update-stepper="updateStepperValue"
-        ></TaskDefinitionView>
-      </q-step>
-      <q-step
-        :name="2"
-        title="Collect sources"
-        icon="mdi-bookmark-box-multiple-outline"
-        :done="step > 2"
-        caption="Step 2"
-      >
-        <SourceCollectionView
-          @update-stepper="updateStepperValue"
-          @decrease-stepper="decreaseStepperValue"
-        ></SourceCollectionView>
-      </q-step>
-      <q-step
-        :name="3"
-        title="Interpret sources"
-        icon="mdi-thought-bubble-outline"
-        :done="step > 2"
-        caption="Step 3"
-      >
-        <interpretation-view></interpretation-view>
-      </q-step>
-      <q-step
-        :name="4"
-        title="Validate interpretation"
-        icon="mdi-timeline-check-outline"
-        :done="step > 3"
-        disable
-        caption="Step 4"
-      >
-      </q-step>
-      <q-step
-        :name="5"
-        title="Perform task"
-        icon="mdi-playlist-check"
-        :done="step > 4"
-        disable
-        caption="Step 5"
-      >
-      </q-step>
-    </q-stepper>
-  </div>
+  <q-layout>
+    <q-page-container>
+      <q-page padding>
+        <div class="q-ma-sm">
+          <q-stepper
+            id="stepper-id"
+            v-model="step"
+            ref="stepper"
+            animated
+            color="primary"
+            flat
+          >
+            <q-step
+              :name="1"
+              title="Define a task"
+              icon="mdi-head-dots-horizontal-outline"
+              :done="step > 1"
+              caption="Step 1"
+              class="fill-height row justify-center content-center"
+            >
+              <TaskDefinitionView
+                @update-stepper="updateStepperValue"
+              ></TaskDefinitionView>
+            </q-step>
+            <q-step
+              :name="2"
+              title="Collect sources"
+              icon="mdi-bookmark-box-multiple-outline"
+              class="fill-height row justify-center content-start"
+              :done="step > 2"
+              caption="Step 2"
+            >
+              <SourceCollectionView
+                @update-stepper="updateStepperValue"
+                @decrease-stepper="decreaseStepperValue"
+              ></SourceCollectionView>
+            </q-step>
+            <q-step
+              :name="3"
+              title="Interpret sources"
+              icon="mdi-thought-bubble-outline"
+              :done="step > 2"
+              caption="Step 3"
+            >
+              <interpretation-view></interpretation-view>
+            </q-step>
+            <q-step
+              :name="4"
+              title="Validate interpretation"
+              icon="mdi-timeline-check-outline"
+              :done="step > 3"
+              disable
+              caption="Step 4"
+            >
+            </q-step>
+            <q-step
+              :name="5"
+              title="Perform task"
+              icon="mdi-playlist-check"
+              :done="step > 4"
+              disable
+              caption="Step 5"
+            >
+            </q-step>
+          </q-stepper>
+        </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -112,6 +119,6 @@ export default {
 </script>
 <style scoped>
 .fill-height {
-  height: calc(100vh - 210px);
+  height: calc(100vh - 136px);
 }
 </style>

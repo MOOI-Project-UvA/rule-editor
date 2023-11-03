@@ -1,6 +1,7 @@
 <template>
   <div id="source-collection-view">
     <q-card flat bordered class="my-card q-ma-sm" style="width: 600px">
+      <!-- header -->
       <q-item class="q-ma-sm">
         <q-item-section avatar>
           <q-avatar icon="mdi-bookmark-box-multiple-outline" rounded size="xl">
@@ -28,8 +29,8 @@
           </q-avatar>
         </q-item-section>
       </q-item>
-
       <q-separator />
+      <!--  main content of the card-->
       <q-card-section>
         <SourceLoader />
       </q-card-section>
@@ -48,8 +49,15 @@
                 default-opened
               >
                 <!--                {{ (activeDocIndex = docIndex) }}-->
-                <q-card flat square class="q-ma-sm q-pa-sm">
-                  <q-card-section class="q-pt-none scrollable">
+                <q-card
+                  flat
+                  square
+                  class="q-ma-sm q-pa-sm expansion-items"
+                  :style="`max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px - (${
+                    docIndex + 1
+                  } * 120px));`"
+                >
+                  <q-card-section class="q-pt-none">
                     <!-- show recursively all text leafs in the document tree -->
                     <ListComponent :textPiece="sourceDocument.sentences" />
                   </q-card-section>
@@ -59,8 +67,7 @@
           </q-card-section>
         </div>
       </div>
-      <q-separator></q-separator>
-
+      <!--  action section  -->
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
         <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')"
           >Back</q-btn
@@ -122,23 +129,34 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-content: center;
-  height: 85vh;
+  //height: calc(100vh - 13 6px);
   overflow: hidden;
 }
 
 #source-collection-card-content {
-  height: 64vh;
-  overflow-y: auto;
+  //height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  //overflow-y: auto;
+  overflow: hidden;
+  z-index: 1 !important;
 }
 
 #source-collection-view-actions {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
   width: 100%;
   position: absolute;
   bottom: 0px;
+  z-index: 3 !important;
+  background: white;
 }
 
-.scrollable {
-  height: 100%;
+.expansion-items {
+  //max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
+  max-height: calc(
+    100vh - 136px - 78px - 88px - 48px - 24px - 72px -
+      (v-bind(sourceDocuments.length) * 120px)
+  );
+
+  overflow-y: auto;
 }
 </style>
