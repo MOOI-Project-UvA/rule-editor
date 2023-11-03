@@ -8,7 +8,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label>Collect sources {{ activeSource }}</q-item-label>
+          <q-item-label>Collect sources</q-item-label>
           <q-item-label caption>Step 2</q-item-label>
         </q-item-section>
         <q-item-section avatar>
@@ -152,11 +152,6 @@ export default {
 
 .expansion-items {
   //max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
-  max-height: calc(
-    100vh - 136px - 78px - 88px - 48px - 24px - 72px -
-      (v-bind(sourceDocuments.length) * 120px)
-  );
-
   overflow-y: auto;
 }
 </style>
