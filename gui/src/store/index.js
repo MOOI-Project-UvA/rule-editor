@@ -24,8 +24,8 @@ const store = createStore({
       annotationBeingEdited: null,
       availableSources: [], //list of sources that the user can choose from
       taskInformation: {
-        title: null,
-        description: null,
+        title: "exampleTask",
+        description: "exampleDescription",
       }, // information about the task
     };
   },

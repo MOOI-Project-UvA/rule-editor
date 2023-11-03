@@ -17,6 +17,16 @@ export default {
       );
       return !this.description || !this.title;
     },
+    getDescription() {
+      return this.$store.getters.getTaskInformation.description;
+    },
+    getTitle() {
+      return this.$store.getters.getTaskInformation.title;
+    },
+  },
+  mounted() {
+    this.description = this.getDescription;
+    this.title = this.getTitle;
   },
 
   methods: {
