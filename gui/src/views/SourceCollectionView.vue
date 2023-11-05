@@ -48,7 +48,6 @@
                 :caption="sourceDocument.title"
                 default-opened
               >
-                <!--                {{ (activeDocIndex = docIndex) }}-->
                 <q-card
                   flat
                   square
@@ -59,7 +58,10 @@
                 >
                   <q-card-section class="q-pt-none">
                     <!-- show recursively all text leafs in the document tree -->
-                    <ListComponent :textPiece="sourceDocument.sentences" />
+                    <ListComponent
+                      :textPiece="sourceDocument.sentences"
+                      :docId="docIndex"
+                    />
                   </q-card-section>
                 </q-card>
               </q-expansion-item>
@@ -73,10 +75,14 @@
           >Back</q-btn
         >
         <q-space></q-space>
-        <q-btn type="submit" color="primary" @click="storeSelectSources"
+
+        <q-btn
+          type="submit"
+          color="primary"
+          @click="storeSelectSources"
+          :disable="!anyCheckedSentences"
           >Continue</q-btn
         >
-        <!-- TODO: add events to continue and back buttons. Validation is needed as well (at least one selected sentence) -->
       </q-card-actions>
     </q-card>
   </div>
@@ -97,9 +103,10 @@ export default {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
-    activeSource() {
-      console.log("this.expandedSources", this.expandedSources);
-      return this.expandedSources;
+    anyCheckedSentences() {
+      return this.sourceDocuments
+        .map((d) => d.sentences.some((e) => e.checked))
+        .every((e) => e);
     },
   },
   methods: {
@@ -115,10 +122,28 @@ export default {
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },
+    // anyCheckedSentences: function (val) {
+    //   const check = this.sourceDocuments.map((d) =>
+    //     d.sentences.some((e) => e.checked),
+    //   );
+    //   const check2 = check.every((e) => e);
+    //   // .some((e) => e.checked);
+    //   console.log("event emitted?", val, check, check2);
+    // },
   },
   watch: {
     sourceDocuments() {
-      console.log("sourceDocuments", this.sourceDocuments);
+      console.log(
+        "sourceDocuments",
+        this.sourceDocuments
+          .map((d) => d.sentences)
+          .filter((d) => {
+            return d.some((e) => e.checked);
+          }),
+      );
+    },
+    anyCheckedSentences(v) {
+      console.log("v", v);
     },
   },
 };
