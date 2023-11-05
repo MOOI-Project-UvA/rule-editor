@@ -1,24 +1,13 @@
 <template>
   <!--
         displays recursively the content fields ('sentences') in a document.
-        Hides itself if showFrameSource is true and this sentence is not part of the source of the
-        frame that is currently being edited
+        Allows the end-user to include a sentence into an interpretation by checking
+        the corresponding checkbox.
     -->
   <div v-for="(item, index) in textPiece" :key="index">
     <q-item v-ripple :id="item.id">
       <q-item-section side>
-        <!--        <input-->
-        <!--          type="checkbox"-->
-        <!--          :id="t"-->
-        <!--          :name=""-->
-        <!--          v-model=""-->
-        <!--        />-->
-        <q-checkbox
-          :name="item.id"
-          :id="item.id"
-          v-model="item.checked"
-          @update:model-value="toggleBox"
-        />
+        <q-checkbox :name="item.id" :id="item.id" v-model="item.checked" />
       </q-item-section>
 
       <q-item-section
@@ -36,17 +25,25 @@ export default {
   data: () => ({}),
   props: {
     textPiece: Array,
+    docId: Number,
   },
   computed: {
-    checkedChunks() {
-      return this.textPiece.filter((item) => item.checked);
-    },
+    // checkedChunks() {
+    //   return this.textPiece.filter((item) => item.checked);
+    // },
   },
   methods: {
-    toggleBox: function (val, evt) {
-      console.log("toggling", val, this.checkedChunks);
-      console.log("toggling2: ", this.textPiece);
-    },
+    // toggleBox: function (val, evt) {
+    //   console.log("toggling", val, this.checkedChunks);
+    //   console.log(
+    //     "toggling2: ",
+    //     this.textPiece.some((d) => d.checked),
+    //   );
+    //   // this.$emit("anyCheckedSentences", {
+    //   //   id: this.docId,
+    //   //   checkedSentences: this.textPiece.some((d) => d.checked),
+    //   // });
+    // },
   },
 };
 </script>
@@ -58,21 +55,7 @@ export default {
   grid-template-columns: 10px auto;
 }
 
-.relation-bar {
-  width: 3px;
-  margin-right: 2px;
-  /* height: 100%; */
-  display: inline-block;
-  pointer-events: none;
-}
-
 .text-piece {
   display: inline-block;
-}
-
-.has-relation {
-  background-color: #1976d2;
-  cursor: pointer;
-  pointer-events: all;
 }
 </style>
