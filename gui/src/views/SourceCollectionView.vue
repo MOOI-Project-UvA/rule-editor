@@ -1,4 +1,5 @@
 <template>
+  <!-- This component contains the content of the source collection view -->
   <div id="source-collection-view">
     <q-card flat bordered class="my-card q-ma-sm" style="width: 600px">
       <!-- header -->
@@ -104,9 +105,11 @@ export default {
       return this.$store.state.sourceDocuments;
     },
     anyCheckedSentences() {
-      return this.sourceDocuments
-        .map((d) => d.sentences.some((e) => e.checked))
-        .every((e) => e);
+      return this.sourceDocuments.length > 0
+        ? this.sourceDocuments
+            .map((d) => d.sentences.some((e) => e.checked))
+            .every((e) => e)
+        : false;
     },
   },
   methods: {
@@ -118,18 +121,9 @@ export default {
         this.activeDocIndex,
         // this.sourceDocuments[this.activeDocIndex].selectedSentences,
       );
-      // TODO: updated the selected sentences based on the checkedsentences
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },
-    // anyCheckedSentences: function (val) {
-    //   const check = this.sourceDocuments.map((d) =>
-    //     d.sentences.some((e) => e.checked),
-    //   );
-    //   const check2 = check.every((e) => e);
-    //   // .some((e) => e.checked);
-    //   console.log("event emitted?", val, check, check2);
-    // },
   },
   watch: {
     sourceDocuments() {
@@ -141,9 +135,6 @@ export default {
             return d.some((e) => e.checked);
           }),
       );
-    },
-    anyCheckedSentences(v) {
-      console.log("v", v);
     },
   },
 };
