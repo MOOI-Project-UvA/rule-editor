@@ -1,30 +1,33 @@
 const frameTypes =
     [
         {
-            'id': 'other',
+            'id': 'fact',
             'class': 'fact',
-            'label': 'Fact'
+            'label': 'Fact',
+            'subTypes': [
+                {
+                    'id': 'agent',
+                    'class': 'fact',
+                    'label': 'Agent'
+                },
+                {
+                    'id': 'action',
+                    'class': 'fact',
+                    'label': 'Action'
+                },
+                {
+                    'id': 'object',
+                    'class': 'fact',
+                    'label': 'Object'
+                },
+
+                {
+                    'id': 'duty',
+                    'class': 'fact',
+                    'label': 'Duty'
+                }
+            ]
         },
-        {
-            'id': 'agent',
-            'class': 'fact',
-            'label': 'Agent'
-        },
-        // {
-        //     'id': 'object',
-        //     'class': 'fact',
-        //     'label': 'Object'
-        // },
-        {
-            'id': 'action',
-            'class': 'fact',
-            'label': 'Action'
-        },
-        // {
-        //     'id': 'duty',
-        //     'class': 'fact',
-        //     'label': 'Duty'
-        // },
         {
             'id': 'act',
             'class': 'relation',
@@ -33,7 +36,7 @@ const frameTypes =
         {
             'id': 'claim_duty',
             'class': 'relation',
-            'label': 'Claim / duty'
+            'label': 'Claim-duty'
         }
     ]
 

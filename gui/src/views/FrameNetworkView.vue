@@ -24,18 +24,31 @@
       <div id="frame-chip-container">
         <template v-for="frameClass in  ['fact', 'relation'] ">
           <div class="class-label">{{ frameClass }}</div>
-          <div class="fact-container" v-for="frameType in  frameTypes.filter(t => t.class == frameClass) ">
-            <div class="chip-container">
-              <div v-if="frameType.id != 'other'"><b>{{ frameType.label }}</b></div>
-              <div class="chips">
-                <div v-for="frame in  frames.filter(f => f.type.id == frameType.id) " @click="onClick(frame)">
+          <div class="fact-container" v-for="frameType in frameTypes.filter(t => t.class == frameClass) ">
+
+            <div v-if="frameType.class != 'fact'"><b>{{ frameType.label }}</b></div>
+            <div class="chips">
+              <div v-for="frame in frames.filter(f => f.type.id == frameType.id && !f.subType) " @click="onClick(frame)">
+                <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
+                  && frameBeingEdited.activeField && !allowedSubTypes.includes(frameType.id)"
+                  :removable="message === 'Click to edit'" functionality="chip-container" />
+              </div>
+            </div>
+            <div v-if="'subTypes' in frameType">
+              <div v-for="subType in frameType.subTypes" class="q-ml-sm">
+                <q-avatar size="md" :icon="icons[subType.id]" />
+                <b>{{ subType.label }}</b>
+                <div
+                  v-for="frame in frames.filter(f => f.type.id == frameType.id && f.subType && f.subType.id == subType.id)"
+                  @click="onClick(frame)">
                   <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
-                    && frameBeingEdited.activeField && !allowedSubTypes.includes(frameType.id)"
+                    && frameBeingEdited.activeField && !allowedSubTypes.includes(subType.id)"
                     :removable="message === 'Click to edit'" functionality="chip-container" />
                 </div>
               </div>
             </div>
           </div>
+
         </template>
       </div>
     </q-item>
@@ -46,10 +59,13 @@
 <script>
 import FrameChip from "../components/FrameChip.vue";
 import { frameTypes } from "../model/frame";
+import { icons, colors } from "../helpers/config"
 
 export default {
   data: () => ({
-    frameTypes: frameTypes
+    frameTypes: frameTypes,
+    icons: icons,
+    colors: colors
   }),
   computed: {
     frames() {
@@ -105,6 +121,11 @@ export default {
       }
     },
   },
+  watch: {
+    frames() {
+      console.log("frames", this.frames)
+    }
+  }
 };
 </script>
 

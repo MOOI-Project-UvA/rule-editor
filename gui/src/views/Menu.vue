@@ -15,24 +15,6 @@
       </q-item-section>
     </q-item>
     <q-separator />
-    <!-- add fact -->
-    <q-item>
-      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
-        <div class="area-label">
-          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
-            Add fact:
-          </div>
-        </div>
-        <div>
-          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'fact')" class="q-mr-sm"
-            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
-            <q-tooltip class="text-subtitle2">
-              Add fact of type {{ frameType.label }}
-            </q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-    </q-item>
     <!-- add relation -->
     <q-item>
       <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
@@ -42,10 +24,28 @@
           </div>
         </div>
         <div>
-          <q-btn v-for="frameType in frameTypes.filter(f => f.class == 'relation')" class="q-mr-sm"
+          <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'relation')" class="q-mr-sm"
             :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
             <q-tooltip class="text-subtitle2">
-              Add relation of type {{ frameType.label }}
+              Add frame of type {{ frameType.label }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+    </q-item>
+    <!-- add fact -->
+    <q-item>
+      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap">
+        <div class="area-label">
+          <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
+            Add fact:
+          </div>
+        </div>
+        <div>
+          <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" class="q-mr-sm"
+            :color="colors[frameType.id]" :label="frameType.label" @click="createFrame(frameType)">
+            <q-tooltip class="text-subtitle2">
+              Add frame of type {{ frameType.label }}
             </q-tooltip>
           </q-btn>
         </div>
@@ -68,7 +68,7 @@
       </div>
     </q-item>
     <!-- show -->
-    <q-item>
+    <!-- <q-item>
       <div class="row inline justify-start items-baseline no-wrap">
         <div class="area-label">
           <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
@@ -79,7 +79,7 @@
           <q-btn class="q-mr-sm" color="primary" icon="mdi-source-branch" label="relations" disable />
         </div>
       </div>
-    </q-item>
+    </q-item> -->
   </q-card>
 </template>
 

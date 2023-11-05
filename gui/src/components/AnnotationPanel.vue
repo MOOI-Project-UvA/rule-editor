@@ -22,18 +22,11 @@
                     <template v-else>
                         <div class="label">Create new frame</div>
                     </template>
-                    <div class="label bold">Fact</div>
-                    <q-btn-group>
-                        <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'fact')" :label="frameType.label"
+                    <div>
+                        <q-btn v-for="frameType in frameTypes" class="q-mr-sm" :label="frameType.label"
                             :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
                             @click="frameTypeButtonClicked(frameType)" />
-                    </q-btn-group>
-                    <div class="label bold">Relation</div>
-                    <q-btn-group>
-                        <q-btn v-for="frameType in frameTypes.filter(t => t.class == 'relation')" :label="frameType.label"
-                            :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
-                            @click="frameTypeButtonClicked(frameType)" />
-                    </q-btn-group>
+                    </div>
                 </q-card-section>
                 <q-card-actions>
                     <div class="label">Or</div>

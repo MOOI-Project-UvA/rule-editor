@@ -3,7 +3,7 @@
         @click="handleClick">
         <div class="col">
 
-
+            <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
             <template v-if="booleanConstruct.frame">
                 <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
                 <div>
@@ -58,14 +58,16 @@
             <!-- if button is after last child, add new BC. Else change operator -->
             <!-- show button for adding frame if BC is empty and is a leaf node -->
             <div v-if="isBeingEdited" class="button-label">
-                Select existing frame or create a new frame by annotating the source {{
-                    booleanConstruct.operatorToJoinChildren }}
+                Select existing frame or create a new frame by annotating the source.
             </div>
         </div>
         <div class="col-1">
-            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close" @click="deleteBooleanConstruct" /></div>
+            <div><q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
+            </div>
             <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square" @click="subdivide" />
             </div>
+            <div v-if="booleanConstruct.parent"><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close"
+                    @click="deleteBooleanConstruct" /></div>
         </div>
     </div>
 </template>
@@ -127,10 +129,10 @@ export default {
             //if empty leaf node, select for adding frame
             if ((!this.booleanConstruct.frame) && this.booleanConstruct.children.length == 0) {
                 this.$store.state.booleanConstructBeingEdited = this.isBeingEdited ? null : this.booleanConstruct
-            } else {
-                //toggle negation
-                this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
             }
+        },
+        toggleNegation() {
+            this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
         },
         removeChipFromContext() {
             this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
@@ -166,9 +168,8 @@ export default {
 }
 
 .panel.negated {
-    border: dotted 2px rgb(210, 77, 25);
+    /* border: dotted 2px hsl(17, 79%, 46%); */
     background-color: rgb(255, 231, 222);
-    ;
 }
 
 .bordered-panel {
@@ -185,5 +186,12 @@ export default {
     display: inline-block;
     font-style: italic;
     margin-left: 5px;
+}
+
+.negation-label {
+    font-weight: bold;
+    font-size: 9pt;
+    margin-bottom: 2px;
+    color: #d42d19;
 }
 </style>

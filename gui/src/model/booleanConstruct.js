@@ -3,7 +3,7 @@ export class BooleanConstruct {
         this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
         this._isNegated = false
         this._children = [] // list of BooleanConstructs if _frame is null
-        this._operatorToJoinChildren = "and" // or "or"
+        this._operatorToJoinChildren = null //"and" // or "or"
         this._parent = null
     }
 
