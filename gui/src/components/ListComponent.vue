@@ -5,8 +5,8 @@
         the corresponding checkbox.
     -->
   <div v-for="(item, index) in textPiece" :key="index">
-    <q-item v-ripple :id="item.id">
-      <q-item-section side>
+    <q-item tag="label" v-ripple :id="item.id">
+      <q-item-section side top>
         <q-checkbox :name="item.id" :id="item.id" v-model="item.checked" />
       </q-item-section>
 
@@ -50,9 +50,9 @@ export default {
 
 <style lang="css" scoped>
 .text-chunk {
-  margin: 10px 0px;
+  margin: 5px 0px;
   display: grid;
-  grid-template-columns: 10px auto;
+  grid-template-columns: 5px auto;
 }
 
 .text-piece {
