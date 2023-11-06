@@ -25,17 +25,20 @@
             id="stepper-id"
             v-model="step"
             ref="stepper"
-            animated
             color="primary"
+            animated
             flat
+            header-nav
           >
             <q-step
               :name="1"
               title="Define a task"
               icon="mdi-head-dots-horizontal-outline"
               :done="step > 1"
+              done-color="green"
               caption="Step 1"
               class="fill-height row justify-center content-center"
+              :header-nav="step > 1"
             >
               <TaskDefinitionView
                 @update-stepper="updateStepperValue"
@@ -47,7 +50,9 @@
               icon="mdi-bookmark-box-multiple-outline"
               class="fill-height row justify-center content-start"
               :done="step > 2"
+              done-color="green"
               caption="Step 2"
+              :header-nav="step > 2"
             >
               <SourceCollectionView
                 @update-stepper="updateStepperValue"
@@ -58,8 +63,10 @@
               :name="3"
               title="Interpret sources"
               icon="mdi-thought-bubble-outline"
-              :done="step > 2"
+              :done="step > 3"
+              done-color="green"
               caption="Step 3"
+              :header-nav="step > 3"
             >
               <interpretation-view></interpretation-view>
             </q-step>
@@ -67,7 +74,7 @@
               :name="4"
               title="Validate interpretation"
               icon="mdi-timeline-check-outline"
-              :done="step > 3"
+              :done="step > 4"
               disable
               caption="Step 4"
             >
@@ -76,7 +83,7 @@
               :name="5"
               title="Perform task"
               icon="mdi-playlist-check"
-              :done="step > 4"
+              :done="step > 5"
               disable
               caption="Step 5"
             >
