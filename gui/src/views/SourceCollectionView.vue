@@ -40,7 +40,15 @@
         <div>
           <q-splitter v-model="splitterModel" class="q-ma-lg">
             <template v-slot:before>
-              <q-tabs v-model="tab" vertical class="text-teal" shrink>
+              <q-tabs
+                v-model="tab"
+                vertical
+                shrink
+                dense
+                class="text-grey"
+                active-color="primary"
+                indicator-color="primary"
+              >
                 <q-tab
                   v-for="(sourceDocument, docIndex) in sourceDocuments"
                   :key="docIndex"
