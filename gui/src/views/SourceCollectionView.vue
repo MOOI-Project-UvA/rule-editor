@@ -85,39 +85,24 @@
               </q-tab-panels>
             </template>
           </q-splitter>
-
-          <!--            <template v-slot:after>-->
-          <!--              <q-tab-panels-->
-          <!--                v-model="tab"-->
-          <!--                animated-->
-          <!--                swipeable-->
-          <!--                vertical-->
-          <!--                transition-prev="jump-up"-->
-          <!--                transition-next="jump-up"-->
-          <!--              >-->
-          <!--                <q-tab-panel-->
-          <!--                  v-for="(sourceDocument, docIndex) in sourceDocuments"-->
-          <!--                  :key="sourceDocument.title"-->
-          <!--                  v-bind="sourceDocument.title"-->
-          <!--                  :name="sourceDocument.title"-->
-          <!--                  icon="mdi-book-search-outline"-->
-          <!--                >-->
-          <!--                  <div class="text-h4 q-mb-md">{{ sourceDocument.title }}</div>-->
-          <!--                  <p>-->
-          <!--                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.-->
-          <!--                    Quis praesentium cumque magnam odio iure quidem, quod illum-->
-          <!--                    numquam possimus obcaecati commodi minima assumenda-->
-          <!--                    consectetur culpa fuga nulla ullam. In, libero.-->
-          <!--                  </p>-->
-          <!--                  <p>-->
-          <!--                    Lorem ipsum dolor sit, amet consectetur adipisicing elit.-->
-          <!--                    Quis praesentium cumque magnam odio iure quidem, quod illum-->
-          <!--                    numquam possimus obcaecati commodi minima assumenda-->
-          <!--                    consectetur culpa fuga nulla ullam. In, libero.-->
-          <!--                  </p>-->
-          <!--                </q-tab-panel>-->
-          <!--              </q-tab-panels>-->
-          <!--            </template>-->
+          <!--          q-tree alternative -->
+          <!--         <q-tree-->
+          <!--            ref="hier"-->
+          <!--      :nodes="children"-->
+          <!--      node-key="id"-->
+          <!--      label-key="label"-->
+          <!--      tick-strategy="leaf"-->
+          <!--      v-model:ticked="ticked"-->
+          <!--      tickable-->
+          <!--      @update:ticked="update"-->
+          <!--      @click="getNodeByKey"-->
+          <!--    >-->
+          <!--      <template v-slot:default-header="prop">-->
+          <!--        <div class="row items-center">         -->
+          <!--          <div class="text-weight-bold">{{ prop.node.content ? prop.node.content : prop.node.label }}</div>-->
+          <!--        </div>-->
+          <!--      </template>-->
+          <!--    </q-tree>-->
         </div>
 
         <!--        <div v-for="(sourceDocument, docIndex) in sourceDocuments">-->
