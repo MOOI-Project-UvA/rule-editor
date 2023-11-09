@@ -168,7 +168,7 @@ export default {
 }
 
 .relation-bar {
-    width: 3px;
+    width: 6px;
     margin-right: 2px;
     /* height: 100%; */
     display: inline-block;
