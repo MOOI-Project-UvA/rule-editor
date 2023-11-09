@@ -1,7 +1,7 @@
 import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
 import { Act } from "../model/act.js"
-import { ClaimDuty } from "../helpers/flint.js"
+import { Claimduty } from "../model/claimduty.js";
 import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
 import { parseJsonToFrames } from "../helpers/import.js";
@@ -39,7 +39,7 @@ const store = createStore({
               frame = new Act()
               break;
             case 'claim_duty':
-              frame = new ClaimDuty()
+              frame = new Claimduty()
               break;
           }
           break;

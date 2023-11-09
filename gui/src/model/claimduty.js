@@ -16,7 +16,7 @@ class Claimduty {
         this._highlight = false
         this._comments = []
 
-        this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
+        this._annotations = [] //typically one annotation (unless claimduty is described multiple times in the source)
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -27,16 +27,16 @@ class Claimduty {
     get label() {
         return this._label && this._label.length > 0
             ? this._label
-            : this.act.length > 25
-                ? this.act.substring(0, 25) + "..."
-                : this.act
+            : this.claimduty.length > 25
+                ? this.claimduty.substring(0, 25) + "..."
+                : this.claimduty
     }
     set label(label) { this._label = label }
 
     get claimduty() {
         return this._claimduty.length > 0
             ? this._claimduty
-            : constructActLabel(this)
+            : constructClaimdutyLabel(this)
     }
     set claimduty(claimduty) { this._claimduty = claimduty }
 
@@ -131,12 +131,12 @@ class Claimduty {
         this._holder = frameData.holder ? allFrames.find(f => f.id == frameData.holder) : null
         this._comments = frameData.comments
     }
-    checkFrameExistance(act, element) {
-        const duty = act._duty !== null && act._duty._id === element._id ? true : false;
-        const actor = act._actor !== null && act._actor._id == element._id
+    checkFrameExistance(claimduty, element) {
+        const duty = claimduty._duty !== null && claimduty._duty._id === element._id ? true : false;
+        const actor = claimduty._actor !== null && claimduty._actor._id == element._id
             ? true
             : false;
-        const holder = act._holder !== null && act._holder._id == element._id
+        const holder = claimduty._holder !== null && claimduty._holder._id == element._id
             ? true
             : false;
 
@@ -147,9 +147,9 @@ class Claimduty {
         ];
 
         if (exist.some((d) => d)) {
-            act._highlight = false
+            claimduty._highlight = false
         } else {
-            act._highlight = true
+            claimduty._highlight = true
         }
         return exist.some((d) => d)
     }

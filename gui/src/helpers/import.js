@@ -1,6 +1,6 @@
-import { ClaimDuty } from './flint.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
+import { Claimduty } from '../model/claimduty.js'
 import { frameTypes } from '../model/frame.js'
 import { store } from '../store/index.js'
 
@@ -17,12 +17,15 @@ function parseJsonToFrames(jsonText) {
 
         let frame
         //create empty frame of correct type
-        switch (frameType.class) {
+        switch (frameType.id) {
             case 'fact':
                 frame = new Fact()
                 break
-            case 'relation':
+            case 'act':
                 frame = new Act()
+                break
+            case 'claim_duty':
+                frame = new Claimduty()
                 break
         }
         frame.id = d.id
