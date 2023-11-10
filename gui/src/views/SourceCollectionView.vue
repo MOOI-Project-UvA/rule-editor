@@ -10,7 +10,6 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>Collect sources</q-item-label>
-          <q-item-label caption>Step 2</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
@@ -22,9 +21,7 @@
               <div style="max-width: 300px">
                 In this view, you can select legal sources from the repository.
                 After selection, a legal source is reconstructed and you are
-                able to start the interpretation process by selected text
-                snippets and assigning one of the four supported labels: 1)
-                Agent, 2) Action, 3) Object, 4) Conditions.
+                able to select parts of the sources for interpretation.
               </div>
             </q-tooltip>
           </q-avatar>
@@ -38,7 +35,7 @@
       <div id="source-collection-card-content">
         <!-- the retrieved legal text will be shown here -->
         <div>
-          <q-splitter v-model="splitterModel" class="q-ma-lg">
+          <q-splitter v-model="splitterModel" class="q-mt-lg">
             <template v-slot:before>
               <q-tabs
                 v-model="tab"
@@ -54,7 +51,7 @@
                   :key="docIndex"
                   :name="docIndex"
                   icon="mdi-book-outline"
-                  :label="sourceDocument.title"
+                  :label="filterNames(sourceDocument.title)"
                 />
               </q-tabs>
             </template>
@@ -167,7 +164,7 @@ export default {
   },
   data: () => ({
     expandedSources: [],
-    splitterModel: 30,
+    splitterModel: 20,
     tab: 0,
   }),
   computed: {
@@ -194,7 +191,9 @@ export default {
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },
-    setTabs: function () {},
+    filterNames: function (name) {
+      return name === "General Data Protection Regulation" ? "GDPR" : name;
+    },
   },
   watch: {
     sourceDocuments() {
@@ -223,7 +222,7 @@ export default {
 
 #source-collection-card-content {
   //height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
-  height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  height: calc(100vh - 136px - 78px - 88px - 48px - 20px);
   overflow-y: hidden;
   //overflow: hidden;
   z-index: 1 !important;
@@ -240,7 +239,7 @@ export default {
 
 .expansion-items {
   //max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
-  max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 150px);
+  max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 120px);
   //height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
   overflow-y: auto;
 }
