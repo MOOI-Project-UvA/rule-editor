@@ -52,7 +52,6 @@ export default {
         </q-item-section>
         <q-item-section>
           <q-item-label>Define a task</q-item-label>
-          <q-item-label caption>Step 1</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
