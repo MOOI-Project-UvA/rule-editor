@@ -22,11 +22,11 @@
     <div class="col-4 fill-height">
       <SourceView />
     </div>
-    <div class="col-3">
+    <div class="col-4">
       <FrameNetworkView />
     </div>
     <!-- chip view + editor forms column-->
-    <div class="col-5">
+    <div class="col-4">
       <!-- save and load interpretation buttons -->
       <div class="row">
         <Menu />
@@ -59,7 +59,6 @@ export default {
   },
   mounted() {
     this.$store.dispatch("readAvailableSources");
-  }
+  },
 };
 </script>
-
