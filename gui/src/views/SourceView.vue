@@ -24,10 +24,6 @@
     </q-item>
     <q-separator />
 
-    <!--    <q-card-section>-->
-    <!--      <SourceLoader />-->
-    <!--    </q-card-section>-->
-
     <!-- the retrieved legal text will be shown here -->
     <div v-for="(sourceDocument, docIndex) in sourceDocuments">
       <q-card-section>
@@ -52,7 +48,16 @@
                 style="max-height: 70vh"
               >
                 <!-- show recursively all text leafs in the document tree -->
-                <TextElement :textPiece="sourceDocument" />
+                <TextElement
+                  v-if="sourceDocument.sentences.some((e) => e.checked)"
+                  :textPiece="sourceDocument"
+                />
+                <div v-else>
+                  <p>
+                    You have not selected any sentences of this source for
+                    interpretation. Please, consider going back to step 2!
+                  </p>
+                </div>
               </q-card-section>
             </q-card>
           </q-expansion-item>
@@ -64,11 +69,10 @@
 
 <script>
 import TextElement from "../components/TextElement.vue";
-import SourceLoader from "../components/SourceLoader.vue";
+
 export default {
   components: {
     TextElement,
-    SourceLoader,
   },
   data: () => ({
     expanded: [],

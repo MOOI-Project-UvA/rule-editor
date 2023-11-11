@@ -82,58 +82,7 @@
               </q-tab-panels>
             </template>
           </q-splitter>
-          <!--          q-tree alternative -->
-          <!--         <q-tree-->
-          <!--            ref="hier"-->
-          <!--      :nodes="children"-->
-          <!--      node-key="id"-->
-          <!--      label-key="label"-->
-          <!--      tick-strategy="leaf"-->
-          <!--      v-model:ticked="ticked"-->
-          <!--      tickable-->
-          <!--      @update:ticked="update"-->
-          <!--      @click="getNodeByKey"-->
-          <!--    >-->
-          <!--      <template v-slot:default-header="prop">-->
-          <!--        <div class="row items-center">         -->
-          <!--          <div class="text-weight-bold">{{ prop.node.content ? prop.node.content : prop.node.label }}</div>-->
-          <!--        </div>-->
-          <!--      </template>-->
-          <!--    </q-tree>-->
         </div>
-
-        <!--        <div v-for="(sourceDocument, docIndex) in sourceDocuments">-->
-        <!--          <q-card-section>-->
-        <!--            <q-list bordered class="rounded-borders q-pa-md">-->
-        <!--              <q-expansion-item-->
-        <!--                v-model="expandedSources[docIndex]"-->
-        <!--                expand-icon-toggle-->
-        <!--                switch-toggle-side-->
-        <!--                expand-separator-->
-        <!--                icon="mdi-book-search-outline"-->
-        <!--                :caption="sourceDocument.title"-->
-        <!--                default-opened-->
-        <!--              >-->
-        <!--                <q-card-->
-        <!--                  flat-->
-        <!--                  square-->
-        <!--                  class="q-ma-sm q-pa-sm expansion-items"-->
-        <!--                  :style="`max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px - (${-->
-        <!--                    docIndex + 1-->
-        <!--                  } * 120px));`"-->
-        <!--                >-->
-        <!--                  <q-card-section class="q-pt-none">-->
-        <!--                    &lt;!&ndash; show recursively all text leafs in the document tree &ndash;&gt;-->
-        <!--                    <ListComponent-->
-        <!--                      :textPiece="sourceDocument.sentences"-->
-        <!--                      :docId="docIndex"-->
-        <!--                    />-->
-        <!--                  </q-card-section>-->
-        <!--                </q-card>-->
-        <!--              </q-expansion-item>-->
-        <!--            </q-list>-->
-        <!--          </q-card-section>-->
-        <!--        </div>-->
       </div>
       <!--  action section  -->
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
@@ -171,12 +120,17 @@ export default {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
+    // at least a sentence must be selected per source...
+    // anyCheckedSentences() {
+    //   return this.sourceDocuments.length > 0
+    //     ? this.sourceDocuments
+    //         .map((d) => d.sentences.some((e) => e.checked))
+    //         .every((e) => e)
+    //     : false;
+    // },
+    //   no need for sentence selection per source
     anyCheckedSentences() {
-      return this.sourceDocuments.length > 0
-        ? this.sourceDocuments
-            .map((d) => d.sentences.some((e) => e.checked))
-            .every((e) => e)
-        : false;
+      return this.sourceDocuments.length > 0;
     },
   },
   methods: {
