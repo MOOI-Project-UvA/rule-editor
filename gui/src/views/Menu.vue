@@ -9,7 +9,11 @@
           <q-icon name="mdi-information-outline" class="cursor-pointer">
           </q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">Description...</div>
+            <div style="max-width: 300px">
+              In this panel, you can perform the supported interpretation
+              actions. Create an act or a clai-duty relation, a fact and lastly
+              your are able import/export your interpretation.
+            </div>
           </q-tooltip>
         </q-avatar>
       </q-item-section>

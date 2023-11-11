@@ -208,11 +208,10 @@ const store = createStore({
         //add attribute to each sentence to store annotations
         getSentencesInDocument(document).forEach((s) => {
           s["annotations"] = [];
-          s["checked"] = false;
+          s["checked"] = true;
         });
         const sentences = getSentencesInDocument(document);
         document.sentences = sentences;
-        document.selectedSentences = sentences;
 
         context.state.sourceDocuments = [
           ...context.state.sourceDocuments,

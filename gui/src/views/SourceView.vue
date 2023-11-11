@@ -12,11 +12,9 @@
           ></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
-              In this view, you can select legal sources from the repository.
-              After selection, a legal source is reconstructed and you are able
-              to start the interpretation process by selected text snippets and
-              assigning one of the four supported labels: 1) Agent, 2) Action,
-              3) Object, 4) Conditions.
+              In this view, you are able to start the interpretation process by
+              selecting text snippets and assigning one of the four supported
+              labels: 1) Fact, 2) Act, and 3) Claim duty relation.
             </div>
           </q-tooltip>
         </q-avatar>
@@ -37,15 +35,10 @@
             :caption="sourceDocument.title"
             default-opened
           >
-            <q-card
-              flat
-              square
-              class="q-ma-sm q-pa-sm"
-              style="max-height: 80vh"
-            >
+            <q-card flat square class="q-ma-sm q-pa-sm">
               <q-card-section
                 class="q-pt-none scrollable"
-                style="max-height: 70vh"
+                style="max-height: 60vh"
               >
                 <!-- show recursively all text leafs in the document tree -->
                 <TextElement
