@@ -25,11 +25,11 @@ export default {
       <div class="col-4">
         <SourceView />
       </div>
-      <div class="col-3">
+      <div class="col-4">
         <FrameNetworkView />
       </div>
       <!-- chip view + editor forms column-->
-      <div class="col-5">
+      <div class="col-4">
         <!-- save and load interpretation buttons -->
         <div class="row">
           <Menu />
