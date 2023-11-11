@@ -1,62 +1,12 @@
 [
     {
         "id": "http://choppr.app/documents/1674741091539/document",
-        "title": "Algemene wet bestuursrecht",
-        "fileName": "/sources/AWB.json"
+        "title": "Participatiewet",
+        "fileName": "/sources/Participatiewet_trimmed.json"
     },
     {
         "id": "http://choppr.app/documents/1674740141704/document",
         "title": "General Data Protection Regulation",
         "fileName": "/sources/GDPR.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1674743664661/document",
-        "title": "Rules for Tic-Tac-Toe",
-        "fileName": "/sources/tictactoe.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1678785424991/document",
-        "title": "Wet inkomstenbelasting 2001",
-        "fileName": "/sources/Inkomstenbelasting.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1680508254065/document",
-        "title": "Provinciewet",
-        "fileName": "/sources/Provinciewet.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1678786097984/document",
-        "title": "Rijksbelastingen",
-        "fileName": "/sources/Rijksbelastingen.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1674744197514/document",
-        "title": "Subsidieregeling IMF 2020 Fryslân",
-        "fileName": "/sources/Subsidieregeling IMF 2020 Fryslân.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1680529928570/document",
-        "title": "Aanwijzingen voor de regelgeving",
-        "fileName": "/sources/Aanwijzingen voor de regelgeving.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1683553921643/document",
-        "title": "CSRD Corporate Sustainability Reporting Directive",
-        "fileName": "/sources/CSRD Corporate Sustainability Reporting Directive.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1686734299646/Document",
-        "title": "Voorschrift Vreemdelingen",
-        "fileName": "/sources/Voorschrift Vreemdelingen.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1686734551749/Document",
-        "title": "Vreemdelingenbesluit",
-        "fileName": "/sources/Vreemdelingenbesluit.json"
-    },
-    {
-        "id": "http://choppr.app/documents/1686734486621/Document",
-        "title": "Vreemdelingenwet",
-        "fileName": "/sources/Vreemdelingenwet.json"
     }
 ]

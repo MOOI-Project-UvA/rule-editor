@@ -3,16 +3,22 @@
     <!-- card title section -->
     <q-item>
       <q-item-section>
-        <q-item-label>Frames <span v-if="message">({{ message }})</span></q-item-label>
+        <q-item-label
+          >Frames <span v-if="message">({{ message }})</span></q-item-label
+        >
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
-          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
+          <q-icon
+            name="mdi-information-outline"
+            class="cursor-pointer"
+          ></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you can see the annotations made in the source view.
-              The annotations are facts and are grouped by type. By clicking on
-              a fact, you can add them to complex facts or acts (right view).
+              The annotations are facts and are grouped by subtype. By clicking
+              on a fact, you can add them to complex facts, acts and/or
+              claim-duties (right view).
             </div>
           </q-tooltip>
         </q-avatar>
@@ -22,16 +28,33 @@
     <!-- main content of the card  -->
     <q-item>
       <div id="frame-chip-container">
-        <template v-for="frameClass in  ['fact', 'relation'] ">
+        <template v-for="frameClass in ['fact', 'relation']">
           <div class="class-label">{{ frameClass }}</div>
-          <div class="fact-container" v-for="frameType in frameTypes.filter(t => t.class == frameClass) ">
-
-            <div v-if="frameType.class != 'fact'"><b>{{ frameType.label }}</b></div>
+          <div
+            class="fact-container"
+            v-for="frameType in frameTypes.filter((t) => t.class == frameClass)"
+          >
+            <div v-if="frameType.class != 'fact'">
+              <b>{{ frameType.label }}</b>
+            </div>
             <div class="chips">
-              <div v-for="frame in frames.filter(f => f.type.id == frameType.id && !f.subType) " @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
-                  && frameBeingEdited.activeField && !allowedSubTypes.includes(frameType.id)"
-                  :removable="message === 'Click to edit'" functionality="chip-container" />
+              <div
+                v-for="frame in frames.filter(
+                  (f) => f.type.id == frameType.id && !f.subType,
+                )"
+                @click="onClick(frame)"
+              >
+                <FrameChip
+                  :frame="frame"
+                  :disable="
+                    frameBeingEdited != null &&
+                    frameBeingEdited.type.class == 'relation' &&
+                    frameBeingEdited.activeField &&
+                    !allowedSubTypes.includes(frameType.id)
+                  "
+                  :removable="message === 'Click to edit'"
+                  functionality="chip-container"
+                />
               </div>
             </div>
             <div v-if="'subTypes' in frameType">
@@ -39,33 +62,45 @@
                 <q-avatar size="md" :icon="icons[subType.id]" />
                 <b>{{ subType.label }}</b>
                 <div
-                  v-for="frame in frames.filter(f => f.type.id == frameType.id && f.subType && f.subType.id == subType.id)"
-                  @click="onClick(frame)">
-                  <FrameChip :frame="frame" :disable="frameBeingEdited != null && frameBeingEdited.type.class == 'relation'
-                    && frameBeingEdited.activeField && !allowedSubTypes.includes(subType.id)"
-                    :removable="message === 'Click to edit'" functionality="chip-container" />
+                  v-for="frame in frames.filter(
+                    (f) =>
+                      f.type.id == frameType.id &&
+                      f.subType &&
+                      f.subType.id == subType.id,
+                  )"
+                  @click="onClick(frame)"
+                >
+                  <FrameChip
+                    :frame="frame"
+                    :disable="
+                      frameBeingEdited != null &&
+                      frameBeingEdited.type.class == 'relation' &&
+                      frameBeingEdited.activeField &&
+                      !allowedSubTypes.includes(subType.id)
+                    "
+                    :removable="message === 'Click to edit'"
+                    functionality="chip-container"
+                  />
                 </div>
               </div>
             </div>
           </div>
-
         </template>
       </div>
     </q-item>
-
   </q-card>
 </template>
 
 <script>
 import FrameChip from "../components/FrameChip.vue";
 import { frameTypes } from "../model/frame";
-import { icons, colors } from "../helpers/config"
+import { icons, colors } from "../helpers/config";
 
 export default {
   data: () => ({
     frameTypes: frameTypes,
     icons: icons,
-    colors: colors
+    colors: colors,
   }),
   computed: {
     frames() {
@@ -75,23 +110,26 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     annotationBeingEdited() {
-      return this.$store.state.annotationBeingEdited
+      return this.$store.state.annotationBeingEdited;
     },
     booleanConstructBeingEdited() {
-      return this.$store.state.booleanConstructBeingEdited
+      return this.$store.state.booleanConstructBeingEdited;
     },
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        this.frameBeingEdited.type.class == 'relation'
+        this.frameBeingEdited.type.class == "relation"
         ? this.frameBeingEdited.allowedSubClassesForActiveField
         : [];
     },
     message() {
-      return this.frameBeingEdited && ['act', 'claim_duty'].includes(this.frameBeingEdited)
+      return this.frameBeingEdited &&
+        ["act", "claim_duty"].includes(this.frameBeingEdited)
         ? "Add to frame"
-        : this.frames.length > 0 ? "Click to edit" : ""
-    }
+        : this.frames.length > 0
+        ? "Click to edit"
+        : "";
+    },
   },
 
   components: {
@@ -99,23 +137,30 @@ export default {
   },
   methods: {
     onClick(frame) {
-      console.log("clicked frame", frame)
+      console.log("clicked frame", frame);
       console.log("this.frameBeingEdited", this.frameBeingEdited);
       console.log("this.annotationBeingEdited", this.annotationBeingEdited);
 
-      if (this.annotationBeingEdited && this.annotationBeingEdited.addingToExistingFrame) {
-        frame.addAnnotation(this.annotationBeingEdited)
-        this.annotationBeingEdited.addingToExistingFrame = false
-        this.$store.state.annotationBeingEdited = null
-      } else if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation' && this.frameBeingEdited.activeField) {
+      if (
+        this.annotationBeingEdited &&
+        this.annotationBeingEdited.addingToExistingFrame
+      ) {
+        frame.addAnnotation(this.annotationBeingEdited);
+        this.annotationBeingEdited.addingToExistingFrame = false;
+        this.$store.state.annotationBeingEdited = null;
+      } else if (
+        this.frameBeingEdited &&
+        this.frameBeingEdited.type.class == "relation" &&
+        this.frameBeingEdited.activeField
+      ) {
         //add frame to field in frame being edited
-        console.log("adding frame to", this.frameBeingEdited)
+        console.log("adding frame to", this.frameBeingEdited);
         this.frameBeingEdited.addFrame(frame);
       } else if (this.booleanConstructBeingEdited) {
-        this.booleanConstructBeingEdited.frame = frame
-        this.$store.state.booleanConstructBeingEdited = null
+        this.booleanConstructBeingEdited.frame = frame;
+        this.$store.state.booleanConstructBeingEdited = null;
       } else {
-        console.log("setting frame being edited")
+        console.log("setting frame being edited");
         // it opens the frame form in the middle
         this.$store.commit("setFrameBeingEdited", frame);
       }
@@ -123,9 +168,9 @@ export default {
   },
   watch: {
     frames() {
-      console.log("frames", this.frames)
-    }
-  }
+      console.log("frames", this.frames);
+    },
+  },
 };
 </script>
 
@@ -134,13 +179,11 @@ export default {
   min-height: 25px;
 }
 
-
 #frame-chip-container {
   margin: 10px 0px;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-
 }
 
 .class-label {
@@ -155,8 +198,6 @@ export default {
   justify-content: flex-start;
 }
 
-
-
 .chip-container {
   display: flex;
   flex-wrap: wrap;
@@ -168,10 +209,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-
-
 }
-
 
 .message {
   font-size: 9pt;

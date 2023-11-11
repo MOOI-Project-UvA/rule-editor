@@ -23,11 +23,16 @@ const store = createStore({
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
       availableSources: [], //list of sources that the user can choose from
+      taskInformation: {
+        title: "",
+        description: "",
+      }, // information about the task
     };
   },
   getters: {
     getFileContent: (state) => state.fileContent,
     reconstructedData: (state) => state.reconstructedData,
+    getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
     addNewFrame(state, { frameType, annotation }) {
@@ -176,6 +181,11 @@ const store = createStore({
       state.frames = state.frames.filter((fr) => fr._id !== frame._id);
       // console.log("updated list of frames:", state.frames.length, state.frames);
     },
+    setTaskInformation(state, task) {
+      console.log("in index.js: ", task);
+      state.taskInformation.title = task.title;
+      state.taskInformation.description = task.description;
+    },
   },
   actions: {
     readAvailableSources(context) {
@@ -196,10 +206,14 @@ const store = createStore({
         //add parent references to each part of the document
         addParentReferencesToDocument(document);
         //add attribute to each sentence to store annotations
-        getSentencesInDocument(document).forEach((s, i) => {
+        getSentencesInDocument(document).forEach((s,i) => {
           s["annotations"] = [];
+          s["checked"] = true;
           s["orderId"] = i;
         });
+        const sentences = getSentencesInDocument(document);
+        document.sentences = sentences;
+
         context.state.sourceDocuments = [
           ...context.state.sourceDocuments,
           document,
