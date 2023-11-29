@@ -6,10 +6,7 @@
       </q-item-section>
       <q-item-section avatar>
         <q-avatar>
-          <q-icon
-            name="mdi-information-outline"
-            class="cursor-pointer"
-          ></q-icon>
+          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you are able to start the interpretation process by
@@ -26,25 +23,12 @@
     <div v-for="(sourceDocument, docIndex) in sourceDocuments">
       <q-card-section>
         <q-list bordered class="rounded-borders q-pa-md">
-          <q-expansion-item
-            v-model="expanded[docIndex]"
-            expand-icon-toggle
-            switch-toggle-side
-            expand-separator
-            icon="mdi-book-search-outline"
-            :caption="sourceDocument.title"
-            default-opened
-          >
+          <q-expansion-item v-model="expanded[docIndex]" expand-icon-toggle switch-toggle-side expand-separator
+            icon="mdi-book-search-outline" :caption="sourceDocument.title" default-opened>
             <q-card flat square class="q-ma-sm q-pa-sm">
-              <q-card-section
-                class="q-pt-none scrollable"
-                style="max-height: 60vh"
-              >
+              <q-card-section class="q-pt-none scrollable" style="max-height: 60vh">
                 <!-- show recursively all text leafs in the document tree -->
-                <TextElement
-                  v-if="sourceDocument.sentences.some((e) => e.checked)"
-                  :textPiece="sourceDocument"
-                />
+                <TextElement v-if="sourceDocument.sentences.some((e) => e.checked)" :textPiece="sourceDocument" />
                 <div v-else>
                   <p>
                     You have not selected any sentences of this source for
@@ -75,14 +59,16 @@ export default {
       return this.$store.getters.reconstructedData;
     },
     sourceDocuments() {
-      return this.$store.state.sourceDocuments;
+      let docs = [...this.$store.state.sourceDocuments]
+      //sort alphabetically on title
+      docs.sort((d1, d2) => {
+        const title1 = d1.title.toLowerCase();
+        const title2 = d2.title.toLowerCase();
+        return (title1 < title2) ? -1 : (title1 > title2) ? 1 : 0;
+      });
+      return docs
     },
-  },
-  watch: {
-    sourceDocuments() {
-      console.log("sourceDocuments", this.sourceDocuments);
-    },
-  },
+  }
 };
 </script>
 
