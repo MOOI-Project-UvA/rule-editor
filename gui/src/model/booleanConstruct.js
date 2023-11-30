@@ -29,6 +29,7 @@ export class BooleanConstruct {
     addEmptyChild() {
         let child = new BooleanConstruct()
         this.addChild(child)
+        return child //boolean construct being edited is set to newly created child
     }
 
     removeChild(child) {
