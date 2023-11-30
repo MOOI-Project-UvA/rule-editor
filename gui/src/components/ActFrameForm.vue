@@ -24,8 +24,19 @@
           v-for="sentence in frame.sentences.sort(function (a, b) {
             return a.orderId - b.orderId;
           })"
+          class="row no-wrap justify-between items-center"
         >
           <TextElement :textPiece="sentence" />
+          <q-btn
+            size="md"
+            flat
+            round
+            color="primary"
+            class="q-mt-sm"
+            icon="mdi-text-recognition"
+            v-if="frame.sentences.length > 0"
+            @click="sendDataToNlp(sentence.content)"
+          ></q-btn>
         </div>
       </template>
       <template v-else>
@@ -175,6 +186,9 @@ export default {
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
+    },
+    sendDataToNlp(text) {
+      console.log("send data to NLP!", text);
     },
   },
   components: {
