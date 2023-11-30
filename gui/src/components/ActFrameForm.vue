@@ -29,14 +29,18 @@
           <TextElement :textPiece="sentence" />
           <q-btn
             size="md"
-            flat
             round
+            flat
             color="primary"
             class="q-mt-sm"
             icon="mdi-text-recognition"
             v-if="frame.sentences.length > 0"
             @click="sendDataToNlp(sentence.content)"
-          ></q-btn>
+          >
+            <q-tooltip anchor="bottom middle" class="text-subtitle2">
+              <span> Detect constituents of an act frame. </span>
+            </q-tooltip>
+          </q-btn>
         </div>
       </template>
       <template v-else>
