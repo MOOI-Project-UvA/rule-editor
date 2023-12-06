@@ -163,6 +163,7 @@ import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import TextElement from "./TextElement.vue";
+import ApiServices from "../services/ApiServices.js";
 
 export default {
   emits: ["closed"],
@@ -191,8 +192,19 @@ export default {
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
-    sendDataToNlp(text) {
+    async sendDataToNlp(text) {
       console.log("send data to NLP!", text);
+      const response = await ApiServices.fetchNlpPrediction(text);
+      console.log("response:", response);
+      //
+      // .then((response) => {
+      //   console.log("response", response.data);
+      // })
+      // .catch((error) => {
+      //   console.log("There was an error:", error.response);
+      //
+      //   return error.response;
+      // });
     },
   },
   components: {
