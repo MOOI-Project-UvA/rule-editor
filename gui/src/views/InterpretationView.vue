@@ -3,16 +3,18 @@ import SourceView from "./SourceView.vue";
 import FrameNetworkView from "./FrameNetworkView.vue";
 import FrameEditorView from "./FrameEditorView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
-import Menu from "./Menu.vue";
+import NewFrameMenu from "../components/NewFrameMenu.vue";
+import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 
 export default {
   name: "InterpretationView",
   components: {
-    Menu,
     AnnotationPanel,
     FrameEditorView,
     FrameNetworkView,
     SourceView,
+    NewFrameMenu,
+    LoadSaveMenu
   },
 };
 </script>
@@ -26,18 +28,12 @@ export default {
         <SourceView />
       </div>
       <div class="col-4">
-        <FrameNetworkView />
+        <NewFrameMenu />
+        <FrameEditorView />
       </div>
-      <!-- chip view + editor forms column-->
       <div class="col-4">
-        <!-- save and load interpretation buttons -->
-        <div class="row">
-          <Menu />
-        </div>
-        <div class="row">
-          <!-- frame editor view -->
-          <FrameEditorView />
-        </div>
+        <LoadSaveMenu />
+        <FrameNetworkView />
       </div>
     </div>
   </div>
@@ -46,9 +42,10 @@ export default {
 
 <style scoped lang="css">
 #interpretation-view {
-  //min-height: calc(100vh - 72px - 48px - 50px);
+  min-height: calc(100vh - 72px - 48px - 50px);
 }
+
 .fill-height {
-  //min-height: calc(100vh - 72px - 48px - 50px);
+  min-height: calc(100vh - 72px - 48px - 50px);
 }
 </style>
