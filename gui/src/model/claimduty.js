@@ -25,18 +25,18 @@ class Claimduty {
     set type(type) { console.log("setting type to", type); this._type = type }
 
     get label() {
-        return this._label && this._label.length > 0
-            ? this._label
-            : this.claimduty.length > 25
-                ? this.claimduty.substring(0, 25) + "..."
-                : this.claimduty
+        return this._label// && this._label.length > 0
+        // ? this._label
+        // : this.claimduty.length > 25
+        //     ? this.claimduty.substring(0, 25) + "..."
+        //     : this.claimduty
     }
     set label(label) { this._label = label }
 
     get claimduty() {
-        return this._claimduty.length > 0
-            ? this._claimduty
-            : constructClaimdutyLabel(this)
+        return this._claimduty //.length > 0
+        // ? this._claimduty
+        // : constructClaimdutyLabel(this)
     }
     set claimduty(claimduty) { this._claimduty = claimduty }
 

@@ -24,16 +24,24 @@ export default {
     <!-- main content of the card -->
     <!-- source view column -->
     <div class="row q-mt-xl q-mx-lg">
-      <div class="col-4">
+      <div class="col-5">
         <SourceView />
       </div>
       <div class="col-4">
-        <NewFrameMenu />
-        <FrameEditorView />
+        <div class="row">
+          <NewFrameMenu />
+        </div>
+        <div class="row">
+          <FrameEditorView />
+        </div>
       </div>
-      <div class="col-4">
-        <LoadSaveMenu />
-        <FrameNetworkView />
+      <div class="col-3">
+        <div>
+          <FrameNetworkView />
+        </div>
+        <div>
+          <LoadSaveMenu />
+        </div>
       </div>
     </div>
   </div>
@@ -42,10 +50,10 @@ export default {
 
 <style scoped lang="css">
 #interpretation-view {
-  min-height: calc(100vh - 72px - 48px - 50px);
+  /* min-height: calc(100vh - 72px - 48px - 50px); */
 }
 
 .fill-height {
-  min-height: calc(100vh - 72px - 48px - 50px);
+  /* min-height: calc(100vh - 72px - 48px - 50px); */
 }
 </style>
