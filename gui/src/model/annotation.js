@@ -99,7 +99,7 @@ class Snippet {
         return {
             //TODO!
             documentId: this.documentId,
-            sentenceId: this.sentenceId,
+            sentenceId: this.sentence.id,
             characterRange: this.characterRange,
             text: this.text
         }
