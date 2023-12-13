@@ -13,7 +13,6 @@ class Act {
         this._actor = null
         this._object = null
         this._precondition = new BooleanConstruct()
-        console.log("boolean construct in act", this._precondition)
         //this._precondition.addEmptyChild()
         this._recipient = null
         this._creates = []
@@ -31,16 +30,16 @@ class Act {
     set type(type) { console.log("setting type to", type); this._type = type }
 
     get label() {
-        return this._label && this._label.length > 0
-            ? this._label
-            : this.act.length > 25
-                ? this.act.substring(0, 25) + "..."
-                : this.act
+        return this._label //&& this._label.length > 0
+        // ? this._label
+        // : this.act.length > 25
+        //     ? this.act.substring(0, 25) + "..."
+        //     : this.act
     }
     set label(label) { this._label = label }
 
     get act() {
-        return this._act.length > 0
+        return this._act
             ? this._act
             : constructActLabel(this)
     }
@@ -174,8 +173,8 @@ class Act {
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments
     }
-    checkFrameExistance(act, element) {
 
+    checkFrameExistance(act, element) {
         const term = act._terminates.find((d) => act._id === element._id) ? true : false;
         const creates = act._creates.find((d) => act._id === element._id) ? true : false;
         const action = act._action !== null && act._action._id === element._id ? true : false;
