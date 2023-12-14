@@ -35,11 +35,15 @@
             class="q-mt-sm"
             icon="mdi-text-recognition"
             v-if="frame.sentences.length > 0"
+            :loading="loading"
             @click="sendDataToNlp(sentence.content)"
           >
             <q-tooltip anchor="bottom middle" class="text-subtitle2">
               <span> Detect constituents of an act frame. </span>
             </q-tooltip>
+            <template v-slot:loading>
+              <q-spinner-gears />
+            </template>
           </q-btn>
         </div>
       </template>
@@ -170,6 +174,7 @@ export default {
   data: () => ({
     showSource: false,
     showComments: false,
+    loading: false,
   }),
   computed: {
     frame() {
@@ -194,8 +199,10 @@ export default {
     },
     async sendDataToNlp(text) {
       console.log("send data to NLP!", text);
+      this.loading = true;
       const response = await ApiServices.fetchNlpPrediction(text);
       console.log("response:", response);
+      this.loading = false;
       //
       // .then((response) => {
       //   console.log("response", response.data);
