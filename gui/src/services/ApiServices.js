@@ -20,7 +20,7 @@ export default {
     try {
       const response = await fetch(
         // "http://127.0.0.1:8080/api/predict",
-        "https://nlp-api-normativesystems.tnodatalab.nl/api/predict",
+        import.meta.env.VITE_NLP_API_ENDPOINT,
         {
           method: "POST",
           headers: {
