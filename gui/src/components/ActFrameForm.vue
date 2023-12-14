@@ -36,7 +36,7 @@
             icon="mdi-text-recognition"
             v-if="frame.sentences.length > 0"
             :loading="loading"
-            @click="sendDataToNlp(sentence.content)"
+            @click="sendDataToNlp(sentence)"
           >
             <q-tooltip anchor="bottom middle" class="text-subtitle2">
               <span> Detect constituents of an act frame. </span>
@@ -168,6 +168,7 @@ import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import TextElement from "./TextElement.vue";
 import ApiServices from "../services/ApiServices.js";
+import { Annotation, Snippet } from "../model/annotation.js";
 
 export default {
   emits: ["closed"],
@@ -179,6 +180,9 @@ export default {
   computed: {
     frame() {
       return this.$store.state.frameBeingEdited;
+    },
+    annotationBeingEdited() {
+      return this.$store.state.annotationBeingEdited;
     },
     // showFrameSource() {
     //   return this.$store.state.showFrameSource
@@ -197,12 +201,53 @@ export default {
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
-    async sendDataToNlp(text) {
-      console.log("send data to NLP!", text);
+    async sendDataToNlp(sentence) {
+      console.log("send data to NLP!", sentence);
       this.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(text);
+      const response = await ApiServices.fetchNlpPrediction(sentence.content);
       console.log("response:", response);
       this.loading = false;
+      //TODO: the response consists of an array of arrays...
+      //Actions needed:
+      // - 1) for each token get the range (differences in HTML and simple string)
+      // - 2) and create a fact frame with a specific role..
+      // - 3) annotate text
+      //         - 3.1) What if there is already an annotation in one case?
+
+      response.predicted_entities.forEach((pair) => {
+        const token = pair[0];
+        const role = pair[1];
+        const range = this.getRange(sentence.content, token);
+        console.log("ranges: ", range);
+
+        if (range[0] != range[1]) {
+          const snippet = new Snippet(
+            sentence, //sentence object
+            range, //[start, end]
+            token, //selected text
+          );
+          console.log("snippet", snippet);
+          //if there is an active annotation being edited, add snippet to that annotation
+          //else create new annotation and add snippet
+          if (this.annotationBeingEdited) {
+            this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
+            console.log(
+              "this.annotaionBeingEdited: ",
+              this.annotationBeingEdited,
+            );
+          } else {
+            // getting position on screen in this case without an event?
+            let annotation = new Annotation();
+            annotation.addSnippet(snippet); //this also sets snippet.annotation
+            annotation.positionOnScreen = [207, 545];
+            console.log("annotation", annotation);
+            //shows the pop-up window...
+            // setAnnotationBeingEdited?
+            this.$store.commit("setAnnotationBeingEdited", annotation);
+          }
+          // create the frame automatically!!..
+        }
+      });
       //
       // .then((response) => {
       //   console.log("response", response.data);
@@ -212,6 +257,16 @@ export default {
       //
       //   return error.response;
       // });
+    },
+    getRange(string, token) {
+      // how about a potential second occurrence of the same token?
+      const index = string.indexOf(token);
+      if (index !== -1) {
+        const endIndex = index + token.length - 1;
+        // console.log(index, endIndex);
+
+        return [index, endIndex];
+      }
     },
   },
   components: {
