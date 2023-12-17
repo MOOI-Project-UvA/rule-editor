@@ -58,6 +58,7 @@ const store = createStore({
       frame.type = frameType;
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
+
       //if a booleanconstruct is being edited, add the new frame to it
       if (state.booleanConstructBeingEdited) {
         state.booleanConstructBeingEdited.frame = frame;
@@ -68,6 +69,18 @@ const store = createStore({
       } else {
         state.frameBeingEdited = frame;
       }
+    },
+    createNewFrameViaNlp(state, { frameType, annotation, subType }) {
+      let frame = new Fact();
+      if (annotation) {
+        frame.addAnnotation(annotation); //this also sets annotation.frame
+      }
+      frame.type = frameType;
+      frame.subType = frameType.subTypes.filter(
+        (d) => d.id == subType.toLowerCase(),
+      )[0];
+      frame["id"] = uuid4();
+      state.frames = [...state.frames, frame];
     },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame;
@@ -206,7 +219,7 @@ const store = createStore({
         //add parent references to each part of the document
         addParentReferencesToDocument(document);
         //add attribute to each sentence to store annotations
-        getSentencesInDocument(document).forEach((s,i) => {
+        getSentencesInDocument(document).forEach((s, i) => {
           s["annotations"] = [];
           s["checked"] = true;
           s["orderId"] = i;

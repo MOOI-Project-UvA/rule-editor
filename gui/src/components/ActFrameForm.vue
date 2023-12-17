@@ -169,6 +169,7 @@ import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import TextElement from "./TextElement.vue";
 import ApiServices from "../services/ApiServices.js";
 import { Annotation, Snippet } from "../model/annotation.js";
+import { frameTypes } from "../model/frame.js";
 
 export default {
   emits: ["closed"],
@@ -190,6 +191,7 @@ export default {
   },
   mounted() {
     console.log("actframeForm: ", this.frame.sentences);
+    console.log("available frametypes", frameTypes);
   },
   methods: {
     closeForm() {
@@ -229,6 +231,7 @@ export default {
           console.log("snippet", snippet);
           //if there is an active annotation being edited, add snippet to that annotation
           //else create new annotation and add snippet
+          // we probably do not need this one ... for the nLP part..
           if (this.annotationBeingEdited) {
             this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
             console.log(
@@ -239,13 +242,27 @@ export default {
             // getting position on screen in this case without an event?
             let annotation = new Annotation();
             annotation.addSnippet(snippet); //this also sets snippet.annotation
-            annotation.positionOnScreen = [207, 545];
+            // annotation.positionOnScreen = [207, 545];
             console.log("annotation", annotation);
+            const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
+            console.log("frametypes", selectedType);
+
+            // create frame
+            this.$store.commit("createNewFrameViaNlp", {
+              frameType: selectedType,
+              annotation: annotation,
+              subType: role,
+            });
+
             //shows the pop-up window...
             // setAnnotationBeingEdited?
-            this.$store.commit("setAnnotationBeingEdited", annotation);
+            // this.$store.commit("setAnnotationBeingEdited", annotation);
+
+            // create a frame as next step..
+            // go to the annotation panel next..
+            // in index.js => addnewFrame () -> set subtype in this frame... frame.addAnnotation...
           }
-          // create the frame automatically!!..
+          // TODO:  create the frame automatically!!..
         }
       });
       //
@@ -262,7 +279,7 @@ export default {
       // how about a potential second occurrence of the same token?
       const index = string.indexOf(token);
       if (index !== -1) {
-        const endIndex = index + token.length - 1;
+        const endIndex = index + token.length;
         // console.log(index, endIndex);
 
         return [index, endIndex];
