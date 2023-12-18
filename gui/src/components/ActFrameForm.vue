@@ -216,11 +216,21 @@ export default {
       // - 3) annotate text
       //         - 3.1) What if there is already an annotation in one case?
 
+      let lastIndex = 0;
       response.predicted_entities.forEach((pair) => {
         const token = pair[0];
         const role = pair[1];
-        const range = this.getRange(sentence.content, token);
+
+        const range = this.getRange(sentence.content, token, lastIndex);
+        console.log("pair: ", pair);
         console.log("ranges: ", range);
+
+        lastIndex = range[1];
+        if (role === "None") {
+          console.log("just before return!", token, role);
+          return;
+        }
+        console.log("after return!");
 
         if (range[0] != range[1]) {
           const snippet = new Snippet(
@@ -232,52 +242,48 @@ export default {
           //if there is an active annotation being edited, add snippet to that annotation
           //else create new annotation and add snippet
           // we probably do not need this one ... for the nLP part..
-          if (this.annotationBeingEdited) {
-            this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
-            console.log(
-              "this.annotaionBeingEdited: ",
-              this.annotationBeingEdited,
-            );
-          } else {
-            // getting position on screen in this case without an event?
-            let annotation = new Annotation();
-            annotation.addSnippet(snippet); //this also sets snippet.annotation
-            // annotation.positionOnScreen = [207, 545];
-            console.log("annotation", annotation);
-            const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
-            console.log("frametypes", selectedType);
+          // if (this.annotationBeingEdited) {
+          //   this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
+          //   console.log(
+          //     "this.annotaionBeingEdited: ",
+          //     this.annotationBeingEdited,
+          //   );
+          // } else {
+          // getting position on screen in this case without an event?
+          let annotation = new Annotation();
+          annotation.addSnippet(snippet); //this also sets snippet.annotation
+          // annotation.positionOnScreen = [207, 545];
+          console.log("annotation", annotation);
+          const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
+          console.log("frametypes", selectedType);
 
-            // create frame
-            this.$store.commit("createNewFrameViaNlp", {
-              frameType: selectedType,
-              annotation: annotation,
-              subType: role,
-            });
+          // create frame
+          this.$store.commit("createNewFrameViaNlp", {
+            frameType: selectedType,
+            annotation: annotation,
+            subType: role,
+          });
+          // TODO:
+          //  1) find range in HTML instead of text,
+          //  2) add modal window for previewing the NLP part
+          //  3) create chips for each element.. -> check FrameNetworkView.vue
+          //  4) if successive elements have the same label in the predictions merge the facts...
+          //  5) if a token is met multiple times per string, pick the correct instance...
 
-            //shows the pop-up window...
-            // setAnnotationBeingEdited?
-            // this.$store.commit("setAnnotationBeingEdited", annotation);
+          //shows the pop-up window...
+          // setAnnotationBeingEdited?
+          // this.$store.commit("setAnnotationBeingEdited", annotation);
 
-            // create a frame as next step..
-            // go to the annotation panel next..
-            // in index.js => addnewFrame () -> set subtype in this frame... frame.addAnnotation...
-          }
-          // TODO:  create the frame automatically!!..
+          // create a frame as next step..
+          // go to the annotation panel next..
+          // in index.js => addnewFrame () -> set subtype in this frame... frame.addAnnotation...
+          // }
         }
       });
-      //
-      // .then((response) => {
-      //   console.log("response", response.data);
-      // })
-      // .catch((error) => {
-      //   console.log("There was an error:", error.response);
-      //
-      //   return error.response;
-      // });
     },
-    getRange(string, token) {
+    getRange(string, token, lastIndex) {
       // how about a potential second occurrence of the same token?
-      const index = string.indexOf(token);
+      const index = string.indexOf(token, lastIndex);
       if (index !== -1) {
         const endIndex = index + token.length;
         // console.log(index, endIndex);
