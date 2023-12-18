@@ -35,7 +35,7 @@
             class="q-mt-sm"
             icon="mdi-text-recognition"
             v-if="frame.sentences.length > 0"
-            :loading="loading"
+            :loading="sentence.loading"
             @click="sendDataToNlp(sentence)"
           >
             <q-tooltip anchor="bottom middle" class="text-subtitle2">
@@ -176,7 +176,7 @@ export default {
   data: () => ({
     showSource: false,
     showComments: false,
-    loading: false,
+    // loading: false,
   }),
   computed: {
     frame() {
@@ -205,10 +205,10 @@ export default {
     },
     async sendDataToNlp(sentence) {
       console.log("send data to NLP!", sentence);
-      this.loading = true;
+      sentence.loading = true;
       const response = await ApiServices.fetchNlpPrediction(sentence.content);
       console.log("response:", response);
-      this.loading = false;
+      sentence.loading = false;
       //TODO: the response consists of an array of arrays...
       //Actions needed:
       // - 1) for each token get the range (differences in HTML and simple string)
@@ -268,7 +268,7 @@ export default {
           //  2) add modal window for previewing the NLP part
           //  3) create chips for each element.. -> check FrameNetworkView.vue
           //  4) if successive elements have the same label in the predictions merge the facts...
-          //  5) if a token is met multiple times per string, pick the correct instance...
+          //  5) if a token is met multiple times per string, pick the correct instance... DONE
 
           //shows the pop-up window...
           // setAnnotationBeingEdited?

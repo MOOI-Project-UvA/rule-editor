@@ -223,6 +223,7 @@ const store = createStore({
           s["annotations"] = [];
           s["checked"] = true;
           s["orderId"] = i;
+          s["loading"] = false;
         });
         const sentences = getSentencesInDocument(document);
         document.sentences = sentences;
