@@ -41,7 +41,8 @@
             <q-tooltip anchor="bottom middle" class="text-subtitle2">
               <span
                 >Detect constituents of an act frame. This feature is still
-                experimental.</span
+                experimental, so use it with caution. It is recommended to use
+                it only once per text snippet.</span
               >
             </q-tooltip>
             <template v-slot:loading>
