@@ -1,14 +1,3 @@
-import axios from "axios";
-
-const apiClient = axios.create({
-  mode: "no-cors",
-  method: "post",
-  crossDomain: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 export default {
   async fetchNlpPrediction(text) {
     try {
