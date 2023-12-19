@@ -10,25 +10,15 @@ const apiClient = axios.create({
 });
 
 export default {
-  getNlpPrediction(text) {
-    return apiClient.post(
-      "http://127.0.0.1:8080/api/predict",
-      JSON.stringify(text),
-    );
-  },
   async fetchNlpPrediction(text) {
     try {
-      const response = await fetch(
-        // "http://127.0.0.1:8080/api/predict",
-        import.meta.env.VITE_NLP_API_ENDPOINT,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text }),
+      const response = await fetch(import.meta.env.VITE_NLP_API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ text }),
+      });
       if (!response.ok) {
         throw new Error("An error occurred during the prediction request.");
       }
@@ -40,6 +30,7 @@ export default {
       throw new Error(
         "An error occurred during the prediction request: " + error.message,
       );
+      return error;
     }
   },
 };

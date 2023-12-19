@@ -39,7 +39,10 @@
             @click="sendDataToNlp(sentence)"
           >
             <q-tooltip anchor="bottom middle" class="text-subtitle2">
-              <span> Detect constituents of an act frame. </span>
+              <span
+                >Detect constituents of an act frame. This feature is still
+                experimental.</span
+              >
             </q-tooltip>
             <template v-slot:loading>
               <q-spinner-gears />
@@ -185,14 +188,8 @@ export default {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
-    // showFrameSource() {
-    //   return this.$store.state.showFrameSource
-    // }
   },
-  mounted() {
-    console.log("actframeForm: ", this.frame.sentences);
-    console.log("available frametypes", frameTypes);
-  },
+  mounted() {},
   methods: {
     closeForm() {
       this.$store.state.frameBeingEdited = null;
@@ -204,80 +201,54 @@ export default {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
     async sendDataToNlp(sentence) {
-      console.log("send data to NLP!", sentence);
       sentence.loading = true;
       const response = await ApiServices.fetchNlpPrediction(sentence.content);
-      console.log("response:", response);
+
       sentence.loading = false;
-      //TODO: the response consists of an array of arrays...
-      //Actions needed:
-      // - 1) for each token get the range (differences in HTML and simple string)
-      // - 2) and create a fact frame with a specific role..
-      // - 3) annotate text
-      //         - 3.1) What if there is already an annotation in one case?
 
       let lastIndex = 0;
-      response.predicted_entities.forEach((pair) => {
+      // create a new annotation
+      let annotation = new Annotation();
+      response.predicted_entities.forEach((pair, index, arr) => {
         const token = pair[0];
         const role = pair[1];
 
         const range = this.getRange(sentence.content, token, lastIndex);
-        console.log("pair: ", pair);
-        console.log("ranges: ", range);
 
         lastIndex = range[1];
-        if (role === "None") {
-          console.log("just before return!", token, role);
-          return;
-        }
-        console.log("after return!");
 
-        if (range[0] != range[1]) {
+        if (role === "None") return;
+
+        if (arr[index + 1][1] === role) {
+          range[1] += 1;
           const snippet = new Snippet(
             sentence, //sentence object
             range, //[start, end]
             token, //selected text
           );
-          console.log("snippet", snippet);
-          //if there is an active annotation being edited, add snippet to that annotation
-          //else create new annotation and add snippet
-          // we probably do not need this one ... for the nLP part..
-          // if (this.annotationBeingEdited) {
-          //   this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
-          //   console.log(
-          //     "this.annotaionBeingEdited: ",
-          //     this.annotationBeingEdited,
-          //   );
-          // } else {
-          // getting position on screen in this case without an event?
-          let annotation = new Annotation();
+
           annotation.addSnippet(snippet); //this also sets snippet.annotation
-          // annotation.positionOnScreen = [207, 545];
-          console.log("annotation", annotation);
+
+          return;
+        } else {
+          const snippet = new Snippet(
+            sentence, //sentence object
+            range, //[start, end]
+            token, //selected text
+          );
+
+          annotation.addSnippet(snippet); //this also sets snippet.annotation
+
           const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
-          console.log("frametypes", selectedType);
 
           // create frame
           this.$store.commit("createNewFrameViaNlp", {
             frameType: selectedType,
             annotation: annotation,
-            subType: role,
+            subType: role === "Recipient" || role === "Actor" ? "Agent" : role,
+            role: role,
           });
-          // TODO:
-          //  1) find range in HTML instead of text,
-          //  2) add modal window for previewing the NLP part
-          //  3) create chips for each element.. -> check FrameNetworkView.vue
-          //  4) if successive elements have the same label in the predictions merge the facts...
-          //  5) if a token is met multiple times per string, pick the correct instance... DONE
-
-          //shows the pop-up window...
-          // setAnnotationBeingEdited?
-          // this.$store.commit("setAnnotationBeingEdited", annotation);
-
-          // create a frame as next step..
-          // go to the annotation panel next..
-          // in index.js => addnewFrame () -> set subtype in this frame... frame.addAnnotation...
-          // }
+          annotation = new Annotation();
         }
       });
     },
