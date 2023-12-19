@@ -1,13 +1,15 @@
 export default {
   async fetchNlpPrediction(text) {
     try {
-      const response = await fetch(import.meta.env.VITE_NLP_API_ENDPOINT, {
+      const response = await fetch("/api/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_X_API_KEY,
         },
         body: JSON.stringify({ text }),
       });
+      console.log("response:", response);
       if (!response.ok) {
         throw new Error("An error occurred during the prediction request.");
       }
