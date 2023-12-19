@@ -13,9 +13,13 @@ function getSelectedCharacterRange(sentenceElement, selection) {
     const allNodes = sentenceElement.childNodes;
     const previousNode = range.startContainer;
     const index = [...allNodes].indexOf(previousNode);
+    console.log("all nodes:", allNodes, index);
     let offset = 0;
     for (let i = 0; i < index; i++) {
       const node = allNodes[i];
+      console.log("node value:", node);
+      console.log("node value:", node.nodeValue, node.innerText);
+
       offset +=
         node.nodeName == "#text"
           ? node.nodeValue.length
@@ -37,9 +41,11 @@ function getHtmlWithHighlights(text, snippets) {
   let htmlText = text;
 
   snippets.forEach((snippet) => {
-    const frameType = snippet.annotation.frame
-      ? snippet.annotation.frame.type
-      : null;
+    // console.log("snippet:", snippet);
+
+    const frameType = snippet.annotation.frame.subType
+      ? snippet.annotation.frame.subType
+      : snippet.annotation.frame.type;
     const color = frameType ? colors[frameType.id] : "grey-6";
     htmlText =
       htmlText.substring(0, snippet.characterRange[1]) +
