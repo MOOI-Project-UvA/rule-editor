@@ -36,8 +36,9 @@
       <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
         :disable="frame.sourceText.length == 0" />
     </q-card-section>
-    <q-card-actions>
-      <q-btn color="primary" @click="closeForm">Close</q-btn>
+    <q-card-actions align="right">
+      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
+      <q-btn color="primary" @click="saveFrame">Save</q-btn>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -65,6 +66,10 @@ export default {
   },
   methods: {
     closeForm() {
+      this.$store.state.frameBeingEdited = null;
+    },
+    saveFrame() {
+      this.$store.commit("saveFrameBeingEdited")
       this.$store.state.frameBeingEdited = null;
     },
     toggleComments() {

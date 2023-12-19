@@ -28,15 +28,15 @@ export class Fact {
     set isComplex(isComplex) { this._isComplex = isComplex }
 
     get label() {
-        return this._label && this._label.length > 0
-            ? this._label
-            : this.fact.length > 25
-                ? this.fact.substring(0, 25) + "..."
-                : this.fact
+        return this._label
+        // ? this._label
+        // : this.fact.length > 25
+        //     ? this.fact.substring(0, 25) + "..."
+        //     : this.fact
     }
     set label(label) { this._label = label }
 
-    get fact() { return this._fact.length > 0 ? this._fact : this.sourceText }
+    get fact() { return this._fact ? this._fact : this.sourceText }
     set fact(fact) { this._fact = fact }
 
     get subdivision() { return this._subdivision }

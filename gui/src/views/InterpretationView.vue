@@ -3,16 +3,18 @@ import SourceView from "./SourceView.vue";
 import FrameNetworkView from "./FrameNetworkView.vue";
 import FrameEditorView from "./FrameEditorView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
-import Menu from "./Menu.vue";
+import NewFrameMenu from "../components/NewFrameMenu.vue";
+import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 
 export default {
   name: "InterpretationView",
   components: {
-    Menu,
     AnnotationPanel,
     FrameEditorView,
     FrameNetworkView,
     SourceView,
+    NewFrameMenu,
+    LoadSaveMenu
   },
 };
 </script>
@@ -22,21 +24,23 @@ export default {
     <!-- main content of the card -->
     <!-- source view column -->
     <div class="row q-mt-xl q-mx-lg">
-      <div class="col-4">
+      <div class="col-5">
         <SourceView />
       </div>
       <div class="col-4">
-        <FrameNetworkView />
-      </div>
-      <!-- chip view + editor forms column-->
-      <div class="col-4">
-        <!-- save and load interpretation buttons -->
         <div class="row">
-          <Menu />
+          <NewFrameMenu />
         </div>
         <div class="row">
-          <!-- frame editor view -->
           <FrameEditorView />
+        </div>
+      </div>
+      <div class="col-3">
+        <div>
+          <FrameNetworkView />
+        </div>
+        <div>
+          <LoadSaveMenu />
         </div>
       </div>
     </div>
@@ -46,9 +50,10 @@ export default {
 
 <style scoped lang="css">
 #interpretation-view {
-  //min-height: calc(100vh - 72px - 48px - 50px);
+  /* min-height: calc(100vh - 72px - 48px - 50px); */
 }
+
 .fill-height {
-  //min-height: calc(100vh - 72px - 48px - 50px);
+  /* min-height: calc(100vh - 72px - 48px - 50px); */
 }
 </style>

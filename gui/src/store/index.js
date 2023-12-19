@@ -57,18 +57,24 @@ const store = createStore({
       }
       frame.type = frameType;
       frame["id"] = uuid4();
-      state.frames = [...state.frames, frame];
 
-      //if a booleanconstruct is being edited, add the new frame to it
-      if (state.booleanConstructBeingEdited) {
-        state.booleanConstructBeingEdited.frame = frame;
-        state.booleanConstructBeingEdited = null; //deselect boolean construct
-        //if frame is being edited and is has an active field, add frame to that field
-      } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
-        state.frameBeingEdited.addFrame(frame);
-      } else {
-        state.frameBeingEdited = frame;
+      state.frameBeingEdited = frame;
+    },
+    saveFrameBeingEdited(state) {
+      //if frameBeingEdited is new, add it to the list
+      //refresh the list to force rerendering of the view
+      if (!state.frames.some(f => f.id == state.frameBeingEdited.id)) {
+        state.frames.push(state.frameBeingEdited)
       }
+      state.frames = [...state.frames];
+      //if a booleanconstruct is being edited, add the new frame to it
+      // if (state.booleanConstructBeingEdited) {
+      //   state.booleanConstructBeingEdited.frame = frame;
+      //   state.booleanConstructBeingEdited = null; //deselect boolean construct
+      //   //if frame is being edited and is has an active field, add frame to that field
+      // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
+      //   state.frameBeingEdited.addFrame(frame);
+      // }
     },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
@@ -169,27 +175,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-            state.frames[index]._action._id === frame._id
+              state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-            state.frames[index]._actor._id == frame._id
+              state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-            state.frames[index]._object._id == frame._id
+              state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-            state.frames[index]._precondition._id == frame._id
+              state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-            state.frames[index]._recipient._id == frame._id
+              state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
