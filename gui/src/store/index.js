@@ -76,6 +76,23 @@ const store = createStore({
       //   state.frameBeingEdited.addFrame(frame);
       // }
     },
+    createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
+      let frame = new Fact();
+      if (annotation) {
+        frame.addAnnotation(annotation); //this also sets annotation.frame
+      }
+      frame.type = frameType;
+
+      subType === "Agent"
+        ? frame.comments.push(`Recommended role by the NLP model: ${role}`)
+        : null;
+
+      frame.subType = frameType.subTypes.filter(
+        (d) => d.id == subType.toLowerCase(),
+      )[0];
+      frame["id"] = uuid4();
+      state.frames = [...state.frames, frame];
+    },
     setFrameBeingEdited(state, frame) {
       state.frameBeingEdited = frame;
     },
@@ -217,6 +234,7 @@ const store = createStore({
           s["annotations"] = [];
           s["checked"] = true;
           s["orderId"] = i;
+          s["loading"] = false;
         });
         const sentences = getSentencesInDocument(document);
         document.sentences = sentences;
