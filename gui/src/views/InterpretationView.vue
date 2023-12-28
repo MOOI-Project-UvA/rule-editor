@@ -14,7 +14,7 @@ export default {
     FrameNetworkView,
     SourceView,
     NewFrameMenu,
-    LoadSaveMenu
+    LoadSaveMenu,
   },
 };
 </script>
@@ -27,7 +27,7 @@ export default {
       <div class="col-5">
         <SourceView />
       </div>
-      <div class="col-4">
+      <div class="col-3">
         <div class="row">
           <NewFrameMenu />
         </div>
@@ -35,7 +35,7 @@ export default {
           <FrameEditorView />
         </div>
       </div>
-      <div class="col-3">
+      <div class="col-4">
         <div>
           <FrameNetworkView />
         </div>
