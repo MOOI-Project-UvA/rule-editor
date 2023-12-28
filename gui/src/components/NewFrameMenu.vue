@@ -21,14 +21,19 @@
     <q-separator />
     <!-- add relation -->
     <q-item>
-      <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap q-mt-sm">
-
-        <div class="text-weight-bold q-mr-sm">
-          Add:
-        </div>
+      <div
+        id="frame-type-buttons"
+        class="row inline justify-start items-baseline no-wrap q-mt-sm"
+      >
+        <div class="text-weight-bold q-mr-sm">Add:</div>
         <div>
-          <q-btn v-for="frameType in frameTypes" class="q-mr-sm" :color="colors[frameType.id]" :label="frameType.label"
-            @click="createFrame(frameType)">
+          <q-btn
+            v-for="frameType in frameTypes"
+            class="q-mr-sm"
+            :color="colors[frameType.id]"
+            :label="frameType.label"
+            @click="createFrame(frameType)"
+          >
             <q-tooltip class="text-subtitle2">
               Add frame of type {{ frameType.label }}
             </q-tooltip>
@@ -51,7 +56,7 @@
       </q-item> -->
   </q-card>
 </template>
-  
+
 <script>
 import { icons, colors } from "../helpers/config.js";
 import { frameTypes } from "../model/frame";
@@ -91,10 +96,9 @@ export default {
   },
 };
 </script>
-  
+
 <style lang="css" scoped>
 #menu-card {
-  width: 600px;
+  width: 100%;
 }
 </style>
-  
