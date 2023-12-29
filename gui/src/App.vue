@@ -119,7 +119,7 @@ export default {
       this.$refs.stepper.next();
     },
     decreaseStepperValue() {
-      console.log("I am decreasing the stepper's value from step 2");
+      // console.log("I am decreasing the stepper's value from step 2");
       this.$refs.stepper.previous();
     },
   },
