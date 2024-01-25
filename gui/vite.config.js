@@ -10,4 +10,13 @@ export default defineConfig({
     }),
     quasar(),
   ],
+  server: {
+    proxy: {
+      "/api/predict": {
+        target: "https://nlp-api-normativesystems.tnodatalab.nl",
+        secure: false,
+        changeOrigin: true,
+      },
+    },
+  },
 });
