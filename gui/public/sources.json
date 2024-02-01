@@ -1,8 +1,8 @@
 [
     {
-        "id": "http://choppr.app/documents/1674741091539/document",
+        "id": "http://choppr.app/documents/e5ac55cb-2195-4a26-b7b0-a9565440747b",
         "title": "Participatiewet",
-        "fileName": "/sources/Participatiewet_trimmed.json"
+        "fileName": "/sources/Participatiewet.json"
     },
     {
         "id": "http://choppr.app/documents/1674740141704/document",
@@ -18,5 +18,10 @@
         "id": "http://choppr.app/documents/0e3e8a6b-8128-45ff-bbbc-01a75c1e8f4f/document",
         "title": "Verordening individuele inkomenstoeslag",
         "fileName": "/sources/Verordening individuele inkomenstoeslag gemeente Utrecht 2019 v4.json"
+    },
+    {
+        "id": "http://choppr.app/documents/1674741091539/document",
+        "title": "Algemene wet bestuursrecht",
+        "fileName": "/sources/Algemene_wet_bestuursrecht.json"
     }
 ]

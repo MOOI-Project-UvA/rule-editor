@@ -61,7 +61,7 @@
 			"@type": "src:Document",
 			"@id": "http://choppr.app/documents/50bdb7d2-497a-4f45-a85a-30ec3c6f0dd7",
 			"document": {
-					"@id": "http://choppr.app/documents/50bdb7d2-497a-4f45-a85a-30ec3c6f0dd7/document",
+				"@id": "http://choppr.app/documents/50bdb7d2-497a-4f45-a85a-30ec3c6f0dd7/document",
 				"@type": "src:Document",
 				"type": "Document",
 				"children": [
