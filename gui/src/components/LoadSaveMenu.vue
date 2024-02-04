@@ -35,6 +35,13 @@
             @click="saveInterpretationClicked"
           />
           <q-btn
+            class="q-mr-sm"
+            color="primary"
+            icon="mdi-cloud-upload-outline"
+            label="Save remotely"
+            @click="saveInterpretationRemotely"
+          />
+          <q-btn
             color="primary"
             @click="chooseFile()"
             icon="mdi-file-upload-outline"
@@ -63,6 +70,9 @@ export default {
   methods: {
     saveInterpretationClicked() {
       this.$store.dispatch("saveInterpretation");
+    },
+    async saveInterpretationRemotely() {
+      this.$store.dispatch("saveInterpretationRemotely");
     },
     chooseFile() {
       //document.getElementById("fileUpload").click()

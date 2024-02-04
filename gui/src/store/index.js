@@ -11,6 +11,11 @@ import {
   getSentencesInDocument,
 } from "../helpers/document.js";
 import { v4 as uuid4 } from "uuid";
+import {
+  fetchNlpPrediction,
+  sendDataToTriply,
+} from "../services/ApiServices.js";
+
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -264,6 +269,18 @@ const store = createStore({
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.json`);
+    },
+    async saveInterpretationRemotely(context) {
+      console.log("saving interpretation to triply");
+      // convert frames to json string
+      // replace object references by id's
+      console.log("frames", context.state.frames);
+      const structure = JSON.stringify(
+        context.state.frames.map((f) => f.toFlatObject()),
+      );
+      console.log("structure", structure);
+      const response = await sendDataToTriply(structure);
+      console.log("response", response);
     },
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText);

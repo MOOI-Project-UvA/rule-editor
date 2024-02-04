@@ -17,6 +17,11 @@ export default defineConfig({
         secure: false,
         changeOrigin: true,
       },
+      "/api/wrap": {
+        target: "http://wrap-up-api-normativesystems.tnodatalab.nl",
+        secure: false,
+        changeOrigin: true,
+      },
     },
   },
 });
