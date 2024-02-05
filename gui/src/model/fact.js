@@ -89,6 +89,7 @@ export class Fact {
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
+        this._comments = data.comments
     }
 }
 

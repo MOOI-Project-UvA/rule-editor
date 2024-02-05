@@ -1,5 +1,6 @@
 import { v4 as uuid4 } from 'uuid'
 import { BooleanConstruct } from './booleanConstruct.js'
+import { Annotation } from './annotation.js'
 
 class Act {
     constructor() {
@@ -140,39 +141,8 @@ class Act {
         }
     }
 
-    //returns object with references to other frames by id
-    toFlatObject() {
-        return {
-            id: this._id,
-            type: this._type,
-            label: this._label,
-            act: this._act,
-            action: this._action ? this._action.id : null,
-            actor: this._actor ? this._actor.id : null,
-            object: this._object ? this._object.id : null,
-            //precondition is never null, it has (a possibly empty) boolean construct
-            precondition: this._precondition.toFlatObject(),
-            recipient: this._recipient ? this._recipient.id : null,
-            creates: this._creates.map(f => f.id),
-            terminates: this._terminates.map(f => f.id),
-            comments: this._comments
-        }
-    }
 
-    fromFlatObject(frameData, allFrames) {
-        this._id = frameData.id
-        this._label = frameData.label
-        this._act = frameData.act
-        this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
-        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
-        this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
-        this._precondition = new BooleanConstruct()
-        this._precondition.fromFlatObject(frameData.precondition, allFrames)
-        this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
-        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
-        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
-        this._comments = frameData.comments
-    }
+
 
     checkFrameExistance(act, element) {
         const term = act._terminates.find((d) => act._id === element._id) ? true : false;
@@ -241,6 +211,26 @@ class Act {
             comments: this.comments,
             annotations: this.annotations.map(a => a.toFlatObject())
         }
+    }
+
+    fromFlatObject(frameData, allFrames) {
+        this._id = frameData.id
+        this._label = frameData.label
+        this._act = frameData.act
+        this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
+        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
+        this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
+        this._precondition = new BooleanConstruct()
+        this._precondition.fromFlatObject(frameData.precondition, allFrames)
+        this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
+        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
+        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+        this._comments = frameData.comments
+        frameData.annotations.forEach(a => {
+            let annotation = new Annotation()
+            annotation.fromFlatObject(a)
+            this.addAnnotation(annotation)
+        })
     }
 }
 
