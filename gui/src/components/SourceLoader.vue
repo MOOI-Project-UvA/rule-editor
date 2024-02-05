@@ -1,15 +1,7 @@
 <template>
   <div>
-    <q-select
-      v-model="selectedSource"
-      use-input
-      label="Add source text"
-      :options="sourcesNotYetLoaded"
-      behavior="menu"
-      autocomplete="title"
-      option-label="title"
-      @update:model-value="handleSelection"
-    >
+    <q-select v-model="selectedSource" use-input label="Add source text" :options="sourcesNotYetLoaded" behavior="menu"
+      autocomplete="title" option-label="title" @update:model-value="handleSelection">
       <template v-slot:before>
         <q-icon name="mdi-book-outline" />
       </template>
@@ -42,7 +34,7 @@ export default {
   methods: {
     handleSelection() {
       console.log("handleSelection", this.selectedSource);
-      this.$store.dispatch("addSource", this.selectedSource.id);
+      this.$store.dispatch("addSource", { sourceId: this.selectedSource.id, checkedSentences: null });
       this.selectedSource = null;
     },
   },

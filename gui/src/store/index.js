@@ -2,9 +2,11 @@ import { createStore } from "vuex";
 import { Fact } from "../model/fact.js";
 import { Act } from "../model/act.js";
 import { Claimduty } from "../model/claimduty.js";
-import reconstructText from "../helpers/reconstructText.js";
 import { saveAs } from "file-saver";
-import { parseJsonToFrames } from "../helpers/import.js";
+import {
+  convertInterpretationToJson,
+  parseJsonToFrames
+} from "../helpers/importExport.js";
 import { json } from "d3-fetch";
 import {
   addParentReferencesToDocument,
@@ -175,27 +177,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-            state.frames[index]._action._id === frame._id
+              state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-            state.frames[index]._actor._id == frame._id
+              state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-            state.frames[index]._object._id == frame._id
+              state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-            state.frames[index]._precondition._id == frame._id
+              state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-            state.frames[index]._recipient._id == frame._id
+              state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
@@ -220,30 +222,36 @@ const store = createStore({
     },
     //reads source, so user can annotate and create frames
     //source object contains filename where to read the source from
-    addSource(context, sourceId) {
-      // console.log("addSource", sourceId)
+    //checkedSentences is used when reading an existing interpretation: it contains
+    //the sentences that are selected by the user as relevant for the interpretation.
+    addSource(context, { sourceId, checkedSentences }) {
+      console.log("addSource", sourceId, "nrCheckedSentences", checkedSentences?.length)
       const source = this.state.availableSources.find((s) => s.id == sourceId);
       // console.log("reading", source.fileName)
       json(source.fileName).then((data) => {
         const document = data["@graph"].find((d) => "document" in d).document;
-        document.title = source.title;
         //add parent references to each part of the document
         addParentReferencesToDocument(document);
-        //add attribute to each sentence to store annotations
-        getSentencesInDocument(document).forEach((s, i) => {
+
+
+        const sentences = getSentencesInDocument(document);
+        sentences.forEach((s, i) => {
           s["annotations"] = [];
-          s["checked"] = true;
+          s["checked"] = !checkedSentences || checkedSentences.includes(s['id']);
           s["orderId"] = i;
           s["loading"] = false;
+          s["documentId"] = sourceId
         });
-        const sentences = getSentencesInDocument(document);
-        document.sentences = sentences;
 
         context.state.sourceDocuments = [
           ...context.state.sourceDocuments,
-          document,
+          {
+            id: source.id,
+            title: source.title,
+            children: document.children,
+            sentences: sentences,
+          }
         ];
-        // console.log("context.state.sourceDocuments", context.state.sourceDocuments)
       });
     },
     createAct(context) {
@@ -251,23 +259,23 @@ const store = createStore({
       context.state.frameBeingEdited = new Act();
     },
     saveInterpretation(context) {
-      console.log("saving interpretation");
-      //convert frames to json string
-      //replace object references by id's
-      console.log("frames", context.state.frames);
-      const string = JSON.stringify(
-        context.state.frames.map((f) => f.toFlatObject()),
-      );
-      console.log("string", string);
-      const blob = new Blob([string], {
+      const jsonString = JSON.stringify(
+        convertInterpretationToJson(context.state.frames, context.state.sourceDocuments)
+      )
+      const blob = new Blob([jsonString], {
         type: "text/plain;charset=utf-8",
       });
-      const dateString = new Date().toISOString().substring(0, 10);
+      const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText);
-      console.log("loaded interpretation", context.state.frames);
+
+      //read sources and replace sentenceIds in snippets with the sentence object
+      JSON.parse(jsonText).sourceDocs.forEach(d => {
+        context.dispatch("addSource", { sourceId: d.id, checkedSentences: d.checkedSentenceIds })
+      })
+
     },
     // gets the id of the hovered frame
     // and updates the frames array, which contain
