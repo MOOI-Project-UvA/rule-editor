@@ -2,10 +2,7 @@
   <q-card flat bordered class="my-card">
     <q-card-section>
       <div class="row">
-        <div class="col-1">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}</div>
-        <div class="col q-gutter-sm">
-          <q-checkbox size="sm" v-model="frame.isComplex" label="Complex" />
-        </div>
+        <div class="col-2">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}</div>
         <div class="col q-gutter-sm">
           <q-btn size="sm" round v-for="subType in factSubTypes"
             :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
@@ -23,6 +20,7 @@
           </q-btn>
         </div>
       </div>
+
     </q-card-section>
     <q-card-section>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
@@ -30,6 +28,11 @@
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
+    <div class="row">
+      <div class="col q-gutter-sm">
+        <q-checkbox size="sm" v-model="frame.isComplex" label="Fact is subdivided" />
+      </div>
+    </div>
     <q-card-section v-if="frame.isComplex">
       <div class="label">Subdivision</div>
       <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />
@@ -52,8 +55,6 @@ import CommentsList from './CommentsList.vue';
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
-import { setTransitionHooks } from 'vue';
-
 
 export default {
   emits: ["closed"],

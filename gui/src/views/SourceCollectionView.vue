@@ -13,10 +13,7 @@
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
-            <q-icon
-              name="mdi-information-outline"
-              class="cursor-pointer"
-            ></q-icon>
+            <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
                 In this view, you can select legal sources from the repository.
@@ -37,45 +34,19 @@
         <div>
           <q-splitter v-model="splitterModel" class="q-mt-lg">
             <template v-slot:before>
-              <q-tabs
-                v-model="tab"
-                vertical
-                shrink
-                dense
-                class="text-grey"
-                active-color="primary"
-                indicator-color="primary"
-              >
-                <q-tab
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                  icon="mdi-book-outline"
-                  :label="filterNames(sourceDocument.title)"
-                />
+              <q-tabs v-model="tab" vertical shrink dense class="text-grey" active-color="primary"
+                indicator-color="primary">
+                <q-tab v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex"
+                  icon="mdi-book-outline" :label="filterNames(sourceDocument.title)" />
               </q-tabs>
             </template>
             <template v-slot:after>
-              <q-tab-panels
-                v-model="tab"
-                animated
-                swipeable
-                vertical
-                transition-prev="jump-up"
-                transition-next="jump-up"
-              >
-                <q-tab-panel
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                >
+              <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up">
+                <q-tab-panel v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex">
                   <q-card flat square>
                     <q-card-section class="q-pt-none expansion-items">
                       <!-- show recursively all text leafs in the document tree -->
-                      <ListComponent
-                        :textPiece="sourceDocument.sentences"
-                        :docId="docIndex"
-                      />
+                      <ListComponent :textPiece="sourceDocument.sentences" :docId="docIndex" />
                     </q-card-section>
                   </q-card>
                 </q-tab-panel>
@@ -86,18 +57,10 @@
       </div>
       <!--  action section  -->
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
-        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')"
-          >Back</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')">Back</q-btn>
         <q-space></q-space>
 
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeSelectSources"
-          :disable="!anyCheckedSentences"
-          >Continue</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="storeSelectSources" :disable="!anyCheckedSentences">Continue</q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -170,15 +133,15 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  //height: calc(100vh - 13 6px);
+  /* height: calc(100vh - 13 6px); */
   overflow: hidden;
 }
 
 #source-collection-card-content {
-  //height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  /* height: calc(100vh - 136px - 78px - 88px - 48px - 24px); */
   height: calc(100vh - 136px - 78px - 88px - 48px - 20px);
   overflow-y: hidden;
-  //overflow: hidden;
+  /* overflow: hidden; */
   z-index: 1 !important;
 }
 
@@ -192,9 +155,9 @@ export default {
 }
 
 .expansion-items {
-  //max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
+  /* max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px); */
   max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 120px);
-  //height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
+  /* height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px); */
   overflow-y: auto;
 }
 </style>
