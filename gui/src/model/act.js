@@ -41,8 +41,8 @@ class Act {
 
     get act() {
         return this._act
-            ? this._act
-            : constructActLabel(this)
+        // ? this._act
+        // : constructActLabel(this)
     }
     set act(act) { this._act = act }
 
