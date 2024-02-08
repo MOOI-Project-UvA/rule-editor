@@ -233,7 +233,6 @@ const store = createStore({
         //add parent references to each part of the document
         addParentReferencesToDocument(document);
 
-
         const sentences = getSentencesInDocument(document);
         sentences.forEach((s, i) => {
           s["annotations"] = [];
@@ -269,7 +268,10 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {
+      context.state.sourceDocuments = []
+
       context.state.frames = parseJsonToFrames(jsonText);
+      console.log("loaded frames", context.state.frames)
 
       //read sources and replace sentenceIds in snippets with the sentence object
       JSON.parse(jsonText).sourceDocs.forEach(d => {

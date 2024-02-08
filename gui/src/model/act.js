@@ -28,7 +28,7 @@ class Act {
     set id(id) { this._id = id }
 
     get type() { return this._type }
-    set type(type) { console.log("setting type to", type); this._type = type }
+    set type(type) { this._type = type }
 
     get label() {
         return this._label //&& this._label.length > 0
@@ -214,15 +214,16 @@ class Act {
     }
 
     fromFlatObject(frameData, allFrames) {
+        console.log("act fromFlatObject", frameData)
         this._id = frameData.id
         this._label = frameData.label
         this._act = frameData.act
-        this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
-        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
-        this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
+        this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
+        this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
+        this._object = frameData.objectId ? allFrames.find(f => f.id == frameData.objectId) : null
         this._precondition = new BooleanConstruct()
         this._precondition.fromFlatObject(frameData.precondition, allFrames)
-        this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
+        this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments

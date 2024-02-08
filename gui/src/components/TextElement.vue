@@ -53,8 +53,11 @@ export default {
     sentenceId() {
       return this.isSentence ? this.textPiece["id"] : null;
     },
+    frames() {
+      return this.$store.state.frames
+    },
     annotations() {
-      return this.$store.state.frames.map((f) => f.annotations).flat();
+      return this.frames.map((f) => f.annotations).flat();
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -162,7 +165,7 @@ export default {
           }
         }
       })
-    }
+    },
   },
 };
 </script>

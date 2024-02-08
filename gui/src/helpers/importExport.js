@@ -32,7 +32,6 @@ function parseJsonToFrames(jsonText) {
     // each frame gets its id from the json data
     interpretationString.frames.forEach(d => {
         const frameType = frameTypes.find(f => f.id == d.typeId)
-        console.log("frameType", frameType)
 
         let frame
         //create empty frame of correct type
