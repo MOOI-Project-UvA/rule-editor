@@ -16,11 +16,7 @@ export default defineConfig({
         target: "https://nlp-api-normativesystems.tnodatalab.nl",
         secure: false,
         changeOrigin: true,
-      },
-      "/api/wrap": {
-        target: "http://wrap-up-api-normativesystems.tnodatalab.nl",
-        secure: false,
-        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/wrap/, ""),
       },
     },
   },

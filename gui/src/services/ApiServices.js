@@ -27,11 +27,10 @@ export async function sendDataToTriply(dataset) {
   try {
     const response = await fetch(
       // "http://localhost:5000/process_and_send",
-      "/api/wrap",
+      "/api/wrap/process_and_send",
 
       {
         method: "POST",
-        mode: "no-cors",
         headers: {
           "Content-Type": "application/json",
           "X-API-KEY": import.meta.env.VITE_X_API_KEY,
