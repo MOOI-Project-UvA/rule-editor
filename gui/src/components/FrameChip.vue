@@ -1,10 +1,8 @@
 <template>
-  <q-chip :class="{ chip: true, active: frame['_highlight'], notActive: !frame['_highlight'] }" :removable="removable"
-    :disable="disable" @remove="onRemove" :color="disable
-      ? 'grey-5'
-      : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
-      " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)"
-    v-on:mouseleave="onLeave(frame)">
+  <q-chip :class="{ chip: true }" :removable="removable" :disable="disable" @remove="onRemove" :color="disable
+    ? 'grey-5'
+    : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
+    " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
     {{ frame.label }}
     <!-- contexts which have been subdivided contain have a badge on top-right -->
     <q-badge v-if="!!frame.isComplex" style="margin-top: -2px;" dense color="secondary" rounded floating></q-badge>
@@ -58,12 +56,12 @@ export default {
       this.$store.commit("removeFrame", this.frame);
       this.$store.commit("setFrameBeingEdited", null)
     },
-    onOver: function (fact) {
+    onOver: function (frame) {
       //disabled for now since it looks very restless
       //this.$store.dispatch('highlightElements', fact)
     },
-    onLeave: function (fact) {
-      this.$store.dispatch('unhighlightElements')
+    onLeave: function (frame) {
+      //this.$store.dispatch('unhighlightElements')
     }
   }
 };

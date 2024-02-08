@@ -206,8 +206,8 @@ class Act {
             objectId: this.object?.id,
             precondition: this.precondition.toFlatObject(), //boolean construct
             recipientId: this.recipient?.id,
-            creates: this.creates.map(c => c.toFlatObject()),
-            terminates: this.terminates.map(t => t.toFlatObject()),
+            creates: this.creates.map(f => f.id),
+            terminates: this.terminates.map(f => f.id),
             comments: this.comments,
             annotations: this.annotations.map(a => a.toFlatObject())
         }
@@ -217,6 +217,7 @@ class Act {
         console.log("act fromFlatObject", frameData)
         this._id = frameData.id
         this._label = frameData.label
+        //this._type is instantiated in importExport.js
         this._act = frameData.act
         this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null

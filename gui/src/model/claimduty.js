@@ -161,6 +161,7 @@ class Claimduty {
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
         this._label = frameData.label
+        //this._type is instantiated in importExport.js
         this._claimduty = frameData.claimduty
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
