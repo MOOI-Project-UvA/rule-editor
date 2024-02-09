@@ -5,7 +5,7 @@ import { Claimduty } from "../model/claimduty.js";
 import { saveAs } from "file-saver";
 import {
   convertInterpretationToJson,
-  parseJsonToFrames
+  parseJsonToFrames,
 } from "../helpers/importExport.js";
 import { json } from "d3-fetch";
 import {
@@ -84,6 +84,7 @@ const store = createStore({
         frame.addAnnotation(annotation); //this also sets annotation.frame
       }
       frame.type = frameType;
+      frame.label = frame.fact.substring(0, 20);
 
       subType === "Agent"
         ? frame.comments.push(`Recommended role by the NLP model: ${role}`)
@@ -177,27 +178,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-              state.frames[index]._action._id === frame._id
+            state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-              state.frames[index]._actor._id == frame._id
+            state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-              state.frames[index]._object._id == frame._id
+            state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-              state.frames[index]._precondition._id == frame._id
+            state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-              state.frames[index]._recipient._id == frame._id
+            state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
@@ -225,7 +226,12 @@ const store = createStore({
     //checkedSentences is used when reading an existing interpretation: it contains
     //the sentences that are selected by the user as relevant for the interpretation.
     addSource(context, { sourceId, checkedSentences }) {
-      console.log("addSource", sourceId, "nrCheckedSentences", checkedSentences?.length)
+      console.log(
+        "addSource",
+        sourceId,
+        "nrCheckedSentences",
+        checkedSentences?.length,
+      );
       const source = this.state.availableSources.find((s) => s.id == sourceId);
       // console.log("reading", source.fileName)
       json(source.fileName).then((data) => {
@@ -236,10 +242,11 @@ const store = createStore({
         const sentences = getSentencesInDocument(document);
         sentences.forEach((s, i) => {
           s["annotations"] = [];
-          s["checked"] = !checkedSentences || checkedSentences.includes(s['id']);
+          s["checked"] =
+            !checkedSentences || checkedSentences.includes(s["id"]);
           s["orderId"] = i;
           s["loading"] = false;
-          s["documentId"] = sourceId
+          s["documentId"] = sourceId;
         });
 
         context.state.sourceDocuments = [
@@ -249,7 +256,7 @@ const store = createStore({
             title: source.title,
             children: document.children,
             sentences: sentences,
-          }
+          },
         ];
       });
     },
@@ -259,8 +266,11 @@ const store = createStore({
     },
     saveInterpretation(context) {
       const jsonString = JSON.stringify(
-        convertInterpretationToJson(context.state.frames, context.state.sourceDocuments)
-      )
+        convertInterpretationToJson(
+          context.state.frames,
+          context.state.sourceDocuments,
+        ),
+      );
       const blob = new Blob([jsonString], {
         type: "text/plain;charset=utf-8",
       });
@@ -268,16 +278,18 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {
-      context.state.sourceDocuments = []
+      context.state.sourceDocuments = [];
 
       context.state.frames = parseJsonToFrames(jsonText);
-      console.log("loaded frames", context.state.frames)
+      console.log("loaded frames", context.state.frames);
 
       //read sources and replace sentenceIds in snippets with the sentence object
-      JSON.parse(jsonText).sourceDocs.forEach(d => {
-        context.dispatch("addSource", { sourceId: d.id, checkedSentences: d.checkedSentenceIds })
-      })
-
+      JSON.parse(jsonText).sourceDocs.forEach((d) => {
+        context.dispatch("addSource", {
+          sourceId: d.id,
+          checkedSentences: d.checkedSentenceIds,
+        });
+      });
     },
     // gets the id of the hovered frame
     // and updates the frames array, which contain
