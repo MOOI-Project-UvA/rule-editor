@@ -4,15 +4,27 @@
         Hides itself if showFrameSource is true and this sentence is not part of the source of the
         frame that is currently being edited
     -->
-  <template v-if="!isLeafElement ||
-    !showFrameSource ||
-    frameBeingEditedHasAnnotationsInThisSentence
-    ">
+  <template
+    v-if="
+      !isLeafElement ||
+      !showFrameSource ||
+      frameBeingEditedHasAnnotationsInThisSentence
+    "
+  >
     <!-- show colored bar and textual content -->
     <div class="text-chunk" v-if="isChecked">
-      <div class="relation-bar" :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
-        @click="relationBarClicked" />
-      <div class="text-piece" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement"></div>
+      <div
+        class="relation-bar"
+        :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
+        @click="relationBarClicked"
+      />
+      <div
+        class="text-piece"
+        v-if="isSentence"
+        @mouseup="handleSelection"
+        v-html="htmlText"
+        ref="sentenceElement"
+      ></div>
     </div>
 
     <div v-for="child in textPiece.children">
@@ -22,9 +34,12 @@
 </template>
 
 <script>
-import { getSelectedCharacterRange, getHtmlWithHighlights } from '../helpers/highlightText.js'
-import { Annotation, Snippet } from "../model/annotation.js"
-import { getDocumentForTextPiece } from '../helpers/document'
+import {
+  getSelectedCharacterRange,
+  getHtmlWithHighlights,
+} from "../helpers/highlightText.js";
+import { Annotation, Snippet } from "../model/annotation.js";
+import { getDocumentForTextPiece } from "../helpers/document";
 
 export default {
   data: () => ({
@@ -54,7 +69,7 @@ export default {
       return this.isSentence ? this.textPiece["id"] : null;
     },
     frames() {
-      return this.$store.state.frames
+      return this.$store.state.frames;
     },
     annotations() {
       return this.frames.map((f) => f.annotations).flat();
@@ -70,7 +85,13 @@ export default {
         //these will be highlighted in the sentence
         return this.annotations
           .filter((a) => a.frame && a.frame.type.class == "fact")
-          .map((a) => a.snippets.filter((s) => s.sentenceId == this.textPiece.id && s.documentId == this.textPiece.documentId))
+          .map((a) =>
+            a.snippets.filter(
+              (s) =>
+                s.sentenceId == this.textPiece.id &&
+                s.documentId == this.textPiece.documentId,
+            ),
+          )
           .flat();
       } else {
         return [];
@@ -83,7 +104,11 @@ export default {
           (a) =>
             a.frame &&
             a.frame.type.class == "relation" &&
-            a.snippets.some((s) => s.sentenceId == this.textPiece.id && s.documentId == this.textPiece.documentId)
+            a.snippets.some(
+              (s) =>
+                s.sentenceId == this.textPiece.id &&
+                s.documentId == this.textPiece.documentId,
+            ),
         );
       } else {
         return [];
@@ -97,7 +122,11 @@ export default {
       const snippetsOfFrame = frameBeingEdited.annotations
         .map((a) => a.snippets)
         .flat();
-      return snippetsOfFrame.some((s) => s.sentenceId == this.textPiece.id && s.documentId == this.textPiece.documentId);
+      return snippetsOfFrame.some(
+        (s) =>
+          s.sentenceId == this.textPiece.id &&
+          s.documentId == this.textPiece.documentId,
+      );
     },
     htmlText() {
       return getHtmlWithHighlights(this.textPiece.content, this.snippets);
@@ -105,47 +134,55 @@ export default {
   },
   methods: {
     handleSelection(event) {
-      console.log("handleSelection")
+      console.log("handleSelection");
       //check if there is an annotation at the clicked location
       if (this.hoveredSnippetId) {
         //if there is no annotation being edited, show the annotation associated with the clicked snippet
         //else do nothing
         if (!this.annotationBeingEdited) {
-          const snippet = this.snippets.find(s => s.id == this.hoveredSnippetId)
-          snippet.annotation.positionOnScreen = [event.clientX, event.clientY]
-          this.$store.commit("setAnnotationBeingEdited", snippet.annotation)
+          const snippet = this.snippets.find(
+            (s) => s.id == this.hoveredSnippetId,
+          );
+          snippet.annotation.positionOnScreen = [event.clientX, event.clientY];
+          this.$store.commit("setAnnotationBeingEdited", snippet.annotation);
         }
       } else {
         //no existing annotation at the clicked location
-        const selection = window.getSelection()
-        const range = getSelectedCharacterRange(this.$refs['sentenceElement'], selection)
+        const selection = window.getSelection();
+        const range = getSelectedCharacterRange(
+          this.$refs["sentenceElement"],
+          selection,
+        );
         //if the user actually selected something (and not just clicked)
         if (range[0] != range[1]) {
-          console.log("textPiece", this.textPiece)
+          console.log("textPiece", this.textPiece);
           const snippet = new Snippet(
             this.textPiece.documentId, //document id
             this.textPiece.id, //sentence id
+            this.textPiece, //sentence
             range, //[start, end]
-            selection.toString() //selected text
-          )
+            selection.toString(), //selected text
+          );
           //if there is an active annotation being edited, add snippet to that annotation
           //else create new annotation and add snippet
           if (this.annotationBeingEdited) {
-            this.annotationBeingEdited.addSnippet(snippet) //this also sets snippet.annotation
+            this.annotationBeingEdited.addSnippet(snippet); //this also sets snippet.annotation
           } else {
-            let annotation = new Annotation()
-            annotation.addSnippet(snippet) //this also sets snippet.annotation
-            annotation.positionOnScreen = [event.clientX, event.clientY]
-            this.$store.commit("setAnnotationBeingEdited", annotation)
+            let annotation = new Annotation();
+            annotation.addSnippet(snippet); //this also sets snippet.annotation
+            annotation.positionOnScreen = [event.clientX, event.clientY];
+            this.$store.commit("setAnnotationBeingEdited", annotation);
           }
         }
-
       }
     },
     relationBarClicked() {
-      console.log("relationBarClicked", this.annotations)
-      this.$store.commit("setAnnotationBeingEdited", this.relationAnnotationsForSentence[0])
-    }
+      console.log("relationBarClicked", this.annotations);
+      this.$store.commit(
+        "setAnnotationBeingEdited",
+        this.relationAnnotationsForSentence[0],
+      );
+    },
   },
   watch: {
     //add listeners to highlighted snippets in html
@@ -154,17 +191,21 @@ export default {
       //add this point, htmlText is not yet rendered, so childnodes is still one textnode
       //we need to wait for the next renderstep before adding mouseover events
       this.$nextTick(() => {
-        if (this.$refs['sentenceElement']) {
-          const nodes = this.$refs['sentenceElement'].childNodes
+        if (this.$refs["sentenceElement"]) {
+          const nodes = this.$refs["sentenceElement"].childNodes;
           for (let i = 0; i < nodes.length; i++) {
-            let node = nodes[i]
+            let node = nodes[i];
             if (node.nodeName == "SPAN") {
-              node.onmouseover = () => { this.hoveredSnippetId = node.id }
-              node.onmouseout = () => { this.hoveredSnippetId = null }
+              node.onmouseover = () => {
+                this.hoveredSnippetId = node.id;
+              };
+              node.onmouseout = () => {
+                this.hoveredSnippetId = null;
+              };
             }
           }
         }
-      })
+      });
     },
   },
 };
