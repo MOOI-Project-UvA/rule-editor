@@ -55,7 +55,7 @@
 
             </div>
             <div v-if="isBeingEdited" class="button-label">
-                Select existing frame or create a new frame by annotating the source.
+                Select existing frame
             </div>
         </div>
         <div class="col-1">

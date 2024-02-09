@@ -181,9 +181,9 @@ export default {
 }
 
 .chips {
-  display: flex;
+  /* display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: wrap; */
 }
 
 .message {

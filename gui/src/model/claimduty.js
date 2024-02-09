@@ -161,10 +161,11 @@ class Claimduty {
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
         this._label = frameData.label
+        //this._type is instantiated in importExport.js
         this._claimduty = frameData.claimduty
-        this._duty = frameData.duty ? allFrames.find(f => f.id == frameData.duty) : null
-        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
-        this._holder = frameData.holder ? allFrames.find(f => f.id == frameData.holder) : null
+        this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
+        this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
+        this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
         this._comments = frameData.comments
         frameData.annotations.forEach(a => {
             let annotation = new Annotation()
