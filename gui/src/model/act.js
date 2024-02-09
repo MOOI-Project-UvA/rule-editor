@@ -84,15 +84,24 @@ class Act {
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
-    get sentences() {
-        const sentences = this.annotations.map(a => a.snippets.map(s => s.sentence)).flat()
-        sentences.sort((s1, s2) => {
-            return (s1.id < s2.id)
-                ? -1
-                : s1.id > s2.id
-                    ? 1
-                    : 0
+    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
+    getSentences(sourceDocs) {
+        console.log("sourceDocs", sourceDocs)
+        const snippets = this._annotations.map(a => a.snippets).flat()
+        //group snippets according to document
+        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
+        console.log("snippetsPerDoc", snippetsPerDoc)
+        let sentences = []
+        Object.entries(snippetsPerDoc).forEach(([docId, snippetsInDoc]) => {
+            console.log("snippetsInDoc", snippetsInDoc)
+            //get sentence object for each snippet from the current document
+            const doc = sourceDocs.find(d => d.id == docId)
+            let sentencesForSnippets = snippetsInDoc
+                .map(snippet => doc.sentences.find(s => s.id == snippet.sentenceId))
+            sentencesForSnippets.sort((s1, s2) => s1.orderId - s2.orderId)
+            sentences = sentences.concat(sentencesForSnippets)
         })
+        console.log("sentences", sentences)
         return sentences
     }
 

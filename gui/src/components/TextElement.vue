@@ -4,27 +4,15 @@
         Hides itself if showFrameSource is true and this sentence is not part of the source of the
         frame that is currently being edited
     -->
-  <template
-    v-if="
-      !isLeafElement ||
-      !showFrameSource ||
-      frameBeingEditedHasAnnotationsInThisSentence
-    "
-  >
+  <template v-if="!isLeafElement ||
+    !showFrameSource ||
+    frameBeingEditedHasAnnotationsInThisSentence
+    ">
     <!-- show colored bar and textual content -->
     <div class="text-chunk" v-if="isChecked">
-      <div
-        class="relation-bar"
-        :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
-        @click="relationBarClicked"
-      />
-      <div
-        class="text-piece"
-        v-if="isSentence"
-        @mouseup="handleSelection"
-        v-html="htmlText"
-        ref="sentenceElement"
-      ></div>
+      <div class="relation-bar" :class="{ 'has-relation': relationAnnotationsForSentence.length > 0 }"
+        @click="relationBarClicked" />
+      <div class="text-piece" v-if="isSentence" @mouseup="handleSelection" v-html="htmlText" ref="sentenceElement"></div>
     </div>
 
     <div v-for="child in textPiece.children">
@@ -159,7 +147,6 @@ export default {
           const snippet = new Snippet(
             this.textPiece.documentId, //document id
             this.textPiece.id, //sentence id
-            this.textPiece, //sentence
             range, //[start, end]
             selection.toString(), //selected text
           );

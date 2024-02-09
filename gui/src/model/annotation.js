@@ -91,12 +91,11 @@ class Annotation {
 
 // piece of consecutive text within a sentence in the source text, contains of a sentence and a character range
 class Snippet {
-  constructor(documentId, sentenceId, sentence, characterRange, text) {
+  constructor(documentId, sentenceId, characterRange, text) {
     this._id = uuid4(); //unique ID
     this._documentId = documentId;
     this._sentenceId = sentenceId;
-    // this._loading = sentence.loading;
-    this._sentence = sentence;
+    // this._loading = sentence.loading;x§x§
     this._characterRange = characterRange;
     this._text = text;
     this._annotation = null; //annotation that this snippet is part of
@@ -110,9 +109,6 @@ class Snippet {
   }
   get sentenceId() {
     return this._sentenceId;
-  }
-  get sentence() {
-    return this._sentence;
   }
   get characterRange() {
     return this._characterRange;

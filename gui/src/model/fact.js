@@ -58,6 +58,14 @@ export class Fact {
 
     }
 
+    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
+    getSentences(sourceDocs) {
+        const snippets = this._annotations.map(a => a.snippets).flat()
+        //group snippets according to document
+        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
+        console.log("snippetsPerDoc", snippetsPerDoc)
+        return []
+    }
     toFlatObject() {
         return {
             id: this.id,
