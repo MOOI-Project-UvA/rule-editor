@@ -1,5 +1,6 @@
 import { v4 as uuid4 } from 'uuid'
 import { BooleanConstruct } from './booleanConstruct.js'
+import { Annotation } from './annotation.js'
 
 class Act {
     constructor() {
@@ -27,7 +28,7 @@ class Act {
     set id(id) { this._id = id }
 
     get type() { return this._type }
-    set type(type) { console.log("setting type to", type); this._type = type }
+    set type(type) { this._type = type }
 
     get label() {
         return this._label //&& this._label.length > 0
@@ -40,8 +41,8 @@ class Act {
 
     get act() {
         return this._act
-            ? this._act
-            : constructActLabel(this)
+        // ? this._act
+        // : constructActLabel(this)
     }
     set act(act) { this._act = act }
 
@@ -83,15 +84,24 @@ class Act {
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
-    get sentences() {
-        const sentences = this.annotations.map(a => a.snippets.map(s => s.sentence)).flat()
-        sentences.sort((s1, s2) => {
-            return (s1.id < s2.id)
-                ? -1
-                : s1.id > s2.id
-                    ? 1
-                    : 0
+    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
+    getSentences(sourceDocs) {
+        console.log("sourceDocs", sourceDocs)
+        const snippets = this._annotations.map(a => a.snippets).flat()
+        //group snippets according to document
+        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
+        console.log("snippetsPerDoc", snippetsPerDoc)
+        let sentences = []
+        Object.entries(snippetsPerDoc).forEach(([docId, snippetsInDoc]) => {
+            console.log("snippetsInDoc", snippetsInDoc)
+            //get sentence object for each snippet from the current document
+            const doc = sourceDocs.find(d => d.id == docId)
+            let sentencesForSnippets = snippetsInDoc
+                .map(snippet => doc.sentences.find(s => s.id == snippet.sentenceId))
+            sentencesForSnippets.sort((s1, s2) => s1.orderId - s2.orderId)
+            sentences = sentences.concat(sentencesForSnippets)
         })
+        console.log("sentences", sentences)
         return sentences
     }
 
@@ -140,39 +150,8 @@ class Act {
         }
     }
 
-    //returns object with references to other frames by id
-    toFlatObject() {
-        return {
-            id: this._id,
-            type: this._type,
-            label: this._label,
-            act: this._act,
-            action: this._action ? this._action.id : null,
-            actor: this._actor ? this._actor.id : null,
-            object: this._object ? this._object.id : null,
-            //precondition is never null, it has (a possibly empty) boolean construct
-            precondition: this._precondition.toFlatObject(),
-            recipient: this._recipient ? this._recipient.id : null,
-            creates: this._creates.map(f => f.id),
-            terminates: this._terminates.map(f => f.id),
-            comments: this._comments
-        }
-    }
 
-    fromFlatObject(frameData, allFrames) {
-        this._id = frameData.id
-        this._label = frameData.label
-        this._act = frameData.act
-        this._action = frameData.action ? allFrames.find(f => f.id == frameData.action) : null
-        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
-        this._object = frameData.object ? allFrames.find(f => f.id == frameData.object) : null
-        this._precondition = new BooleanConstruct()
-        this._precondition.fromFlatObject(frameData.precondition, allFrames)
-        this._recipient = frameData.recipient ? allFrames.find(f => f.id == frameData.recipient) : null
-        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
-        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
-        this._comments = frameData.comments
-    }
+
 
     checkFrameExistance(act, element) {
         const term = act._terminates.find((d) => act._id === element._id) ? true : false;
@@ -236,11 +215,33 @@ class Act {
             objectId: this.object?.id,
             precondition: this.precondition.toFlatObject(), //boolean construct
             recipientId: this.recipient?.id,
-            creates: this.creates.map(c => c.toFlatObject()),
-            terminates: this.terminates.map(t => t.toFlatObject()),
+            creates: this.creates.map(f => f.id),
+            terminates: this.terminates.map(f => f.id),
             comments: this.comments,
             annotations: this.annotations.map(a => a.toFlatObject())
         }
+    }
+
+    fromFlatObject(frameData, allFrames) {
+        console.log("act fromFlatObject", frameData)
+        this._id = frameData.id
+        this._label = frameData.label
+        //this._type is instantiated in importExport.js
+        this._act = frameData.act
+        this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
+        this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
+        this._object = frameData.objectId ? allFrames.find(f => f.id == frameData.objectId) : null
+        this._precondition = new BooleanConstruct()
+        this._precondition.fromFlatObject(frameData.precondition, allFrames)
+        this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
+        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
+        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+        this._comments = frameData.comments
+        frameData.annotations.forEach(a => {
+            let annotation = new Annotation()
+            annotation.fromFlatObject(a)
+            this.addAnnotation(annotation)
+        })
     }
 }
 

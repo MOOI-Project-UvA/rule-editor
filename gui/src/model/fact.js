@@ -7,8 +7,8 @@ export class Fact {
         this._id = uuid4() //unique ID
         this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
-        this._type = null //type object (id, class, label)
-        this._subType = null //optional subtype (id, class, label)
+        this._type = null //type object {id, class, label} 
+        this._subType = null //optional subtype {id, class, label}
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
@@ -58,6 +58,14 @@ export class Fact {
 
     }
 
+    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
+    getSentences(sourceDocs) {
+        const snippets = this._annotations.map(a => a.snippets).flat()
+        //group snippets according to document
+        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
+        console.log("snippetsPerDoc", snippetsPerDoc)
+        return []
+    }
     toFlatObject() {
         return {
             id: this.id,
@@ -77,7 +85,7 @@ export class Fact {
         this.label = data.label
         this.fact = data.fact
         if (data.subTypeId) {
-            //this.type is instantiated in import.js
+            //this.type is instantiated in importExport.js
             //find corresponding subtype in type
             this.subType = this.type.subTypes.find(t => t.id == data.subTypeId)
         }
@@ -89,6 +97,7 @@ export class Fact {
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
+        this._comments = data.comments
     }
 }
 

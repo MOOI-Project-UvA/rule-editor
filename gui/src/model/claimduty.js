@@ -1,5 +1,5 @@
 import { v4 as uuid4 } from 'uuid'
-import { BooleanConstruct } from './booleanConstruct.js'
+import { Annotation } from './annotation.js'
 
 class Claimduty {
     constructor() {
@@ -108,29 +108,7 @@ class Claimduty {
         }
     }
 
-    //returns object with references to other frames by id
-    toFlatObject() {
-        return {
-            id: this._id,
-            type: this._type,
-            label: this._label,
-            claimduty: this._claimduty,
-            duty: this._duty ? this._duty.id : null,
-            actor: this._actor ? this._actor.id : null,
-            holder: this._holder ? this._holder.id : null,
-            comments: this._comments
-        }
-    }
 
-    fromFlatObject(frameData, allFrames) {
-        this._id = frameData.id
-        this._label = frameData.label
-        this._claimduty = frameData.claimduty
-        this._duty = frameData.duty ? allFrames.find(f => f.id == frameData.duty) : null
-        this._actor = frameData.actor ? allFrames.find(f => f.id == frameData.actor) : null
-        this._holder = frameData.holder ? allFrames.find(f => f.id == frameData.holder) : null
-        this._comments = frameData.comments
-    }
     checkFrameExistance(claimduty, element) {
         const duty = claimduty._duty !== null && claimduty._duty._id === element._id ? true : false;
         const actor = claimduty._actor !== null && claimduty._actor._id == element._id
@@ -178,6 +156,22 @@ class Claimduty {
             comments: this.comments,
             annotations: this.annotations.map(a => a.toFlatObject())
         }
+    }
+
+    fromFlatObject(frameData, allFrames) {
+        this._id = frameData.id
+        this._label = frameData.label
+        //this._type is instantiated in importExport.js
+        this._claimduty = frameData.claimduty
+        this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
+        this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
+        this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
+        this._comments = frameData.comments
+        frameData.annotations.forEach(a => {
+            let annotation = new Annotation()
+            annotation.fromFlatObject(a)
+            this.addAnnotation(annotation)
+        })
     }
 }
 
