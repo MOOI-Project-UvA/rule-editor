@@ -275,9 +275,11 @@ const store = createStore({
       // convert frames to json string
       // replace object references by id's
       console.log("frames", context.state.frames);
-      const structure = JSON.stringify(
-        context.state.frames.map((f) => f.toFlatObject()),
-      );
+      const data = {
+        graphName: "myExampleGraph",
+        graphData: context.state.frames.map((f) => f.toFlatObject()),
+      };
+      const structure = JSON.stringify(data);
       console.log("structure", structure);
       const response = await sendDataToTriply(structure);
       console.log("response", response);

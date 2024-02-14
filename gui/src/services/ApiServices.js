@@ -26,8 +26,8 @@ export async function fetchNlpPrediction(text) {
 export async function sendDataToTriply(dataset) {
   try {
     const response = await fetch(
-      // "http://localhost:5000/process_and_send",
-      "/api/wrap/process_and_send",
+      "http://localhost:5011/process_and_send",
+      // "/api/wrap/process_and_send",
 
       {
         method: "POST",

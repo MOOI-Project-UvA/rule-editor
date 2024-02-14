@@ -40,6 +40,7 @@
             icon="mdi-cloud-upload-outline"
             label="Save remotely"
             @click="saveInterpretationRemotely"
+            :loading="loading"
           />
           <q-btn
             color="primary"
@@ -66,13 +67,18 @@ import { icons } from "../helpers/config.js";
 export default {
   data: () => ({
     icons: icons,
+    loading: false,
   }),
   methods: {
     saveInterpretationClicked() {
       this.$store.dispatch("saveInterpretation");
     },
     async saveInterpretationRemotely() {
-      this.$store.dispatch("saveInterpretationRemotely");
+      this.loading = true;
+      this.$store.dispatch("saveInterpretationRemotely").then(() => {
+        this.loading = false;
+      });
+      // this.loading = false;
     },
     chooseFile() {
       //document.getElementById("fileUpload").click()
