@@ -7,7 +7,7 @@ import {
   convertInterpretationToJson,
   parseJsonToFrames,
 } from "../helpers/importExport.js";
-import { json } from "d3-fetch";
+import { json, text } from "d3-fetch";
 import {
   addParentReferencesToDocument,
   getSentencesInDocument,
@@ -178,27 +178,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-            state.frames[index]._action._id === frame._id
+              state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-            state.frames[index]._actor._id == frame._id
+              state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-            state.frames[index]._object._id == frame._id
+              state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-            state.frames[index]._precondition._id == frame._id
+              state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-            state.frames[index]._recipient._id == frame._id
+              state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
@@ -215,6 +215,15 @@ const store = createStore({
     },
   },
   actions: {
+    loadInterpretationForDebugging(context) {
+      json(`./sources.json`).then((data) => {
+        context.state.availableSources = data;
+        text("./interpretation_DEBUG/interpretation.json").then(data => {
+          console.log("data", data)
+          context.dispatch("loadInterpretation", data)
+        })
+      });
+    },
     readAvailableSources(context) {
       console.log("reading available sources");
       json(`./sources.json`).then((data) => {
@@ -279,7 +288,7 @@ const store = createStore({
     },
     loadInterpretation(context, jsonText) {
       context.state.sourceDocuments = [];
-
+      console.log("jsonText", jsonText)
       context.state.frames = parseJsonToFrames(jsonText);
       console.log("loaded frames", context.state.frames);
 
