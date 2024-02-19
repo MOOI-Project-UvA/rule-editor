@@ -1,7 +1,5 @@
 <template>
-  <q-card flat bordered class="q-ma-sm full-height">
-
-
+  <q-card flat bordered class="q-ma-sm">
     <div class="row items-center q-pa-sm">
       <div class="col-1 text-bold">Sources</div>
       <div class="col">
@@ -25,15 +23,13 @@
         </q-avatar>
       </div>
     </div>
-
-
     <q-separator />
 
-    <q-card-section class="q-pt-none">
+    <q-card-section class="q-pa-none">
       <template v-if="displayedSource && displayedSource.sentences.some((e) => e.checked)">
         <!-- show recursively all text leafs in the document tree -->
-        <div class="flex full-height scrollable">
-          <!-- <TextElement :textPiece="displayedSource" /> -->
+        <div class="fill-height scrollable q-py-xs">
+          <TextElement :textPiece="displayedSource" />
         </div>
       </template>
       <template v-else>
@@ -89,5 +85,9 @@ export default {
 <style lang="css" scoped>
 .scrollable {
   overflow-y: auto;
+}
+
+.fill-height {
+  height: calc(100vh - 210px);
 }
 </style>

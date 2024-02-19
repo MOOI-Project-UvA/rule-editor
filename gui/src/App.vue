@@ -21,7 +21,7 @@
 
   <q-stepper id="stepper-id" v-model="step" ref="stepper" color="primary" animated flat header-nav>
     <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="step > 1" done-color="green"
-      caption="Step 1" class="flex full-height row justify-center content-center" :header-nav="step > 1">
+      caption="Step 1" class="row justify-center content-center" :header-nav="step > 1">
       <TaskDefinitionView @update-stepper="updateStepperValue" />
     </q-step>
     <q-step :name="2" title="Collect sources" icon="mdi-bookmark-box-multiple-outline"
@@ -65,26 +65,12 @@ export default {
   },
   methods: {
     updateStepperValue() {
-      console.log("I am updating the stepper value from step 1");
       this.$refs.stepper.next();
     },
     decreaseStepperValue() {
-      // console.log("I am decreasing the stepper's value from step 2");
       this.$refs.stepper.previous();
     },
   },
 };
 </script>
-<style scoped>
-.fill-height {
-  height: calc(100vh - 136px);
-}
-
-.scrollable {
-  overflow-y: auto;
-}
-
-.q-stepper :deep(.q-stepper__content) {
-  overflow: auto !important;
-}
-</style>
+<style scoped></style>

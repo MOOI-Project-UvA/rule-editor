@@ -1,11 +1,5 @@
 <template>
-  <q-card
-    flat
-    bordered
-    id="current-frame"
-    v-if="frameBeingEdited"
-    class="my-card q-ma-sm"
-  >
+  <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
     <template v-if="frameBeingEdited.type.class == 'fact'">
       <FactFrameForm />
     </template>

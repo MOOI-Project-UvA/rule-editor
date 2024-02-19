@@ -24,48 +24,56 @@
 
     <q-separator />
     <!-- main content of the card  -->
-    <q-item>
-      <div>
-        <template v-for="frameClass in ['fact', 'relation']">
-          <div class="class-label">{{ frameClass }}</div>
-          <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
-            <div v-if="frameType.class != 'fact'">
-              <b>{{ frameType.label }}</b>
-            </div>
-            <div class="chips">
-              <div v-for="frame in frames.filter(
-                (f) => f.type.id == frameType.id && !f.subType,
-              )" @click="onClick(frame)">
-                <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-                  frameBeingEdited.type.class == 'relation' &&
-                  frameBeingEdited.activeField &&
-                  !allowedSubTypes.includes(frameType.id)
-                  " :removable="message === 'Click to edit'" functionality="chip-container" />
+    <q-item class="q-pa-none">
+      <div class="column fill-height">
+        <div class="col scrollable q-pa-sm">
+
+          <template v-for="frameClass in ['fact', 'relation']">
+            <div class="class-label">{{ frameClass }}</div>
+            <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
+              <div v-if="frameType.class != 'fact'">
+                <b>{{ frameType.label }}</b>
               </div>
-            </div>
-            <div v-if="'subTypes' in frameType">
-              <div v-for="subType in frameType.subTypes" class="q-ml-sm">
-                <q-avatar size="md" :icon="icons[subType.id]" />
-                <b>{{ subType.label }}</b>
-                <div class="chips">
-                  <div v-for="frame in frames.filter(
-                    (f) =>
-                      f.type.id == frameType.id &&
-                      f.subType &&
-                      f.subType.id == subType.id,
-                  )" @click="onClick(frame)">
-                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-                      frameBeingEdited.type.class == 'relation' &&
-                      frameBeingEdited.activeField &&
-                      !allowedSubTypes.includes(subType.id)
-                      " :removable="message === 'Click to edit'" functionality="chip-container" />
+              <div class="chips">
+                <div v-for="frame in frames.filter(
+                  (f) => f.type.id == frameType.id && !f.subType,
+                )" @click="onClick(frame)">
+                  <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+                    frameBeingEdited.type.class == 'relation' &&
+                    frameBeingEdited.activeField &&
+                    !allowedSubTypes.includes(frameType.id)
+                    " :removable="message === 'Click to edit'" functionality="chip-container" />
+                </div>
+              </div>
+              <div v-if="'subTypes' in frameType">
+                <div v-for="subType in frameType.subTypes" class="q-ml-sm">
+                  <q-avatar size="md" :icon="icons[subType.id]" />
+                  <b>{{ subType.label }}</b>
+                  <div class="chips">
+                    <div v-for="frame in frames.filter(
+                      (f) =>
+                        f.type.id == frameType.id &&
+                        f.subType &&
+                        f.subType.id == subType.id,
+                    )" @click="onClick(frame)">
+                      <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+                        frameBeingEdited.type.class == 'relation' &&
+                        frameBeingEdited.activeField &&
+                        !allowedSubTypes.includes(subType.id)
+                        " :removable="message === 'Click to edit'" functionality="chip-container" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
+
+        </div>
+        <div v-if="frameBeingEdited" class="col-auto">
+          <FrameEditorPanel />
+        </div>
       </div>
+
     </q-item>
   </q-card>
 </template>
@@ -73,6 +81,7 @@
 <script>
 import FrameChip from "../components/FrameChip.vue";
 import NewFrameMenu from "../components/NewFrameMenu.vue";
+import FrameEditorPanel from "../components/FrameEditorPanel.vue";
 import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
 
@@ -112,7 +121,8 @@ export default {
 
   components: {
     FrameChip,
-    NewFrameMenu
+    NewFrameMenu,
+    FrameEditorPanel
   },
   methods: {
     onClick(frame) {
@@ -173,8 +183,11 @@ export default {
   flex-wrap: wrap;
 }
 
-.message {
-  font-size: 9pt;
-  color: #333333;
+.fill-height {
+  height: calc(100vh - 210px);
+}
+
+.scrollable {
+  overflow-y: auto;
 }
 </style>
