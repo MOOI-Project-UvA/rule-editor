@@ -1,16 +1,17 @@
 <script>
 import SourceView from "./SourceView.vue";
 import FramesView from "./FramesView.vue";
-import FrameEditorView from "./FrameEditorView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 
 export default {
   name: "InterpretationView",
+  data: () => ({
+    sourceViewIsCollapsed: false
+  }),
   components: {
     AnnotationPanel,
-    FrameEditorView,
     FramesView,
     SourceView,
     NewFrameMenu,
@@ -20,21 +21,20 @@ export default {
 </script>
 
 <template>
-  <div class="full-height">
+  <div>
     <!-- main content of the card -->
     <!-- source view column -->
     <div class="row">
-      <div class="col-6">
+      <div v-if="!sourceViewIsCollapsed" class="col-5">
         <SourceView />
       </div>
-      <!-- <div class="col-3">
-        <div class="row">
-          <FrameEditorView />
-        </div>
-      </div> -->
-      <div class="col-6">
+      <div class="col-auto">
+        <q-btn round size="xs" :icon="sourceViewIsCollapsed ? 'mdi-arrow-expand-right' : 'mdi-arrow-collapse-left'"
+          @click="sourceViewIsCollapsed = !sourceViewIsCollapsed"></q-btn>
+      </div>
+      <div class="col">
         <div>
-          <!-- <FramesView /> -->
+          <FramesView />
         </div>
         <!-- <div>
           <LoadSaveMenu />
