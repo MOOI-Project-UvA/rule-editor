@@ -17,35 +17,28 @@
     limitations under the License.
   */
   -->
-  <!--  <q-layout>-->
-  <!--    <q-page-container>-->
-  <!--      <q-page padding>-->
-  <div class="q-ma-sm">
-    <q-stepper id="stepper-id" v-model="step" ref="stepper" color="primary" animated flat header-nav>
-      <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="step > 1" done-color="green"
-        caption="Step 1" class="fill-height row justify-center content-center" :header-nav="step > 1">
-        <TaskDefinitionView @update-stepper="updateStepperValue"></TaskDefinitionView>
-      </q-step>
-      <q-step :name="2" title="Collect sources" icon="mdi-bookmark-box-multiple-outline"
-        class="fill-height row justify-center content-start" :done="step > 2" done-color="green" caption="Step 2"
-        :header-nav="step > 2">
-        <SourceCollectionView @update-stepper="updateStepperValue" @decrease-stepper="decreaseStepperValue">
-        </SourceCollectionView>
-      </q-step>
-      <q-step :name="3" title="Interpret sources" icon="mdi-thought-bubble-outline" :done="step > 3" done-color="green"
-        caption="Step 3" :header-nav="step > 3">
-        <interpretation-view></interpretation-view>
-      </q-step>
-      <q-step :name="4" title="Validate interpretations" icon="mdi-timeline-check-outline" :done="step > 4" disable
-        caption="Step 4">
-      </q-step>
-      <q-step :name="5" title="Perform task" icon="mdi-playlist-check" :done="step > 5" disable caption="Step 5">
-      </q-step>
-    </q-stepper>
-  </div>
-  <!--      </q-page>-->
-  <!--    </q-page-container>-->
-  <!--  </q-layout>-->
+
+
+  <q-stepper id="stepper-id" v-model="step" ref="stepper" color="primary" animated flat header-nav>
+    <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="step > 1" done-color="green"
+      caption="Step 1" class="flex full-height row justify-center content-center" :header-nav="step > 1">
+      <TaskDefinitionView @update-stepper="updateStepperValue" />
+    </q-step>
+    <q-step :name="2" title="Collect sources" icon="mdi-bookmark-box-multiple-outline"
+      class="row justify-center content-start" :done="step > 2" done-color="green" caption="Step 2"
+      :header-nav="step > 2">
+      <SourceCollectionView @update-stepper="updateStepperValue" @decrease-stepper="decreaseStepperValue" />
+    </q-step>
+    <q-step :name="3" title="Interpret sources" icon="mdi-thought-bubble-outline" :done="step > 3" done-color="green"
+      caption="Step 3" :header-nav="step > 3">
+      <InterpretationView />
+    </q-step>
+    <q-step :name="4" title="Validate interpretations" icon="mdi-timeline-check-outline" :done="step > 4" disable
+      caption="Step 4">
+    </q-step>
+    <q-step :name="5" title="Perform task" icon="mdi-playlist-check" :done="step > 5" disable caption="Step 5">
+    </q-step>
+  </q-stepper>
 </template>
 
 <script>

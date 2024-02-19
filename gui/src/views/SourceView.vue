@@ -1,19 +1,18 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm">
-    <q-item>
+  <q-card flat bordered class="q-ma-sm full-height">
 
-      <div class="row">
-        <div class="col">
-          <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
-            :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
-            @click="displayedSource = doc">
-            {{ doc.title }}
-          </q-btn>
-        </div>
+
+    <div class="row items-center q-pa-sm">
+      <div class="col-1 text-bold">Sources</div>
+      <div class="col">
+        <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
+          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
+          @click="displayedSource = doc">
+          {{ doc.title }}
+        </q-btn>
       </div>
 
-
-      <div class="col">
+      <div class="col-1">
         <q-avatar class="float-right" size="lg">
           <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
@@ -25,26 +24,27 @@
           </q-tooltip>
         </q-avatar>
       </div>
+    </div>
 
-    </q-item>
+
     <q-separator />
 
-
-
-
-    <q-card-section v-if="displayedSource" class="q-pt-none scrollable">
-      <!-- show recursively all text leafs in the document tree -->
-      <TextElement :textPiece="displayedSource" />
-      <!-- <div v-else>
-        <p>
-          You have not selected any sentences of this source for
-          interpretation. Please, consider going back to step 2!
-        </p>
-      </div> -->
+    <q-card-section class="q-pt-none">
+      <template v-if="displayedSource && displayedSource.sentences.some((e) => e.checked)">
+        <!-- show recursively all text leafs in the document tree -->
+        <div class="flex full-height scrollable">
+          <!-- <TextElement :textPiece="displayedSource" /> -->
+        </div>
+      </template>
+      <template v-else>
+        <div>
+          <p>
+            You have not selected any sentences of this source for
+            interpretation. Please, consider going back to step 2!
+          </p>
+        </div>
+      </template>
     </q-card-section>
-
-
-
 
   </q-card>
 </template>

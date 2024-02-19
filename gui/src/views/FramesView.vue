@@ -1,12 +1,14 @@
 <template>
   <q-card flat bordered class="my-card q-ma-sm">
     <!-- card title section -->
-    <q-item>
-      <q-item-section>
-        <q-item-label>Frames <span v-if="message">({{ message }})</span></q-item-label>
-      </q-item-section>
-      <q-item-section avatar>
-        <q-avatar>
+
+    <div class="row items-center q-pa-sm">
+      <div class="col-1 text-bold">Frames</div>
+      <div class="col q-ml-md">
+        <NewFrameMenu />
+      </div>
+      <div class="col-1">
+        <q-avatar class="float-right" size="lg">
           <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
@@ -17,12 +19,13 @@
             </div>
           </q-tooltip>
         </q-avatar>
-      </q-item-section>
-    </q-item>
+      </div>
+    </div>
+
     <q-separator />
     <!-- main content of the card  -->
     <q-item>
-      <div id="frame-chip-container">
+      <div>
         <template v-for="frameClass in ['fact', 'relation']">
           <div class="class-label">{{ frameClass }}</div>
           <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
@@ -44,17 +47,19 @@
               <div v-for="subType in frameType.subTypes" class="q-ml-sm">
                 <q-avatar size="md" :icon="icons[subType.id]" />
                 <b>{{ subType.label }}</b>
-                <div v-for="frame in frames.filter(
-                  (f) =>
-                    f.type.id == frameType.id &&
-                    f.subType &&
-                    f.subType.id == subType.id,
-                )" @click="onClick(frame)">
-                  <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-                    frameBeingEdited.type.class == 'relation' &&
-                    frameBeingEdited.activeField &&
-                    !allowedSubTypes.includes(subType.id)
-                    " :removable="message === 'Click to edit'" functionality="chip-container" />
+                <div class="chips">
+                  <div v-for="frame in frames.filter(
+                    (f) =>
+                      f.type.id == frameType.id &&
+                      f.subType &&
+                      f.subType.id == subType.id,
+                  )" @click="onClick(frame)">
+                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+                      frameBeingEdited.type.class == 'relation' &&
+                      frameBeingEdited.activeField &&
+                      !allowedSubTypes.includes(subType.id)
+                      " :removable="message === 'Click to edit'" functionality="chip-container" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -67,6 +72,7 @@
 
 <script>
 import FrameChip from "../components/FrameChip.vue";
+import NewFrameMenu from "../components/NewFrameMenu.vue";
 import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
 
@@ -100,14 +106,13 @@ export default {
       return this.frameBeingEdited &&
         ["act", "claim_duty"].includes(this.frameBeingEdited)
         ? "Add to frame"
-        : this.frames.length > 0
-          ? "Click to edit"
-          : "";
+        : "";
     },
   },
 
   components: {
     FrameChip,
+    NewFrameMenu
   },
   methods: {
     onClick(frame) {
@@ -150,17 +155,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#status {
-  min-height: 25px;
-}
-
-#frame-chip-container {
-  margin: 10px 0px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
 .class-label {
   text-transform: uppercase;
 }
@@ -173,17 +167,10 @@ export default {
   justify-content: flex-start;
 }
 
-.chip-container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-content: flex-start;
-}
-
 .chips {
-  /* display: flex;
+  display: flex;
   flex-direction: row;
-  flex-wrap: wrap; */
+  flex-wrap: wrap;
 }
 
 .message {

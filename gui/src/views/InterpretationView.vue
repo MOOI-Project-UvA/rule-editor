@@ -1,6 +1,6 @@
 <script>
 import SourceView from "./SourceView.vue";
-import FrameNetworkView from "./FrameNetworkView.vue";
+import FramesView from "./FramesView.vue";
 import FrameEditorView from "./FrameEditorView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
 import NewFrameMenu from "../components/NewFrameMenu.vue";
@@ -11,7 +11,7 @@ export default {
   components: {
     AnnotationPanel,
     FrameEditorView,
-    FrameNetworkView,
+    FramesView,
     SourceView,
     NewFrameMenu,
     LoadSaveMenu,
@@ -20,40 +20,29 @@ export default {
 </script>
 
 <template>
-  <div id="interpretation-view">
+  <div class="full-height">
     <!-- main content of the card -->
     <!-- source view column -->
-    <div class="row q-mt-xl q-mx-lg">
-      <div class="col-5">
+    <div class="row">
+      <div class="col-6">
         <SourceView />
       </div>
-      <div class="col-3">
-        <div class="row">
-          <NewFrameMenu />
-        </div>
+      <!-- <div class="col-3">
         <div class="row">
           <FrameEditorView />
         </div>
-      </div>
-      <div class="col-4">
+      </div> -->
+      <div class="col-6">
         <div>
-          <FrameNetworkView />
+          <!-- <FramesView /> -->
         </div>
-        <div>
+        <!-- <div>
           <LoadSaveMenu />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
   <AnnotationPanel />
 </template>
 
-<style scoped lang="css">
-#interpretation-view {
-  /* min-height: calc(100vh - 72px - 48px - 50px); */
-}
-
-.fill-height {
-  /* min-height: calc(100vh - 72px - 48px - 50px); */
-}
-</style>
+<style scoped lang="css"></style>
