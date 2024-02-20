@@ -1,64 +1,122 @@
 <template>
   <!-- load and save interpretation  -->
-  <q-card flat bordered class="my-card q-ma-sm" id="menu-card">
-    <q-item>
-      <q-item-section>
-        <q-item-label>Load/save interpretation </q-item-label>
-      </q-item-section>
-      <q-item-section avatar>
-        <q-avatar>
-          <q-icon
-            name="mdi-information-outline"
-            class="cursor-pointer"
-          ></q-icon>
-          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">
-              In this view, you can press the buttons and save your
-              interpretation or load an existing interpretation.
-            </div>
-          </q-tooltip>
-        </q-avatar>
-      </q-item-section>
-    </q-item>
-    <q-separator></q-separator>
+  <div>
+    <q-card flat bordered class="my-card q-ma-sm" id="menu-card">
+      <q-item>
+        <q-item-section>
+          <q-item-label>Load/save interpretation </q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-avatar>
+            <q-icon
+              name="mdi-information-outline"
+              class="cursor-pointer"
+            ></q-icon>
+            <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
+              <div style="max-width: 300px">
+                In this view, you can press the buttons and save your
+                interpretation or load an existing interpretation.
+              </div>
+            </q-tooltip>
+          </q-avatar>
+        </q-item-section>
+      </q-item>
+      <q-separator></q-separator>
 
-    <q-item>
-      <div
-        class="row inline justify-start items-baseline no-wrap q-mb-sm q-mt-sm"
-      >
-        <div class="btn-area">
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            icon="mdi-content-save"
-            label="Save"
-            @click="saveInterpretationClicked"
-          />
-          <q-btn
-            class="q-mr-sm"
-            color="primary"
-            icon="mdi-cloud-upload-outline"
-            label="Save remotely"
-            @click="saveInterpretationRemotely"
-            :loading="loading"
-          />
-          <q-btn
-            color="primary"
-            @click="chooseFile()"
-            icon="mdi-file-upload-outline"
-            label="Load"
-          />
-          <input
-            id="fileUpload"
-            type="file"
-            @change="handleFileSelection"
-            hidden
-            ref="fileUpload"
-          />
+      <q-item>
+        <div
+          class="row inline justify-start items-baseline no-wrap q-mb-sm q-mt-sm"
+        >
+          <div class="btn-area">
+            <q-btn
+              class="q-mr-sm"
+              color="primary"
+              icon="mdi-content-save"
+              label="Save"
+              @click="saveInterpretationClicked"
+            />
+            <q-btn
+              class="q-mr-sm"
+              color="primary"
+              icon="mdi-cloud-upload-outline"
+              label="Save remotely"
+              @click="showSavingOptions"
+            />
+            <q-btn
+              color="primary"
+              @click="chooseFile()"
+              icon="mdi-file-upload-outline"
+              label="Load"
+            />
+            <input
+              id="fileUpload"
+              type="file"
+              @change="handleFileSelection"
+              hidden
+              ref="fileUpload"
+            />
+          </div>
         </div>
-      </div>
-    </q-item>
-  </q-card>
+      </q-item>
+    </q-card>
+    <!-- modal dialog for saving interpretation  -->
+    <q-dialog v-model="alert" style="width: fit-content">
+      <q-card class="my-card" style="width: 700px">
+        <q-card-section>
+          <div class="text-h6">Alert</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Would you like to
+          <q-chip
+            outline
+            color="primary"
+            clickable
+            @click="saveInterpretationLocally"
+            >save an interpretation locally</q-chip
+          >
+          or
+          <q-chip
+            outline
+            color="primary"
+            clickable
+            @click="showGraphNameFunction"
+            >save an interpretation remotely</q-chip
+          >?
+        </q-card-section>
+
+        <Transition name="slide-fade">
+          <q-card-section v-if="showGraphName">
+            <q-separator class="q-mb-lg"></q-separator>
+            <q-form ref="graphNameForm" class="q-gutter-md">
+              <q-input
+                filled
+                v-model="graphName"
+                label="Graph name"
+                hint="Set a name for the graph"
+                lazy-rules
+                :rules="[
+                  (val) =>
+                    (val && val.length > 0) || 'This property is required',
+                ]"
+              />
+            </q-form>
+          </q-card-section>
+        </Transition>
+
+        <q-card-actions align="right" v-if="showGraphName">
+          <q-btn flat label="Close" color="primary" @click="closeDialog" />
+          <q-btn
+            label="Submit"
+            color="primary"
+            :loading="loading"
+            :disable="!graphName"
+            @click="saveInterpretationRemotely"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script>
@@ -68,16 +126,48 @@ export default {
   data: () => ({
     icons: icons,
     loading: false,
+    alert: false,
+    showGraphName: false,
+    graphName: null,
   }),
   methods: {
-    saveInterpretationClicked() {
+    saveInterpretationLocally() {
+      this.showGraphName = false;
       this.$store.dispatch("saveInterpretation");
     },
-    async saveInterpretationRemotely() {
-      this.loading = true;
-      this.$store.dispatch("saveInterpretationRemotely").then(() => {
-        this.loading = false;
+    showGraphNameFunction() {
+      console.log("showing Graph name!", this.showGraphName);
+      this.showGraphName = true;
+    },
+    showSavingOptions() {
+      this.alert = true;
+    },
+    closeDialog() {
+      this.alert = false;
+      this.showGraphName = false;
+      this.$refs.graphNameForm.resetValidation();
+    },
+    async saveInterpretationRemotely(event) {
+      console.log("@submit - do something here", event);
+      this.$refs.graphNameForm.validate().then((success) => {
+        if (success) {
+          // yay, models are correct
+          console.log("success!");
+          this.loading = true;
+          this.$store
+            .dispatch("saveInterpretationRemotely", this.graphName)
+            .then(() => {
+              this.loading = false;
+            });
+        } else {
+          // oh no, user has filled in
+          // at least one invalid value
+          console.log("no success!");
+          // this.$refs.graphNameForm.resetValidation();
+        }
       });
+
+      // this.alert = true;
       // this.loading = false;
     },
     chooseFile() {
@@ -96,4 +186,23 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 1s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+.my-card {
+  width: 100%;
+  max-width: 700px;
+}
+</style>

@@ -270,13 +270,13 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
-    async saveInterpretationRemotely(context) {
+    async saveInterpretationRemotely(context, graphName) {
       console.log("saving interpretation to triply");
       // convert frames to json string
       // replace object references by id's
       console.log("frames", context.state.frames);
       const data = {
-        graphName: "myExampleGraph",
+        graphName: graphName,
         graphData: context.state.frames.map((f) => f.toFlatObject()),
       };
       const structure = JSON.stringify(data);
