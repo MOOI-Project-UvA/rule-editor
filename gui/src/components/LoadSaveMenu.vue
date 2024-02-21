@@ -33,13 +33,6 @@
               color="primary"
               icon="mdi-content-save"
               label="Save"
-              @click="saveInterpretationClicked"
-            />
-            <q-btn
-              class="q-mr-sm"
-              color="primary"
-              icon="mdi-cloud-upload-outline"
-              label="Save remotely"
               @click="showSavingOptions"
             />
             <q-btn
@@ -63,7 +56,7 @@
     <q-dialog v-model="alert" style="width: fit-content">
       <q-card class="my-card" style="width: 700px">
         <q-card-section>
-          <div class="text-h6">Alert</div>
+          <div class="text-h6">Save progress</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -75,7 +68,7 @@
             @click="saveInterpretationLocally"
             >save an interpretation locally</q-chip
           >
-          or
+          or to
           <q-chip
             outline
             color="primary"
@@ -85,34 +78,48 @@
           >?
         </q-card-section>
 
-        <Transition name="slide-fade">
-          <q-card-section v-if="showGraphName">
-            <q-separator class="q-mb-lg"></q-separator>
-            <q-form ref="graphNameForm" class="q-gutter-md">
-              <q-input
-                filled
-                v-model="graphName"
-                label="Graph name"
-                hint="Set a name for the graph"
-                lazy-rules
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'This property is required',
-                ]"
-              />
-            </q-form>
-          </q-card-section>
-        </Transition>
+        <q-slide-transition duration="500">
+          <q-card v-if="showGraphName">
+            <q-separator v-if="showGraphName" class="q-mb-lg"></q-separator>
+            <q-card-section>
+              <q-form ref="graphNameForm" class="q-gutter-md">
+                <div
+                  class="row justify-start items-center"
+                  style="width: 600px"
+                >
+                  <div class="q-mr-md">
+                    <q-input
+                      style="width: 220px"
+                      filled
+                      v-model="graphName"
+                      label="Set a graph name"
+                      lazy-rules
+                      :rules="[
+                        (val) =>
+                          (val && val.length > 0) ||
+                          'This property is required',
+                      ]"
+                    />
+                  </div>
+                  <div class="self-center">
+                    <q-btn
+                      style="top: -10px"
+                      label="Submit"
+                      color="primary"
+                      :loading="loading"
+                      :disable="!graphName"
+                      @click="saveInterpretationRemotely"
+                    />
+                  </div>
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </q-slide-transition>
+        <q-separator class="q-mb-lg"></q-separator>
 
-        <q-card-actions align="right" v-if="showGraphName">
+        <q-card-actions align="right">
           <q-btn flat label="Close" color="primary" @click="closeDialog" />
-          <q-btn
-            label="Submit"
-            color="primary"
-            :loading="loading"
-            :disable="!graphName"
-            @click="saveInterpretationRemotely"
-          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -121,6 +128,7 @@
 
 <script>
 import { icons } from "../helpers/config.js";
+import { alertWidget } from "../helpers/alertWidget.js";
 
 export default {
   data: () => ({
@@ -154,10 +162,22 @@ export default {
           // yay, models are correct
           console.log("success!");
           this.loading = true;
+
           this.$store
             .dispatch("saveInterpretationRemotely", this.graphName)
             .then(() => {
+              console.log("fulfilled");
               this.loading = false;
+              alertWidget("success", "The request was successful!");
+              this.alert = false;
+            })
+            .catch((error) => {
+              console.log("error:", error);
+              this.loading = false;
+              alertWidget(
+                "error",
+                "An error occurred while serving your request!",
+              );
             });
         } else {
           // oh no, user has filled in
