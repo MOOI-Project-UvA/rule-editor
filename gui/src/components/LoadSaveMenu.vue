@@ -36,24 +36,18 @@
               @click="showSavingOptions"
             />
             <q-btn
+              class="q-mr-sm"
               color="primary"
-              @click="chooseFile()"
               icon="mdi-file-upload-outline"
               label="Load"
-            />
-            <input
-              id="fileUpload"
-              type="file"
-              @change="handleFileSelection"
-              hidden
-              ref="fileUpload"
+              @click="showLoadOptions"
             />
           </div>
         </div>
       </q-item>
     </q-card>
     <!-- modal dialog for saving interpretation  -->
-    <q-dialog v-model="alert" style="width: fit-content">
+    <q-dialog v-model="saveModal" style="width: fit-content">
       <q-card class="my-card" style="width: 700px">
         <q-card-section>
           <div class="text-h6">Save progress</div>
@@ -119,7 +113,78 @@
         <q-separator class="q-mb-lg"></q-separator>
 
         <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" @click="closeDialog" />
+          <q-btn flat label="Close" color="primary" @click="closeSaveDialog" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!-- modal dialog for loading interpration -->
+    <q-dialog v-model="loadModal" style="width: fit-content">
+      <q-card class="my-card" style="width: 700px">
+        <q-card-section>
+          <div class="text-h6">Load interpretation</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          Would you like to
+          <q-chip outline color="primary" clickable @click="chooseFile"
+            >load an interpretation from a file</q-chip
+          >
+          <input
+            id="fileUpload"
+            type="file"
+            @change="handleFileSelection"
+            hidden
+            ref="fileUpload"
+          />
+          or to
+          <q-chip
+            outline
+            color="primary"
+            clickable
+            @click="showRemoteLoadFormFunction"
+            >load a remote interpretation?</q-chip
+          >?
+        </q-card-section>
+
+        <q-slide-transition duration="500">
+          <q-card v-if="showRemoteLoadForm">
+            <q-separator
+              v-if="showRemoteLoadForm"
+              class="q-mb-lg"
+            ></q-separator>
+            <q-card-section>
+              <q-form ref="selectGraphForm" class="q-gutter-md">
+                <div
+                  class="row justify-start items-center"
+                  style="width: 600px"
+                >
+                  <div class="q-mr-md">
+                    <q-select
+                      v-model="selectedGraph"
+                      :options="availableGraphs"
+                      label="Choose a graph"
+                      transition-show="scale"
+                      transition-hide="scale"
+                      clearable
+                    />
+                  </div>
+                  <div class="self-center">
+                    <q-btn
+                      style="top: -10px"
+                      label="Load graph"
+                      color="primary"
+                      :loading="loadingIndLoadForm"
+                      @click="loadSelectedGraph"
+                    />
+                  </div>
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </q-slide-transition>
+        <q-separator class="q-mb-lg"></q-separator>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="primary" @click="closeLoadDialog" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -134,26 +199,55 @@ export default {
   data: () => ({
     icons: icons,
     loading: false,
-    alert: false,
+    loadingIndLoadForm: false,
+    saveModal: false,
+    loadModal: false,
     showGraphName: false,
+    showRemoteLoadForm: false,
     graphName: null,
+    selectedGraph: null,
+    // availableGraphs: null,
   }),
+  mounted() {
+    this.retrieveAvailableGraphs();
+  },
+  computed: {
+    availableGraphs() {
+      return this.$store.getters.getAvailableGraphs;
+    },
+  },
   methods: {
+    retrieveAvailableGraphs() {
+      this.$store.dispatch("retrieveAvailableGraphs");
+    },
     saveInterpretationLocally() {
       this.showGraphName = false;
       this.$store.dispatch("saveInterpretation");
     },
+
     showGraphNameFunction() {
       console.log("showing Graph name!", this.showGraphName);
       this.showGraphName = true;
     },
-    showSavingOptions() {
-      this.alert = true;
+    showRemoteLoadFormFunction() {
+      console.log("showing remote load form!", this.showLoadOptions());
+      this.showRemoteLoadForm = true;
     },
-    closeDialog() {
-      this.alert = false;
+    showSavingOptions() {
+      this.saveModal = true;
+    },
+    showLoadOptions() {
+      this.loadModal = true;
+    },
+    closeSaveDialog() {
+      this.saveModal = false;
       this.showGraphName = false;
       this.$refs.graphNameForm.resetValidation();
+    },
+    closeLoadDialog() {
+      this.loadModal = false;
+      // this.showGraphName = false;
+      // this.$refs.phNameForm.resetValidation();
     },
     async saveInterpretationRemotely(event) {
       console.log("@submit - do something here", event);
@@ -169,7 +263,7 @@ export default {
               console.log("fulfilled");
               this.loading = false;
               alertWidget("success", "The request was successful!");
-              this.alert = false;
+              this.saveModal = false;
             })
             .catch((error) => {
               console.log("error:", error);
@@ -187,8 +281,29 @@ export default {
         }
       });
 
-      // this.alert = true;
+      // this.saveModal = true;
       // this.loading = false;
+    },
+    async loadSelectedGraph(event) {
+      this.loadingIndLoadForm = true;
+      console.log("selectedGraph is: ", this.selectedGraph);
+      // this.$store.dispatch("retrieveSelectedGraph", this.selectedGraph);
+      const selectedGraphIRI = encodeURIComponent(this.selectedGraph.value);
+      console.log("selectedGraphIRI", selectedGraphIRI);
+
+      this.$store
+        .dispatch("retrieveSelectedGraph", selectedGraphIRI)
+        .then(() => {
+          console.log("fulfilled");
+          this.loadingIndLoadForm = false;
+          alertWidget("success", "The request was successful!");
+          this.loadModal = false;
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.loadingIndLoadForm = false;
+          alertWidget("error", "An error occurred while serving your request!");
+        });
     },
     chooseFile() {
       //document.getElementById("fileUpload").click()

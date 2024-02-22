@@ -13,6 +13,8 @@ import {
 import { v4 as uuid4 } from "uuid";
 import {
   fetchNlpPrediction,
+  retrieveAvailableGraphs,
+  retrieveSelectedGraph,
   sendDataToTriply,
 } from "../services/ApiServices.js";
 
@@ -32,12 +34,14 @@ const store = createStore({
         title: "",
         description: "",
       }, // information about the task
+      availableGraphs: [],
     };
   },
   getters: {
     getFileContent: (state) => state.fileContent,
     reconstructedData: (state) => state.reconstructedData,
     getTaskInformation: (state) => state.taskInformation,
+    getAvailableGraphs: (state) => state.availableGraphs,
   },
   mutations: {
     addNewFrame(state, { frameType, annotation }) {
@@ -283,6 +287,18 @@ const store = createStore({
       console.log("structure", structure);
       const response = await sendDataToTriply(structure);
       console.log("response", response);
+    },
+    async retrieveAvailableGraphs(context) {
+      console.log("retrieving available graphs in store!");
+      const response = await retrieveAvailableGraphs();
+      console.log("response in store!", response);
+      context.state.availableGraphs = response;
+    },
+    async retrieveSelectedGraph(context, selectedGraphData) {
+      const response = await retrieveSelectedGraph(selectedGraphData);
+      console.log("loaded response:", response);
+      context.state.frames = parseJsonToFrames(JSON.stringify(response));
+      console.log("loaded interpretation", context.state.frames);
     },
     loadInterpretation(context, jsonText) {
       context.state.frames = parseJsonToFrames(jsonText);
