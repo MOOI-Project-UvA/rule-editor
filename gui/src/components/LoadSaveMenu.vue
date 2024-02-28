@@ -164,6 +164,7 @@
                       label="Choose a graph"
                       transition-show="scale"
                       transition-hide="scale"
+                      style="width: 300px"
                       clearable
                     />
                   </div>
@@ -231,6 +232,7 @@ export default {
     },
     showRemoteLoadFormFunction() {
       console.log("showing remote load form!", this.showLoadOptions());
+      this.retrieveAvailableGraphs();
       this.showRemoteLoadForm = true;
     },
     showSavingOptions() {
