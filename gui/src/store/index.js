@@ -219,7 +219,6 @@ const store = createStore({
       json(`./sources.json`).then((data) => {
         context.state.availableSources = data;
         text("./interpretation_DEBUG/interpretation.json").then(data => {
-          console.log("data", data)
           context.dispatch("loadInterpretation", data)
         })
       });
@@ -288,9 +287,7 @@ const store = createStore({
     },
     loadInterpretation(context, jsonText) {
       context.state.sourceDocuments = [];
-      console.log("jsonText", jsonText)
       context.state.frames = parseJsonToFrames(jsonText);
-      console.log("loaded frames", context.state.frames);
 
       //read sources and replace sentenceIds in snippets with the sentence object
       JSON.parse(jsonText).sourceDocs.forEach((d) => {

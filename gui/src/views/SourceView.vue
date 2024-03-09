@@ -57,6 +57,7 @@ export default {
     displayedSource: null
   }),
   mounted() {
+    console.log("sourceview mounted")
     this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
   },
   computed: {

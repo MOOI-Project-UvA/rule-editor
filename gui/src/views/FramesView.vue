@@ -156,11 +156,6 @@ export default {
       }
     },
   },
-  watch: {
-    frames() {
-      console.log("frames", this.frames);
-    },
-  },
 };
 </script>
 

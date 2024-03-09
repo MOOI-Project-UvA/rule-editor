@@ -86,7 +86,6 @@ class Act {
 
     //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
     getSentences(sourceDocs) {
-        console.log("sourceDocs", sourceDocs)
         const snippets = this._annotations.map(a => a.snippets).flat()
         //group snippets according to document
         const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
@@ -223,7 +222,6 @@ class Act {
     }
 
     fromFlatObject(frameData, allFrames) {
-        console.log("act fromFlatObject", frameData)
         this._id = frameData.id
         this._label = frameData.label
         //this._type is instantiated in importExport.js
