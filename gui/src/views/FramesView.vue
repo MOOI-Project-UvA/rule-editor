@@ -1,80 +1,80 @@
 <template>
   <q-card flat bordered class="my-card q-ma-sm">
     <!-- card title section -->
-
-    <div class="row items-center q-pa-sm">
-      <div class="col-1 text-bold">Frames</div>
-      <div class="col q-ml-md">
-        <NewFrameMenu />
-      </div>
-      <div class="col-1">
-        <q-avatar class="float-right" size="lg">
-          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
-          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">
-              In this view, you can see the annotations made in the source view.
-              The annotations are facts and are grouped by subtype. By clicking
-              on a fact, you can add them to complex facts, acts and/or
-              claim-duties (right view).
-            </div>
-          </q-tooltip>
-        </q-avatar>
-      </div>
-    </div>
-
-    <q-separator />
-    <!-- main content of the card  -->
-    <q-item class="q-pa-none">
-      <div class="column fill-height">
-        <div class="col scrollable q-pa-sm">
-
-          <template v-for="frameClass in ['fact', 'relation']">
-            <div class="class-label">{{ frameClass }}</div>
-            <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
-              <div v-if="frameType.class != 'fact'">
-                <b>{{ frameType.label }}</b>
+    <div class="container">
+   
+      <div class="top-row row q-pa-sm">
+        <div class="col-1 text-bold">Frames</div>
+        <div class="col q-ml-md">
+          <NewFrameMenu />
+        </div>
+        <div class="col-1">
+          <q-avatar class="float-right" size="lg">
+            <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
+            <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
+              <div style="max-width: 300px">
+                In this view, you can see the annotations made in the source view.
+                The annotations are facts and are grouped by subtype. By clicking
+                on a fact, you can add them to complex facts, acts and/or
+                claim-duties (right view).
               </div>
-              <div class="chips">
-                <div v-for="frame in frames.filter(
-                  (f) => f.type.id == frameType.id && !f.subType,
-                )" @click="onClick(frame)">
-                  <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-                    frameBeingEdited.type.class == 'relation' &&
-                    frameBeingEdited.activeField &&
-                    !allowedSubTypes.includes(frameType.id)
-                    " :removable="message === 'Click to edit'" functionality="chip-container" />
+            </q-tooltip>
+          </q-avatar>
+        </div>
+      </div>
+
+      <div class="middle-row q-pa-sm">
+        <div>
+            <template v-for="frameClass in ['fact', 'relation']">
+              <div class="class-label">{{ frameClass }}</div>
+              <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
+                <div v-if="frameType.class != 'fact'">
+                  <b>{{ frameType.label }}</b>
                 </div>
-              </div>
-              <div v-if="'subTypes' in frameType">
-                <div v-for="subType in frameType.subTypes" class="q-ml-sm">
-                  <q-avatar size="md" :icon="icons[subType.id]" />
-                  <b>{{ subType.label }}</b>
-                  <div class="chips">
-                    <div v-for="frame in frames.filter(
-                      (f) =>
-                        f.type.id == frameType.id &&
-                        f.subType &&
-                        f.subType.id == subType.id,
-                    )" @click="onClick(frame)">
-                      <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-                        frameBeingEdited.type.class == 'relation' &&
-                        frameBeingEdited.activeField &&
-                        !allowedSubTypes.includes(subType.id)
-                        " :removable="message === 'Click to edit'" functionality="chip-container" />
+                <div class="chips">
+                  <div v-for="frame in frames.filter(
+                    (f) => f.type.id == frameType.id && !f.subType,
+                  )" @click="onClick(frame)">
+                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+                      frameBeingEdited.type.class == 'relation' &&
+                      frameBeingEdited.activeField &&
+                      !allowedSubTypes.includes(frameType.id)
+                      " :removable="message === 'Click to edit'" functionality="chip-container" />
+                  </div>
+                </div>
+                <div v-if="'subTypes' in frameType">
+                  <div v-for="subType in frameType.subTypes" class="q-ml-sm">
+                    <q-avatar size="md" :icon="icons[subType.id]" />
+                    <b>{{ subType.label }}</b>
+                    <div class="chips">
+                      <div v-for="frame in frames.filter(
+                        (f) =>
+                          f.type.id == frameType.id &&
+                          f.subType &&
+                          f.subType.id == subType.id,
+                      )" @click="onClick(frame)">
+                        <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+                          frameBeingEdited.type.class == 'relation' &&
+                          frameBeingEdited.activeField &&
+                          !allowedSubTypes.includes(subType.id)
+                          " :removable="message === 'Click to edit'" functionality="chip-container" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </template>
-
-        </div>
-        <div v-if="frameBeingEdited" class="col-auto">
+            </template>
+          </div>
+      </div>
+      <div class="bottom-row">
+        <div v-if="frameBeingEdited">
+          <hr/>
           <FrameEditorPanel />
         </div>
-      </div>
 
-    </q-item>
+      </div>
+   </div>
+
   </q-card>
 </template>
 
@@ -178,11 +178,25 @@ export default {
   flex-wrap: wrap;
 }
 
-.fill-height {
-  height: calc(100vh - 210px);
+.container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
 }
 
-.scrollable {
-  overflow-y: auto;
+.top-row, .bottom-row {
+  flex: 0 0 auto; /* Take only the needed height */
+}
+
+.middle-row {
+  flex: 1; /* Fill available height */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.scrollable-content {
+  /* Optional styles for scrollable content */
+  height: 100%; /* Ensure full height of container */
+  padding: 10px; /* Adjust as needed */
 }
 </style>
+

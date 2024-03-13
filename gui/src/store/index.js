@@ -20,6 +20,7 @@ const store = createStore({
       frames: [], //list of frames in interpretation
       annotationMode: null,
       frameBeingEdited: null, //frame for which editor-pane is opened
+      framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
@@ -37,6 +38,9 @@ const store = createStore({
     getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
+    //add new frame to list of frames being edited. does not permanently store
+    //the frame to the frames list yet. storing permanently is done when the save
+    //button in the frame editor is clicked.
     addNewFrame(state, { frameType, annotation }) {
       let frame;
       switch (frameType.class) {
@@ -61,6 +65,8 @@ const store = createStore({
       frame["id"] = uuid4();
 
       state.frameBeingEdited = frame;
+      state.framesOpenInEditor.push(frame)
+
     },
     saveFrameBeingEdited(state) {
       //if frameBeingEdited is new, add it to the list
@@ -77,6 +83,18 @@ const store = createStore({
       // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
       //   state.frameBeingEdited.addFrame(frame);
       // }
+      //remove the frame from the list of frames that are open in the editor
+      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+      state.framesOpenInEditor.splice(index, 1)
+      //if there are any frames left open in the editor, set frameBeingEdited to
+      //the first of those
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+
+    },
+    cancelFrameBeingEdited(state) {
+      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+      state.framesOpenInEditor.splice(index, 1)
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
     },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();

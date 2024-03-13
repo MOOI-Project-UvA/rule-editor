@@ -197,11 +197,10 @@ export default {
   },
   methods: {
     closeForm() {
-      this.$store.state.frameBeingEdited = null;
+      this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited");
-      this.$store.state.frameBeingEdited = null;
     },
     toggleComments() {
       this.showComments = !this.showComments;

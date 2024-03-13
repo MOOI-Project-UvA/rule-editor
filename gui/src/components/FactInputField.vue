@@ -5,7 +5,7 @@
         <q-btn class="button" round :color="active ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"
           @click="$emit('click')" />
         <span>{{ label }}</span>
-        <div v-if="active" class="button-label">Select existing frame</div>
+        <div v-if="active" class="button-label">Select frame</div>
       </div>
     </div>
     <div>

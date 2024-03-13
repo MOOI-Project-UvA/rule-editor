@@ -1,5 +1,21 @@
 <template>
-  <q-card flat bordered id="current-frame" v-if="frameBeingEdited" class="my-card q-ma-sm">
+  <div class="row">
+    <div v-if="framesOpenInEditor.length > 0" class="col-2 bg-grey-12 q-pa-md q-ma-sm">
+      <div class="text-bold">
+        Editing:
+        <div v-for="frame in framesOpenInEditor">
+          <div
+            class="text-white frame-label chip ellipsis"
+            style="max-width: 200px;"
+            :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]"
+            @click="frameChipClicked(frame)">
+      {{ frame.label }}
+    </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <q-card flat bordered v-if="frameBeingEdited" class="my-card q-ma-sm">
     <template v-if="frameBeingEdited.type.class == 'fact'">
       <FactFrameForm />
     </template>
@@ -10,15 +26,23 @@
       <ClaimdutyFrameForm />
     </template>
   </q-card>
+    </div>
+    
+  </div>
+  
 </template>
 
 <script>
 import ActFrameForm from "../components/ActFrameForm.vue";
 import FactFrameForm from "../components/FactFrameForm.vue";
 import ClaimdutyFrameForm from "../components/ClaimdutyFrameForm.vue";
+import { icons, colors } from "../helpers/config.js";
 
 export default {
-  data: () => ({}),
+  data: () => ({
+    icons: icons,
+    colors: colors,
+  }),
   components: {
     ActFrameForm,
     FactFrameForm,
@@ -28,12 +52,54 @@ export default {
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
     },
+    framesOpenInEditor() {
+      return this.$store.state.framesOpenInEditor
+    },
+    annotationBeingEdited() {
+      return this.$store.state.annotationBeingEdited;
+    },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited;
+    },
   },
+  methods: {
+    frameChipClicked(frame) {
+      if (
+        this.annotationBeingEdited &&
+        this.annotationBeingEdited.addingToExistingFrame
+      ) {
+        frame.addAnnotation(this.annotationBeingEdited);
+        this.annotationBeingEdited.addingToExistingFrame = false;
+        this.$store.state.annotationBeingEdited = null;
+      } else if (
+        this.frameBeingEdited &&
+        this.frameBeingEdited.type.class == "relation" &&
+        this.frameBeingEdited.activeField
+      ) {
+        this.frameBeingEdited.addFrame(frame);
+        this.frameBeingEdited.activeField = null
+      } else if (this.booleanConstructBeingEdited) {
+        this.booleanConstructBeingEdited.frame = frame;
+        this.$store.state.booleanConstructBeingEdited = null;
+      } else {
+        this.$store.state.frameBeingEdited = frame
+      }
+    },
+  }
 };
 </script>
 
 <style lang="css" scoped>
-#current-frame {
-  width: 100%;
+.chip {
+  user-select: none;
+  cursor: pointer;
+}
+
+.frame-label {
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 10pt;
+  line-height: 1rem;
+  margin: 2px;
 }
 </style>

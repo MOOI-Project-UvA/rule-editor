@@ -82,11 +82,10 @@ export default {
   },
   methods: {
     closeForm() {
-      this.$store.state.frameBeingEdited = null;
+      this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited")
-      this.$store.state.frameBeingEdited = null;
     },
     toggleSubdivision() {
       if (this.subdivided) {
@@ -94,7 +93,6 @@ export default {
           this.frame.booleanConstruct = new BooleanConstruct()
           this.frame.booleanConstruct.addEmptyChild()
         }
-
       } else {
         this.frame.booleanConstruct = null
       }

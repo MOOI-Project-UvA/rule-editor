@@ -55,7 +55,7 @@
 
             </div>
             <div v-if="isBeingEdited" class="button-label">
-                Select existing frame
+                Select frame
             </div>
         </div>
         <div class="col-1">
