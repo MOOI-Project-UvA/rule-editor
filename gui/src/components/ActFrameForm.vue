@@ -101,44 +101,43 @@
 
         <div class="label">Postcondition</div>
 
-        <div class="indent">
-          <FactInputField
-            label="Creates"
-            :active="frame.activeField === 'creates'"
-            :facts="frame.creates"
-            @factRemoveClicked="
-              (fact) => {
-                const index = frame.creates.indexOf(fact);
-                if (index !== -1) {
-                  frame.creates.splice(index, 1);
-                }
+        <FactInputField
+          label="Creates"
+          :active="frame.activeField === 'creates'"
+          :facts="frame.creates"
+          @factRemoveClicked="
+            (fact) => {
+              const index = frame.creates.indexOf(fact);
+              if (index !== -1) {
+                frame.creates.splice(index, 1);
               }
-            "
-            @click="
-              frame.activeField =
-                frame.activeField == 'creates' ? null : 'creates'
-            "
-          />
+            }
+          "
+          @click="
+            frame.activeField =
+              frame.activeField == 'creates' ? null : 'creates'
+          "
+        />
 
-          <FactInputField
-            label="Terminates"
-            :active="frame.activeField === 'terminates'"
-            :facts="frame.terminates"
-            @factRemoveClicked="
-              (fact) => {
-                const index = frame.terminates.indexOf(fact);
-                if (index !== -1) {
-                  frame.terminates.splice(index, 1);
-                }
+        <FactInputField
+          label="Terminates"
+          :active="frame.activeField === 'terminates'"
+          :facts="frame.terminates"
+          @factRemoveClicked="
+            (fact) => {
+              const index = frame.terminates.indexOf(fact);
+              if (index !== -1) {
+                frame.terminates.splice(index, 1);
               }
-            "
-            @click="
-              frame.activeField =
-                frame.activeField == 'terminates' ? null : 'terminates'
-            "
-          />
-        </div>
+            }
+          "
+          @click="
+            frame.activeField =
+              frame.activeField == 'terminates' ? null : 'terminates'
+          "
+        />
       </div>
+
     </q-card-section>
     <q-card-section>
       <q-toggle
@@ -293,9 +292,7 @@ export default {
   margin-left: 0px;
 }
 
-.indent {
-  margin-left: 30px;
-}
+
 
 .source-text {
   font-style: italic;
