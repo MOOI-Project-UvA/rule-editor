@@ -25,7 +25,7 @@ export default {
     <!-- main content of the card -->
     <!-- source view column -->
     <div class="row">
-      <div v-if="!sourceViewIsCollapsed" class="col-5">
+      <div v-show="!sourceViewIsCollapsed" class="col-5">
         <SourceView />
       </div>
       <div class="col-auto">

@@ -76,7 +76,6 @@ export default {
   },
   watch: {
     sourceDocuments() {
-      console.log("sourceDocs changed")
       this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
     }
   }
