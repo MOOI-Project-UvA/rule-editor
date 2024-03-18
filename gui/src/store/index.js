@@ -275,21 +275,6 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.ttl`);
     },
-    // saveInterpretation(context) {
-    //   console.log("saving interpretation");
-    //   //convert frames to json string
-    //   //replace object references by id's
-    //   console.log("frames", context.state.frames);
-    //   const string = JSON.stringify(
-    //     context.state.frames.map((f) => f.toFlatObject()),
-    //   );
-    //   console.log("string", string);
-    //   const blob = new Blob([string], {
-    //     type: "text/plain;charset=utf-8",
-    //   });
-    //   const dateString = new Date().toISOString().substring(0, 10);
-    //   saveAs(blob, `${dateString}_interpretation.json`);
-    // },
     async saveInterpretationRemotely(context, graphName) {
       console.log("saving interpretation to triply");
       // convert frames to json string
