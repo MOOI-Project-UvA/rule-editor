@@ -12,6 +12,7 @@ import {
 } from "../helpers/document.js";
 import { v4 as uuid4 } from "uuid";
 import {
+  convertToRDF,
   fetchNlpPrediction,
   retrieveAvailableGraphs,
   retrieveSelectedGraph,
@@ -259,21 +260,36 @@ const store = createStore({
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
     },
-    saveInterpretation(context) {
-      console.log("saving interpretation");
-      //convert frames to json string
-      //replace object references by id's
-      console.log("frames", context.state.frames);
-      const string = JSON.stringify(
-        context.state.frames.map((f) => f.toFlatObject()),
-      );
-      console.log("string", string);
-      const blob = new Blob([string], {
-        type: "text/plain;charset=utf-8",
+    async saveInterpretation(context) {
+      console.log("saving interpretation locally!");
+      const data = {
+        graphName: null,
+        graphData: context.state.frames.map((f) => f.toFlatObject()),
+      };
+      const structure = JSON.stringify(data);
+      const response = await convertToRDF(structure);
+      console.log("response from convertToRDF:", response);
+      const blob = new Blob([response], {
+        type: "text/turtle;charset=utf-8",
       });
       const dateString = new Date().toISOString().substring(0, 10);
-      saveAs(blob, `${dateString}_interpretation.json`);
+      saveAs(blob, `${dateString}_interpretation.ttl`);
     },
+    // saveInterpretation(context) {
+    //   console.log("saving interpretation");
+    //   //convert frames to json string
+    //   //replace object references by id's
+    //   console.log("frames", context.state.frames);
+    //   const string = JSON.stringify(
+    //     context.state.frames.map((f) => f.toFlatObject()),
+    //   );
+    //   console.log("string", string);
+    //   const blob = new Blob([string], {
+    //     type: "text/plain;charset=utf-8",
+    //   });
+    //   const dateString = new Date().toISOString().substring(0, 10);
+    //   saveAs(blob, `${dateString}_interpretation.json`);
+    // },
     async saveInterpretationRemotely(context, graphName) {
       console.log("saving interpretation to triply");
       // convert frames to json string

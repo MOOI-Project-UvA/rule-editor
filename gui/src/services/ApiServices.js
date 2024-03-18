@@ -53,6 +53,37 @@ export async function sendDataToTriply(dataset) {
   }
 }
 
+export async function convertToRDF(dataset) {
+  try {
+    const response = await fetch(
+      "http://localhost:5011/process_and_save",
+      // "/api/wrap/process_and_send",
+
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+        },
+        body: dataset,
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("An error occurred during sending the data.");
+    }
+
+    const data = await response.text();
+    console.log("response:", data);
+    return data;
+  } catch (error) {
+    throw new Error(
+      "An error occurred while converting data to rdf: " + error.message,
+    );
+    return error;
+  }
+}
+
 export async function retrieveAvailableGraphs() {
   try {
     const response = await fetch(
