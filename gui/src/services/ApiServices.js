@@ -53,6 +53,9 @@ export async function sendDataToTriply(dataset) {
   }
 }
 
+/*
+  Converts the JSON structure supported by the editor to RDF
+ */
 export async function convertToRDF(dataset) {
   try {
     const response = await fetch(
@@ -75,6 +78,39 @@ export async function convertToRDF(dataset) {
 
     const data = await response.text();
     console.log("response:", data);
+    return data;
+  } catch (error) {
+    throw new Error(
+      "An error occurred while converting data to rdf: " + error.message,
+    );
+    return error;
+  }
+}
+/*
+  Converts the RDF string to the JSON structure supported by the editor
+ */
+export async function convertToJSON(ttl_string) {
+  try {
+    const response = await fetch(
+      "http://localhost:5012/convert_rdf_to_json",
+      // "/api/wrap/process_and_send",
+
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+        },
+        body: ttl_string,
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("An error occurred during sending the data.");
+    }
+
+    const data = await response.text();
+    console.log("response in convertToJSON:", data);
     return data;
   } catch (error) {
     throw new Error(

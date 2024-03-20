@@ -131,7 +131,7 @@
           <input
             id="fileUpload"
             type="file"
-            @change="handleFileSelection"
+            @change="loadLocalFile"
             hidden
             ref="fileUpload"
           />
@@ -311,10 +311,10 @@ export default {
       //document.getElementById("fileUpload").click()
       this.$refs.fileUpload.click();
     },
-    handleFileSelection(evt) {
+    loadLocalFile(evt) {
       const reader = new FileReader();
       reader.onload = (evt) => {
-        console.log("evt.target.result", evt.target.result);
+        console.log("evt.target.result", JSON.stringify(evt.target.result));
         this.$store.dispatch("loadInterpretation", evt.target.result);
       };
       reader.readAsText(evt.target.files[0]);

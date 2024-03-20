@@ -12,6 +12,7 @@ import {
 } from "../helpers/document.js";
 import { v4 as uuid4 } from "uuid";
 import {
+  convertToJSON,
   convertToRDF,
   fetchNlpPrediction,
   retrieveAvailableGraphs,
@@ -260,6 +261,7 @@ const store = createStore({
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
     },
+    // saves an interpretation locally
     async saveInterpretation(context) {
       console.log("saving interpretation locally!");
       const data = {
@@ -267,6 +269,7 @@ const store = createStore({
         graphData: context.state.frames.map((f) => f.toFlatObject()),
       };
       const structure = JSON.stringify(data);
+      // convert JSON string representing editor structure to RDF
       const response = await convertToRDF(structure);
       console.log("response from convertToRDF:", response);
       const blob = new Blob([response], {
@@ -301,9 +304,16 @@ const store = createStore({
       context.state.frames = parseJsonToFrames(JSON.stringify(response));
       console.log("loaded interpretation", context.state.frames);
     },
-    loadInterpretation(context, jsonText) {
-      context.state.frames = parseJsonToFrames(jsonText);
-      console.log("loaded interpretation", context.state.frames);
+    // load a local interpretation
+    async loadInterpretation(context, ttlString) {
+      console.log("turtleString: ", ttlString);
+      // STEPS:
+      // 1) Convert ttl string to editor's JSON structure
+      const jsonString = await convertToJSON(ttlString);
+      console.log("JsonString:", jsonString);
+      // 2) Get interpretation in the recognized JSON structure
+      context.state.frames = parseJsonToFrames(jsonString);
+      // console.log("loaded interpretation", context.state.frames);
     },
     // gets the id of the hovered frame
     // and updates the frames array, which contain
