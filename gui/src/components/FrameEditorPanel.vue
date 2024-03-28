@@ -3,33 +3,34 @@
     <div v-if="framesOpenInEditor.length > 0" class="col-2 bg-grey-12 q-pa-md q-ma-sm">
       <div class="text-bold">
         Editing:
-        <div v-for="frame in framesOpenInEditor">
-          <div
-            class="text-white frame-label chip ellipsis"
-            style="max-width: 200px;"
+      </div>
+      <div v-for="frame in framesOpenInEditor">
+        <div class="edit-entry">
+          <div :class="{ dot: frame == frameBeingEdited }" />
+          <div class="text-white frame-label chip ellipsis" style="max-width: 200px;"
             :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]"
             @click="frameChipClicked(frame)">
-      {{ frame.label }}
-    </div>
+            {{ frame.label != "" ? frame.label : frame.subType ? frame.subType.label : frame.type.label }}
+          </div>
         </div>
       </div>
     </div>
     <div class="col">
       <q-card flat bordered v-if="frameBeingEdited" class="my-card q-ma-sm">
-    <template v-if="frameBeingEdited.type.class == 'fact'">
-      <FactFrameForm />
-    </template>
-    <template v-else-if="frameBeingEdited.type.id == 'act'">
-      <ActFrameForm />
-    </template>
-    <template v-else-if="frameBeingEdited.type.id == 'claim_duty'">
-      <ClaimdutyFrameForm />
-    </template>
-  </q-card>
+        <template v-if="frameBeingEdited.type.class == 'fact'">
+          <FactFrameForm />
+        </template>
+        <template v-else-if="frameBeingEdited.type.id == 'act'">
+          <ActFrameForm />
+        </template>
+        <template v-else-if="frameBeingEdited.type.id == 'claim_duty'">
+          <ClaimdutyFrameForm />
+        </template>
+      </q-card>
     </div>
-    
+
   </div>
-  
+
 </template>
 
 <script>
@@ -101,5 +102,19 @@ export default {
   font-size: 10pt;
   line-height: 1rem;
   margin: 2px;
+}
+
+.edit-entry {
+  display: grid;
+  grid-template-columns: 8px auto;
+  column-gap: 2px;
+}
+
+.dot {
+  margin-top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #666666;
 }
 </style>

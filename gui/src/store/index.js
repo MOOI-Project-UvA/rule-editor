@@ -30,6 +30,7 @@ const store = createStore({
         title: "",
         description: "",
       }, // information about the task
+      sourceViewIsCollapsed: false //whether or not the panel showing the source is collapsed
     };
   },
   getters: {
@@ -94,7 +95,8 @@ const store = createStore({
     cancelFrameBeingEdited(state) {
       const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
       state.framesOpenInEditor.splice(index, 1)
-      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+      const indexFrameBeingEdited = Math.max(0, index - 1)
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[indexFrameBeingEdited] : null;
     },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
@@ -113,9 +115,6 @@ const store = createStore({
       )[0];
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
-    },
-    setFrameBeingEdited(state, frame) {
-      state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;

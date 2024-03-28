@@ -7,9 +7,6 @@ import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 
 export default {
   name: "InterpretationView",
-  data: () => ({
-    sourceViewIsCollapsed: false
-  }),
   components: {
     AnnotationPanel,
     FramesView,
@@ -17,6 +14,11 @@ export default {
     NewFrameMenu,
     LoadSaveMenu,
   },
+  computed: {
+    sourceViewIsCollapsed() {
+      return this.$store.state.sourceViewIsCollapsed
+    }
+  }
 };
 </script>
 
@@ -30,7 +32,7 @@ export default {
       </div>
       <div class="col-auto">
         <q-btn round size="xs" :icon="sourceViewIsCollapsed ? 'mdi-arrow-expand-right' : 'mdi-arrow-collapse-left'"
-          @click="sourceViewIsCollapsed = !sourceViewIsCollapsed"></q-btn>
+          @click="this.$store.state.sourceViewIsCollapsed = !this.$store.state.sourceViewIsCollapsed"></q-btn>
       </div>
       <div class="col">
         <div>
