@@ -24,17 +24,13 @@
           </div>
         </div>
 
-        <!-- <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm"> -->
-        <div class="height-fill-available q-pa-sm">
+        <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
           <FramesList />
         </div>
       </div>
 
-      <!-- <div :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel"> -->
-      <div class="height-content frame-editor-panel">
-        <div v-if="frameBeingEdited">
-          <FrameEditorPanel />
-        </div>
+      <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
+        <FrameEditorPanel />
       </div>
     </div>
 

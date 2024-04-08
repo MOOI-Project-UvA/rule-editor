@@ -28,7 +28,6 @@
         </template>
       </q-card>
     </div>
-
   </div>
 
 </template>
