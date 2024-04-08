@@ -1,7 +1,6 @@
 <script>
 import SourceView from "./SourceView.vue";
-import FrameNetworkView from "./FrameNetworkView.vue";
-import FrameEditorView from "./FrameEditorView.vue";
+import FramesView from "./FramesView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import LoadSaveMenu from "../components/LoadSaveMenu.vue";
@@ -10,50 +9,42 @@ export default {
   name: "InterpretationView",
   components: {
     AnnotationPanel,
-    FrameEditorView,
-    FrameNetworkView,
+    FramesView,
     SourceView,
     NewFrameMenu,
     LoadSaveMenu,
   },
+  computed: {
+    sourceViewIsCollapsed() {
+      return this.$store.state.sourceViewIsCollapsed
+    }
+  }
 };
 </script>
 
 <template>
-  <div id="interpretation-view">
+  <div>
     <!-- main content of the card -->
     <!-- source view column -->
-    <div class="row q-mt-xl q-mx-lg">
-      <div class="col-5">
+    <div class="row">
+      <div v-show="!sourceViewIsCollapsed" class="col-5">
         <SourceView />
       </div>
-      <div class="col-3">
-        <div class="row">
-          <NewFrameMenu />
-        </div>
-        <div class="row">
-          <FrameEditorView />
-        </div>
+      <div class="col-auto">
+        <q-btn round size="xs" :icon="sourceViewIsCollapsed ? 'mdi-arrow-expand-right' : 'mdi-arrow-collapse-left'"
+          @click="this.$store.state.sourceViewIsCollapsed = !this.$store.state.sourceViewIsCollapsed"></q-btn>
       </div>
-      <div class="col-4">
+      <div class="col">
         <div>
-          <FrameNetworkView />
+          <FramesView />
         </div>
-        <div>
+        <!-- <div>
           <LoadSaveMenu />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
   <AnnotationPanel />
 </template>
 
-<style scoped lang="css">
-#interpretation-view {
-  /* min-height: calc(100vh - 72px - 48px - 50px); */
-}
-
-.fill-height {
-  /* min-height: calc(100vh - 72px - 48px - 50px); */
-}
-</style>
+<style scoped lang="css"></style>

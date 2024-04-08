@@ -1,11 +1,17 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm">
-    <q-item>
-      <q-item-section>
-        <q-item-label>Source view</q-item-label>
-      </q-item-section>
-      <q-item-section avatar>
-        <q-avatar>
+  <q-card flat bordered class="q-ma-sm">
+    <div class="row items-center q-pa-sm">
+      <div class="col-1 text-bold">Sources</div>
+      <div class="col">
+        <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
+          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
+          @click="displayedSource = doc">
+          {{ doc.title }}
+        </q-btn>
+      </div>
+
+      <div class="col-1">
+        <q-avatar class="float-right" size="lg">
           <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
@@ -15,33 +21,27 @@
             </div>
           </q-tooltip>
         </q-avatar>
-      </q-item-section>
-    </q-item>
-    <q-separator />
-    <div :class="{ 'non-selectable': frameBeingEdited }">
-      <!-- the retrieved legal text will be shown here -->
-      <div v-for="(sourceDocument, docIndex) in sourceDocuments">
-        <q-card-section>
-          <q-list bordered class="rounded-borders q-pa-md">
-            <q-expansion-item v-model="expanded[docIndex]" expand-icon-toggle switch-toggle-side expand-separator
-              icon="mdi-book-search-outline" :caption="sourceDocument.title" default-opened>
-              <q-card flat square class="q-ma-sm q-pa-sm">
-                <q-card-section class="q-pt-none scrollable" style="max-height: 60vh">
-                  <!-- show recursively all text leafs in the document tree -->
-                  <TextElement v-if="sourceDocument.sentences.some((e) => e.checked)" :textPiece="sourceDocument" />
-                  <div v-else>
-                    <p>
-                      You have not selected any sentences of this source for
-                      interpretation. Please, consider going back to step 2!
-                    </p>
-                  </div>
-                </q-card-section>
-              </q-card>
-            </q-expansion-item>
-          </q-list>
-        </q-card-section>
       </div>
     </div>
+    <q-separator />
+
+    <q-card-section class="q-pa-none">
+      <template v-if="displayedSource && displayedSource.sentences.some((e) => e.checked)">
+        <!-- show recursively all text leafs in the document tree -->
+        <div class="fill-height scrollable q-py-xs">
+          <TextElement :textPiece="displayedSource" />
+        </div>
+      </template>
+      <template v-else>
+        <div>
+          <p>
+            You have not selected any sentences of this source for
+            interpretation. Please, consider going back to step 2!
+          </p>
+        </div>
+      </template>
+    </q-card-section>
+
   </q-card>
 </template>
 
@@ -54,7 +54,12 @@ export default {
   },
   data: () => ({
     expanded: [],
+    displayedSource: null
   }),
+  mounted() {
+    console.log("sourceview mounted")
+    this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
+  },
   computed: {
     reconstructedData() {
       return this.$store.getters.reconstructedData;
@@ -62,15 +67,16 @@ export default {
     sourceDocuments() {
       let docs = [...this.$store.state.sourceDocuments]
       //sort alphabetically on title
-      docs.sort((d1, d2) => {
-        const title1 = d1.title.toLowerCase();
-        const title2 = d2.title.toLowerCase();
-        return (title1 < title2) ? -1 : (title1 > title2) ? 1 : 0;
-      });
+      docs.sort((d1, d2) => d1.title.localeCompare(d2.title))
       return docs
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited
+    },
+  },
+  watch: {
+    sourceDocuments() {
+      this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
     }
   }
 };
@@ -81,8 +87,7 @@ export default {
   overflow-y: auto;
 }
 
-.non-selectable {
-  pointer-events: none;
-  cursor: pointer;
+.fill-height {
+  height: calc(100vh - 210px);
 }
 </style>

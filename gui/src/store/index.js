@@ -7,7 +7,7 @@ import {
   convertInterpretationToJson,
   parseJsonToFrames,
 } from "../helpers/importExport.js";
-import { json } from "d3-fetch";
+import { json, text } from "d3-fetch";
 import {
   addParentReferencesToDocument,
   getSentencesInDocument,
@@ -20,6 +20,7 @@ const store = createStore({
       frames: [], //list of frames in interpretation
       annotationMode: null,
       frameBeingEdited: null, //frame for which editor-pane is opened
+      framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
@@ -29,6 +30,7 @@ const store = createStore({
         title: "",
         description: "",
       }, // information about the task
+      sourceViewIsCollapsed: false //whether or not the panel showing the source is collapsed
     };
   },
   getters: {
@@ -37,6 +39,9 @@ const store = createStore({
     getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
+    //add new frame to list of frames being edited. does not permanently store
+    //the frame to the frames list yet. storing permanently is done when the save
+    //button in the frame editor is clicked.
     addNewFrame(state, { frameType, annotation }) {
       let frame;
       switch (frameType.class) {
@@ -61,6 +66,8 @@ const store = createStore({
       frame["id"] = uuid4();
 
       state.frameBeingEdited = frame;
+      state.framesOpenInEditor.push(frame)
+
     },
     saveFrameBeingEdited(state) {
       //if frameBeingEdited is new, add it to the list
@@ -77,6 +84,19 @@ const store = createStore({
       // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
       //   state.frameBeingEdited.addFrame(frame);
       // }
+      //remove the frame from the list of frames that are open in the editor
+      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+      state.framesOpenInEditor.splice(index, 1)
+      //if there are any frames left open in the editor, set frameBeingEdited to
+      //the first of those
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+
+    },
+    cancelFrameBeingEdited(state) {
+      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+      state.framesOpenInEditor.splice(index, 1)
+      const indexFrameBeingEdited = Math.max(0, index - 1)
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[indexFrameBeingEdited] : null;
     },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
@@ -95,9 +115,6 @@ const store = createStore({
       )[0];
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
-    },
-    setFrameBeingEdited(state, frame) {
-      state.frameBeingEdited = frame;
     },
     setShowFrameSource(state, show) {
       state.showFrameSource = show;
@@ -178,27 +195,27 @@ const store = createStore({
           );
           state.frames[index]._action =
             state.frames[index]._action !== null &&
-            state.frames[index]._action._id === frame._id
+              state.frames[index]._action._id === frame._id
               ? null
               : state.frames[index]._action;
           state.frames[index]._actor =
             state.frames[index]._actor !== null &&
-            state.frames[index]._actor._id == frame._id
+              state.frames[index]._actor._id == frame._id
               ? null
               : state.frames[index]._actor;
           state.frames[index]._object =
             state.frames[index]._object !== null &&
-            state.frames[index]._object._id == frame._id
+              state.frames[index]._object._id == frame._id
               ? null
               : state.frames[index]._object;
           state.frames[index]._precondition =
             state.frames[index]._precondition !== null &&
-            state.frames[index]._precondition._id == frame._id
+              state.frames[index]._precondition._id == frame._id
               ? null
               : state.frames[index]._precondition;
           state.frames[index]._recipient =
             state.frames[index]._recipient !== null &&
-            state.frames[index]._recipient._id == frame._id
+              state.frames[index]._recipient._id == frame._id
               ? null
               : state.frames[index]._recipient;
         });
@@ -215,6 +232,14 @@ const store = createStore({
     },
   },
   actions: {
+    loadInterpretationForDebugging(context) {
+      json(`./sources.json`).then((data) => {
+        context.state.availableSources = data;
+        text("./interpretation_DEBUG/interpretation.json").then(data => {
+          context.dispatch("loadInterpretation", data)
+        })
+      });
+    },
     readAvailableSources(context) {
       console.log("reading available sources");
       json(`./sources.json`).then((data) => {
@@ -279,9 +304,7 @@ const store = createStore({
     },
     loadInterpretation(context, jsonText) {
       context.state.sourceDocuments = [];
-
       context.state.frames = parseJsonToFrames(jsonText);
-      console.log("loaded frames", context.state.frames);
 
       //read sources and replace sentenceIds in snippets with the sentence object
       JSON.parse(jsonText).sourceDocs.forEach((d) => {

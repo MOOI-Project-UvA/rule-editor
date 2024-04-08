@@ -1,60 +1,15 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm" id="menu-card">
-    <q-item>
-      <q-item-section>
-        <q-item-label>Add and edit frames</q-item-label>
-      </q-item-section>
-      <q-item-section avatar>
-        <q-avatar>
-          <q-icon name="mdi-information-outline" class="cursor-pointer">
-          </q-icon>
-          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">
-              In this panel, you can perform the supported interpretation
-              actions. Create an act or a clai-duty relation, a fact and lastly
-              your are able import/export your interpretation.
-            </div>
-          </q-tooltip>
-        </q-avatar>
-      </q-item-section>
-    </q-item>
-    <q-separator />
-    <!-- add relation -->
-    <q-item>
-      <div
-        id="frame-type-buttons"
-        class="row inline justify-start items-baseline no-wrap q-mt-sm"
-      >
-        <div class="text-weight-bold q-mr-sm">Add:</div>
-        <div>
-          <q-btn
-            v-for="frameType in frameTypes"
-            class="q-mr-sm"
-            :color="colors[frameType.id]"
-            :label="frameType.label"
-            @click="createFrame(frameType)"
-          >
-            <q-tooltip class="text-subtitle2">
-              Add frame of type {{ frameType.label }}
-            </q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-    </q-item>
-    <!-- show -->
-    <!-- <q-item>
-        <div class="row inline justify-start items-baseline no-wrap">
-          <div class="area-label">
-            <div class="text-weight-bold text-right q-mr-sm" style="width: 100px">
-              Show:
-            </div>
-          </div>
-          <div class="btn-area">
-            <q-btn class="q-mr-sm" color="primary" icon="mdi-source-branch" label="relations" disable />
-          </div>
-        </div>
-      </q-item> -->
-  </q-card>
+  <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap q-mt-sm">
+    <div>Add new:</div>
+    <div>
+      <q-btn v-for="frameType in frameTypes" class="q-ml-xs" size="sm" :color="colors[frameType.id]"
+        :label="frameType.label" @click="createFrame(frameType)">
+        <q-tooltip class="text-subtitle2">
+          Add frame of type {{ frameType.label }}
+        </q-tooltip>
+      </q-btn>
+    </div>
+  </div>
 </template>
 
 <script>

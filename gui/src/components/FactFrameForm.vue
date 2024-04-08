@@ -2,7 +2,8 @@
   <q-card flat bordered class="my-card">
     <q-card-section>
       <div class="row">
-        <div class="col-2">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}</div>
+        <div class="col-2">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}
+        </div>
         <div class="col q-gutter-sm">
           <q-btn size="sm" round v-for="subType in factSubTypes"
             :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
@@ -42,8 +43,14 @@
       <!-- <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" /> -->
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="isExistingFrame">
+        <div class="message">Any changes have been saved</div>
+        <q-btn color="primary" @click="saveFrame">Close</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="primary" @click="closeForm">Cancel</q-btn>
+        <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -66,14 +73,19 @@ export default {
     showComments: false
   }),
   computed: {
-    console: () => console,
     frame() {
       return this.$store.state.frameBeingEdited;
+    },
+    frames() {
+      return this.$store.state.frames;
+    },
+    isExistingFrame() {
+      return this.frames.some((f) => f.id == this.frame.id)
     },
     factSubTypes() {
       const factType = frameTypes.find(f => f.id == "fact")
       return factType.subTypes
-    }
+    },
   },
   mounted() {
     if (this.frame.booleanConstruct) {
@@ -82,11 +94,10 @@ export default {
   },
   methods: {
     closeForm() {
-      this.$store.state.frameBeingEdited = null;
+      this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited")
-      this.$store.state.frameBeingEdited = null;
     },
     toggleSubdivision() {
       if (this.subdivided) {
@@ -94,7 +105,6 @@ export default {
           this.frame.booleanConstruct = new BooleanConstruct()
           this.frame.booleanConstruct.addEmptyChild()
         }
-
       } else {
         this.frame.booleanConstruct = null
       }
@@ -113,4 +123,10 @@ export default {
 }
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.message {
+  font-size: 10pt;
+  font-style: italic;
+  margin-right: 10px;
+}
+</style>

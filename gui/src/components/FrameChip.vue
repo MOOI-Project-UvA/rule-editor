@@ -1,12 +1,22 @@
 <template>
-  <q-chip :class="{ chip: true }" :removable="removable" :disable="disable" @remove="onRemove" :color="disable
+  <!-- <q-chip :class="{ chip: true }" :removable="removable" :disable="disable" @remove="onRemove" :color="disable
     ? 'grey-5'
     : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
     " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
     {{ frame.label }}
-    <!-- contexts which have been subdivided contain have a badge on top-right -->
     <q-badge v-if="!!frame.isComplex" style="margin-top: -2px;" dense color="secondary" rounded floating></q-badge>
-  </q-chip>
+  </q-chip> -->
+  <div>
+    <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
+      :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]">
+      {{ frame.label }}
+    </div>
+    <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
+      <div style="max-width: 300px">
+        {{ frame.label }}
+      </div>
+    </q-tooltip>
+  </div>
 </template>
 
 <script>
@@ -70,13 +80,14 @@ export default {
 <style lang="css" scoped>
 .chip {
   user-select: none;
+  cursor: pointer;
 }
 
-.active {
-  opacity: 0.2;
-}
-
-.notActive {
-  opacity: 1;
+.frame-label {
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 10pt;
+  line-height: 1rem;
+  margin: 2px;
 }
 </style>
