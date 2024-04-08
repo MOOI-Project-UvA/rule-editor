@@ -29,7 +29,7 @@
       :header-nav="step > 2">
       <SourceCollectionView @update-stepper="updateStepperValue" @decrease-stepper="decreaseStepperValue" />
     </q-step>
-    
+
     <q-step :name="3" title="Interpret sources" icon="mdi-thought-bubble-outline" :done="step > 3" done-color="green"
       caption="Step 3" :header-nav="step > 3">
       <InterpretationView />
@@ -62,8 +62,8 @@ export default {
 
   mounted() {
     //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
-    this.step = 3
-    this.$store.dispatch("loadInterpretationForDebugging")
+    // this.step = 3
+    // this.$store.dispatch("loadInterpretationForDebugging")
   },
   methods: {
     updateStepperValue() {
