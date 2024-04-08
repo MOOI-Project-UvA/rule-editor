@@ -3,7 +3,7 @@
     <!-- card title section -->
     <div :class="sourceViewIsCollapsed ? 'container-row' : 'container-column'">
 
-      <div class="height-fill-available">
+      <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }">
         <div class="height-content row q-pa-sm">
           <div class="col-1 text-bold">Frames</div>
           <div class="col q-ml-md">
@@ -28,6 +28,7 @@
           <FramesList />
         </div>
       </div>
+
 
       <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
         <FrameEditorPanel />
@@ -87,6 +88,12 @@ export default {
     NewFrameMenu,
     FrameEditorPanel
   },
+
+  watch: {
+    sourceViewIsCollapsed() {
+      console.log("sourceViewIsCollapsed", this.sourceViewIsCollapsed)
+    }
+  }
 };
 </script>
 
