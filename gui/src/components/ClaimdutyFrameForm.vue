@@ -37,8 +37,14 @@
         :disable="frame.sourceText.length == 0" />
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="isExistingFrame">
+        <div class="message">Any changes have been saved</div>
+        <q-btn color="primary" @click="saveFrame">Close</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="primary" @click="closeForm">Cancel</q-btn>
+        <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -59,6 +65,12 @@ export default {
   computed: {
     frame() {
       return this.$store.state.frameBeingEdited;
+    },
+    frames() {
+      return this.$store.state.frames;
+    },
+    isExistingFrame() {
+      return this.frames.some((f) => f.id == this.frame.id)
     },
     // showFrameSource() {
     //   return this.$store.state.showFrameSource
@@ -95,5 +107,11 @@ export default {
 
 .source-text {
   font-style: italic;
+}
+
+.message {
+  font-size: 10pt;
+  font-style: italic;
+  margin-right: 10px;
 }
 </style>
