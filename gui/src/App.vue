@@ -62,8 +62,8 @@ export default {
 
   mounted() {
     //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
-    this.step = 3
-    this.$store.dispatch("loadInterpretationForDebugging")
+    // this.step = 3
+    // this.$store.dispatch("loadInterpretationForDebugging")
   },
   methods: {
     updateStepperValue() {
