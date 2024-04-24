@@ -93,6 +93,7 @@
         style="padding-top: 1px; padding-bottom: 1px"
       >
         <load-save-interpretation-banner></load-save-interpretation-banner>
+        <p>{{ hash }}</p>
       </q-banner>
     </template>
   </q-stepper>
@@ -103,11 +104,13 @@ import TaskDefinitionView from "./views/TaskDefinitionView.vue";
 import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
+import * as child from "child_process";
 
 export default {
   name: "app",
   data: () => ({
     step: 1,
+    hash: import.meta.env.VITE_VERSION,
   }),
 
   components: {
