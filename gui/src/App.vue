@@ -143,7 +143,7 @@ export default {
       this.hash
     }`;
     const message = `Welcome to the Norm editor! This version is based on the <a href='${urlToRender}' target='_blank'>${this.branch}</a> branch.
-    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash}</a>.`;
+    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash}.substring(0,9)</a>.`;
 
     alertWidget("welcome", message);
   },
