@@ -93,7 +93,11 @@
         style="padding-top: 1px; padding-bottom: 1px"
       >
         <load-save-interpretation-banner></load-save-interpretation-banner>
-        <p>{{ hash }}</p>
+        <a :href="hash" target="_blank">{{ hash }}</a
+        ><br />
+        <a :href="context" target="_blank">{{ context }}</a
+        ><br />
+        <a :href="head" target="_blank">{{ head }}</a>
       </q-banner>
     </template>
   </q-stepper>
@@ -111,6 +115,8 @@ export default {
   data: () => ({
     step: 1,
     hash: import.meta.env.VITE_VERSION,
+    context: import.meta.env.VITE_CONTEXT,
+    head: import.meta.env.VITE_HEAD,
   }),
 
   components: {
