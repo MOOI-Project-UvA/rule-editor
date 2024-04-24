@@ -88,7 +88,7 @@
 
     <!--  adding message slot, thus making the save/load interpretation tasks always accessible  -->
     <template v-slot:message>
-      <q-banner class="bg-secondary text-white q-px-lg q-py-sm">
+      <q-banner class="bg-blue-grey-8 text-white q-px-lg q-py-sm">
         <load-save-interpretation-banner></load-save-interpretation-banner>
       </q-banner>
     </template>
