@@ -93,6 +93,16 @@
         style="padding-top: 1px; padding-bottom: 1px"
       >
         <load-save-interpretation-banner></load-save-interpretation-banner>
+        <!--        <a :href="hash" target="_blank">{{ hash }}</a-->
+        <!--        ><br />-->
+        <!--        <a :href="context" target="_blank">{{ context }}</a-->
+        <!--        ><br />-->
+        <!--        <a target="_blank">{{ head }}</a-->
+        <!--        ><br />-->
+        <!--        <a target="_blank" :href="repo">{{ repo }}</a-->
+        <!--        ><br />-->
+        <!--        <a target="_blank" :href="branch">{{ branch }}</a-->
+        <!--        ><br />-->
       </q-banner>
     </template>
   </q-stepper>
@@ -103,11 +113,14 @@ import TaskDefinitionView from "./views/TaskDefinitionView.vue";
 import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
-
+import { alertWidget } from "./helpers/alertWidget.js";
 export default {
   name: "app",
   data: () => ({
     step: 1,
+    hash: import.meta.env.VITE_VERSION,
+    repo: import.meta.env.VITE_REPOSITORY_URL,
+    branch: import.meta.env.VITE_BRANCH,
   }),
 
   components: {
@@ -121,6 +134,21 @@ export default {
     //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
     // this.step = 3
     // this.$store.dispatch("loadInterpretationForDebugging")
+    const urlToRender = `https://${this.repo.split(":").join("/")}/-/tree/${
+      this.branch
+    }`;
+    const commitUrl = `https://${this.repo.split(":").join("/")}/-/commit/${
+      this.hash
+    }`;
+    const message = `Welcome to the Norm editor! This version is based on the <a href='${urlToRender}' target='_blank'>${
+      this.branch
+    }</a> branch.
+    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash.substring(
+      0,
+      9,
+    )}</a>.`;
+
+    alertWidget("welcome", message);
   },
   methods: {
     updateStepperValue() {
