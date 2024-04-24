@@ -97,12 +97,12 @@
         ><br />
         <a :href="context" target="_blank">{{ context }}</a
         ><br />
-        <a target="_blank">{{ head }}</a>
-        <a target="_blank" :href="VITE_REPOSITORY_URL">{{
-          VITE_REPOSITORY_URL
-        }}</a>
-        <a target="_blank" :href="VITE_BRANCH">{{ VITE_BRANCH }}</a>
-        <
+        <a target="_blank">{{ head }}</a
+        ><br />
+        <a target="_blank" :href="repo">{{ repo }}</a
+        ><br />
+        <a target="_blank" :href="branch">{{ branch }}</a
+        ><br />
       </q-banner>
     </template>
   </q-stepper>
@@ -122,6 +122,8 @@ export default {
     hash: import.meta.env.VITE_VERSION,
     context: import.meta.env.VITE_CONTEXT,
     head: import.meta.env.VITE_HEAD,
+    repo: import.meta.env.VITE_REPOSITORY_URL,
+    branch: import.meta.env.VITE_BRANCH,
   }),
 
   components: {
