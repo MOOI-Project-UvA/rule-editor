@@ -97,7 +97,7 @@
         ><br />
         <a :href="context" target="_blank">{{ context }}</a
         ><br />
-        <a :href="head" target="_blank">{{ head }}</a>
+        <a target="_blank">{{ head }}</a>
       </q-banner>
     </template>
   </q-stepper>
