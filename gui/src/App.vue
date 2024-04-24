@@ -119,8 +119,6 @@ export default {
   data: () => ({
     step: 1,
     hash: import.meta.env.VITE_VERSION,
-    context: import.meta.env.VITE_CONTEXT,
-    head: import.meta.env.VITE_HEAD,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
   }),
@@ -142,8 +140,13 @@ export default {
     const commitUrl = `https://${this.repo.split(":").join("/")}/-/commit/${
       this.hash
     }`;
-    const message = `Welcome to the Norm editor! This version is based on the <a href='${urlToRender}' target='_blank'>${this.branch}</a> branch.
-    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash}.substring(0,9)</a>.`;
+    const message = `Welcome to the Norm editor! This version is based on the <a href='${urlToRender}' target='_blank'>${
+      this.branch
+    }</a> branch.
+    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash.substring(
+      0,
+      9,
+    )}</a>.`;
 
     alertWidget("welcome", message);
   },
