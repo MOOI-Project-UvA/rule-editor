@@ -98,6 +98,11 @@
         <a :href="context" target="_blank">{{ context }}</a
         ><br />
         <a target="_blank">{{ head }}</a>
+        <a target="_blank" :href="VITE_REPOSITORY_URL">{{
+          VITE_REPOSITORY_URL
+        }}</a>
+        <a target="_blank" :href="VITE_BRANCH">{{ VITE_BRANCH }}</a>
+        <
       </q-banner>
     </template>
   </q-stepper>
