@@ -22,9 +22,12 @@
   <!--      <q-page padding>-->
   <div class="q-ma-sm">
     <q-stepper id="stepper-id" v-model="step" ref="stepper" color="primary" animated flat header-nav>
-      <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="step > 1" done-color="green"
-        caption="Step 1" class="fill-height row justify-center content-center" :header-nav="step > 1">
+      <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="step > 1"
+        done-color="green" caption="Step 1" class="fill-height row justify-center content-center"
+        :header-nav="step > 1">
         <AnnotationTest />
+        <!-- <SpanTest /> -->
+        <!-- <UnderlineTest /> -->
         <!-- <TaskDefinitionView @update-stepper="updateStepperValue"></TaskDefinitionView> -->
       </q-step>
       <q-step :name="2" title="Collect sources" icon="mdi-bookmark-box-multiple-outline"
@@ -54,6 +57,8 @@ import TaskDefinitionView from "./views/TaskDefinitionView.vue";
 import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import AnnotationTest from "./components/AnnotationTest.vue";
+import SpanTest from "./components/SpanTest.vue"
+import UnderlineTest from "./components/UnderlineTest.vue";
 
 export default {
   name: "app",
@@ -65,7 +70,9 @@ export default {
     InterpretationView,
     SourceCollectionView,
     TaskDefinitionView,
-    AnnotationTest
+    AnnotationTest,
+    SpanTest,
+    UnderlineTest
   },
 
   methods: {

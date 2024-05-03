@@ -1,28 +1,27 @@
 <template>
-    <div>
-        <template v-if="level < snippet.annotations.length">
-            <div class="underlined">
-                <SnippetContainer :snippet="snippet" :level="level + 1" />
-            </div>
-        </template>
-        <template v-else>
-            <div :id="snippet.id">{{ snippet.text }}</div>
-        </template>
-    </div>
+    <span class="snippet underline">{{ snippet.text }}</span>
 </template>
 
 <script>
 export default {
-    name: "snippet_container",
     props: {
         snippet: Object,
-        level: Number
+        sentence: Object
     }
 }
 </script>
+
 <style>
-.underlined {
-    border-bottom: 2px solid #007bc6;
-    margin-bottom: 1px;
+.snippet {
+    display: inline;
+}
+
+.underline {
+    padding-bottom: 30px;
+    line-height: 18px;
+    background: linear-gradient(180deg, #00ff00 2px, #ffffff 2px, #ffffff 4px, #ffff00 4px, #ffff00 6px, #ffffff 6px, #ffffff 8px, #ff00ff 8px);
+    background-size: 100% 10px;
+    background-repeat: no-repeat;
+    background-position: 0px;
 }
 </style>

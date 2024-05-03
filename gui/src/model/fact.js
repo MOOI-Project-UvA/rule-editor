@@ -7,8 +7,8 @@ export class Fact {
         this._id = uuid4() //unique ID
         this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
-        this._type = null //type object (id, class, label)
-        this._subType = null //optional subtype (id, class, label)
+        this._type = null //type-object {id, class, label}
+        this._subType = null //optional subtype {id, class, label}
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
