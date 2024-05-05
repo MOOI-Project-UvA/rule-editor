@@ -8,10 +8,7 @@ import {
   parseJsonToFrames,
 } from "../helpers/importExport.js";
 import { json, text } from "d3-fetch";
-import {
-  addParentReferencesToDocument,
-  getSentencesInDocument,
-} from "../helpers/document.js";
+import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
 // Create a new store instance.
 const store = createStore({
@@ -34,8 +31,6 @@ const store = createStore({
     };
   },
   getters: {
-    getFileContent: (state) => state.fileContent,
-    reconstructedData: (state) => state.reconstructedData,
     getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
@@ -250,40 +245,25 @@ const store = createStore({
     //source object contains filename where to read the source from
     //checkedSentences is used when reading an existing interpretation: it contains
     //the sentences that are selected by the user as relevant for the interpretation.
-    addSource(context, { sourceId, checkedSentences }) {
-      console.log(
-        "addSource",
-        sourceId,
-        "nrCheckedSentences",
-        checkedSentences?.length,
-      );
+    addSource(context, { sourceId, checkedSentenceIds }) {
       const source = this.state.availableSources.find((s) => s.id == sourceId);
-      // console.log("reading", source.fileName)
-      json(source.fileName).then((data) => {
-        const document = data["@graph"].find((d) => "document" in d).document;
-        //add parent references to each part of the document
-        addParentReferencesToDocument(document);
-
-        const sentences = getSentencesInDocument(document);
-        sentences.forEach((s, i) => {
-          s["annotations"] = [];
-          s["checked"] =
-            !checkedSentences || checkedSentences.includes(s["id"]);
-          s["orderId"] = i;
-          s["loading"] = false;
-          s["documentId"] = sourceId;
-        });
-
-        context.state.sourceDocuments = [
+      console.log("source", source)
+      console.log("reading", source.fileName)
+      json(source.fileName).then((chopperData) => {
+        console.log("chopperData", chopperData)
+        //get document from chopper data.
+        const document = chopperData["@graph"].find((d) => ('document' in d)).document;
+        console.log("document", document)
+        const sourceDoc = new SourceDocument(document, source.title, checkedSentenceIds)
+        console.log("sourceDoc", sourceDoc)
+        let updatedDocumentList = [
           ...context.state.sourceDocuments,
-          {
-            id: source.id,
-            title: source.title,
-            children: document.children,
-            sentences: sentences,
-          },
+          sourceDoc
         ];
-      });
+        //sort alphabetically on title
+        updatedDocumentList.sort((d1, d2) => d1.title.localeCompare(d2.title))
+        context.state.sourceDocuments = updatedDocumentList
+      })
     },
     createAct(context) {
       console.log("create act frame");
@@ -310,7 +290,7 @@ const store = createStore({
       JSON.parse(jsonText).sourceDocs.forEach((d) => {
         context.dispatch("addSource", {
           sourceId: d.id,
-          checkedSentences: d.checkedSentenceIds,
+          checkedSentenceIds: d.checkedSentenceIds,
         });
       });
     },

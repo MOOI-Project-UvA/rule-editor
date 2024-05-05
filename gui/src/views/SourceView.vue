@@ -26,10 +26,14 @@
     <q-separator />
 
     <q-card-section class="q-pa-none">
-      <template v-if="displayedSource && displayedSource.sentences.some((e) => e.checked)">
-        <!-- show recursively all text leafs in the document tree -->
+      <template v-if="displayedSource && displayedSource.sentences.length > 0">
+        <!-- show all sentences in document -->
         <div class="fill-height scrollable q-py-xs">
-          <TextElement :textPiece="displayedSource" />
+          <div class="q-mb-sm" v-for="sentence in displayedSource.sentences">
+            <span v-for="snippet in sentence.snippets">
+              {{ snippet.text }}
+            </span>
+          </div>
         </div>
       </template>
       <template v-else>
@@ -53,30 +57,22 @@ export default {
     TextElement,
   },
   data: () => ({
-    expanded: [],
     displayedSource: null
   }),
   mounted() {
-    console.log("sourceview mounted")
+    //show by default the first document in the list of source documents
     this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
   },
   computed: {
-    reconstructedData() {
-      return this.$store.getters.reconstructedData;
-    },
     sourceDocuments() {
-      let docs = [...this.$store.state.sourceDocuments]
-      //sort alphabetically on title
-      docs.sort((d1, d2) => d1.title.localeCompare(d2.title))
-      return docs
-    },
-    frameBeingEdited() {
-      return this.$store.state.frameBeingEdited
+      return this.$store.state.sourceDocuments
     },
   },
   watch: {
     sourceDocuments() {
       this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
+      console.log("displayedSource", this.displayedSource.sentences[0].snippets[0])
+
     }
   }
 };

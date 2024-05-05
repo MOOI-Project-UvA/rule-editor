@@ -9,17 +9,7 @@ function getSentencesInDocument(document) {
     return sentences
 }
 
-//adds a parent attribute for each part of the document
-//so we can easily get the paragraph (etc) that a sentence is
-//part of
-function addParentReferencesToDocument(document) {
-    if ('children' in document) {
-        document.children.forEach(c => {
-            c.parent = document
-            addParentReferencesToDocument(c)
-        })
-    }
-}
+
 
 //returns document that the piece of text is part of
 function getDocumentForTextPiece(textPiece) {
@@ -31,6 +21,5 @@ function getDocumentForTextPiece(textPiece) {
 }
 export {
     getSentencesInDocument,
-    addParentReferencesToDocument,
     getDocumentForTextPiece
 }
