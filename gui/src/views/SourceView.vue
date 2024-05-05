@@ -29,8 +29,8 @@
       <template v-if="displayedSource && displayedSource.sentences.length > 0">
         <!-- show all sentences in document -->
         <div class="fill-height scrollable q-py-xs">
-          <div class="q-mb-sm" v-for="sentence in displayedSource.sentences">
-            <span v-for="snippet in sentence.snippets">
+          <div class="q-mb-sm" :style="getStyleForLineSpacing(sentence)" v-for="sentence in displayedSource.sentences">
+            <span :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets">
               {{ snippet.text }}
             </span>
           </div>
@@ -50,7 +50,8 @@
 </template>
 
 <script>
-import TextElement from "../components/TextElement.vue";
+import { getSelectionAsSnippets, splitAndReturnSelectedSnippets } from "../helpers/annotating.js"
+import { getStyleForUnderlining, getStyleForLineSpacing } from "../helpers/underlining.js"
 
 export default {
   components: {
