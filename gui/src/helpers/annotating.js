@@ -2,6 +2,8 @@
 //these manage splitting a sentence into snippets, to allow
 //nested annotations, and corresponding underlining of text
 
+import { Snippet } from "../model/snippet"
+
 export function getSelectionAsSnippets(selection, sentences) {
     let startSentenceIndex
     let endSentenceIndex
@@ -79,9 +81,18 @@ export function splitAndReturnSelectedSnippets(
     selectionAsSnippets,
     sentences) {
     //destructure
-    const { startSentenceIndex, endSentenceIndex, startSnippet, endSnippet, startOffset, endOffset } = selectionAsSnippets
+    const {
+        startSentenceIndex,
+        endSentenceIndex,
+        startSnippet,
+        endSnippet,
+        startOffset,
+        endOffset
+    } = selectionAsSnippets
+    const startSentence = sentences[startSentenceIndex]
+    const endSentence = sentences[endSentenceIndex]
     //split start snippet and replace it in the sentence by the two new snippets
-    const startSubSnippets = splitSnippet(startSnippet, startOffset, sentences)
+    const startSubSnippets = splitSnippet(startSnippet, startOffset, startSentence)
     let endSubSnippets
     //if startsnippet and endsnippet are the same, split the rightmost startSubSnippet
     //else split the endsnippet
@@ -89,54 +100,48 @@ export function splitAndReturnSelectedSnippets(
         endSubSnippets = splitSnippet(
             startSubSnippets[1],
             endOffset - startOffset,
-            sentences
+            endSentence
         )
     } else {
-        endSubSnippets = splitSnippet(endSnippet, endOffset, sentences)
+        endSubSnippets = splitSnippet(endSnippet, endOffset, endSentence)
     }
     //collect all snippets covered by the selection
     let selectionSnippets = []
-    const startSnippetIndexInSentence = sentences[startSentenceIndex].snippets.findIndex(s => s.id == startSubSnippets[1].id)
-    const endSnippetIndexInSentence = sentences[endSentenceIndex].snippets.findIndex(s => s.id == endSubSnippets[0].id)
-    if (startSnippet.sentenceId == endSnippet.sentenceId) {
+    const startSnippetIndexInSentence = startSentence.snippets.findIndex(s => s.id == startSubSnippets[1].id)
+    const endSnippetIndexInSentence = endSentence.snippets.findIndex(s => s.id == endSubSnippets[0].id)
+    if (startSentenceIndex == endSentenceIndex) {
         //same sentence
         if (startSnippet == endSnippet) {
             //same snippet
             selectionSnippets = [endSubSnippets[0]]
         } else {
             //different snippets
-            selectionSnippets = sentences[startSentenceIndex].snippets.slice(startSnippetIndexInSentence, endSnippetIndexInSentence + 1)
+            selectionSnippets = startSentence.snippets.slice(startSnippetIndexInSentence, endSnippetIndexInSentence + 1)
         }
     } else {
-        const startSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == startSnippet.sentenceId)
-        const endSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == endSnippet.sentenceId)
-        selectionSnippets = sentences[startSentenceIndex].snippets.slice(startSnippetIndexInSentence) //copy start snippet plus rest of sentence
-        for (let sentenceNr = startSentenceSequenceNumber + 1; sentenceNr < endSentenceSequenceNumber; sentenceNr++) {
+        // const startSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == startSnippet.sentenceId)
+        // const endSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == endSnippet.sentenceId)
+        selectionSnippets = startSentence.snippets.slice(startSnippetIndexInSentence) //copy start snippet plus rest of sentence
+        for (let sentenceNr = startSentenceIndex + 1; sentenceNr < endSentenceIndex; sentenceNr++) {
             //add all snippets of intermediate sentences
             selectionSnippets = selectionSnippets.concat(sentences[sentenceNr].snippets)
         }
         //add all up and including end snippet
-        selectionSnippets = selectionSnippets.concat(sentences[endSentenceIndex].snippets.slice(0, endSnippetIndexInSentence + 1))
+        selectionSnippets = selectionSnippets.concat(endSentence.snippets.slice(0, endSnippetIndexInSentence + 1))
     }
     return selectionSnippets
 }
 
-function splitSnippet(snippet, charIndex, sentences) {
+function splitSnippet(snippet, charIndex, sentence) {
     //TODO handle empty leftSnippet and/or rightSnippet, when charIndex == 0 or charIndex == snippet.text.length-1
-    const leftSnippet = {
-        id: snippet.id + "_0",
-        sentenceId: snippet.sentenceId,
-        annotations: [...snippet.annotations],
-        text: snippet.text.substring(0, charIndex)
-    }
-    const rightSnippet = {
-        id: snippet.id + "_1",
-        sentenceId: snippet.sentenceId,
-        annotations: [...snippet.annotations],
-        text: snippet.text.substring(charIndex)
-    }
+    const leftSnippet = new Snippet(snippet.text.substring(0, charIndex), sentence)
+    const rightSnippet = new Snippet(snippet.text.substring(charIndex), sentence)
+    snippet.annotations.forEach(a => {
+        leftSnippet.addAnnotation(a)
+        rightSnippet.addAnnotation(a)
+    })
+
     //replace original snippet in sentence with the two new ones
-    const sentence = sentences.find(s => s.id == snippet.sentenceId)
     const snippetIndexInSentence = sentence.snippets.findIndex(s => s.id == snippet.id)
     sentence.snippets.splice(snippetIndexInSentence, 1, leftSnippet, rightSnippet)
 

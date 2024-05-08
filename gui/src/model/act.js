@@ -77,7 +77,7 @@ class Act {
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this
     }
-    removeAnnotation(annotation) {
+    deleteAnnotation(annotation) {
         const index = this._annotations.indexOf(annotation)
         this._annotations.splice(index, 1)
     }

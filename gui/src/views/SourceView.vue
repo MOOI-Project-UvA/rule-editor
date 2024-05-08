@@ -28,12 +28,8 @@
     <q-card-section class="q-pa-none">
       <template v-if="displayedSource && displayedSource.sentences.length > 0">
         <!-- show all sentences in document -->
-        <div class="fill-height scrollable q-py-xs">
-          <div class="q-mb-sm" :style="getStyleForLineSpacing(sentence)" v-for="sentence in displayedSource.sentences">
-            <span :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets">
-              {{ snippet.text }}
-            </span>
-          </div>
+        <div class="fill-height scrollable q-pa-md">
+          <SentenceList :sentences="displayedSource.sentences" />
         </div>
       </template>
       <template v-else>
@@ -50,13 +46,9 @@
 </template>
 
 <script>
-import { getSelectionAsSnippets, splitAndReturnSelectedSnippets } from "../helpers/annotating.js"
-import { getStyleForUnderlining, getStyleForLineSpacing } from "../helpers/underlining.js"
 
+import SentenceList from '../components/SentenceList.vue';
 export default {
-  components: {
-    TextElement,
-  },
   data: () => ({
     displayedSource: null
   }),
@@ -64,16 +56,17 @@ export default {
     //show by default the first document in the list of source documents
     this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
   },
+  components: {
+    SentenceList
+  },
   computed: {
     sourceDocuments() {
       return this.$store.state.sourceDocuments
-    },
+    }
   },
   watch: {
     sourceDocuments() {
       this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
-      console.log("displayedSource", this.displayedSource.sentences[0].snippets[0])
-
     }
   }
 };
@@ -86,5 +79,11 @@ export default {
 
 .fill-height {
   height: calc(100vh - 210px);
+}
+
+
+
+.snippet {
+  display: inline;
 }
 </style>

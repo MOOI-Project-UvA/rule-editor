@@ -1,4 +1,13 @@
-const frameTypes =
+export class Frame {
+    constructor() {
+
+    }
+    getSubClass(frameType) {
+
+    }
+}
+
+export const frameTypes =
     [
         {
             'id': 'fact',
@@ -40,6 +49,3 @@ const frameTypes =
         }
     ]
 
-export {
-    frameTypes
-}

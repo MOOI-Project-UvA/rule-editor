@@ -22,6 +22,8 @@ const store = createStore({
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
+      selectedSnippet: null, // selected snippet in the source text
+      clickedPosition: null,
       availableSources: [], //list of sources that the user can choose from
       taskInformation: {
         title: "",
@@ -54,15 +56,12 @@ const store = createStore({
           }
           break;
       }
-      if (annotation) {
-        frame.addAnnotation(annotation); //this also sets annotation.frame
-      }
       frame.type = frameType;
-      frame["id"] = uuid4();
-
       state.frameBeingEdited = frame;
       state.framesOpenInEditor.push(frame)
-
+      if (annotation) {
+        annotation.frame = frame
+      }
     },
     saveFrameBeingEdited(state) {
       //if frameBeingEdited is new, add it to the list

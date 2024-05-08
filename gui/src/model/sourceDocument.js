@@ -8,23 +8,40 @@ export class SourceDocument {
         //sentences are the leaf elements of the document.
         //keep only those that are selected by the user
         //keep only those that have non-empty content
-        this._sentences = setSentenceListFromDocument(chopperDocument)
-            .filter(s => selectedSentenceIds.includes(s.id))
-            .filter(s => s.text.length > 0)
+        const selectedLeafElements = getLeafs(chopperDocument)
+            .filter(l => selectedSentenceIds.includes(l.id))
+            .filter(l => l.content.length > 0)
+        this._sentences = selectedLeafElements.map(element => new Sentence(element, this))
     }
 
     get id() { return this._id }
     get title() { return this._title }
-
     get sentences() { return this._sentences }
 
-}
+    getSnippetsForAnnotation(annotation) {
+        //check all snippets to see if they contain given annotation
+        return this._sentences
+            .map(s => s.snippets)
+            .flat()
+            .filter(snippet =>
+                snippet.annotations.some(a => a.id == annotation.id)
+            )
+    }
 
-//doc is a hierarchy of elements. Its leafs are the sentences, containing the textual content.
-//get the leafs in the correct order, in a list.
-function setSentenceListFromDocument(doc) {
-    const leafElements = getLeafs(doc)
-    return leafElements.map(element => new Sentence(element))
+    //remove annotation from snippets
+    deleteAnnotation(annotation) {
+        const snippets = this._sentences
+            .map(s => s.snippets)
+            .flat()
+        snippets.forEach(s => s.deleteAnnotation(annotation))
+    }
+
+    //return all sentences that have snippets with annotations for frame
+    getSentencesForFrame(frame) {
+        return this._sentences.filter(sentence =>
+            sentence.snippets.some(snippet => snippet.annotations.some(a => a.frame && a.frame.id == frame.id))
+        )
+    }
 }
 
 function getLeafs(node) {

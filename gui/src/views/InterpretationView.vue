@@ -2,6 +2,7 @@
 import SourceView from "./SourceView.vue";
 import FramesView from "./FramesView.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
+import AnnotationList from "../components/AnnotationList.vue"
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 
@@ -9,6 +10,7 @@ export default {
   name: "InterpretationView",
   components: {
     AnnotationPanel,
+    AnnotationList,
     FramesView,
     SourceView,
     NewFrameMenu,
@@ -45,6 +47,7 @@ export default {
     </div>
   </div>
   <AnnotationPanel />
+  <AnnotationList />
 </template>
 
 <style scoped lang="css"></style>

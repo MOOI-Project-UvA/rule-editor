@@ -1,14 +1,12 @@
 <template>
-    <div id="annotation-panel" v-if="annotation" :style="{
-        left: clickedPosition[0] + 'px',
-        top: clickedPosition[1] + 'px',
+    <div id="annotationPanel" v-if="annotation" :style="{
+        left: annotation.positionOnScreen[0] + 'px',
+        top: annotation.positionOnScreen[1] + 'px',
     }">
         <q-card bordered>
             <q-card-section>
                 <div>
-                    <span v-for="snippet in snippetsForThisAnnotation">
-                        {{ snippet.text }}
-                    </span>
+                    {{ annotation.sourceText }}
                 </div>
             </q-card-section>
             <template v-if="annotation.addingToExistingFrame">
@@ -32,10 +30,15 @@
                 </q-card-section>
                 <q-card-actions>
                     <div class="label">Or</div>
-                    <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
-                        :disabled="frames.length == 0">
-                        Add to existing frame
-                    </q-btn>
+                    <template v-if="annotation.frame">
+                        <q-btn @click="removeAnnotation" color="negative">Remove annotation</q-btn>
+                    </template>
+                    <template v-else>
+                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
+                            :disabled="frames.length == 0">
+                            Add to existing frame
+                        </q-btn>
+                    </template>
                 </q-card-actions>
             </template>
 
@@ -60,24 +63,29 @@ export default {
         },
         frames() {
             return this.$store.state.frames
-        },
-        clickedPosition() {
-            return this.$store.state.clickedPosition
-        },
-        snippetsForThisAnnotation() {
-            console.log("snippetsForThisAnnotation")
-            return this.$store.state.sourceDocuments
-                .map(sourceDoc => sourceDoc.getSnippetsForAnnotation(this.annotation))
-                .flat()
         }
     },
     methods: {
         frameTypeButtonClicked(frameType) {
-            //create new frame, set annotation's frame to this new frame
-            this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
+            if (!this.annotation.frame) {
+                //there is no frame attached to this.
+                //create new frame and add annotation to it
+                this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
+                // disabled because of performance problems. TODO: fix performance problems
+                //this.annotation.addSimilarAnnotationsToFrame(this.$store.state.sourceDocuments)
+            } else {
+                //there is a frame attached to this, change it type according to the selected type
+                this.annotation.frame.type = frameType
+            }
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {
+            this.$store.commit("setAnnotationBeingEdited", null)
+        },
+        removeAnnotation() {
+            //this is only called if annotation has a frame.
+            //remove the annotaiton from the frame, and from the store
+            this.annotation.frame.removeAnnotation(this.annotation)
             this.$store.commit("setAnnotationBeingEdited", null)
         }
     },
@@ -85,7 +93,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#annotation-panel {
+#annotationPanel {
     position: absolute;
     width: 440px;
 }

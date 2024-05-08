@@ -26,7 +26,8 @@ import {
   getSelectedCharacterRange,
   getHtmlWithHighlights,
 } from "../helpers/highlightText.js";
-import { Annotation, Snippet } from "../model/annotation.js";
+import { Annotation } from "../model/annotation.js";
+import { Snippet } from "../model/snippet.js"
 import { getDocumentForTextPiece } from "../helpers/document";
 
 export default {
