@@ -15,13 +15,13 @@ const store = createStore({
   state() {
     return {
       frames: [], //list of frames in interpretation
-      annotationMode: null,
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are opened in the current interpretation
       annotationBeingEdited: null,
+      addingAnnotationToExistingFrame: false, //true if user is in the process of selecting a frame to add the annotationBeingEdited to
       selectedSnippet: null, // selected snippet in the source text
       clickedPosition: null,
       availableSources: [], //list of sources that the user can choose from

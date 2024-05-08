@@ -1,25 +1,36 @@
 //functions that return style for underlining pieces of text (snippets and sentences)
-
-const lineThickness = 2
+import { hexColors } from "./config.js";
+const lineThickness = 3
 const marginBottom = 20 //space between sentences
 const charHeight = 14
 //const highlightColor = "#c7dcee"
+const white = "#ffffff"
+const grey = "#666666"
 
 export function getStyleForUnderlining(snippet, sentence) {
-    const white = "#ffffff"
     //each annotation within a sentence gets its own vertical position
-    const annotationIdsInSentence = sentence.snippets.map(snippet => snippet.annotations)
+    const annotationsInSentence = sentence.snippets.map(snippet => snippet.annotations)
         .filter(annotations => annotations.length > 0)
         .flat()
-        .map(a => a.id)
-        .filter((value, index, array) => array.indexOf(value) === index);
+        .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index);
 
     //loop through all annotations for this sentence and see if this snippet
     //has the annotation. if so, add coloured line, if not, add white line
     let backgroundStyle = "linear-gradient(180deg"
-    annotationIdsInSentence.forEach((annotationId, annotationNumber) => {
-        const lineColor = snippet.annotations.some(a => a.id == annotationId)
-            ? "#007bc6" : white
+    annotationsInSentence.forEach((annotation, annotationNumber) => {
+        let lineColor
+        console.log("annotationsInSentence", annotationsInSentence)
+        if (snippet.annotations.some(a => a.id == annotation.id)) {
+            if (annotation.frame) {
+                lineColor = annotation.frame.subType
+                    ? hexColors[annotation.frame.subType.id]
+                    : hexColors[annotation.frame.type.id]
+            } else {
+                lineColor = grey
+            }
+        } else {
+            lineColor = white
+        }
         backgroundStyle +=
             `, ${white} ${annotationNumber * 2 * lineThickness}px`
             + `, ${lineColor} ${annotationNumber * 2 * lineThickness}px`
@@ -28,9 +39,11 @@ export function getStyleForUnderlining(snippet, sentence) {
     })
     backgroundStyle += ")"
 
-    const backgroundSize = annotationIdsInSentence.length == 0
+    console.log("snippet", snippet, "backgroundStyle", backgroundStyle)
+
+    const backgroundSize = annotationsInSentence.length == 0
         ? 0
-        : (2 * annotationIdsInSentence.length - 1) * lineThickness
+        : (2 * annotationsInSentence.length - 1) * lineThickness
 
     //if snippet has annotation that is being edited: highlight text background
     //disabled for now: highlighting covers line beneath as well

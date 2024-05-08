@@ -77,6 +77,12 @@ export default {
                 ? "Add to frame"
                 : "";
         },
+        annotationBeingEdited() {
+            return this.$store.state.annotationBeingEdited
+        },
+        addingAnnotationToExistingFrame() {
+            return this.$store.state.addingAnnotationToExistingFrame
+        }
     },
     methods: {
         onClick(frame) {
@@ -86,10 +92,10 @@ export default {
 
             if (
                 this.annotationBeingEdited &&
-                this.annotationBeingEdited.addingToExistingFrame
+                this.addingAnnotationToExistingFrame
             ) {
-                frame.addAnnotation(this.annotationBeingEdited);
-                this.annotationBeingEdited.addingToExistingFrame = false;
+                this.$store.state.annotationBeingEdited.frame = frame
+                this.$store.state.addingAnnotationToExistingFrame = false;
                 this.$store.state.annotationBeingEdited = null;
             } else if (
                 this.frameBeingEdited &&

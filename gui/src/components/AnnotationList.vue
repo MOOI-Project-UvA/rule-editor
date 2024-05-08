@@ -1,7 +1,7 @@
 <template>
     <!-- show panel if snippet is selected and contains annotations -->
     <div id="annotation-list" v-if="selectedAnnotations.length > 0" :style="{
-        left: `${clickedPosition[0] - 150}px`,
+        left: `${clickedPosition[0] - 50}px`,
         top: `${clickedPosition[1]}px`,
     }">
         <q-card bordered>
@@ -16,15 +16,20 @@
                             </div>
                         </q-tooltip>
                     </div>
-
                     <div @click="deleteAnnotation(annotation)">
                         Delete
                     </div>
-                    <div @click="openFrameOfAnnotation(annotation)">
-                        Open frame
-                    </div>
+                    <template v-if="annotation.frame">
+                        <div @click="openFrameOfAnnotation(annotation)">
+                            Open frame
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div @click="addAnnotationToExistingFrame(annotation)">
+                            Add to frame
+                        </div>
+                    </template>
                 </div>
-
             </q-card-section>
             <!--
             <template v-if="annotation.addingToExistingFrame">
@@ -92,7 +97,11 @@ export default {
         },
         clickedPosition() {
             return this.$store.state.clickedPosition
-        }
+        },
+        framesOpenInEditor() {
+            return this.$store.state.framesOpenInEditor
+        },
+
     },
     methods: {
         cancelAnnotation() {
@@ -109,6 +118,13 @@ export default {
             return this.getSnippets(annotation).map(s => s.text).join("")
         },
         openFrameOfAnnotation(annotation) {
+            //if annotation's frame is not yet in the list of frames being edited, add it
+            if (!(this.framesOpenInEditor.some(f => f.id == annotation.frame.id))) {
+                this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, annotation.frame]
+            }
+            this.$store.state.frameBeingEdited = annotation.frame
+        },
+        addAnnotationToExistingFrame(annotation) {
             //TODO
         }
     },

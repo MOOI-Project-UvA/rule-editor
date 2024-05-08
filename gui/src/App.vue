@@ -64,7 +64,6 @@ import TaskDefinitionView from "./views/TaskDefinitionView.vue";
 import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
-import { alertWidget } from "./helpers/alertWidget.js";
 export default {
   name: "app",
   data: () => ({

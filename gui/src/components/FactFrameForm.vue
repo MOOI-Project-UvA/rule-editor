@@ -21,7 +21,14 @@
           </q-btn>
         </div>
       </div>
-
+    </q-card-section>
+    <q-card-section>
+      <template v-if="sentences?.length > 0">
+        <SentenceList :sentences="sentences" />
+      </template>
+      <template v-else>
+        <div class="source-text">No source added yet</div>
+      </template>
     </q-card-section>
     <q-card-section>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
@@ -59,6 +66,7 @@
 <script>
 import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
+import SentenceList from "./SentenceList.vue"
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
@@ -73,6 +81,14 @@ export default {
     showComments: false
   }),
   computed: {
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments;
+    },
+    sentences() {
+      return this.sourceDocuments
+        .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
+        .flat()
+    },
     frame() {
       return this.$store.state.frameBeingEdited;
     },
@@ -119,7 +135,7 @@ export default {
       this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType
     }
   },
-  components: { BooleanConstructPanel, CommentsList }
+  components: { BooleanConstructPanel, CommentsList, SentenceList }
 }
 </script>
 

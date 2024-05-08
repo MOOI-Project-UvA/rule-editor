@@ -21,4 +21,14 @@ const colors = {
   claim_duty: "primary",
 };
 
-export { icons, colors };
+const hexColors = {
+  fact: "#1976D2",
+  agent: "#F2C037",
+  object: "#9C27B0",
+  action: "#26A69A",
+  duty: "#31CCEC",
+  act: "#1976D2",
+  claim_duty: "#1976D2",
+};
+
+export { icons, colors, hexColors };

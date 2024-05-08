@@ -11,7 +11,7 @@
                     </span>
                 </div>
             </q-card-section>
-            <template v-if="annotation.addingToExistingFrame">
+            <template v-if="addingAnnotationToExistingFrame">
                 <q-card-section>
                     <div class="message">Select existing frame</div>
                 </q-card-section>
@@ -32,8 +32,7 @@
                 </q-card-section>
                 <q-card-actions>
                     <div class="label">Or</div>
-                    <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
-                        :disabled="frames.length == 0">
+                    <q-btn @click="addingToExistingFrame" color="primary" :disabled="frames.length == 0">
                         Add to existing frame
                     </q-btn>
                 </q-card-actions>
@@ -65,10 +64,12 @@ export default {
             return this.$store.state.clickedPosition
         },
         snippetsForThisAnnotation() {
-            console.log("snippetsForThisAnnotation")
             return this.$store.state.sourceDocuments
                 .map(sourceDoc => sourceDoc.getSnippetsForAnnotation(this.annotation))
                 .flat()
+        },
+        addingAnnotationToExistingFrame() {
+            return this.$store.state.addingAnnotationToExistingFrame
         }
     },
     methods: {
@@ -79,6 +80,10 @@ export default {
         },
         cancelAnnotation() {
             this.$store.commit("setAnnotationBeingEdited", null)
+            this.$store.state.addingAnnotationToExistingFrame = false
+        },
+        addingToExistingFrame() {
+            this.$store.state.addingAnnotationToExistingFrame = true
         }
     },
 }

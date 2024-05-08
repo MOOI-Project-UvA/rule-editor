@@ -4,7 +4,7 @@ import { Snippet } from "./snippet";
 class Annotation {
   constructor() {
     this._id = uuid4() //unique ID
-    this._frame; //fact, act, or duty that is annotation is the source of
+    this._frame = null; //fact, act, or duty that is annotation is the source of
     this._addingToExistingFrame = false; //true if user wants to add this annotation to an existing frame
   }
 
