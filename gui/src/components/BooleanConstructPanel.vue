@@ -28,22 +28,11 @@
         <!-- buttons for changing operator and adding another child -->
 
         <!-- show options for boolean operator -->
-        <!-- <q-btn-group flat>
-                    <q-btn v-for="option in booleanOptions" size="sm"
-                        :color="booleanConstruct.operatorToJoinChildren == option.value ? 'primary' : 'grey'" dense
-                        @click="(event) => {
-                            event.stopPropagation()
-                            //set operator to clicked value
-                            booleanConstruct.operatorToJoinChildren = option.value
-                            //if this is the last child, add child
-                            if (i == booleanConstruct.children.length - 1) {
-                                addChild()
-                            }
-                        }">
-                        {{ option.label }}</q-btn>
-                </q-btn-group> -->
-
-        <q-btn-group class="q-ml-md q-my-xs" flat>
+        <q-btn-group
+          class="q-ml-md q-my-xs"
+          flat
+          v-if="i !== booleanConstruct.children.length - 1"
+        >
           <q-btn
             v-for="option in booleanOptions"
             size="sm"
@@ -59,20 +48,33 @@
                 event.stopPropagation();
                 //set operator to clicked value
                 booleanConstruct.operatorToJoinChildren = option.value;
-                booleanConstruct.operatorToJoinChildren = option.value;
-                //if this is the last child, add child and give focus to that child
-                if (i == booleanConstruct.children.length - 1) {
-                  addChild();
-                }
               }
             "
             :label="option.label"
           >
-            <q-tooltip class="text-subtitle2">
-              {{ option.description }}
-            </q-tooltip>
           </q-btn>
         </q-btn-group>
+        <!-- add a new operand -->
+
+        <q-btn
+          v-else
+          class="q-my-sm q-ml-md"
+          round
+          fab-mini
+          :ripple="{ center: true }"
+          color="primary"
+          size="xs"
+          icon="mdi-plus"
+          @click="
+            (event) => {
+              event.stopPropagation();
+              //if this is the last child, add child and give focus to that child
+              addChild();
+            }
+          "
+        >
+          <q-tooltip class="text-subtitle2"> Add new operand </q-tooltip>
+        </q-btn>
       </div>
       <div v-if="isBeingEdited" class="button-label">Select frame</div>
     </div>
