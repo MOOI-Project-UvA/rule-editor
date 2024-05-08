@@ -59,6 +59,7 @@
                 event.stopPropagation();
                 //set operator to clicked value
                 booleanConstruct.operatorToJoinChildren = option.value;
+                booleanConstruct.operatorToJoinChildren = option.value;
                 //if this is the last child, add child and give focus to that child
                 if (i == booleanConstruct.children.length - 1) {
                   addChild();
@@ -124,11 +125,12 @@ export default {
       { label: "OR", value: "or" },
       { label: "PLUS", value: "plus" },
       { label: "MINUS", value: "minus" },
-      { label: ">", value: "greater" },
-      { label: "<", value: "less" },
-      { label: "≥", value: "greater-equal" },
-      { label: "≤", value: "less-equal" },
-      { label: "=", value: "equal" },
+      { label: ">", value: "greaterThan" },
+      { label: "<", value: "lessThan" },
+      { label: "≥", value: "greaterThanOrEqualTo" },
+      { label: "≤", value: "lessThanOrEqualTo" },
+      { label: "=", value: "assign" },
+      { label: "==", value: "equals" },
       { label: "IF", value: "if" },
     ],
   }),
