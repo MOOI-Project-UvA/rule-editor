@@ -52,6 +52,9 @@
             "
             :label="option.label"
           >
+            <q-tooltip class="text-subtitle2">
+              {{ option.description }}
+            </q-tooltip>
           </q-btn>
         </q-btn-group>
         <!-- add a new operand -->
