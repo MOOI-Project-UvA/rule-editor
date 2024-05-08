@@ -43,17 +43,17 @@
                         {{ option.label }}</q-btn>
                 </q-btn-group> -->
 
-        <q-btn-group class="q-ml-md" flat>
+        <q-btn-group class="q-ml-md q-my-xs" flat>
           <q-btn
             v-for="option in booleanOptions"
             size="sm"
+            padding="xs md"
             :color="
               booleanConstruct.operatorToJoinChildren == option.value
                 ? 'primary'
                 : 'grey'
             "
             dense
-            push
             @click="
               (event) => {
                 event.stopPropagation();
@@ -66,8 +66,11 @@
                 }
               }
             "
+            :label="option.label"
           >
-            {{ option.label }}
+            <q-tooltip class="text-subtitle2">
+              {{ option.description }}
+            </q-tooltip>
           </q-btn>
         </q-btn-group>
       </div>
@@ -121,17 +124,29 @@ export default {
       { label: "Conditions", value: "conditions" },
     ],
     booleanOptions: [
-      { label: "AND", value: "and" },
-      { label: "OR", value: "or" },
-      { label: "PLUS", value: "plus" },
-      { label: "MINUS", value: "minus" },
-      { label: ">", value: "greaterThan" },
-      { label: "<", value: "lessThan" },
-      { label: "≥", value: "greaterThanOrEqualTo" },
-      { label: "≤", value: "lessThanOrEqualTo" },
-      { label: "=", value: "assign" },
-      { label: "==", value: "equals" },
-      { label: "IF", value: "if" },
+      { label: "AND", value: "and", description: "AND (boolean)" },
+      { label: "OR", value: "or", description: "OR (boolean)" },
+      { label: "PLUS", value: "plus", description: "Plus (arithmetic)" },
+      { label: "MINUS", value: "minus", description: "Minus (arithmetic)" },
+      {
+        label: ">",
+        value: "greaterThan",
+        description: "Greater than (comparison)",
+      },
+      { label: "<", value: "lessThan", description: "Less than (comparison)" },
+      {
+        label: "≥",
+        value: "greaterThanOrEqualTo",
+        description: "Greater than or Equal to (comparison)",
+      },
+      {
+        label: "≤",
+        value: "lessThanOrEqualTo",
+        description: "Less than or Equal to (comparison)",
+      },
+      { label: "=", value: "assign", description: "Assignment" },
+      { label: "==", value: "equals", description: "Equals (comparison)" },
+      { label: "IF", value: "if", description: "If function" },
     ],
   }),
   props: {
