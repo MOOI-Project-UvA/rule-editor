@@ -107,14 +107,14 @@ export default {
 .container-column {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 153px);
+  min-height: calc(100vh - 193px);
   height: auto;
 }
 
 .container-row {
   display: flex;
   flex-direction: row;
-  min-height: calc(100vh - 153px);
+  min-height: calc(100vh - 193px);
   height: auto;
 }
 
