@@ -17,14 +17,25 @@ export default {
     props: {
         sentences: Array
     },
+    computed: {
+        annotationBeingEdited() {
+            return this.$store.state.annotationBeingEdited
+        }
+    },
     methods: {
         getStyleForUnderlining,
         getStyleForLineSpacing,
         handleSelection(event) {
             const selection = window.getSelection()
             if (selection.toString().length > 0) {
-                let annotation = new Annotation();
-                this.$store.state.annotationBeingEdited = annotation
+                //if no annotation is open, create a new one, else use the existing one that is open
+                let annotation
+                if (this.annotationBeingEdited) {
+                    annotation = this.annotationBeingEdited
+                } else {
+                    annotation = new Annotation()
+                    this.$store.state.annotationBeingEdited = annotation
+                }
                 //get selection in terms of start/end sentences, snippets, and offsets
                 const selectionAsSnippets = getSelectionAsSnippets(selection, this.sentences)
                 //split snippets and return those that correspond with the selection

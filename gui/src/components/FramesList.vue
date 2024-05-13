@@ -13,8 +13,7 @@
                         <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
             frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(frameType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
+            !allowedSubTypes.includes(frameType.id)" />
                     </div>
                 </div>
                 <div v-if="'subTypes' in frameType">
@@ -31,8 +30,7 @@
                                 <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
             frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(subType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
+            !allowedSubTypes.includes(subType.id)" />
                             </div>
                         </div>
                     </div>
@@ -77,8 +75,8 @@ export default {
                 ? "Add to frame"
                 : "";
         },
-        annotationBeingEdited() {
-            return this.$store.state.annotationBeingEdited
+        annotationToBeAddedToExistingFrame() {
+            return this.$store.state.annotationToBeAddedToExistingFrame
         },
         addingAnnotationToExistingFrame() {
             return this.$store.state.addingAnnotationToExistingFrame
@@ -91,12 +89,11 @@ export default {
             console.log("this.annotationBeingEdited", this.annotationBeingEdited);
 
             if (
-                this.annotationBeingEdited &&
                 this.addingAnnotationToExistingFrame
             ) {
-                this.$store.state.annotationBeingEdited.frame = frame
+                this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
                 this.$store.state.addingAnnotationToExistingFrame = false;
-                this.$store.state.annotationBeingEdited = null;
+                this.$store.state.annotationToBeAddedToExistingFrame = null;
             } else if (
                 this.frameBeingEdited &&
                 this.frameBeingEdited.type.class == "relation" &&
@@ -111,7 +108,7 @@ export default {
                 this.$store.state.booleanConstructBeingEdited = null;
             } else {
                 console.log("setting frame being edited");
-                // it opens the frame form in the middle
+                //open the frame editing form
                 this.$store.state.frameBeingEdited = frame
                 this.$store.state.framesOpenInEditor.push(frame)
             }

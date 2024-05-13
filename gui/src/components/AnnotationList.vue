@@ -1,6 +1,6 @@
 <template>
     <!-- show panel if snippet is selected and contains annotations -->
-    <div id="annotation-list" v-if="selectedAnnotations.length > 0" :style="{
+    <div id="annotation-list" v-if="selectedSnippet" :style="{
         left: `${clickedPosition[0] - 50}px`,
         top: `${clickedPosition[1]}px`,
     }">
@@ -110,6 +110,9 @@ export default {
         deleteAnnotation(annotation) {
             //remove the annotaiton from the frame, and from the snippets
             this.selectedSourceDocument.deleteAnnotation(annotation)
+            if (this.selectedAnnotations.length == 0) {
+                this.$store.state.selectedSnippet = null
+            }
         },
         getSnippets(annotation) {
             return this.selectedSourceDocument ? this.selectedSourceDocument.getSnippetsForAnnotation(annotation) : []
@@ -123,9 +126,14 @@ export default {
                 this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, annotation.frame]
             }
             this.$store.state.frameBeingEdited = annotation.frame
+            //close annotation list panel
+            this.$store.state.selectedSnippet = null
         },
         addAnnotationToExistingFrame(annotation) {
-            //TODO
+            this.$store.state.annotationToBeAddedToExistingFrame = annotation
+            this.$store.state.addingAnnotationToExistingFrame = true
+            //close annotation list panel
+            this.$store.state.selectedSnippet = null
         }
     },
 }

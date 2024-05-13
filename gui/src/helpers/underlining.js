@@ -19,7 +19,6 @@ export function getStyleForUnderlining(snippet, sentence) {
     let backgroundStyle = "linear-gradient(180deg"
     annotationsInSentence.forEach((annotation, annotationNumber) => {
         let lineColor
-        console.log("annotationsInSentence", annotationsInSentence)
         if (snippet.annotations.some(a => a.id == annotation.id)) {
             if (annotation.frame) {
                 lineColor = annotation.frame.subType
@@ -38,8 +37,6 @@ export function getStyleForUnderlining(snippet, sentence) {
             + `, ${white} ${(annotationNumber * 2 + 1) * lineThickness}px`
     })
     backgroundStyle += ")"
-
-    console.log("snippet", snippet, "backgroundStyle", backgroundStyle)
 
     const backgroundSize = annotationsInSentence.length == 0
         ? 0
