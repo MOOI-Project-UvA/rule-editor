@@ -130,6 +130,7 @@ export default {
             }
         },
         toggleNegation() {
+            event.stopPropagation()
             this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
         },
         removeFrame() {
