@@ -29,7 +29,6 @@ export const frameTypes =
                     'class': 'fact',
                     'label': 'Object'
                 },
-
                 {
                     'id': 'duty',
                     'class': 'fact',

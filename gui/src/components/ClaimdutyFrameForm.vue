@@ -8,10 +8,8 @@
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>
     <q-card-section>
-      <template v-if="frame.sentences.length > 0">
-        <div v-for="sentence in frame.sentences">
-          <TextElement :textPiece="sentence" />
-        </div>
+      <template v-if="sentences?.length > 0">
+        <SentenceList :sentences="sentences" />
       </template>
       <template v-else>
         <div class="source-text">No source added yet</div>
@@ -32,12 +30,8 @@
           @click="frame.activeField = frame.activeField == 'holder' ? null : 'holder'" />
       </div>
     </q-card-section>
-    <q-card-section>
-      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
-        :disable="frame.sourceText.length == 0" />
-    </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
+      <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
       <q-btn color="primary" @click="saveFrame">Save</q-btn>
     </q-card-actions>
   </q-card>
@@ -48,7 +42,6 @@
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import TextElement from "./TextElement.vue"
 
 export default {
   emits: ["closed"],
@@ -60,12 +53,17 @@ export default {
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    // showFrameSource() {
-    //   return this.$store.state.showFrameSource
-    // }
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments;
+    },
+    sentences() {
+      return this.sourceDocuments
+        .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
+        .flat()
+    },
   },
   methods: {
-    closeForm() {
+    cancelFrame() {
       this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
@@ -79,7 +77,7 @@ export default {
     },
   },
   components: {
-    FactInputField, CommentsList, BooleanConstructPanel, TextElement
+    FactInputField, CommentsList, BooleanConstructPanel
   },
 };
 </script>

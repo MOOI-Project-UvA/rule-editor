@@ -36,8 +36,4 @@ export default {
     position: absolute;
     width: 240px;
 }
-
-.message {
-    /* font-weight: bold; */
-}
 </style>

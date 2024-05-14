@@ -40,28 +40,30 @@
 
                 <q-btn-group class="q-ml-md" flat>
                     <q-btn v-for="option in booleanOptions" size="sm"
-                        :color="booleanConstruct.operatorToJoinChildren == option.value ? 'primary' : 'grey'" dense @click="(event) => {
-                            event.stopPropagation()
-                            //set operator to clicked value
-                            booleanConstruct.operatorToJoinChildren = option.value
-                            //if this is the last child, add child and give focus to that child
-                            if (i == booleanConstruct.children.length - 1) {
-                                addChild()
-                            }
-                        }">
+                        :color="booleanConstruct.operatorToJoinChildren == option.value ? 'primary' : 'grey'" dense
+                        @click="(event) => {
+        event.stopPropagation()
+        //set operator to clicked value
+        booleanConstruct.operatorToJoinChildren = option.value
+        //if this is the last child, add child and give focus to that child
+        if (i == booleanConstruct.children.length - 1) {
+            addChild()
+        }
+    }">
                         {{ option.value }}
                     </q-btn>
                 </q-btn-group>
 
             </div>
             <div v-if="isBeingEdited" class="button-label">
-                Select frame
+                Select frame or create new frame from source
             </div>
         </div>
         <div class="col-1">
             <div><q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
             </div>
-            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square" @click="subdivide" />
+            <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square"
+                    @click="subdivide" />
             </div>
             <div v-if="booleanConstruct.parent"><q-btn size="sm" color="#007bc7" dense flat icon="mdi-close"
                     @click="deleteBooleanConstruct" /></div>

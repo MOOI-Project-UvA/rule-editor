@@ -70,41 +70,7 @@ class Act {
     get terminates() { return this._terminates }
     set terminates(terminates) { this._terminates = terminates }
 
-    //TODO these methods are also present in fact and claim-duty.
-    //maybe use a super-class 'frame' and add them there
-    get annotations() { return this._annotations }
-    addAnnotation(annotation) {
-        this._annotations = [...this._annotations, annotation]
-        annotation.frame = this
-    }
-    deleteAnnotation(annotation) {
-        const index = this._annotations.indexOf(annotation)
-        this._annotations.splice(index, 1)
-    }
-
-    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
-
-    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
-    getSentences(sourceDocs) {
-        const snippets = this._annotations.map(a => a.snippets).flat()
-        //group snippets according to document
-        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
-        console.log("snippetsPerDoc", snippetsPerDoc)
-        let sentences = []
-        Object.entries(snippetsPerDoc).forEach(([docId, snippetsInDoc]) => {
-            console.log("snippetsInDoc", snippetsInDoc)
-            //get sentence object for each snippet from the current document
-            const doc = sourceDocs.find(d => d.id == docId)
-            let sentencesForSnippets = snippetsInDoc
-                .map(snippet => doc.sentences.find(s => s.id == snippet.sentenceId))
-            sentencesForSnippets.sort((s1, s2) => s1.orderId - s2.orderId)
-            sentences = sentences.concat(sentencesForSnippets)
-        })
-        console.log("sentences", sentences)
-        return sentences
-    }
-
-    get allowedSubClassesForActiveField() {
+    get allowedSubTypesForActiveField() {
         switch (this._activeField) {
             case 'action':
                 return ['action']
@@ -115,9 +81,9 @@ class Act {
             case 'recipient':
                 return ['agent']
             case 'creates':
-                return ['agent', 'action', 'object', 'other']
+                return ['agent', 'action', 'object']
             case 'terminates':
-                return ['agent', 'action', 'object', 'other']
+                return ['agent', 'action', 'object']
             default:
                 return []
         }
@@ -149,42 +115,33 @@ class Act {
         }
     }
 
-
-
-
-    checkFrameExistance(act, element) {
-        const term = act._terminates.find((d) => act._id === element._id) ? true : false;
-        const creates = act._creates.find((d) => act._id === element._id) ? true : false;
-        const action = act._action !== null && act._action._id === element._id ? true : false;
-        const actor = act._actor !== null && act._actor._id == element._id
-            ? true
-            : false;
-        const object = act._object !== null && act._object._id == element._id
-            ? true
-            : false;
-        const precondition = act._precondition !== null && act._precondition._id == element._id
-            ? true
-            : false;
-        const recipient = (act._recipient !== null && act._recipient._id == element._id)
-            ? true
-            : false;
-
-        const exist = [
-            term,
-            creates,
-            action,
-            actor,
-            object,
-            precondition,
-            recipient,
-        ];
-
-        if (exist.some((d) => d)) {
-            act._highlight = false
-        } else {
-            act._highlight = true
+    //check if any of the roles has this frame, if so, remove it
+    deleteFrameFromRoles(frame) {
+        if (this._action && this._action.id == frame.id) {
+            this._action = null
         }
-        return exist.some((d) => d)
+        if (this._actor && this._actor.id == frame.id) {
+            this._actor = null
+        }
+        if (this._object && this._object.id == frame.id) {
+            this._object = null
+        }
+        if (this._recipient && this._recipient.id == frame.id) {
+            this._recipient = null
+        }
+
+
+        const indexCreates = this._creates.findIndex(f => f.id == frame.id)
+        if (indexCreates != -1) {
+            this._creates.splice(indexCreates, 1)
+        }
+        const indexTerminates = this._creates.findIndex(f => f.id == frame.id)
+        if (indexTerminates != -1) {
+            this._creates.splice(indexTerminates, 1)
+        }
+
+
+        //TODO boolean construct
     }
 
     // returns the ids of the containing facts

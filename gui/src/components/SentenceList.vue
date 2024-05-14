@@ -13,6 +13,7 @@
 import { getSelectionAsSnippets, splitAndReturnSelectedSnippets } from "../helpers/annotating.js"
 import { getStyleForUnderlining, getStyleForLineSpacing } from "../helpers/underlining.js"
 import { Annotation } from "../model/annotation";
+import { frameTypes } from "../model/frame";
 export default {
     props: {
         sentences: Array
@@ -20,6 +21,12 @@ export default {
     computed: {
         annotationBeingEdited() {
             return this.$store.state.annotationBeingEdited
+        },
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
         }
     },
     methods: {
@@ -34,7 +41,30 @@ export default {
                     annotation = this.annotationBeingEdited
                 } else {
                     annotation = new Annotation()
-                    this.$store.state.annotationBeingEdited = annotation
+                    //if user is creating a frame for a role, create fact immediately, without
+                    //showing the annotation panel
+                    if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation' &&
+                        this.frameBeingEdited.activeField) {
+                        console.log("this.frameBeingEdited.activeField", this.frameBeingEdited.activeField)
+                        const factFrameType = frameTypes.find(t => t.id == "fact")
+                        //if there is only one subtype allowed for this fact, assign that subtype to the frame
+                        const subTypeId = this.frameBeingEdited.allowedSubTypesForActiveField.length == 1
+                            ? this.frameBeingEdited.allowedSubTypesForActiveField[0] : null
+                        const subType = subTypeId ? factFrameType.subTypes.find(t => t.id == subTypeId) : null
+                        console.log("subType", subType, factFrameType)
+                        //store reference to the currently being edited frame
+                        const relationFrame = this.$store.state.frameBeingEdited
+                        this.$store.commit("addNewFrame", {
+                            frameType: factFrameType,
+                            annotation: annotation,
+                            subType: subType
+                        })
+                        relationFrame.addFrame(this.$store.state.frameBeingEdited)
+                        this.frameBeingEdited.activeField = null
+                    } else {
+                        //no role is selected, or role is booleanconstruct (that requires annotation panel)
+                        this.$store.state.annotationBeingEdited = annotation
+                    }
                 }
                 //get selection in terms of start/end sentences, snippets, and offsets
                 const selectionAsSnippets = getSelectionAsSnippets(selection, this.sentences)

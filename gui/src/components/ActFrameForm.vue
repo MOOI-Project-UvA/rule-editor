@@ -4,25 +4,11 @@
       <div class="float-right">
         <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments"></q-btn>
       </div>
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.act" label="Act" autogrow />
     </q-card-section>
     <q-card-section>
       <template v-if="sentences?.length > 0">
-        <!--<div v-for="sentence in sentences" class="row no-wrap justify-between items-center">
-          <TextElement :textPiece="sentence" />
-          <q-btn size="md" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
-            v-if="sentences.length > 0" :loading="sentence.loading" @click="sendDataToNlp(sentence)">
-            <q-tooltip anchor="bottom middle" class="text-subtitle2">
-              <span>Detect constituents of an act frame. <br />This feature is
-                still experimental, so use it with caution. <br />It is
-                recommended to use it only once per text snippet.</span>
-            </q-tooltip>
-            <template v-slot:loading>
-              <q-spinner-gears />
-            </template>
-</q-btn>
-</div>-->
         <SentenceList :sentences="sentences" />
       </template>
       <template v-else>
@@ -63,8 +49,7 @@
     if (index !== -1) {
       frame.creates.splice(index, 1);
     }
-  }
-    " @click="
+  }" @click="
     frame.activeField =
     frame.activeField == 'creates' ? null : 'creates'
     " />
@@ -83,13 +68,20 @@
       </div>
 
     </q-card-section>
-    <q-card-section>
+    <!-- <q-card-section>
       <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
         :disable="frame.annotations.length == 0" />
-    </q-card-section>
+    </q-card-section> -->
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="isExistingFrame">
+        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
+        <div class="message">Any changes have been saved</div>
+        <q-btn color="primary" @click="saveFrame">Close</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
+        <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => {
@@ -103,7 +95,6 @@ import FactInputField from "./FactInputField.vue";
 import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import TextElement from "./TextElement.vue";
 import ApiServices from "../services/ApiServices.js";
 import { Annotation } from "../model/annotation.js";
 import { Snippet } from "../model/snippet";
@@ -132,13 +123,22 @@ export default {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
+    frames() {
+      return this.$store.state.frames;
+    },
+    isExistingFrame() {
+      return this.frames.some((f) => f.id == this.frame.id)
+    },
   },
   methods: {
-    closeForm() {
+    cancelFrame() {
       this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited");
+    },
+    deleteFrame() {
+      this.$store.commit("removeFrame", this.frame)
     },
     toggleComments() {
       this.showComments = !this.showComments;
@@ -146,6 +146,7 @@ export default {
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
+
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
@@ -222,7 +223,6 @@ export default {
     SentenceList,
     CommentsList,
     BooleanConstructPanel,
-    TextElement,
   },
 };
 </script>

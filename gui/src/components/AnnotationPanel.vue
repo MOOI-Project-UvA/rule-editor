@@ -64,7 +64,7 @@ export default {
     methods: {
         frameTypeButtonClicked(frameType) {
             //create new frame, set annotation's frame to this new frame
-            this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation })
+            this.$store.commit("addNewFrame", { frameType: frameType, annotation: this.annotation, subType: null })
             this.$store.commit("setAnnotationBeingEdited", null)
         },
         cancelAnnotation() {

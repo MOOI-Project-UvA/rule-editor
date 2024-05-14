@@ -12,8 +12,7 @@
         )" @click="onClick(frame)">
                         <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(frameType.id)" />
+            frameBeingEdited.activeField != null" />
                     </div>
                 </div>
                 <div v-if="'subTypes' in frameType">
@@ -29,8 +28,8 @@
         )" @click="onClick(frame)">
                                 <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(subType.id)" />
+            frameBeingEdited.activeField != null &&
+            !frameBeingEdited.allowedSubTypesForActiveField.includes(subType.id)" />
                             </div>
                         </div>
                     </div>
@@ -62,24 +61,14 @@ export default {
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;
         },
-        allowedSubTypes() {
-            console.log("frameBeingEdited", this.frameBeingEdited);
-            return this.$store.state.frameBeingEdited &&
-                this.frameBeingEdited.type.class == "relation"
-                ? this.frameBeingEdited.allowedSubClassesForActiveField
-                : [];
-        },
-        message() {
-            return this.frameBeingEdited &&
-                ["act", "claim_duty"].includes(this.frameBeingEdited)
-                ? "Add to frame"
-                : "";
-        },
         annotationToBeAddedToExistingFrame() {
             return this.$store.state.annotationToBeAddedToExistingFrame
         },
         addingAnnotationToExistingFrame() {
             return this.$store.state.addingAnnotationToExistingFrame
+        },
+        framesOpenInEditor() {
+            return this.$store.state.framesOpenInEditor
         }
     },
     methods: {
@@ -108,9 +97,11 @@ export default {
                 this.$store.state.booleanConstructBeingEdited = null;
             } else {
                 console.log("setting frame being edited");
-                //open the frame editing form
                 this.$store.state.frameBeingEdited = frame
-                this.$store.state.framesOpenInEditor.push(frame)
+                //if the frame is not yet in the list of edited frames, add it
+                if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {
+                    this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, frame]
+                }
             }
         },
     },

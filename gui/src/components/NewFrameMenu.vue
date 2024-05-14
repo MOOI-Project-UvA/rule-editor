@@ -28,6 +28,7 @@ export default {
       this.$store.commit("addNewFrame", {
         frameType: frameType,
         annotation: null,
+        subType: null
       });
     },
     saveInterpretationClicked() {

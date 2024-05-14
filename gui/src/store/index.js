@@ -40,7 +40,7 @@ const store = createStore({
     //add new frame to list of frames being edited. does not permanently store
     //the frame to the frames list yet. storing permanently is done when the save
     //button in the frame editor is clicked.
-    addNewFrame(state, { frameType, annotation }) {
+    addNewFrame(state, { frameType, annotation, subType }) {
       let frame;
       switch (frameType.class) {
         case "fact":
@@ -58,11 +58,13 @@ const store = createStore({
           break;
       }
       frame.type = frameType;
+      frame.subType = subType ? subType : null
       state.frameBeingEdited = frame;
       state.framesOpenInEditor.push(frame)
       if (annotation) {
         annotation.frame = frame
       }
+
     },
     saveFrameBeingEdited(state) {
       //if frameBeingEdited is new, add it to the list
@@ -118,13 +120,34 @@ const store = createStore({
       state.annotationBeingEdited = annotation;
     },
     removeFrame(state, frame) {
-      if (frame == state.frameBeingEdited) {
-        state.frameBeingEdited = null;
+      //check if frame in edited list
+      const openFrameIndex = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
+      if (openFrameIndex != -1) {
+        state.framesOpenInEditor.splice(openFrameIndex, 1);
+        state.framesOpenInEditor = [...state.framesOpenInEditor]
+      }
+      if (state.frameBeingEdited.id == frame.id) {
+        const nrFramesOpen = state.framesOpenInEditor.length
+        state.frameBeingEdited = nrFramesOpen > 0
+          ? state.framesOpenInEditor[nrFramesOpen - 1]
+          : null
         state.booleanConstructBeingEdited = null;
         state.showFrameSource = null;
       }
-      const index = state.frames.indexOf(frame);
-      state.frames.splice(index, 1);
+      const frameIndex = state.frames.findIndex(f => f.id == frame.id);
+      state.frames.splice(frameIndex, 1);
+      //remove frame from any attribute of frames of type 'relation'.
+      //those frames can be in list of edited frames as well.
+      state.frames.concat(state.framesOpenInEditor).filter(f => f.type.class == "relation").forEach(relation => {
+        relation.deleteFrameFromRoles(frame)
+      })
+
+      //remove frame from its annotations
+      state.sourceDocuments.forEach(doc => {
+        doc.getAnnotationsForFrame(frame).forEach(annotation => {
+          annotation.frame = null
+        })
+      })
     },
     removeAtomicFact(state, frame) {
       // remove the fact from an act or a complexFact
@@ -293,64 +316,6 @@ const store = createStore({
           checkedSentenceIds: d.checkedSentenceIds,
         });
       });
-    },
-    // gets the id of the hovered frame
-    // and updates the frames array, which contain
-    highlightElements(context, hoveredElement) {
-      // array with ids of the related elements ...
-      let relatedIds = new Array(hoveredElement._id);
-      // Case 1: Hovering over an atomic fact, higlight the related parents
-      if (
-        hoveredElement._type === "fact" &&
-        !hoveredElement._booleanConstruct
-      ) {
-        // check if acts contain this element
-        context.state.frames
-          .filter((d) => d._type === "act")
-          .forEach((d) =>
-            d.checkFrameExistance(d, hoveredElement)
-              ? relatedIds.push(d._id)
-              : null,
-          );
-        // console.log("actIds without contexts:", relatedIds)
-
-        // check if contexts contain this element
-        context.state.frames
-          .filter(
-            (d) =>
-              d._type === "fact" &&
-              d._booleanConstruct &&
-              d._id !== hoveredElement._id,
-          )
-          .forEach((d) =>
-            d.checkFrameExistance(hoveredElement)
-              ? relatedIds.push(d._id)
-              : null,
-          );
-        // console.log("actIds with contexts:", relatedIds)
-        // console.log("context.state.frames: ", context.state.frames)
-      }
-      // Case 2: if the hovered element is an Act, highlight the corresponding facts
-      if (hoveredElement._type === "act") {
-        relatedIds = relatedIds.concat(hoveredElement.childrenIds);
-      }
-      // Case 3: if the hovered element is a context, highlight the corresponding facts
-      // check if a booleanConstruct could contain acts or other complex structures.
-      if (hoveredElement._type === "fact" && hoveredElement._booleanConstruct) {
-        // give me all the children
-        relatedIds = relatedIds.concat(hoveredElement.retrieveChildrenIds);
-      }
-
-      // change the transparecy of the non-related atomic facts
-      context.state.frames.forEach((d) => {
-        return relatedIds.includes(d._id)
-          ? (d._highlight = false)
-          : (d._highlight = true);
-      });
-    },
-    // Mouseout restore
-    unhighlightElements(context) {
-      context.state.frames.forEach((d) => (d._highlight = false));
     },
   },
 });

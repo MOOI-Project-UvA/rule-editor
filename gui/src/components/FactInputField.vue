@@ -4,13 +4,15 @@
       <q-btn class="button" round :color="active ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"
         @click="$emit('click')" />
       <span>{{ label }}</span>
-      
+
     </div>
 
     <div class="chips">
-      <FrameChip v-for="fact in facts" :frame="fact" removable functionality="editor-form"
-        @remove="$emit('factRemoveClicked', fact)" />
-        <div v-if="active" class="button-label">Select frame</div>
+      <div class="chip" v-for="fact in facts">
+        <FrameChip :frame="fact" @click="onClick(fact)" />
+        <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="$emit('factRemoveClicked', fact)" />
+      </div>
+      <div v-if="active" class="button-label">Select existing frame or create frame from source</div>
     </div>
   </div>
 </template>
@@ -36,6 +38,20 @@ export default {
   emits: ['click', 'factRemoveClicked'],
   components: {
     FrameChip
+  },
+  computed: {
+    framesOpenInEditor() {
+      return this.$store.state.framesOpenInEditor
+    }
+  },
+  methods: {
+    onClick(fact) {
+      //add to list of edited frames, if not yet in it
+      if (!(this.framesOpenInEditor.some(f => f.id == fact.id))) {
+        this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, fact]
+      }
+      this.$store.state.frameBeingEdited = fact
+    }
   }
 }
 </script>
@@ -61,5 +77,10 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+
+.chip {
+  display: flex;
+  flex-direction: row;
 }
 </style>
