@@ -89,7 +89,6 @@ export default {
   },
   // update component lifecycle hook
   updated() {
-    console.log("annotation", this.annotationß);
     if (this.annotation) {
       this.coordY = this.determineCoordY(
         this.annotation,
