@@ -93,16 +93,6 @@
         style="padding-top: 1px; padding-bottom: 1px"
       >
         <load-save-interpretation-banner></load-save-interpretation-banner>
-        <!--        <a :href="hash" target="_blank">{{ hash }}</a-->
-        <!--        ><br />-->
-        <!--        <a :href="context" target="_blank">{{ context }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank">{{ head }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank" :href="repo">{{ repo }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank" :href="branch">{{ branch }}</a-->
-        <!--        ><br />-->
       </q-banner>
     </template>
   </q-stepper>
