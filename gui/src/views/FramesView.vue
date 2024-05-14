@@ -2,7 +2,6 @@
   <q-card flat bordered class="my-card q-ma-sm">
     <!-- card title section -->
     <div :class="sourceViewIsCollapsed ? 'container-row' : 'container-column'">
-
       <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }">
         <div class="height-content row q-pa-sm">
           <div class="col-1 text-bold">Frames</div>
@@ -11,37 +10,44 @@
           </div>
           <div class="col-1">
             <q-avatar class="float-right" size="lg">
-              <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
+              <q-icon
+                name="mdi-information-outline"
+                class="cursor-pointer"
+              ></q-icon>
               <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
                 <div style="max-width: 300px">
-                  In this view, you can see the annotations made in the source view.
-                  The annotations are facts and are grouped by subtype. By clicking
-                  on a fact, you can add them to complex facts, acts and/or
-                  claim-duties (right view).
+                  In this view, you can see the annotations made in the source
+                  view. The annotations are facts and are grouped by subtype. By
+                  clicking on a fact, you can add them to complex facts, acts
+                  and/or claim-duties (right view).
                 </div>
               </q-tooltip>
             </q-avatar>
           </div>
         </div>
 
-        <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
+        <div
+          :class="{ 'height-fill-available': !sourceViewIsCollapsed }"
+          class="q-pa-sm"
+        >
           <FramesList />
         </div>
       </div>
 
-
-      <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
+      <div
+        v-if="frameBeingEdited"
+        :class="{ 'height-content': !sourceViewIsCollapsed }"
+        class="frame-editor-panel"
+      >
         <FrameEditorPanel />
       </div>
     </div>
-
   </q-card>
 </template>
 
 <script>
-
 import NewFrameMenu from "../components/NewFrameMenu.vue";
-import FramesList from "../components/FramesList.vue"
+import FramesList from "../components/FramesList.vue";
 import FrameEditorPanel from "../components/FrameEditorPanel.vue";
 import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
@@ -54,7 +60,7 @@ export default {
   }),
   computed: {
     sourceViewIsCollapsed() {
-      return this.$store.state.sourceViewIsCollapsed
+      return this.$store.state.sourceViewIsCollapsed;
     },
     frames() {
       return this.$store.state.frames;
@@ -86,14 +92,14 @@ export default {
   components: {
     FramesList,
     NewFrameMenu,
-    FrameEditorPanel
+    FrameEditorPanel,
   },
 
   watch: {
     sourceViewIsCollapsed() {
-      console.log("sourceViewIsCollapsed", this.sourceViewIsCollapsed)
-    }
-  }
+      console.log("sourceViewIsCollapsed", this.sourceViewIsCollapsed);
+    },
+  },
 };
 </script>
 
@@ -101,13 +107,15 @@ export default {
 .container-column {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 140px);
+  min-height: calc(100vh - 193px);
+  height: auto;
 }
 
 .container-row {
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 140px);
+  min-height: calc(100vh - 193px);
+  height: auto;
 }
 
 .height-content {
