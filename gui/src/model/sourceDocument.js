@@ -1,15 +1,15 @@
 import { Sentence } from "./sentence.js"
 
 export class SourceDocument {
-    constructor(chopperDocument, title, selectedSentenceIds) {
-        console.log("selectedSentenceIds", selectedSentenceIds)
+    constructor(chopperDocument, title) {//, selectedSentenceIds) {
+        //console.log("selectedSentenceIds", selectedSentenceIds)
         this._id = chopperDocument['@id'];
         this._title = title
         //sentences are the leaf elements of the document.
         //keep only those that are selected by the user
         //keep only those that have non-empty content
         const selectedLeafElements = getLeafs(chopperDocument)
-            .filter(l => selectedSentenceIds.includes(l.id))
+            //.filter(l => selectedSentenceIds.includes(l.id))
             .filter(l => l.content.length > 0)
         this._sentences = selectedLeafElements.map(element => new Sentence(element, this))
     }

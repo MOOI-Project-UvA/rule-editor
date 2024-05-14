@@ -2,7 +2,7 @@
 <template>
     <div id="adding-annotation-panel" v-if="addingAnnotationToExistingFrame" :style="{
         left: '10px',
-        top: '10px',
+        bottom: '10px',
     }">
         <q-card bordered>
             <q-card-section>

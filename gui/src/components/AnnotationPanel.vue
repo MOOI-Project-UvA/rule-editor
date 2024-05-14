@@ -1,7 +1,11 @@
 <template>
-    <div id="annotation-panel" v-if="annotation" :style="{
+    <!-- <div id="annotation-panel" v-if="annotation" :style="{
         left: clickedPosition[0] + 'px',
         top: clickedPosition[1] + 'px',
+    }"> -->
+    <div id="annotation-panel" v-if="annotation" :style="{
+        left: '10px',
+        bottom: '10px',
     }">
         <q-card bordered>
             <q-card-section>

@@ -82,8 +82,8 @@ export default {
 
   mounted() {
     //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
-    this.step = 3
-    this.$store.dispatch("loadInterpretationForDebugging")
+    // this.step = 3
+    // this.$store.dispatch("loadInterpretationForDebugging")
     // const urlToRender = `https://${this.repo.split(":").join("/")}/-/tree/${this.branch
     //   }`;
     // const commitUrl = `https://${this.repo.split(":").join("/")}/-/commit/${this.hash

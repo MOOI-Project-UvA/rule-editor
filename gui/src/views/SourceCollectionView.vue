@@ -32,27 +32,26 @@
       <div id="source-collection-card-content">
         <!-- the retrieved legal text will be shown here -->
         <div>
-          <q-splitter v-model="splitterModel" class="q-mt-lg">
-            <template v-slot:before>
-              <q-tabs v-model="tab" vertical shrink dense class="text-grey" active-color="primary"
-                indicator-color="primary">
-                <q-tab v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex"
-                  icon="mdi-book-outline" :label="filterNames(sourceDocument.title)" />
-              </q-tabs>
-            </template>
-            <template v-slot:after>
+          <!-- <q-splitter v-model="splitterModel" class="q-mt-lg">
+            <template v-slot:before> -->
+          <q-tabs v-model="tab" vertical shrink dense class="text-grey" active-color="primary"
+            indicator-color="primary">
+            <q-tab v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex"
+              icon="mdi-book-outline" :label="filterNames(sourceDocument.title)" />
+          </q-tabs>
+          <!-- </template>
+<template v-slot:after>
               <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up">
                 <q-tab-panel v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex">
                   <q-card flat square>
                     <q-card-section class="q-pt-none expansion-items">
-                      <!-- show recursively all text leafs in the document tree -->
                       <ListComponent :textPiece="sourceDocument.sentences" :docId="docIndex" />
                     </q-card-section>
                   </q-card>
                 </q-tab-panel>
               </q-tab-panels>
             </template>
-          </q-splitter>
+</q-splitter>-->
         </div>
       </div>
       <!--  action section  -->
@@ -60,7 +59,8 @@
         <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')">Back</q-btn>
         <q-space></q-space>
 
-        <q-btn type="submit" color="primary" @click="storeSelectSources" :disable="!anyCheckedSentences">Continue</q-btn>
+        <q-btn type="submit" color="primary" @click="storeSelectSources"
+          :disable="!anyCheckedSentences">Continue</q-btn>
       </q-card-actions>
     </q-card>
   </div>
