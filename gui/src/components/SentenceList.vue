@@ -45,13 +45,11 @@ export default {
                     //showing the annotation panel
                     if (this.frameBeingEdited && this.frameBeingEdited.type.class == 'relation' &&
                         this.frameBeingEdited.activeField) {
-                        console.log("this.frameBeingEdited.activeField", this.frameBeingEdited.activeField)
                         const factFrameType = frameTypes.find(t => t.id == "fact")
                         //if there is only one subtype allowed for this fact, assign that subtype to the frame
                         const subTypeId = this.frameBeingEdited.allowedSubTypesForActiveField.length == 1
                             ? this.frameBeingEdited.allowedSubTypesForActiveField[0] : null
                         const subType = subTypeId ? factFrameType.subTypes.find(t => t.id == subTypeId) : null
-                        console.log("subType", subType, factFrameType)
                         //store reference to the currently being edited frame
                         const relationFrame = this.$store.state.frameBeingEdited
                         this.$store.commit("addNewFrame", {
@@ -83,7 +81,6 @@ export default {
                 this.$store.state.selectedSnippet = clickedSnippet
             }
             this.$store.state.clickedPosition = [event.clientX, event.clientY]
-            console.log("this.sentences", this.sentences)
         },
     },
 }

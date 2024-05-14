@@ -6,12 +6,12 @@
             <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
             <template v-if="booleanConstruct.frame">
                 <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
-                <div>
-                    <!--<q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
+                <div class="row-container">
+                    <!-- <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
                     :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
                     @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>-->
-                    <FrameChip :frame="booleanConstruct.frame" :disable="false" :removable="true"
-                        functionality="editor-form" @remove="removeChipFromContext" />
+                    <FrameChip :frame="booleanConstruct.frame" :disable="false" />
+                    <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="removeFrame" />
                 </div>
 
             </template>
@@ -59,7 +59,7 @@
                 Select frame or create new frame from source
             </div>
         </div>
-        <div class="col-1">
+        <div class="col-1 row-container">
             <div><q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
             </div>
             <div><q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square"
@@ -117,7 +117,6 @@ export default {
             this.booleanConstruct.subdivide()
         },
         addChild() {
-            console.log("booleanConstruct adding child")
             const newChild = this.booleanConstruct.addEmptyChild()
             //set focus to new child
             this.$store.state.booleanConstructBeingEdited = newChild
@@ -133,7 +132,7 @@ export default {
         toggleNegation() {
             this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
         },
-        removeChipFromContext() {
+        removeFrame() {
             this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
         },
         deleteBooleanConstruct(event) {
@@ -143,7 +142,6 @@ export default {
             if (this.booleanConstruct.parent) {
                 this.booleanConstruct.delete()
             } else {
-                console.log("no parent")
                 this.booleanConstruct.clean()
             }
         }
@@ -192,5 +190,10 @@ export default {
     font-size: 9pt;
     margin-bottom: 2px;
     color: #d42d19;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
 }
 </style>

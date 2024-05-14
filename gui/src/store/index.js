@@ -64,7 +64,10 @@ const store = createStore({
       if (annotation) {
         annotation.frame = frame
       }
-
+      if (state.booleanConstructBeingEdited) {
+        state.booleanConstructBeingEdited.frame = frame
+        state.booleanConstructBeingEdited = null
+      }
     },
     saveFrameBeingEdited(state) {
       //if frameBeingEdited is new, add it to the list

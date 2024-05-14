@@ -16,55 +16,15 @@
                             </div>
                         </q-tooltip>
                     </div>
-                    <div @click="deleteAnnotation(annotation)">
-                        Delete
-                    </div>
+                    <q-btn color="negative" flat @click="deleteAnnotation(annotation)">Delete</q-btn>
                     <template v-if="annotation.frame">
-                        <div @click="openFrameOfAnnotation(annotation)">
-                            Open frame
-                        </div>
+                        <q-btn flat @click="openFrameOfAnnotation(annotation)">Open frame</q-btn>
                     </template>
                     <template v-else>
-                        <div @click="addAnnotationToExistingFrame(annotation)">
-                            Add to frame
-                        </div>
+                        <q-btn flat @click="addAnnotationToExistingFrame(annotation)">Add to frame</q-btn>
                     </template>
                 </div>
             </q-card-section>
-            <!--
-            <template v-if="annotation.addingToExistingFrame">
-                <q-card-section>
-                    <div class="message">Select existing frame</div>
-                </q-card-section>
-            </template>
-<template v-else>
-                <q-card-section>
-                    <template v-if="annotation.frame">
-                        <div class="label">Change type of fact frame</div>
-                    </template>
-<template v-else>
-                        <div class="label">Create new frame</div>
-                    </template>
-<div>
-    <q-btn v-for="frameType in frameTypes" class="q-mr-sm" :label="frameType.label"
-        :color="(!annotation.frame || annotation.frame.type == frameType) ? colors[frameType.id] : 'grey-6'"
-        @click="frameTypeButtonClicked(frameType)" />
-</div>
-</q-card-section>
-<q-card-actions>
-    <div class="label">Or</div>
-    <template v-if="annotation.frame">
-                        <q-btn @click="removeAnnotation" color="negative">Remove annotation</q-btn>
-                    </template>
-    <template v-else>
-                        <q-btn @click="annotation.addingToExistingFrame = true" color="primary"
-                            :disabled="frames.length == 0">
-                            Add to existing frame
-                        </q-btn>
-                    </template>
-</q-card-actions>
-</template>-->
-
             <q-card-actions>
                 <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
             </q-card-actions>
@@ -161,5 +121,6 @@ export default {
     display: grid;
     grid-template-columns: auto max-content max-content;
     column-gap: 5px;
+    align-items: center;
 }
 </style>

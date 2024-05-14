@@ -89,7 +89,7 @@ export class BooleanConstruct {
     set isNegated(isNegated) { this._isNegated = isNegated }
 
     removeFrame(frame) {
-        if (this._frame == frame) {
+        if (this._frame.id == frame.id) {
             this._frame = null
             //remove itself from the children of the parent, unless
             //the parent is the top of the tree, and this is its last child

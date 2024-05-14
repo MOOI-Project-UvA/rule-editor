@@ -69,6 +69,9 @@ export default {
         },
         framesOpenInEditor() {
             return this.$store.state.framesOpenInEditor
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
         }
     },
     methods: {
