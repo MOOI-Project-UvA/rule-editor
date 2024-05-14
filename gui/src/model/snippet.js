@@ -27,6 +27,9 @@ export class Snippet {
 
     toFlatObject() {
         return {
+            documentId: this.sentence.sourceDocument.id,
+            sentenceId: this.sentence.id,
+            characterRange: [],
             text: this.text,
         };
     }

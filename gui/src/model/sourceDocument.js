@@ -35,7 +35,7 @@ export class SourceDocument {
             .flat()
             .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index)
 
-        return annotations
+        return annotations.filter(a => a.frame.id == frame.id)
     }
 
     deleteAnnotationsForFrame(frame) {

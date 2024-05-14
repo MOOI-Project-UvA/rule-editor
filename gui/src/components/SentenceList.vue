@@ -83,6 +83,7 @@ export default {
                 this.$store.state.selectedSnippet = clickedSnippet
             }
             this.$store.state.clickedPosition = [event.clientX, event.clientY]
+            console.log("this.sentences", this.sentences)
         },
     },
 }

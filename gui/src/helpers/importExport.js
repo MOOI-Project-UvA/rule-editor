@@ -6,21 +6,27 @@ import { store } from '../store/index.js'
 
 
 function convertInterpretationToJson(frames, sourceDocuments) {
-    // console.log("saving interpretation");
-    //   //convert frames to json string
-    //   //replace object references by id's
-    //   console.log("frames", context.state.frames);
-    //   const string = JSON.stringify(
-    //     context.state.frames.map((f) => f.toFlatObject()),
-    //   );
     const sourceDocsString = sourceDocuments.map(d => ({
         id: d.id,
-        checkedSentenceIds: d.sentences.filter(s => s.checked).map(s => s.id)
+        checkedSentenceIds: d.sentences.map(s => s.id)
     }))
-    const framesString = frames.map((f) => f.toFlatObject())
+    const framesFlat = frames.map((f) => f.toFlatObject())
+    //add annotations per frame
+    framesFlat.forEach(frame => {
+        let annotations = []
+        sourceDocuments.forEach(doc => {
+            const annotationsForFrame = doc.getAnnotationsForFrame(frame)
+            annotationsForFrame.forEach(a => {
+                annotations.push({
+                    "snippets": doc.getSnippetsForAnnotation(a).map(s => s.toFlatObject())
+                })
+            })
+        })
+        frame.annotations = annotations
+    })
     return {
         sourceDocs: sourceDocsString,
-        frames: framesString
+        frames: framesFlat
     }
 }
 

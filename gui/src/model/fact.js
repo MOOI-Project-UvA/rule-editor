@@ -73,7 +73,6 @@ export class Fact {
             fact: this.fact,
             typeId: this.type.id,
             subTypeId: this.subType ? this.subType.id : null,
-            annotations: this.annotations.map(a => a.toFlatObject()),
             comments: this.comments,
             isComplex: this.isComplex,
             subdivision: this.subdivision.toFlatObject()

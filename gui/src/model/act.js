@@ -174,7 +174,6 @@ class Act {
             creates: this.creates.map(f => f.id),
             terminates: this.terminates.map(f => f.id),
             comments: this.comments,
-            annotations: this.annotations.map(a => a.toFlatObject())
         }
     }
 
