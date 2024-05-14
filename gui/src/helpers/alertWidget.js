@@ -35,7 +35,7 @@ export const alertWidget = (type, message) => {
     case "welcome":
       Notify.create({
         message: message,
-        color: "primary",
+        color: "blue-grey-8",
         icon: "mdi-human-greeting",
         position: "top",
         html: true,
