@@ -31,8 +31,15 @@
       </div>
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="isExistingFrame">
+        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
+        <div class="message">Any changes have been saved</div>
+        <q-btn color="primary" @click="saveFrame">Close</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
+        <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -42,6 +49,7 @@
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+import SentenceList from "./SentenceList.vue";
 
 export default {
   emits: ["closed"],
@@ -61,13 +69,24 @@ export default {
         .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
         .flat()
     },
+    frames() {
+      return this.$store.state.frames;
+    },
+    isExistingFrame() {
+      return this.frames.some((f) => f.id == this.frame.id)
+    },
   },
   methods: {
     cancelFrame() {
+      this.frame.activeField = null
       this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
-      this.$store.commit("saveFrameBeingEdited")
+      this.frame.activeField = null
+      this.$store.commit("saveFrameBeingEdited");
+    },
+    deleteFrame() {
+      this.$store.commit("removeFrame", this.frame)
     },
     toggleComments() {
       this.showComments = !this.showComments
@@ -77,7 +96,7 @@ export default {
     },
   },
   components: {
-    FactInputField, CommentsList, BooleanConstructPanel
+    FactInputField, CommentsList, BooleanConstructPanel, SentenceList
   },
 };
 </script>

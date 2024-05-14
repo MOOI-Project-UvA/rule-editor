@@ -132,9 +132,11 @@ export default {
   },
   methods: {
     cancelFrame() {
+      this.frame.activeField = null
       this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
+      this.frame.activeField = null
       this.$store.commit("saveFrameBeingEdited");
     },
     deleteFrame() {

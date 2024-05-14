@@ -139,8 +139,6 @@ class Act {
         if (indexTerminates != -1) {
             this._creates.splice(indexTerminates, 1)
         }
-
-
         //TODO boolean construct
     }
 
@@ -191,11 +189,6 @@ class Act {
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
         this._comments = frameData.comments
-        frameData.annotations.forEach(a => {
-            let annotation = new Annotation()
-            annotation.fromFlatObject(a)
-            this.addAnnotation(annotation)
-        })
     }
 }
 

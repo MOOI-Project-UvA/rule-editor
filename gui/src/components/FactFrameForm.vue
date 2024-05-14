@@ -36,11 +36,11 @@
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col q-gutter-sm">
         <q-checkbox size="sm" v-model="frame.isComplex" label="Fact is subdivided" />
       </div>
-    </div>
+    </div> -->
     <q-card-section v-if="frame.isComplex">
       <div class="label">Subdivision</div>
       <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />

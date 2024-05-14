@@ -12,7 +12,8 @@
         <FrameChip :frame="fact" @click="onClick(fact)" />
         <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="$emit('factRemoveClicked', fact)" />
       </div>
-      <div v-if="active" class="button-label">Select existing frame or create frame from source</div>
+      <div v-if="active && facts.length == 0" class="button-label">Select existing frame or create frame from source
+      </div>
     </div>
   </div>
 </template>
