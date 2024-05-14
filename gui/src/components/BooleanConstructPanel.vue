@@ -50,8 +50,13 @@
             addChild()
         }
     }">
-                        {{ option.value }}
+                        {{ option.label }}
+                        <q-tooltip class="text-subtitle2">
+                            {{ option.description }}
+                        </q-tooltip>
                     </q-btn>
+
+
                 </q-btn-group>
 
             </div>
@@ -84,10 +89,36 @@ export default {
             { label: "Object", value: "object" },
             { label: "Conditions", value: "conditions" }
         ],
+        // booleanOptions: [
+        //     { label: 'AND', value: 'and' },
+        //     { label: 'OR', value: 'or' }
+        // ],
         booleanOptions: [
-            { label: 'AND', value: 'and' },
-            { label: 'OR', value: 'or' }
-        ]
+            { label: "AND", value: "and", description: "AND (boolean)" },
+            { label: "OR", value: "or", description: "OR (boolean)" },
+            { label: "PLUS", value: "plus", description: "Plus (arithmetic)" },
+            { label: "MINUS", value: "minus", description: "Minus (arithmetic)" },
+            {
+                label: ">",
+                value: "greaterThan",
+                description: "Greater than (comparison)",
+            },
+            { label: "<", value: "lessThan", description: "Less than (comparison)" },
+            {
+                label: "≥",
+                value: "greaterThanOrEqualTo",
+                description: "Greater than or Equal to (comparison)",
+            },
+            {
+                label: "≤",
+                value: "lessThanOrEqualTo",
+                description: "Less than or Equal to (comparison)",
+            },
+            { label: "=", value: "assign", description: "Assignment" },
+            { label: "==", value: "equals", description: "Equals (comparison)" },
+            { label: "IF", value: "if", description: "If function" },
+        ],
+
     }),
     props: {
         booleanConstruct: Object
