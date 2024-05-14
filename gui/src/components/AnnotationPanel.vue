@@ -89,11 +89,13 @@ export default {
   },
   // update component lifecycle hook
   updated() {
+    console.log("annotation", this.annotationß);
     if (this.annotation) {
-      [this.coordX, this.coordY] = this.determineCoords(
+      this.coordY = this.determineCoordY(
         this.annotation,
         this.$refs.annotationPanel.clientHeight,
       );
+      this.coordX = this.determineCoordX(this.annotation);
     }
   },
   methods: {
@@ -123,16 +125,19 @@ export default {
       this.annotation.frame.removeAnnotation(this.annotation);
       this.$store.commit("setAnnotationBeingEdited", null);
     },
-    determineCoords(annotation, componentsHeight) {
+    determineCoordX(annotation) {
+      return window.innerWidth - annotation.positionOnScreen[0] > 440
+        ? annotation.positionOnScreen[0]
+        : annotation.positionOnScreen[0] - 440;
+    },
+    determineCoordY(annotation, componentsHeight) {
       if (
         window.innerHeight - annotation.positionOnScreen[1] <
         componentsHeight
       ) {
-        const newY = annotation.positionOnScreen[1] - componentsHeight;
-        const newX = annotation.positionOnScreen[0];
-        return [newX, newY];
+        return annotation.positionOnScreen[1] - componentsHeight;
       } else {
-        return [annotation.positionOnScreen[0], annotation.positionOnScreen[1]];
+        return annotation.positionOnScreen[1];
       }
     },
   },
