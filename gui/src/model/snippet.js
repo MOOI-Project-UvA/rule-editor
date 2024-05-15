@@ -1,16 +1,18 @@
 import { v4 as uuid4 } from 'uuid'
 
 export class Snippet {
-    constructor(text, sentence) {
+    constructor(text, sentence, characterRange) {
         this._id = uuid4() //unique ID
         this._sentence = sentence
         this._text = text
+        this._characterRange = characterRange
         this._annotations = []
     }
     get id() { return this._id }
     get text() { return this._text }
     get annotations() { return this._annotations }
     get sentence() { return this._sentence }
+    get characterRange() { return this._characterRange }
 
     addAnnotation(annotation) {
         this._annotations = [...this._annotations, annotation]
@@ -29,7 +31,7 @@ export class Snippet {
         return {
             documentId: this.sentence.sourceDocument.id,
             sentenceId: this.sentence.id,
-            characterRange: [],
+            characterRange: this._characterRange,
             text: this.text,
         };
     }

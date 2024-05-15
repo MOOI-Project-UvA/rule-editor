@@ -8,7 +8,8 @@ export class Sentence {
         //this._parent = ""
         //level in document structure
         //this._level = 0
-        this._snippets = [new Snippet(documentLeafElement.content.trim(), this)]
+        const text = documentLeafElement.content.trim()
+        this._snippets = [new Snippet(text, this, [0, text.length - 1])]
     }
 
     get id() { return this._id }
