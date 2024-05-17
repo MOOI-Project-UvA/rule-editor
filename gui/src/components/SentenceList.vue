@@ -33,6 +33,9 @@ export default {
   props: {
     sentences: Array,
   },
+  mounted() {
+    console.log("this.sentences", this.sentences);
+  },
   computed: {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -111,6 +114,11 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
+    },
+  },
+  watch: {
+    sentences() {
+      console.log("this.sentences", this.sentences);
     },
   },
 };

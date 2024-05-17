@@ -14,6 +14,7 @@ import { v4 as uuid4 } from "uuid";
 const store = createStore({
   state() {
     return {
+      step: 1, //step in the process
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
@@ -238,6 +239,8 @@ const store = createStore({
           checkedSentenceIds: d.checkedSentenceIds,
         });
       });
+      //skip to step 3 to show the interpretation
+      context.state.step = 3
     },
   },
 });

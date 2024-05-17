@@ -19,7 +19,12 @@ export class Sentence {
         new Snippet(this._text, this, [0, this._text.length]),
       );
     } else {
-      addMissingSnippets(this._text, this._snippets);
+      const missingSnippets = findMissingSnippets(this);
+      this._snippets = this._snippets.concat(missingSnippets);
+      console.log("this._snippets", this._snippets);
+      this._snippets.sort(
+        (s1, s2) => s1.characterRange[0] - s2.characterRange[0],
+      );
     }
   }
 
@@ -45,29 +50,39 @@ export class Sentence {
 }
 
 //add snippets not covered by annotations
-function addMissingSnippets(sentenceText, snippets) {
-  console.log("addMissingSnippets", sentenceText, snippets);
+function findMissingSnippets(sentence) {
+  console.log("addMissingSnippets", sentence);
   //sort existing snippets on range (start)
-  snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0]);
-  console.log("snippets", snippets);
+  sentence.snippets.sort(
+    (s1, s2) => s1.characterRange[0] - s2.characterRange[0],
+  );
   let missingSnippets = [];
   let rangeStart = 0;
-  snippets.forEach((existingSnippet) => {
+  sentence.snippets.forEach((existingSnippet) => {
     const rangeEnd = existingSnippet.characterRange[0]; //end of current snippet is start of next one
     if (rangeStart < rangeEnd) {
-      const snippetText = sentenceText.substring(rangeStart, rangeEnd);
-      const snippet = new Snippet(snippetText, [rangeStart, rangeEnd]);
+      const snippetText = sentence.text.substring(rangeStart, rangeEnd);
+      const snippet = new Snippet(snippetText, sentence, [
+        rangeStart,
+        rangeEnd,
+      ]);
       missingSnippets.push(snippet);
     }
     rangeStart = existingSnippet.characterRange[1];
   });
   //add last snippet to the end
-  if (rangeStart < sentenceText.length) {
-    const snippetText = sentenceText.substring(rangeStart, sentenceText.length);
-    const snippet = new Snippet(snippetText, [rangeStart, sentenceText.length]);
+  if (rangeStart < sentence.text.length) {
+    const snippetText = sentence.text.substring(
+      rangeStart,
+      sentence.text.length,
+    );
+    const snippet = new Snippet(snippetText, sentence, [
+      rangeStart,
+      sentence.text.length,
+    ]);
     missingSnippets.push(snippet);
   }
   console.log("missingSnippets", missingSnippets);
   //extend current snippets with missing snippets
-  snippets = snippets.concat(missingSnippets);
+  return missingSnippets;
 }
