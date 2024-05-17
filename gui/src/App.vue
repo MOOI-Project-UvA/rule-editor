@@ -73,6 +73,7 @@ export default {
     branch: import.meta.env.VITE_BRANCH,
   }),
 
+
   components: {
     LoadSaveInterpretationBanner,
     InterpretationView,
@@ -96,6 +97,7 @@ export default {
     //   )}</a>.`;
 
     // alertWidget("welcome", message);
+    this.$store.dispatch("readAvailableSources");
   },
   methods: {
     updateStepperValue() {

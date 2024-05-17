@@ -26,8 +26,8 @@ export function getSelectionAsSnippets(selection, sentences) {
     if (anchorSentenceIndex > focusSentenceIndex) { //user selected from right to left
         startSnippet = focusSnippet //first snippet in selection
         endSnippet = anchorSnippet //last snippet in selection
-        startOffset = selection.focusOffset
-        endOffset = selection.anchorOffset
+        startOffset = selection.focusOffset //character offset in start snippet
+        endOffset = selection.anchorOffset //character offset in end snippet
         startSentenceIndex = focusSentenceIndex
         endSentenceIndex = anchorSentenceIndex
     } else if (anchorSentenceIndex == focusSentenceIndex) {
@@ -134,7 +134,7 @@ export function splitAndReturnSelectedSnippets(
 
 function splitSnippet(snippet, charIndex, sentence) {
     //TODO handle empty leftSnippet and/or rightSnippet, when charIndex == 0 or charIndex == snippet.text.length-1
-    const leftSnippet = new Snippet(snippet.text.substring(0, charIndex), sentence, [snippet.characterRange[0], snippet.characterRange[0] + charIndex - 1])
+    const leftSnippet = new Snippet(snippet.text.substring(0, charIndex), sentence, [snippet.characterRange[0], snippet.characterRange[0] + charIndex])
     const rightSnippet = new Snippet(snippet.text.substring(charIndex), sentence, [snippet.characterRange[0] + charIndex, snippet.characterRange[1]])
     snippet.annotations.forEach(a => {
         leftSnippet.addAnnotation(a)

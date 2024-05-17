@@ -35,6 +35,7 @@ export default {
         handleSelection(event) {
             const selection = window.getSelection()
             if (selection.toString().length > 0) {
+                console.log("selection", selection)
                 //if no annotation is open, create a new one, else use the existing one that is open
                 let annotation
                 if (this.annotationBeingEdited) {
@@ -67,6 +68,7 @@ export default {
                 //get selection in terms of start/end sentences, snippets, and offsets
                 const selectionAsSnippets = getSelectionAsSnippets(selection, this.sentences)
                 //split snippets and return those that correspond with the selection
+                console.log("selectionAsSnippets", selectionAsSnippets)
                 const selectedSnippets = splitAndReturnSelectedSnippets(
                     selectionAsSnippets,
                     this.sentences

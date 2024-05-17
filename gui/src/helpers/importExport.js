@@ -1,8 +1,12 @@
+import { SourceDocument } from '../model/sourceDocument.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
 import { Claimduty } from '../model/claimduty.js'
 import { frameTypes } from '../model/frame.js'
-import { store } from '../store/index.js'
+import { Sentence } from '../model/sentence.js'
+import { Annotation } from '../model/annotation.js'
+import { Snippet } from '../model/snippet.js'
+
 
 
 function convertInterpretationToJson(frames, sourceDocuments) {
@@ -30,13 +34,26 @@ function convertInterpretationToJson(frames, sourceDocuments) {
     }
 }
 
-function parseJsonToFrames(jsonText) {
-    const interpretationString = JSON.parse(jsonText)
-    let frames = []
+//parse json to sourcedoc and frames
+//sourcedoc will be missing the actual sentence texts from the source, these
+//will be filled in later, as will the non-annotated snippets
 
-    // first, create an empty frame for each frame in the loaded json
+function parseJsonToInterpretation(jsonText) {
+    const parsedInterpretation = JSON.parse(jsonText)
+    let sourceDocs = []
+    let frames = []
+    //create sourceDocs from loaded interpretation
+    parsedInterpretation.sourceDocs.forEach(doc => {
+        const sourceDoc = new SourceDocument(doc.id, doc.checkedSentenceIds)
+        // create empty sentences with one snippet
+        sourceDoc.sentences = doc.checkedSentenceIds.map(sId => new Sentence(sId, sourceDoc))
+        //text of these sentences will be loaded later from the source
+        sourceDocs.push(sourceDoc)
+    })
+
+    // create an empty frame for each frame in the loaded json
     // each frame gets its id from the json data
-    interpretationString.frames.forEach(d => {
+    parsedInterpretation.frames.forEach(d => {
         const frameType = frameTypes.find(f => f.id == d.typeId)
 
         let frame
@@ -59,15 +76,78 @@ function parseJsonToFrames(jsonText) {
 
     //go to the loaded json once more, and fill each frame with data
     //while replacing references by ID with references to frame objects
-    interpretationString.frames.forEach(d => {
-        let frame = frames.find(f => f.id === d.id)
-        frame.fromFlatObject(d, frames)
+    parsedInterpretation.frames.forEach(parsedFrame => {
+        let frame = frames.find(f => f.id === parsedFrame.id)
+        frame.fromFlatObject(parsedFrame, frames)
+
+        //go through the annotations of each frame. Create annotations objects.
+        //go through the snippets of each parsed annotation, and add snippets to the
+        //correct sentence in the correct document. Add the annotation to the snippet
+        //the annotation object links a frame with a snippet.
+        parsedFrame.annotations.forEach(parsedAnnotation => {
+            const annotation = new Annotation()
+            annotation.frame = frame
+            //create snippet for each of the annotation's snippets
+            parsedAnnotation.snippets.forEach(parsedSnippet => {
+                //find sourceDoc for this snippet
+                const sourceDoc = sourceDocs.find(doc => doc.id == parsedSnippet.documentId)
+                //find sentence for this snippet
+                const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
+                //snippet possibly exists, added by another annotation
+                let snippet = sentence.snippets.find(snippet => snippet.characterRange[0] == parsedSnippet.characterRange[0] && snippet.characterRange[1] == parsedSnippet.characterRange[1])
+                if (!snippet) {
+                    snippet = new Snippet(parsedSnippet.text, sentence, parsedSnippet.characterRange)
+                    sentence.snippets.push(snippet)
+                }
+                snippet.annotations.push(annotation)
+            })
+        })
     })
 
-    return frames
+    return {
+        sourceDocs: sourceDocs,
+        frames: frames
+    }
 }
 
+/**
+ * Finds snippets for each sentence and adds them to the sentence
+ * @param {*} interpretation 
+ * @param {*} sourceDoc 
+ */
+function addSnippetsToSentences(interpretation, sourceDocs) {
+    const snippetsInInterpretation = interpretation
+        .frames.map(f => f.annotations
+            .map(a => a.snippets))
+        .flat().flat()
+        //get unique snippets
+        .filter((snippet, index, snippets) => snippets
+            .findIndex(s =>
+            (s.documentId == snippet.documentId &&
+                s.sentenceId == snippet.sentenceId &&
+                s.characterRange[0] == snippet.characterRange[0] &&
+                s.characterRange[1] == snippet.characterRange[1])) === index);
+
+    sourceDocs.forEach(doc => {
+        doc.sentences.forEach(sentence => {
+            const snippetsFromInterpretationForSentence = snippetsInInterpretation.filter(s => s.id == sentence.id)
+            sentence.snippets = getSnippetObjectsForSentence(sentence, snippetsFromInterpretationForSentence)
+        })
+    })
+    interpretation
+}
+
+/**
+ * Creates snippet objects for sentence. In between the snippets from the interpretation, there will be snippets
+ * that are not annotated. These need to be generated.
+ * @param {*} sentence 
+ * @param {*} snippetsFromInterpretation 
+ */
+function getSnippetObjectsForSentence(sentence, snippetsFromInterpretation) {
+    //sort snippets on character range
+
+}
 export {
     convertInterpretationToJson,
-    parseJsonToFrames
+    parseJsonToInterpretation
 }

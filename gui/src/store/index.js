@@ -5,7 +5,7 @@ import { Claimduty } from "../model/claimduty.js";
 import { saveAs } from "file-saver";
 import {
   convertInterpretationToJson,
-  parseJsonToFrames,
+  parseJsonToInterpretation,
 } from "../helpers/importExport.js";
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
@@ -152,100 +152,6 @@ const store = createStore({
         })
       })
     },
-    removeAtomicFact(state, frame) {
-      // remove the fact from an act or a complexFact
-      // case1: complex fact
-      // get the generated ids (frame._id) of the complexFrames, which contain the AtomicFact
-
-      state.frames
-        .filter((f) => f.type == "fact" && f.booleanConstruct)
-        .forEach((f) => {
-          f.booleanConstruct.removeFrame(frame);
-        });
-      const actFrameIds = state.frames
-        .filter((fr) => fr._type === "act")
-        .filter((act) => {
-          const term = act._terminates.find((d) => d._id === frame._id);
-          const creates = act._creates.find((d) => d._id === frame._id);
-          const action =
-            act._action !== null && act._action._id === frame._id
-              ? act._action._id
-              : undefined;
-          const actor =
-            act._actor !== null && act._actor._id == frame._id
-              ? act._actor._id
-              : undefined;
-          const object =
-            act._object !== null && act._object._id == frame._id
-              ? act._object._id
-              : undefined;
-          const precondition =
-            act._precondition !== null && act._precondition._id == frame._id
-              ? act._precondition._id
-              : undefined;
-          const recipient =
-            act._recipient !== null && act._recipient._id == frame._id
-              ? act._recipient._id
-              : undefined;
-
-          const exist = [
-            term,
-            creates,
-            action,
-            actor,
-            object,
-            precondition,
-            recipient,
-          ];
-          // console.log("exist?:", exist);
-          // console.log("exist?:", !exist.every((d) => d === undefined));
-          return !exist.every((d) => d === undefined);
-        })
-        .map((fr) => fr._id);
-      // console.log("ids of acts:", actFrameIds);
-
-      if (actFrameIds.length > 0) {
-        actFrameIds.forEach((id) => {
-          const index = state.frames.findIndex((d) => d._id === id);
-
-          state.frames[index]._terminates = state.frames[
-            index
-          ]._terminates.filter((fr) => fr._id !== frame._id);
-          state.frames[index]._creates = state.frames[index]._creates.filter(
-            (fr) => fr._id !== frame._id,
-          );
-          state.frames[index]._action =
-            state.frames[index]._action !== null &&
-              state.frames[index]._action._id === frame._id
-              ? null
-              : state.frames[index]._action;
-          state.frames[index]._actor =
-            state.frames[index]._actor !== null &&
-              state.frames[index]._actor._id == frame._id
-              ? null
-              : state.frames[index]._actor;
-          state.frames[index]._object =
-            state.frames[index]._object !== null &&
-              state.frames[index]._object._id == frame._id
-              ? null
-              : state.frames[index]._object;
-          state.frames[index]._precondition =
-            state.frames[index]._precondition !== null &&
-              state.frames[index]._precondition._id == frame._id
-              ? null
-              : state.frames[index]._precondition;
-          state.frames[index]._recipient =
-            state.frames[index]._recipient !== null &&
-              state.frames[index]._recipient._id == frame._id
-              ? null
-              : state.frames[index]._recipient;
-        });
-      }
-
-      // remove the Atomicfact from the list of frames
-      state.frames = state.frames.filter((fr) => fr._id !== frame._id);
-      // console.log("updated list of frames:", state.frames.length, state.frames);
-    },
     setTaskInformation(state, task) {
       console.log("in index.js: ", task);
       state.taskInformation.title = task.title;
@@ -280,15 +186,22 @@ const store = createStore({
         //get document from chopper data.
         const document = chopperData["@graph"].find((d) => ('document' in d)).document;
         console.log("document", document)
-        const sourceDoc = new SourceDocument(document, source.title, checkedSentenceIds)
-        console.log("sourceDoc", sourceDoc)
-        let updatedDocumentList = [
-          ...context.state.sourceDocuments,
-          sourceDoc
-        ];
+        //TODO check if source doc already exists, from a loaded interpretation
+        let sourceDoc = context.state.sourceDocuments.find(d => d.id == document['@id'])
+        if (!sourceDoc) {
+          sourceDoc = new SourceDocument(document['@id'], checkedSentenceIds)
+          context.state.sourceDocuments = [
+            ...context.state.sourceDocuments,
+            sourceDoc
+          ];
+        }
+
+        sourceDoc.fillSentencesFromChopperDocument(document)
+        sourceDoc.title = source.title
+
         //sort alphabetically on title
-        updatedDocumentList.sort((d1, d2) => d1.title.localeCompare(d2.title))
-        context.state.sourceDocuments = updatedDocumentList
+        context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
+        context.state.sourceDocuments
       })
     },
     createAct(context) {
@@ -309,10 +222,16 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {
-      context.state.sourceDocuments = [];
-      context.state.frames = parseJsonToFrames(jsonText);
+      const interpretation = parseJsonToInterpretation(jsonText)
+      console.log("loaded interpretation", interpretation)
+      context.state.sourceDocuments = interpretation.sourceDocs;
+      context.state.frames = interpretation.frames
 
-      //read sources and replace sentenceIds in snippets with the sentence object
+      /**
+       * at this point, the source docs created from the loaded interpretation
+       * do not contain sentence text yet, and they miss snippets that are
+       * not annotated. Read source files and add this missing information
+      */
       JSON.parse(jsonText).sourceDocs.forEach((d) => {
         context.dispatch("addSource", {
           sourceId: d.id,

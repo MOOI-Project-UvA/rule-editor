@@ -27,10 +27,6 @@ export default {
       return this.availableSources.filter((s) => !loadedDocIds.includes(s.id));
     },
   },
-  mounted() {
-    console.log("sourceLoader mounted!");
-    this.$store.dispatch("readAvailableSources");
-  },
   methods: {
     handleSelection() {
       console.log("handleSelection", this.selectedSource);
