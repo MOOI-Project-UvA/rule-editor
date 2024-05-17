@@ -4,6 +4,7 @@ export class SourceDocument {
     constructor(id, selectedSentenceIds) {
         //console.log("selectedSentenceIds", selectedSentenceIds)
         this._id = id
+        this._iri = id
         this._title = ""
         this._sentences = []
         this._selectedSentenceIds = selectedSentenceIds
@@ -12,6 +13,7 @@ export class SourceDocument {
     }
 
     get id() { return this._id }
+    get iri() { return this._iri }
     set title(title) { this._title = title }
     get title() { return this._title }
     set sentences(sentences) { this._sentences = sentences }
@@ -33,10 +35,12 @@ export class SourceDocument {
         selectedLeafElements.forEach(element => {
             let sentence = this._sentences.find(s => s.id == element.id)
             if (!sentence) {
-                sentence = new Sentence(element.id, this)
+                sentence = new Sentence(element.id, element.IRI, this)
                 this._sentences.push(sentence)
             }
             sentence.addTextFromChopperLeafElement(element)
+            //for backwards comp
+            sentence.iri = element.IRI
         })
     }
 

@@ -31,6 +31,7 @@ export class Snippet {
         return {
             documentId: this.sentence.sourceDocument.id,
             sentenceId: this.sentence.id,
+            sentenceIri: this.sentence.iri,
             characterRange: this._characterRange,
             text: this.text,
         };
