@@ -3,16 +3,25 @@
     <div class="row items-center q-pa-sm">
       <div class="col-1 text-bold">Sources</div>
       <div class="col">
-        <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
-          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
-          @click="displayedSource = doc">
+        <q-btn
+          class="q-mx-sm"
+          v-for="doc in sourceDocuments"
+          size="md"
+          flat
+          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'"
+          icon="mdi-book-search"
+          @click="displayedSource = doc"
+        >
           {{ doc.title }}
         </q-btn>
       </div>
 
       <div class="col-1">
         <q-avatar class="float-right" size="lg">
-          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
+          <q-icon
+            name="mdi-information-outline"
+            class="cursor-pointer"
+          ></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you are able to start the interpretation process by
@@ -29,7 +38,9 @@
       <template v-if="displayedSource && displayedSource.sentences.length > 0">
         <!-- show all sentences in document -->
         <div class="fill-height scrollable q-pa-md">
-          <SentenceList :sentences="displayedSource.sentences" />
+          <SentenceList
+            :sentences="displayedSource.sentences.filter((s) => s.checked)"
+          />
         </div>
       </template>
       <template v-else>
@@ -41,34 +52,34 @@
         </div>
       </template>
     </q-card-section>
-
   </q-card>
 </template>
 
 <script>
-
-import SentenceList from '../components/SentenceList.vue';
+import SentenceList from "../components/SentenceList.vue";
 export default {
   data: () => ({
-    displayedSource: null
+    displayedSource: null,
   }),
   mounted() {
     //show by default the first document in the list of source documents
-    this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
+    this.displayedSource =
+      this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null;
   },
   components: {
-    SentenceList
+    SentenceList,
   },
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments
-    }
+      return this.$store.state.sourceDocuments;
+    },
   },
   watch: {
     sourceDocuments() {
-      this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
-    }
-  }
+      this.displayedSource =
+        this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null;
+    },
+  },
 };
 </script>
 
@@ -80,8 +91,6 @@ export default {
 .fill-height {
   height: calc(100vh - 210px);
 }
-
-
 
 .snippet {
   display: inline;
