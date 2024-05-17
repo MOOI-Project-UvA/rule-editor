@@ -44,8 +44,9 @@ export class Snippet {
 
   toFlatObject() {
     return {
-      documentId: this.sentence.sourceDocument.id,
-      sentenceId: this.sentence.id,
+      documentId: this._sentence.sourceDocument.id,
+      sentenceId: this._sentence.id,
+      sentenceIri: this._sentence.iri,
       characterRange: this._characterRange,
       text: this.text,
     };
