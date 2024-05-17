@@ -46,7 +46,7 @@ function parseJsonToInterpretation(jsonText) {
     parsedInterpretation.sourceDocs.forEach(doc => {
         const sourceDoc = new SourceDocument(doc.id, doc.checkedSentenceIds)
         // create empty sentences with one snippet
-        sourceDoc.sentences = doc.checkedSentenceIds.map(sId => new Sentence(sId, sourceDoc))
+        sourceDoc.sentences = doc.checkedSentenceIds.map(sId => new Sentence(sId, "", sourceDoc)) //IRI will be filled later
         //text of these sentences will be loaded later from the source
         sourceDocs.push(sourceDoc)
     })

@@ -26,6 +26,7 @@ export class Sentence {
 
     get id() { return this._id }
     get iri() { return this._iri }
+    set iri(iri) { this._iri = iri }
     get snippets() { return this._snippets }
     get text() { return this._text }
     get sourceDocument() { return this._sourceDocument }
