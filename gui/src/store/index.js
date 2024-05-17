@@ -219,7 +219,7 @@ const store = createStore({
       const blob = new Blob([jsonString], {
         type: "text/plain;charset=utf-8",
       });
-      const dateString = "test" //new Date().toISOString().substring(0, 19);
+      const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     loadInterpretation(context, jsonText) {

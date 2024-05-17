@@ -1,13 +1,14 @@
 import { Snippet } from "./snippet.js";
 
 export class Sentence {
-  constructor(id, sourceDocument) {
+  constructor(id, iri, sourceDocument) {
     this._id = id;
+    this._iri = iri;
     this._sourceDocument = sourceDocument;
     this._loading = false;
-    this._checked = true;
     this._snippets = [];
     this._text = "";
+    this._checked = true;
   }
 
   //set text and create sniippets. if there are snippets (from a loaded interpretation)
@@ -31,15 +32,19 @@ export class Sentence {
   get id() {
     return this._id;
   }
+
   get snippets() {
     return this._snippets;
   }
+
   get text() {
     return this._text;
   }
+
   get sourceDocument() {
     return this._sourceDocument;
   }
+
   get checked() {
     return this._checked;
   }
@@ -47,8 +52,11 @@ export class Sentence {
   set checked(checked) {
     this._checked = checked;
   }
-}
 
+  get iri() {
+    return this._iri;
+  }
+}
 //add snippets not covered by annotations
 function findMissingSnippets(sentence) {
   console.log("addMissingSnippets", sentence);
