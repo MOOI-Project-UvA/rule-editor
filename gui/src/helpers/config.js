@@ -17,8 +17,8 @@ const colors = {
   object: "accent",
   action: "secondary",
   duty: "info",
-  act: "primary",
-  claim_duty: "primary",
+  act: "deep-purple-10",
+  claim_duty: "deep-purple-10",
 };
 
 const hexColors = {
@@ -27,8 +27,8 @@ const hexColors = {
   object: "#9C27B0",
   action: "#26A69A",
   duty: "#31CCEC",
-  act: "#1976D2",
-  claim_duty: "#1976D2",
+  act: "rgb(49, 27, 146)",
+  claim_duty: "rgb(49, 27, 146)",
 };
 
 export { icons, colors, hexColors };

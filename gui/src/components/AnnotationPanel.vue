@@ -30,12 +30,12 @@
             </q-card-section>
             <q-card-actions>
                 <div class="label">Or</div>
-                <q-btn @click="addingToExistingFrame" color="primary" :disabled="frames.length == 0">
+                <q-btn flat @click="addingToExistingFrame" color="primary" :disabled="frames.length == 0">
                     Add to existing frame
                 </q-btn>
             </q-card-actions>
             <q-card-actions>
-                <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
+                <q-btn color="negative" flat @click="cancelAnnotation">Cancel</q-btn>
             </q-card-actions>
         </q-card>
     </div>

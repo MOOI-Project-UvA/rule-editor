@@ -37,14 +37,7 @@
 </template>
 
 <script>
-import { frameTypes } from '../model/frame.js'
-import { colors } from '../helpers/config.js'
 export default {
-    data: () => ({
-        frameTypes: frameTypes,
-        colors: colors,
-        maxLengthSourceShow: 100 //show max this nr of chars of an annotation source
-    }),
     computed: {
         selectedSnippet() {
             return this.$store.state.selectedSnippet
@@ -107,18 +100,6 @@ export default {
 #annotation-list {
     position: absolute;
     width: 440px;
-}
-
-.message {
-    font-weight: bold;
-}
-
-.label {
-    margin-right: 10px;
-}
-
-.label.bold {
-    font-weight: bold;
 }
 
 .annotation-row {
