@@ -1,20 +1,17 @@
 <template>
   <div class="document" @mouseup="handleSelection">
-    <div
-      class="q-mb-sm"
-      :style="getStyleForLineSpacing(sentence)"
-      v-for="sentence in sentences"
-    >
-      <span
-        class="snippet"
-        :style="getStyleForUnderlining(snippet, sentence)"
-        v-for="snippet in sentence.snippets"
-        :data-snippet-id="snippet.id"
-        :data-sentence-id="sentence.id"
-      >
+    <div class="q-mb-sm" :style="getStyleForLineSpacing(sentence)" v-for="sentence in sentences">
+      <span class="snippet" :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets"
+        :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
         {{ snippet.text }}
       </span>
+      <div v-if="showNLP && sentences.length > 0">
+        <q-btn size="md" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
+          :loading="sentence.loading" @click.stop="sendDataToNlp(sentence)" @mouseup.stop="">
+        </q-btn>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -29,12 +26,15 @@ import {
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
 import { frameTypes } from "../model/frame";
+import { Snippet } from "../model/snippet";
+import ApiServices from "../services/ApiServices.js";
 export default {
   props: {
     sentences: Array,
+    showNLP: Boolean
   },
   mounted() {
-    console.log("this.sentences", this.sentences);
+    console.log("this.sentences", this.sentences, this.showNLP);
   },
   computed: {
     annotationBeingEdited() {
@@ -114,6 +114,76 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
+    },
+    async sendDataToNlp(sentence) {
+      console.log("sentence: ", sentence);
+      sentence.loading = true;
+      const response = await ApiServices.fetchNlpPrediction(sentence.content);
+
+      sentence.loading = false;
+
+      let lastIndex = 0;
+      // create a new annotation
+      let annotation = new Annotation();
+      response.predicted_entities.forEach((pair, index, arr) => {
+        const token = pair[0];
+        const role = pair[1];
+
+        const range = this.getRange(sentence.content, token, lastIndex);
+
+        lastIndex = range[1];
+
+        if (role === "None") return;
+
+        if (arr[index + 1][1] === role) {
+          range[1] += 1;
+          const snippet = new Snippet(
+            // this.textPiece.documentId, //document id
+            // this.textPiece.id, //sentence id
+            // this.textPiece, //sentence
+            sentence.documentId,
+            sentence.id,
+            // sentence, //sentence object
+            range, //[start, end]
+            token, //selected text
+          );
+
+          annotation.addSnippet(snippet); //this also sets snippet.annotation
+
+          return;
+        } else {
+          const snippet = new Snippet(
+            sentence.documentId, // documentId
+            sentence.id, // sentence.id
+            // sentence, //sentence object
+            range, //[start, end]
+            token, //selected text
+          );
+
+          annotation.addSnippet(snippet); //this also sets snippet.annotation
+
+          const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
+
+          // create frame
+          this.$store.commit("createNewFrameViaNlp", {
+            frameType: selectedType,
+            annotation: annotation,
+            subType: role === "Recipient" || role === "Actor" ? "Agent" : role,
+            role: role,
+          });
+          annotation = new Annotation();
+        }
+      });
+    },
+    getRange(string, token, lastIndex) {
+      // how about a potential second occurrence of the same token?
+      const index = string.indexOf(token, lastIndex);
+      if (index !== -1) {
+        const endIndex = index + token.length;
+        // console.log(index, endIndex);
+
+        return [index, endIndex];
+      }
     },
   },
   watch: {
