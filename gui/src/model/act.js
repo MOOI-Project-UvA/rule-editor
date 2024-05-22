@@ -159,6 +159,7 @@ class Act {
     }
 
     toFlatObject() {
+        console.log("toFlatObject act", this)
         return {
             id: this.id,
             typeId: this.type.id, //type is an object {id, class, label}
@@ -186,8 +187,8 @@ class Act {
         this._precondition = new BooleanConstruct()
         this._precondition.fromFlatObject(frameData.precondition, allFrames)
         this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
-        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
-        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
+        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
+        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._comments = frameData.comments
     }
 }
