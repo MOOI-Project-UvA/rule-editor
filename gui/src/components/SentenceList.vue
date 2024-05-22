@@ -118,7 +118,7 @@ export default {
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.content);
+      const response = await ApiServices.fetchNlpPrediction(sentence.text);
 
       sentence.loading = false;
 
@@ -129,7 +129,7 @@ export default {
         const token = pair[0];
         const role = pair[1];
 
-        const range = this.getRange(sentence.content, token, lastIndex);
+        const range = this.getRange(sentence.text, token, lastIndex);
 
         lastIndex = range[1];
 
