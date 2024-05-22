@@ -210,6 +210,8 @@ const store = createStore({
       context.state.frameBeingEdited = new Act();
     },
     saveInterpretation(context) {
+      //TODO combine frames that are saved with any unsaved
+      //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
           context.state.frames,
