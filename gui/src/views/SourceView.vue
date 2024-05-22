@@ -29,9 +29,7 @@
       <template v-if="displayedSource && displayedSource.sentences.length > 0">
         <!-- show all sentences in document -->
         <div class="fill-height scrollable q-pa-md">
-          <SentenceList
-            :sentences="displayedSource.sentences.filter((s) => s.checked)"
-          />
+          <SentenceList :sentences="displayedSource.sentences.filter((s) => s.checked)" :showNLP="false" />
         </div>
       </template>
       <template v-else>

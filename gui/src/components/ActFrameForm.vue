@@ -9,7 +9,7 @@
     </q-card-section>
     <q-card-section>
       <template v-if="sentences?.length > 0">
-        <SentenceList :sentences="sentences" />
+        <SentenceList :sentences="sentences" :showNLP="true" />
       </template>
       <template v-else>
         <div class="source-text">No source added yet</div>
@@ -95,10 +95,6 @@ import FactInputField from "./FactInputField.vue";
 import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import ApiServices from "../services/ApiServices.js";
-import { Annotation } from "../model/annotation.js";
-import { Snippet } from "../model/snippet";
-import { frameTypes } from "../model/frame.js";
 
 
 export default {
@@ -147,77 +143,6 @@ export default {
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
-    },
-
-    async sendDataToNlp(sentence) {
-      console.log("sentence: ", sentence);
-      sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.content);
-
-      sentence.loading = false;
-
-      let lastIndex = 0;
-      // create a new annotation
-      let annotation = new Annotation();
-      response.predicted_entities.forEach((pair, index, arr) => {
-        const token = pair[0];
-        const role = pair[1];
-
-        const range = this.getRange(sentence.content, token, lastIndex);
-
-        lastIndex = range[1];
-
-        if (role === "None") return;
-
-        if (arr[index + 1][1] === role) {
-          range[1] += 1;
-          const snippet = new Snippet(
-            // this.textPiece.documentId, //document id
-            // this.textPiece.id, //sentence id
-            // this.textPiece, //sentence
-            sentence.documentId,
-            sentence.id,
-            // sentence, //sentence object
-            range, //[start, end]
-            token, //selected text
-          );
-
-          annotation.addSnippet(snippet); //this also sets snippet.annotation
-
-          return;
-        } else {
-          const snippet = new Snippet(
-            sentence.documentId, // documentId
-            sentence.id, // sentence.id
-            // sentence, //sentence object
-            range, //[start, end]
-            token, //selected text
-          );
-
-          annotation.addSnippet(snippet); //this also sets snippet.annotation
-
-          const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
-
-          // create frame
-          this.$store.commit("createNewFrameViaNlp", {
-            frameType: selectedType,
-            annotation: annotation,
-            subType: role === "Recipient" || role === "Actor" ? "Agent" : role,
-            role: role,
-          });
-          annotation = new Annotation();
-        }
-      });
-    },
-    getRange(string, token, lastIndex) {
-      // how about a potential second occurrence of the same token?
-      const index = string.indexOf(token, lastIndex);
-      if (index !== -1) {
-        const endIndex = index + token.length;
-        // console.log(index, endIndex);
-
-        return [index, endIndex];
-      }
     },
   },
   components: {
