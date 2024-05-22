@@ -12,9 +12,7 @@
         )" @click="onClick(frame)">
                         <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(frameType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
+            frameBeingEdited.activeField != null" />
                     </div>
                 </div>
                 <div v-if="'subTypes' in frameType">
@@ -30,9 +28,8 @@
         )" @click="onClick(frame)">
                                 <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(subType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
+            frameBeingEdited.activeField != null &&
+            !frameBeingEdited.allowedSubTypesForActiveField.includes(subType.id)" />
                             </div>
                         </div>
                     </div>
@@ -64,19 +61,18 @@ export default {
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;
         },
-        allowedSubTypes() {
-            console.log("frameBeingEdited", this.frameBeingEdited);
-            return this.$store.state.frameBeingEdited &&
-                this.frameBeingEdited.type.class == "relation"
-                ? this.frameBeingEdited.allowedSubClassesForActiveField
-                : [];
+        annotationToBeAddedToExistingFrame() {
+            return this.$store.state.annotationToBeAddedToExistingFrame
         },
-        message() {
-            return this.frameBeingEdited &&
-                ["act", "claim_duty"].includes(this.frameBeingEdited)
-                ? "Add to frame"
-                : "";
+        addingAnnotationToExistingFrame() {
+            return this.$store.state.addingAnnotationToExistingFrame
         },
+        framesOpenInEditor() {
+            return this.$store.state.framesOpenInEditor
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
+        }
     },
     methods: {
         onClick(frame) {
@@ -85,12 +81,11 @@ export default {
             console.log("this.annotationBeingEdited", this.annotationBeingEdited);
 
             if (
-                this.annotationBeingEdited &&
-                this.annotationBeingEdited.addingToExistingFrame
+                this.addingAnnotationToExistingFrame
             ) {
-                frame.addAnnotation(this.annotationBeingEdited);
-                this.annotationBeingEdited.addingToExistingFrame = false;
-                this.$store.state.annotationBeingEdited = null;
+                this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
+                this.$store.state.addingAnnotationToExistingFrame = false;
+                this.$store.state.annotationToBeAddedToExistingFrame = null;
             } else if (
                 this.frameBeingEdited &&
                 this.frameBeingEdited.type.class == "relation" &&
@@ -105,9 +100,11 @@ export default {
                 this.$store.state.booleanConstructBeingEdited = null;
             } else {
                 console.log("setting frame being edited");
-                // it opens the frame form in the middle
                 this.$store.state.frameBeingEdited = frame
-                this.$store.state.framesOpenInEditor.push(frame)
+                //if the frame is not yet in the list of edited frames, add it
+                if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {
+                    this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, frame]
+                }
             }
         },
     },

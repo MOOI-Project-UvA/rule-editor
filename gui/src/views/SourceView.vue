@@ -3,25 +3,16 @@
     <div class="row items-center q-pa-sm">
       <div class="col-1 text-bold">Sources</div>
       <div class="col">
-        <q-btn
-          class="q-mx-sm"
-          v-for="doc in sourceDocuments"
-          size="md"
-          flat
-          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'"
-          icon="mdi-book-search"
-          @click="displayedSource = doc"
-        >
+        <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
+          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
+          @click="displayedSource = doc">
           {{ doc.title }}
         </q-btn>
       </div>
 
       <div class="col-1">
         <q-avatar class="float-right" size="lg">
-          <q-icon
-            name="mdi-information-outline"
-            class="cursor-pointer"
-          ></q-icon>
+          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you are able to start the interpretation process by
@@ -35,14 +26,12 @@
     <q-separator />
 
     <q-card-section class="q-pa-none">
-      <template
-        v-if="
-          displayedSource && displayedSource.sentences.some((e) => e.checked)
-        "
-      >
-        <!-- show recursively all text leafs in the document tree -->
-        <div class="fill-height scrollable q-py-xs">
-          <TextElement :textPiece="displayedSource" />
+      <template v-if="displayedSource && displayedSource.sentences.length > 0">
+        <!-- show all sentences in document -->
+        <div class="fill-height scrollable q-pa-md">
+          <SentenceList
+            :sentences="displayedSource.sentences.filter((s) => s.checked)"
+          />
         </div>
       </template>
       <template v-else>
@@ -58,41 +47,29 @@
 </template>
 
 <script>
-import TextElement from "../components/TextElement.vue";
-
+import SentenceList from "../components/SentenceList.vue";
 export default {
   components: {
-    TextElement,
+    SentenceList,
   },
   data: () => ({
-    expanded: [],
     displayedSource: null,
   }),
   mounted() {
-    console.log("sourceview mounted");
+    //show by default the first document in the list of source documents
     this.displayedSource =
       this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null;
   },
   computed: {
-    reconstructedData() {
-      return this.$store.getters.reconstructedData;
-    },
     sourceDocuments() {
-      let docs = [...this.$store.state.sourceDocuments];
-      //sort alphabetically on title
-      docs.sort((d1, d2) => d1.title.localeCompare(d2.title));
-      return docs;
-    },
-    frameBeingEdited() {
-      return this.$store.state.frameBeingEdited;
+      return this.$store.state.sourceDocuments;
     },
   },
   watch: {
     sourceDocuments() {
-      this.displayedSource =
-        this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null;
-    },
-  },
+      this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
+    }
+  }
 };
 </script>
 
@@ -103,5 +80,9 @@ export default {
 
 .fill-height {
   height: calc(100vh - 250px);
+}
+
+.snippet {
+  display: inline;
 }
 </style>

@@ -1,18 +1,23 @@
 <script>
 import SourceView from "./SourceView.vue";
 import FramesView from "./FramesView.vue";
-import AnnotationPanel from "../components/AnnotationPanel.vue";
+
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import LoadSaveMenu from "../components/LoadSaveMenu.vue";
+import AnnotationPanel from "../components/AnnotationPanel.vue";
+import AnnotationList from "../components/AnnotationList.vue"
+import AddingAnnotationToFramePanel from "../components/AddingAnnotationToFramePanel.vue"
 
 export default {
   name: "InterpretationView",
   components: {
-    AnnotationPanel,
     FramesView,
     SourceView,
     NewFrameMenu,
     LoadSaveMenu,
+    AnnotationPanel,
+    AnnotationList,
+    AddingAnnotationToFramePanel,
   },
   computed: {
     sourceViewIsCollapsed() {
@@ -38,13 +43,15 @@ export default {
         <div>
           <FramesView />
         </div>
-        <!-- <div>
-          <LoadSaveMenu />
-        </div> -->
       </div>
     </div>
   </div>
+  <!-- panel that appears when a new annotation is made by selecting source text -->
   <AnnotationPanel />
+  <!-- panel that appears when existing annotation(s) have been clicked in the source text -->
+  <AnnotationList />
+  <!-- panel that appears when user is adding an annotation to a frame -->
+  <AddingAnnotationToFramePanel />
 </template>
 
 <style scoped lang="css"></style>

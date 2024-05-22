@@ -9,11 +9,11 @@
   <div>
     <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
       :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]">
-      {{ frame.label }}
+      {{ frame.label != "" ? frame.label : frame.subType ? frame.subType.label : frame.type.label }}
     </div>
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
-        {{ frame.label }}
+        {{ frame.label != "" ? frame.label : "- no label given yet -" }}
       </div>
     </q-tooltip>
   </div>
@@ -29,17 +29,9 @@ export default {
   }),
   props: {
     frame: Object,
-    removable: {
-      default: false,
-      type: Boolean,
-    },
     disable: {
       default: false,
       type: Boolean,
-    },
-    functionality: {
-      default: "chip-container",
-      type: String,
     },
   },
   emits: ["remove"],

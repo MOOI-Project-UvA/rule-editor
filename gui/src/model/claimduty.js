@@ -78,7 +78,7 @@ class Claimduty {
         return sentences
     }
 
-    get allowedSubClassesForActiveField() {
+    get allowedSubTypesForActiveField() {
         switch (this._activeField) {
             case 'duty':
                 return ['duty']
@@ -154,7 +154,6 @@ class Claimduty {
             actorId: this.actor?.id,
             holderId: this.holder?.id,
             comments: this.comments,
-            annotations: this.annotations.map(a => a.toFlatObject())
         }
     }
 

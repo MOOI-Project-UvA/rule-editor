@@ -5,11 +5,11 @@
         the corresponding checkbox.
     -->
   <div v-for="(item, index) in textPiece" :key="index">
-    <q-item tag="label" v-ripple :id="item.id">
+    <q-item tag="label" v-ripple :id="`q-item-${item.id}`">
       <q-item-section side top>
         <q-checkbox
-          :name="item.id"
-          :id="item.id"
+          :name="item.id + index"
+          :id="`q-checkbox-${item.id}`"
           v-model="item.checked"
           size="sm"
         />
@@ -17,7 +17,7 @@
 
       <q-item-section
         class="text-piece text-chunk"
-        v-html="item.content"
+        v-html="item.text"
         ref="sentenceElement"
       >
       </q-item-section>
@@ -36,6 +36,9 @@ export default {
     // checkedChunks() {
     //   return this.textPiece.filter((item) => item.checked);
     // },
+  },
+  mounted() {
+    console.log("ListComponent:", this.textPiece);
   },
   methods: {
     // toggleBox: function (val, evt) {

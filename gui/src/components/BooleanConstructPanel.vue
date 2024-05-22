@@ -1,26 +1,20 @@
 <template>
-  <div
-    class="panel flex flex-row"
-    :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
-    @click="handleClick"
-  >
-    <div class="col">
-      <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
-      <template v-if="booleanConstruct.frame">
-        <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
-        <div>
-          <!--<q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
+    <div class="panel flex flex-row" :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
+        @click="handleClick">
+        <div class="col">
+
+            <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
+            <template v-if="booleanConstruct.frame">
+                <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
+                <div class="row-container">
+                    <!-- <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
                     :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
                     @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>-->
-          <FrameChip
-            :frame="booleanConstruct.frame"
-            :disable="false"
-            :removable="true"
-            functionality="editor-form"
-            @remove="removeChipFromContext"
-          />
-        </div>
-      </template>
+                    <FrameChip :frame="booleanConstruct.frame" :disable="false" />
+                    <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="removeFrame" />
+                </div>
+
+            </template>
 
       <div v-for="(child, i) in booleanConstruct.children">
         <BooleanConstructPanel :booleanConstruct="child" />
@@ -79,9 +73,9 @@
           <q-tooltip class="text-subtitle2"> Add new operand </q-tooltip>
         </q-btn>
       </div>
-      <div v-if="isBeingEdited" class="button-label">Select frame</div>
+      <div v-if="isBeingEdited" class="button-label">Select frame or create new frame from source</div>
     </div>
-    <div class="col-1">
+    <div class="col-1 row-container">
       <div>
         <q-btn
           size="sm"
@@ -113,112 +107,106 @@
         />
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import FrameChip from "./FrameChip.vue";
 export default {
-  name: "booleanConstructPanel",
-  data: () => ({
-    textSnippet: "",
-    tags: [
-      { label: "Agent", value: "agent" },
-      { label: "Action", value: "action" },
-      { label: "Object", value: "object" },
-      { label: "Conditions", value: "conditions" },
-    ],
-    booleanOptions: [
-      { label: "AND", value: "and", description: "AND (boolean)" },
-      { label: "OR", value: "or", description: "OR (boolean)" },
-      { label: "PLUS", value: "plus", description: "Plus (arithmetic)" },
-      { label: "MINUS", value: "minus", description: "Minus (arithmetic)" },
-      {
-        label: ">",
-        value: "greaterThan",
-        description: "Greater than (comparison)",
-      },
-      { label: "<", value: "lessThan", description: "Less than (comparison)" },
-      {
-        label: "≥",
-        value: "greaterThanOrEqualTo",
-        description: "Greater than or Equal to (comparison)",
-      },
-      {
-        label: "≤",
-        value: "lessThanOrEqualTo",
-        description: "Less than or Equal to (comparison)",
-      },
-      { label: "=", value: "assign", description: "Assignment" },
-      { label: "==", value: "equals", description: "Equals (comparison)" },
-      { label: "IF", value: "if", description: "If function" },
-    ],
-  }),
-  props: {
-    booleanConstruct: Object,
-  },
-  computed: {
-    frameBeingEdited() {
-      return this.$store.state.frameBeingEdited;
-    },
-    booleanConstructBeingEdited() {
-      return this.$store.state.booleanConstructBeingEdited;
-    },
-    isBeingEdited() {
-      return this.booleanConstruct == this.booleanConstructBeingEdited;
-    },
-  },
+    name: "booleanConstructPanel",
+    data: () => ({
+        textSnippet: "",
+        tags: [
+            { label: "Agent", value: "agent" },
+            { label: "Action", value: "action" },
+            { label: "Object", value: "object" },
+            { label: "Conditions", value: "conditions" }
+        ],
+        booleanOptions: [
+            { label: "AND", value: "and", description: "AND (boolean)" },
+            { label: "OR", value: "or", description: "OR (boolean)" },
+            { label: "PLUS", value: "plus", description: "Plus (arithmetic)" },
+            { label: "MINUS", value: "minus", description: "Minus (arithmetic)" },
+            {
+                label: ">",
+                value: "greaterThan",
+                description: "Greater than (comparison)",
+            },
+            { label: "<", value: "lessThan", description: "Less than (comparison)" },
+            {
+                label: "≥",
+                value: "greaterThanOrEqualTo",
+                description: "Greater than or Equal to (comparison)",
+            },
+            {
+                label: "≤",
+                value: "lessThanOrEqualTo",
+                description: "Less than or Equal to (comparison)",
+            },
+            { label: "=", value: "assign", description: "Assignment" },
+            { label: "==", value: "equals", description: "Equals (comparison)" },
+            { label: "IF", value: "if", description: "If function" },
+        ],
 
-  components: {
-    FrameChip,
-  },
-  methods: {
-    addParent(event) {
-      event.stopPropagation();
-      this.booleanConstruct.addParent();
+    }),
+    props: {
+        booleanConstruct: Object
     },
-    subdivide(event) {
-      event.stopPropagation();
-      this.booleanConstruct.subdivide();
+    computed: {
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
+        },
+        isBeingEdited() {
+            return this.booleanConstruct == this.booleanConstructBeingEdited
+        }
     },
-    addChild() {
-      console.log("booleanConstruct adding child");
-      const newChild = this.booleanConstruct.addEmptyChild();
-      //set focus to new child
-      this.$store.state.booleanConstructBeingEdited = newChild;
+    components: {
+        FrameChip
     },
-    handleClick(event) {
-      //prevent propagation to underlying panels
-      event.stopPropagation();
-      //if empty leaf node, select for adding frame
-      if (
-        !this.booleanConstruct.frame &&
-        this.booleanConstruct.children.length == 0
-      ) {
-        this.$store.state.booleanConstructBeingEdited = this.isBeingEdited
-          ? null
-          : this.booleanConstruct;
-      }
-    },
-    toggleNegation() {
-      this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated;
-    },
-    removeChipFromContext() {
-      this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
-    },
-    deleteBooleanConstruct(event) {
-      event.stopPropagation();
-      //if bc has no parent, do not delete, since that would leave precondition empty
-      //instead: clean
-      if (this.booleanConstruct.parent) {
-        this.booleanConstruct.delete();
-      } else {
-        console.log("no parent");
-        this.booleanConstruct.clean();
-      }
-    },
-  },
-};
+    methods: {
+        addParent(event) {
+            event.stopPropagation()
+            this.booleanConstruct.addParent()
+        },
+        subdivide(event) {
+            event.stopPropagation()
+            this.booleanConstruct.subdivide()
+        },
+        addChild() {
+            console.log("booleanConstruct adding child")
+            const newChild = this.booleanConstruct.addEmptyChild()
+            //set focus to new child
+            this.$store.state.booleanConstructBeingEdited = newChild
+        },
+        handleClick(event) {
+            //prevent propagation to underlying panels
+            event.stopPropagation()
+            //if empty leaf node, select for adding frame
+            if ((!this.booleanConstruct.frame) && this.booleanConstruct.children.length == 0) {
+                this.$store.state.booleanConstructBeingEdited = this.isBeingEdited ? null : this.booleanConstruct
+            }
+        },
+        toggleNegation() {
+            event.stopPropagation()
+            this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated
+        },
+        removeFrame() {
+            this.booleanConstruct.removeFrame(this.booleanConstruct.frame);
+        },
+        deleteBooleanConstruct(event) {
+            event.stopPropagation()
+            //if bc has no parent, do not delete, since that would leave precondition empty
+            //instead: clean
+            if (this.booleanConstruct.parent) {
+                this.booleanConstruct.delete()
+            } else {
+                this.booleanConstruct.clean()
+            }
+        }
+    }
+}
 </script>
 
 <style>
@@ -262,5 +250,10 @@ export default {
   font-size: 9pt;
   margin-bottom: 2px;
   color: #d42d19;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
 }
 </style>

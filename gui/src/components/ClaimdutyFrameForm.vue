@@ -8,10 +8,8 @@
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>
     <q-card-section>
-      <template v-if="frame.sentences.length > 0">
-        <div v-for="sentence in frame.sentences">
-          <TextElement :textPiece="sentence" />
-        </div>
+      <template v-if="sentences?.length > 0">
+        <SentenceList :sentences="sentences" />
       </template>
       <template v-else>
         <div class="source-text">No source added yet</div>
@@ -32,13 +30,16 @@
           @click="frame.activeField = frame.activeField == 'holder' ? null : 'holder'" />
       </div>
     </q-card-section>
-    <q-card-section>
-      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
-        :disable="frame.sourceText.length == 0" />
-    </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="isExistingFrame">
+        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
+        <div class="message">Any changes have been saved</div>
+        <q-btn color="primary" @click="saveFrame">Close</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
+        <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
@@ -48,7 +49,7 @@
 import FactInputField from "./FactInputField.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import TextElement from "./TextElement.vue"
+import SentenceList from "./SentenceList.vue";
 
 export default {
   emits: ["closed"],
@@ -60,16 +61,32 @@ export default {
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    // showFrameSource() {
-    //   return this.$store.state.showFrameSource
-    // }
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments;
+    },
+    sentences() {
+      return this.sourceDocuments
+        .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
+        .flat()
+    },
+    frames() {
+      return this.$store.state.frames;
+    },
+    isExistingFrame() {
+      return this.frames.some((f) => f.id == this.frame.id)
+    },
   },
   methods: {
-    closeForm() {
+    cancelFrame() {
+      this.frame.activeField = null
       this.$store.commit("cancelFrameBeingEdited")
     },
     saveFrame() {
-      this.$store.commit("saveFrameBeingEdited")
+      this.frame.activeField = null
+      this.$store.commit("saveFrameBeingEdited");
+    },
+    deleteFrame() {
+      this.$store.commit("removeFrame", this.frame)
     },
     toggleComments() {
       this.showComments = !this.showComments
@@ -79,7 +96,7 @@ export default {
     },
   },
   components: {
-    FactInputField, CommentsList, BooleanConstructPanel, TextElement
+    FactInputField, CommentsList, BooleanConstructPanel, SentenceList
   },
 };
 </script>

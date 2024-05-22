@@ -17,8 +17,18 @@ const colors = {
   object: "accent",
   action: "secondary",
   duty: "info",
-  act: "primary",
-  claim_duty: "primary",
+  act: "deep-purple-10",
+  claim_duty: "deep-purple-10",
 };
 
-export { icons, colors };
+const hexColors = {
+  fact: "#1976D2",
+  agent: "#F2C037",
+  object: "#9C27B0",
+  action: "#26A69A",
+  duty: "#31CCEC",
+  act: "rgb(49, 27, 146)",
+  claim_duty: "rgb(49, 27, 146)",
+};
+
+export { icons, colors, hexColors };

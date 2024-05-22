@@ -55,8 +55,8 @@ export default {
     framesOpenInEditor() {
       return this.$store.state.framesOpenInEditor
     },
-    annotationBeingEdited() {
-      return this.$store.state.annotationBeingEdited;
+    addingAnnotationToExistingFrame() {
+      return this.$store.state.addingAnnotationToExistingFrame;
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
@@ -65,17 +65,18 @@ export default {
   methods: {
     frameChipClicked(frame) {
       if (
-        this.annotationBeingEdited &&
-        this.annotationBeingEdited.addingToExistingFrame
+        this.addingAnnotationToExistingFrame
       ) {
-        frame.addAnnotation(this.annotationBeingEdited);
-        this.annotationBeingEdited.addingToExistingFrame = false;
-        this.$store.state.annotationBeingEdited = null;
+        this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
+        this.$store.state.addingAnnotationToExistingFrame = false;
+        this.$store.state.annotationToBeAddedToExistingFrame = null;
       } else if (
         this.frameBeingEdited &&
         this.frameBeingEdited.type.class == "relation" &&
         this.frameBeingEdited.activeField
       ) {
+        //add frame to field in frame being edited
+        console.log("adding frame to", this.frameBeingEdited);
         this.frameBeingEdited.addFrame(frame);
         this.frameBeingEdited.activeField = null
       } else if (this.booleanConstructBeingEdited) {
