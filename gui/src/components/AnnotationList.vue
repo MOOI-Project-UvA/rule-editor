@@ -4,9 +4,9 @@
         left: `${clickedPosition[0] - 50}px`,
         top: `${clickedPosition[1]}px`,
     }"> -->
-    <div id="annotation-list" v-if="selectedSnippet" :style="{
-        left: `10px`,
-        bottom: `10px`,
+    <div id="annotation-list" ref="annotationListPanel" v-if="selectedSnippet" :style="{
+      left: coordX + 50 + 'px',
+      top: coordY - 250 + 'px',
     }">
         <q-card bordered>
             <q-card-section>
@@ -38,6 +38,19 @@
 
 <script>
 export default {
+    data: () => ({
+      coordX: 0,
+      coordY: 0,
+    }),
+  // update component lifecycle hook
+  updated() {
+    if (this.selectedSnippet) {
+      this.coordY = this.determineCoordY(
+          this.$refs.annotationListPanel.clientHeight,
+      );
+      this.coordX = this.determineCoordX();
+    }
+  },
     computed: {
         selectedSnippet() {
             return this.$store.state.selectedSnippet
@@ -91,7 +104,19 @@ export default {
             this.$store.state.addingAnnotationToExistingFrame = true
             //close annotation list panel
             this.$store.state.selectedSnippet = null
-        }
+        },
+        determineCoordX() {
+          return window.innerWidth - this.clickedPosition[0] > 440
+              ? this.clickedPosition[0]
+              : this.clickedPosition[0] - 440;
+        },
+        determineCoordY(annotation, componentsHeight) {
+          if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
+            return this.clickedPosition[1] - componentsHeight;
+          } else {
+            return this.clickedPosition[1];
+          }
+      },
     },
 }
 </script>
