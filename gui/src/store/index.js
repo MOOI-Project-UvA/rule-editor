@@ -93,12 +93,6 @@ const store = createStore({
       state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
 
     },
-    cancelFrameBeingEdited(state) {
-      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
-      state.framesOpenInEditor.splice(index, 1)
-      const indexFrameBeingEdited = Math.max(0, index - 1)
-      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[indexFrameBeingEdited] : null;
-    },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
@@ -155,11 +149,14 @@ const store = createStore({
       allFrames.forEach(f => f.deleteReferencesToFrame(frame))
 
       //remove frame from its annotations
-      state.sourceDocuments.forEach(doc => {
-        doc.getAnnotationsForFrame(frame).forEach(annotation => {
-          annotation.frame = null
-        })
-      })
+      // state.sourceDocuments.forEach(doc => {
+      //   doc.getAnnotationsForFrame(frame).forEach(annotation => {
+      //     annotation.frame = null
+      //   })
+      // })
+
+      //remove annotations that have this frame as their frame, in all source documents
+      state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))
     },
     setTaskInformation(state, task) {
       console.log("in index.js: ", task);
