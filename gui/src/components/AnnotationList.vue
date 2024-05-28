@@ -1,12 +1,8 @@
 <template>
     <!-- show panel if snippet is selected and contains annotations -->
-    <!-- <div id="annotation-list" v-if="selectedSnippet" :style="{
-        left: `${clickedPosition[0] - 50}px`,
-        top: `${clickedPosition[1]}px`,
-    }"> -->
     <div id="annotation-list" ref="annotationListPanel" v-if="selectedSnippet && selectedSnippet.annotations.length>0" :style="{
       left: coordX + 50 + 'px',
-      top: coordY - 250 + 'px',
+      top: coordY - 150 + 'px',
     }">
         <q-card bordered>
             <q-card-section>
@@ -45,11 +41,11 @@ export default {
   // update component lifecycle hook
   updated() {
     if (this.selectedSnippet && this.selectedSnippet.annotations.length >0) {
-      // this.coordY = this.determineCoordY(
-      //     this.$refs.annotationListPanel.clientHeight
-      // );
-      console.log("this.$refs.annotationListPanel", this.$refs.annotationListPanel)
-      this.coordY = this.clickedPosition[1];
+      this.coordY = this.determineCoordY(
+          this.$refs.annotationListPanel.clientHeight
+      );
+      // console.log("this.$refs.annotationListPanel", this.$refs.annotationListPanel)
+      // this.coordY = this.clickedPosition[1];
       this.coordX = this.determineCoordX();
     }
   },
@@ -114,11 +110,11 @@ export default {
         },
         determineCoordY(componentsHeight) {
           console.log("clickedPosition:", this.clickedPosition)
-          // if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
-          //   return this.clickedPosition[1] - componentsHeight;
-          // } else {
-          //   return this.clickedPosition[1];
-          // }
+          if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
+            return this.clickedPosition[1] - componentsHeight;
+          } else {
+            return this.clickedPosition[1];
+          }
       },
     },
 }
