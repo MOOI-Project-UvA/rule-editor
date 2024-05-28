@@ -110,43 +110,7 @@ function parseJsonToInterpretation(jsonText) {
     }
 }
 
-/**
- * Finds snippets for each sentence and adds them to the sentence
- * @param {*} interpretation 
- * @param {*} sourceDoc 
- */
-function addSnippetsToSentences(interpretation, sourceDocs) {
-    const snippetsInInterpretation = interpretation
-        .frames.map(f => f.annotations
-            .map(a => a.snippets))
-        .flat().flat()
-        //get unique snippets
-        .filter((snippet, index, snippets) => snippets
-            .findIndex(s =>
-            (s.documentId == snippet.documentId &&
-                s.sentenceId == snippet.sentenceId &&
-                s.characterRange[0] == snippet.characterRange[0] &&
-                s.characterRange[1] == snippet.characterRange[1])) === index);
 
-    sourceDocs.forEach(doc => {
-        doc.sentences.forEach(sentence => {
-            const snippetsFromInterpretationForSentence = snippetsInInterpretation.filter(s => s.id == sentence.id)
-            sentence.snippets = getSnippetObjectsForSentence(sentence, snippetsFromInterpretationForSentence)
-        })
-    })
-    interpretation
-}
-
-/**
- * Creates snippet objects for sentence. In between the snippets from the interpretation, there will be snippets
- * that are not annotated. These need to be generated.
- * @param {*} sentence 
- * @param {*} snippetsFromInterpretation 
- */
-function getSnippetObjectsForSentence(sentence, snippetsFromInterpretation) {
-    //sort snippets on character range
-
-}
 export {
     convertInterpretationToJson,
     parseJsonToInterpretation
