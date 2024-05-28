@@ -85,10 +85,9 @@ export default {
   updated() {
     if (this.annotation) {
       this.coordY = this.determineCoordY(
-        this.annotation,
         this.$refs.annotationPanel.clientHeight,
       );
-      this.coordX = this.determineCoordX(this.annotation);
+      this.coordX = this.determineCoordX();
     }
   },
   methods: {
@@ -115,12 +114,12 @@ export default {
     //     this.annotation.frame.removeAnnotation(this.annotation)
     //     this.$store.commit("setAnnotationBeingEdited", null)
     // },
-    determineCoordX(annotation) {
+    determineCoordX() {
       return window.innerWidth - this.clickedPosition[0] > 440
         ? this.clickedPosition[0]
         : this.clickedPosition[0] - 440;
     },
-    determineCoordY(annotation, componentsHeight) {
+    determineCoordY(componentsHeight) {
       if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
         return this.clickedPosition[1] - componentsHeight;
       } else {
