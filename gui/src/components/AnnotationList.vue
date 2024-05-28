@@ -4,7 +4,7 @@
         left: `${clickedPosition[0] - 50}px`,
         top: `${clickedPosition[1]}px`,
     }"> -->
-    <div id="annotation-list" v-if="selectedSnippet" :style="{
+    <div id="annotation-list" v-if="selectedSnippet && selectedSnippet.annotations.length > 0" :style="{
         left: `10px`,
         bottom: `10px`,
     }">
