@@ -55,13 +55,17 @@ export class SourceDocument {
     }
 
     getAnnotationsForFrame(frame) {
+        console.log("annotations", this._sentences
+            .map(s => s.snippets.map(snippet => snippet.annotations))
+            .flat()
+            .flat())
         const annotations = this._sentences
             .map(s => s.snippets.map(snippet => snippet.annotations))
             .flat()
             .flat()
             .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index)
 
-        return annotations.filter(a => a.frame.id == frame.id)
+        return annotations.filter(a => a.frame?.id == frame.id)
     }
 
     deleteAnnotationsForFrame(frame) {

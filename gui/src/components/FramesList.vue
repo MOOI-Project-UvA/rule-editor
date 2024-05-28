@@ -76,13 +76,11 @@ export default {
     },
     methods: {
         onClick(frame) {
-            console.log("clicked frame", frame);
-            console.log("this.frameBeingEdited", this.frameBeingEdited);
-            console.log("this.annotationBeingEdited", this.annotationBeingEdited);
-
+            console.log("clicked frame", frame)
             if (
                 this.addingAnnotationToExistingFrame
             ) {
+                //add annotation to this frame
                 this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
                 this.$store.state.addingAnnotationToExistingFrame = false;
                 this.$store.state.annotationToBeAddedToExistingFrame = null;
@@ -99,7 +97,7 @@ export default {
                 this.booleanConstructBeingEdited.frame = frame;
                 this.$store.state.booleanConstructBeingEdited = null;
             } else {
-                console.log("setting frame being edited");
+                //open this frame in edit panel
                 this.$store.state.frameBeingEdited = frame
                 //if the frame is not yet in the list of edited frames, add it
                 if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {

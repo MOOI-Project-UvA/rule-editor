@@ -64,6 +64,19 @@ class Claimduty {
         this._annotations.splice(index, 1)
     }
 
+    //check if any of the roles has this frame, if so, remove it
+    deleteReferencesToFrame(frame) {
+        if (this._duty && this._duty.id == frame.id) {
+            this._duty = null
+        }
+        if (this._actor && this._actor.id == frame.id) {
+            this._actor = null
+        }
+        if (this._holder && this._holder.id == frame.id) {
+            this._holder = null
+        }
+    }
+
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
     get sentences() {
