@@ -116,7 +116,7 @@ class Act {
     }
 
     //check if any of the roles has this frame, if so, remove it
-    deleteFrameFromRoles(frame) {
+    deleteReferencesToFrame(frame) {
         if (this._action && this._action.id == frame.id) {
             this._action = null
         }
@@ -129,8 +129,6 @@ class Act {
         if (this._recipient && this._recipient.id == frame.id) {
             this._recipient = null
         }
-
-
         const indexCreates = this._creates.findIndex(f => f.id == frame.id)
         if (indexCreates != -1) {
             this._creates.splice(indexCreates, 1)
@@ -139,7 +137,7 @@ class Act {
         if (indexTerminates != -1) {
             this._creates.splice(indexTerminates, 1)
         }
-        //TODO boolean construct
+        this._precondition.removeFrame(frame)
     }
 
     // returns the ids of the containing facts
