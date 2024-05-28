@@ -31,13 +31,12 @@
       </div>
     </q-card-section>
     <q-card-actions align="right">
+      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
       <template v-if="isExistingFrame">
-        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
         <div class="message">Any changes have been saved</div>
         <q-btn color="primary" @click="saveFrame">Close</q-btn>
       </template>
       <template v-else>
-        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
         <q-btn color="primary" @click="saveFrame">Save</q-btn>
       </template>
     </q-card-actions>
@@ -77,10 +76,6 @@ export default {
     },
   },
   methods: {
-    cancelFrame() {
-      this.frame.activeField = null
-      this.$store.commit("cancelFrameBeingEdited")
-    },
     saveFrame() {
       this.frame.activeField = null
       this.$store.commit("saveFrameBeingEdited");

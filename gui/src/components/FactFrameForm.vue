@@ -50,13 +50,12 @@
       <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     </q-card-section> -->
     <q-card-actions align="right">
+      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
       <template v-if="isExistingFrame">
-        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
         <div class="message">Any changes have been saved</div>
         <q-btn color="primary" @click="saveFrame">Close</q-btn>
       </template>
       <template v-else>
-        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
         <q-btn color="primary" @click="saveFrame">Save</q-btn>
       </template>
     </q-card-actions>
@@ -111,7 +110,7 @@ export default {
   },
   methods: {
     cancelFrame() {
-      this.$store.commit("cancelFrameBeingEdited")
+      this.$store.commit("removeFrame", this.frame)
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited")

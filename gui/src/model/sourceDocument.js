@@ -55,10 +55,6 @@ export class SourceDocument {
     }
 
     getAnnotationsForFrame(frame) {
-        console.log("annotations", this._sentences
-            .map(s => s.snippets.map(snippet => snippet.annotations))
-            .flat()
-            .flat())
         const annotations = this._sentences
             .map(s => s.snippets.map(snippet => snippet.annotations))
             .flat()
@@ -69,7 +65,8 @@ export class SourceDocument {
     }
 
     deleteAnnotationsForFrame(frame) {
-
+        const annotations = this.getAnnotationsForFrame(frame)
+        annotations.forEach(a => this.deleteAnnotation(a))
     }
 
     //remove annotation from snippets
