@@ -1,26 +1,13 @@
 <template>
-  <div
-    class="panel flex flex-row"
-    :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
-    @click="handleClick"
-  >
+  <div class="panel flex flex-row" :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
+    @click="handleClick">
     <div class="col">
       <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
       <template v-if="booleanConstruct.frame">
         <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
         <div class="row-container">
-          <!-- <q-btn size="sm" :text-color="booleanConstruct.isNegated ? 'white' : 'grey-5'"
-                    :color="booleanConstruct.isNegated ? 'negative' : 'grey-5'" dense :flat="!booleanConstruct.isNegated"
-                    @click="booleanConstruct.isNegated = !booleanConstruct.isNegated">NOT</q-btn>-->
           <FrameChip :frame="booleanConstruct.frame" :disable="false" />
-          <q-btn
-            round
-            size="xs"
-            flat
-            color="negative"
-            icon="mdi-close"
-            @click="removeFrame"
-          />
+          <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="removeFrame" />
         </div>
       </template>
 
@@ -28,57 +15,24 @@
         <BooleanConstructPanel :booleanConstruct="child" />
 
         <!-- buttons for changing operator and adding another child -->
-
         <!-- show options for boolean operator -->
-        <q-btn-group
-          class="q-ml-md q-my-xs"
-          flat
-          v-if="i !== booleanConstruct.children.length - 1"
-        >
-          <q-btn
-            v-for="option in booleanOptions"
-            size="sm"
-            padding="xs md"
-            :color="
-              booleanConstruct.operatorToJoinChildren == option.value
-                ? 'primary'
-                : 'grey'
-            "
-            dense
-            @click="
-              (event) => {
-                event.stopPropagation();
-                //set operator to clicked value
-                booleanConstruct.operatorToJoinChildren = option.value;
-              }
-            "
-            :label="option.label"
-          >
+        <q-btn-group class="q-ml-md q-my-xs" flat v-if="i !== booleanConstruct.children.length - 1">
+          <q-btn v-for="option in booleanOptions" size="sm" padding="xs md" :color="booleanConstruct.operatorToJoinChildren == option.value
+    ? 'primary'
+    : 'grey'
+    " dense @click="() => {
+    //set operator to clicked value
+    booleanConstruct.operatorToJoinChildren = option.value;
+  }
+    " :label="option.label">
             <q-tooltip class="text-subtitle2">
               {{ option.description }}
             </q-tooltip>
           </q-btn>
         </q-btn-group>
         <!-- add a new operand -->
-
-        <q-btn
-          v-else
-          class="q-my-sm q-ml-md"
-          round
-          fab-mini
-          :ripple="{ center: true }"
-          color="primary"
-          size="xs"
-          icon="mdi-plus"
-          @click="
-            (event) => {
-              event.stopPropagation();
-              //if this is the last child, add child and give focus to that child
-              addChild();
-            }
-          "
-        >
-          <q-tooltip class="text-subtitle2"> Add new operand </q-tooltip>
+        <q-btn v-else class="q-my-sm q-ml-md" round dense color="primary" size="sm" icon="mdi-plus" @click="addChild">
+          <q-tooltip class="text-subtitle2">Add new operand</q-tooltip>
         </q-btn>
       </div>
       <div v-if="isBeingEdited" class="button-label">
@@ -87,34 +41,13 @@
     </div>
     <div class="col-1 row-container">
       <div>
-        <q-btn
-          size="sm"
-          color="#d42d19"
-          dense
-          flat
-          icon="mdi-minus-circle-outline"
-          @click="toggleNegation"
-        />
+        <q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
       </div>
       <div>
-        <q-btn
-          size="sm"
-          color="#007bc7"
-          dense
-          flat
-          icon="mdi-format-list-bulleted-square"
-          @click="subdivide"
-        />
+        <q-btn size="sm" color="#007bc7" dense flat icon="mdi-format-list-bulleted-square" @click="subdivide" />
       </div>
       <div v-if="booleanConstruct.parent">
-        <q-btn
-          size="sm"
-          color="#007bc7"
-          dense
-          flat
-          icon="mdi-close"
-          @click="deleteBooleanConstruct"
-        />
+        <q-btn size="sm" color="#007bc7" dense flat icon="mdi-close" @click="deleteBooleanConstruct" />
       </div>
     </div>
   </div>
@@ -201,10 +134,13 @@ export default {
         this.$store.state.booleanConstructBeingEdited = this.isBeingEdited
           ? null
           : this.booleanConstruct;
+        //de-select any other properties of the active frame, if it is a relation
+        if (this.frameBeingEdited.type.class == "relation") {
+          this.frameBeingEdited.activeField = null
+        }
       }
     },
     toggleNegation() {
-      event.stopPropagation();
       this.booleanConstruct.isNegated = !this.booleanConstruct.isNegated;
     },
     removeFrame() {

@@ -17,61 +17,19 @@
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
       <div>
-        <FactInputField label="Action" :active="frame.activeField === 'action'"
-          :facts="frame.action ? [frame.action] : []" @factRemoveClicked="frame.action = null" @click="
-    frame.activeField = frame.activeField == 'action' ? null : 'action'
-    " />
-
-        <FactInputField label="Actor" :active="frame.activeField === 'actor'" :facts="frame.actor ? [frame.actor] : []"
-          @factRemoveClicked="frame.actor = null" @click="
-    frame.activeField = frame.activeField == 'actor' ? null : 'actor'
-    " />
-
-        <FactInputField label="Object" :active="frame.activeField === 'object'"
-          :facts="frame.object ? [frame.object] : []" @factRemoveClicked="frame.object = null" @click="
-    frame.activeField = frame.activeField == 'object' ? null : 'object'
-    " />
-
-        <FactInputField label="Recipient" :active="frame.activeField === 'recipient'"
-          :facts="frame.recipient ? [frame.recipient] : []" @factRemoveClicked="frame.recipient = null" @click="
-    frame.activeField =
-    frame.activeField == 'recipient' ? null : 'recipient'
-    " />
+        <RoleSelector :frame="frame" attribute="action" label="Action" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="object" label="Object" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="recipient" label="Recipient" :multipleFramesAllowed="false" />
 
         <div class="label">Precondition</div>
         <BooleanConstructPanel :booleanConstruct="frame.precondition" />
 
         <div class="label">Postcondition</div>
-
-        <FactInputField label="Creates" :active="frame.activeField === 'creates'" :facts="frame.creates"
-          @factRemoveClicked="(fact) => {
-    const index = frame.creates.indexOf(fact);
-    if (index !== -1) {
-      frame.creates.splice(index, 1);
-    }
-  }" @click="
-    frame.activeField =
-    frame.activeField == 'creates' ? null : 'creates'
-    " />
-
-        <FactInputField label="Terminates" :active="frame.activeField === 'terminates'" :facts="frame.terminates"
-          @factRemoveClicked="(fact) => {
-    const index = frame.terminates.indexOf(fact);
-    if (index !== -1) {
-      frame.terminates.splice(index, 1);
-    }
-  }
-    " @click="
-    frame.activeField =
-    frame.activeField == 'terminates' ? null : 'terminates'
-    " />
+        <RoleSelector :frame="frame" attribute="creates" label="Creates" :multipleFramesAllowed="true" />
+        <RoleSelector :frame="frame" attribute="terminates" label="Terminates" :multipleFramesAllowed="true" />
       </div>
-
     </q-card-section>
-    <!-- <q-card-section>
-      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
-        :disable="frame.annotations.length == 0" />
-    </q-card-section> -->
     <q-card-actions align="right">
       <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
       <template v-if="isExistingFrame">
@@ -90,11 +48,10 @@
 </template>
 
 <script>
-import FactInputField from "./FactInputField.vue";
+import RoleSelector from "./RoleSelector.vue";
 import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-
 
 export default {
   emits: ["closed"],
@@ -117,6 +74,9 @@ export default {
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
+    },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited
     },
     frames() {
       return this.$store.state.frames;
@@ -141,7 +101,7 @@ export default {
     },
   },
   components: {
-    FactInputField,
+    RoleSelector,
     SentenceList,
     CommentsList,
     BooleanConstructPanel,
@@ -153,8 +113,6 @@ export default {
 .label {
   margin-left: 0px;
 }
-
-
 
 .source-text {
   font-style: italic;
