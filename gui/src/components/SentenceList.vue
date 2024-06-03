@@ -33,9 +33,6 @@ export default {
     sentences: Array,
     showNLP: Boolean
   },
-  mounted() {
-    console.log("this.sentences", this.sentences, this.showNLP);
-  },
   computed: {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;

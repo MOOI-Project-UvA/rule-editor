@@ -7,6 +7,7 @@ import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
 import AnnotationList from "../components/AnnotationList.vue"
 import AddingAnnotationToFramePanel from "../components/AddingAnnotationToFramePanel.vue"
+import DeleteConfirmationPanel from "../components/DeleteConfirmationPanel.vue"
 
 export default {
   name: "InterpretationView",
@@ -18,6 +19,7 @@ export default {
     AnnotationPanel,
     AnnotationList,
     AddingAnnotationToFramePanel,
+    DeleteConfirmationPanel
   },
   computed: {
     sourceViewIsCollapsed() {
@@ -52,6 +54,8 @@ export default {
   <AnnotationList />
   <!-- panel that appears when user is adding an annotation to a frame -->
   <AddingAnnotationToFramePanel />
+  <!-- panel that asks for confirmation when user is deleting a frame -->
+  <DeleteConfirmationPanel />
 </template>
 
 <style scoped lang="css"></style>
