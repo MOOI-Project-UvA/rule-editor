@@ -91,7 +91,7 @@ export default {
       this.$store.commit("saveFrameBeingEdited");
     },
     deleteFrame() {
-      this.$store.commit("removeFrame", this.frame)
+      this.$store.state.frameBeingDeleted = this.frame
     },
     toggleComments() {
       this.showComments = !this.showComments;

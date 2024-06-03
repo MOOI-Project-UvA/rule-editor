@@ -17,6 +17,7 @@ const store = createStore({
       step: 1, //step in the process
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
+      frameBeingDeleted: null, //frame for which confirmation of deletion is being asked
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
