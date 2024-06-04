@@ -12,6 +12,7 @@
                 <div v-for="comment in fact.comments">
                     <template v-if="commentBeingEdited == comment">
                         <q-input v-model="commentBeingEdited.content" filled type="textarea" />
+                        <q-btn class="q-mt-sm q-mr-sm" color="negative" @click="deleteComment">Delete</q-btn>
                         <q-btn class="q-mt-sm" color="primary" @click="commentBeingEdited = null">Save</q-btn>
                     </template>
                     <template v-else>
@@ -62,6 +63,11 @@ export default {
         addComment() {
             this.fact.comments.push(this.newComment)
             this.newComment = new Comment()
+        },
+        deleteComment() {
+            const index = this.fact.comments.findIndex(c => c.id == this.commentBeingEdited.id)
+            this.fact.comments.splice(index, 1)
+            this.commentBeingEdited = null
         }
     }
 }
