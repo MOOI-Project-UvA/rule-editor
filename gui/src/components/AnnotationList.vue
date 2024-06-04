@@ -1,12 +1,8 @@
 <template>
     <!-- show panel if snippet is selected and contains annotations -->
-    <!-- <div id="annotation-list" v-if="selectedSnippet" :style="{
-        left: `${clickedPosition[0] - 50}px`,
-        top: `${clickedPosition[1]}px`,
-    }"> -->
-    <div id="annotation-list" v-if="selectedAnnotations.length > 0" :style="{
-        left: `10px`,
-        bottom: `10px`,
+    <div id="annotation-list" ref="annotationListPanel" v-if="selectedSnippet && selectedSnippet.annotations.length>0" :style="{
+      left: coordX + 50 + 'px',
+      top: coordY - 150 + 'px',
     }">
         <q-card bordered>
             <q-card-section>
@@ -38,6 +34,21 @@
 
 <script>
 export default {
+    data: () => ({
+      coordX: 0,
+      coordY: 0,
+    }),
+  // update component lifecycle hook
+  updated() {
+    if (this.selectedSnippet && this.selectedSnippet.annotations.length >0) {
+      this.coordY = this.determineCoordY(
+          this.$refs.annotationListPanel.clientHeight
+      );
+      // console.log("this.$refs.annotationListPanel", this.$refs.annotationListPanel)
+      // this.coordY = this.clickedPosition[1];
+      this.coordX = this.determineCoordX();
+    }
+  },
     computed: {
         selectedSnippet() {
             return this.$store.state.selectedSnippet
@@ -91,7 +102,20 @@ export default {
             this.$store.state.addingAnnotationToExistingFrame = true
             //close annotation list panel
             this.$store.state.selectedSnippet = null
-        }
+        },
+        determineCoordX() {
+          return window.innerWidth - this.clickedPosition[0] > 440
+              ? this.clickedPosition[0]
+              : this.clickedPosition[0] - 440;
+        },
+        determineCoordY(componentsHeight) {
+          console.log("clickedPosition:", this.clickedPosition)
+          if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
+            return this.clickedPosition[1] - componentsHeight;
+          } else {
+            return this.clickedPosition[1];
+          }
+      },
     },
 }
 </script>
@@ -100,6 +124,7 @@ export default {
 #annotation-list {
     position: absolute;
     width: 440px;
+    min-height: 50px;
 }
 
 .annotation-row {
