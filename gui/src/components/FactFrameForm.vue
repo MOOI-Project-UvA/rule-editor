@@ -14,9 +14,10 @@
           </q-btn>
         </div>
         <div class="col-1">
-          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
+          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+            @click="showComments = !showComments">
             <q-tooltip class="text-subtitle2">
-              Add comment
+              Comments
             </q-tooltip>
           </q-btn>
         </div>
@@ -60,7 +61,7 @@
       </template>
     </q-card-actions>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
+  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
 <script>
@@ -130,9 +131,6 @@ export default {
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)
-    },
-    toggleComments() {
-      this.showComments = !this.showComments
     },
     setSubType(subType) {
       this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType
