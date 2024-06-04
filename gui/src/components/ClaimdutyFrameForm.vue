@@ -2,8 +2,15 @@
   <q-card flat bordered v-if="frame">
 
     <q-card-section>
-      <div class="float-right"><q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-          @click="showComments = !showComments"></q-btn></div>
+      <div class="float-right">
+        <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+          @click="showComments = !showComments">
+          <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+          <q-tooltip class="text-subtitle2">
+            Comments
+          </q-tooltip>
+        </q-btn>
+      </div>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>

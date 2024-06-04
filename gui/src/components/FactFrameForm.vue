@@ -16,6 +16,7 @@
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
             @click="showComments = !showComments">
+            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
             <q-tooltip class="text-subtitle2">
               Comments
             </q-tooltip>
