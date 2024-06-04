@@ -3,7 +3,7 @@
 
     <q-card-section>
       <div class="float-right"><q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-          @click="toggleComments"></q-btn></div>
+          @click="showComments = !showComments"></q-btn></div>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>
@@ -33,7 +33,7 @@
       </template>
     </q-card-actions>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
+  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
 <script>
@@ -74,9 +74,6 @@ export default {
     },
     deleteFrame() {
       this.$store.state.frameBeingDeleted = this.frame
-    },
-    toggleComments() {
-      this.showComments = !this.showComments
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)

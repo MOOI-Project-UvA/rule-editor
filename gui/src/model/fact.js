@@ -45,6 +45,7 @@ export class Fact {
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
     get comments() { return this._comments }
+    set comments(comments) { this._comments = comments }
 
     get annotations() { return this._annotations }
     addAnnotation(annotation) {
@@ -77,7 +78,7 @@ export class Fact {
             fact: this.fact,
             typeId: this.type.id,
             subTypeId: this.subType ? this.subType.id : null,
-            comments: this.comments,
+            comments: this.comments.map(c => c.toFlatObject()),
             isComplex: this.isComplex,
             subdivision: this.subdivision.toFlatObject()
         }
@@ -100,7 +101,7 @@ export class Fact {
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
-        this._comments = data.comments
+        //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
 }
 

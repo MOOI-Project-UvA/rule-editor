@@ -6,6 +6,7 @@ import { frameTypes } from '../model/frame.js'
 import { Sentence } from '../model/sentence.js'
 import { Annotation } from '../model/annotation.js'
 import { Snippet } from '../model/snippet.js'
+import { Comment } from '../model/comment.js'
 
 
 
@@ -74,16 +75,16 @@ function parseJsonToInterpretation(jsonText) {
         frames.push(frame)
     })
 
-    //go to the loaded json once more, and fill each frame with data
-    //while replacing references by ID with references to frame objects
+    // Go to the loaded json once more, and fill each frame with data
+    // while replacing references by ID with references to frame objects
     parsedInterpretation.frames.forEach(parsedFrame => {
         let frame = frames.find(f => f.id === parsedFrame.id)
         frame.fromFlatObject(parsedFrame, frames)
 
-        //go through the annotations of each frame. Create annotations objects.
-        //go through the snippets of each parsed annotation, and add snippets to the
-        //correct sentence in the correct document. Add the annotation to the snippet
-        //the annotation object links a frame with a snippet.
+        // Go through the annotations of each frame. Create annotations objects.
+        // Go through the snippets of each parsed annotation, and add snippets to the
+        // correct sentence in the correct document. Add the annotation to the snippet
+        // the annotation object links a frame with a snippet.
         parsedFrame.annotations.forEach(parsedAnnotation => {
             const annotation = new Annotation()
             annotation.frame = frame
@@ -101,6 +102,13 @@ function parseJsonToInterpretation(jsonText) {
                 }
                 snippet.annotations.push(annotation)
             })
+        })
+
+        // Add comments to the frame
+        frame.comments = parsedFrame.comments.map(parsedComment => {
+            let comment = new Comment()
+            comment.fromFlatObject(parsedComment)
+            return comment
         })
     })
 
