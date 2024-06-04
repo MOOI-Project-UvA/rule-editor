@@ -1,11 +1,13 @@
 <template>
   <div class="document" @mouseup="handleSelection">
-    <div class="q-mb-sm" :style="getStyleForLineSpacing(sentence)" v-for="sentence in sentences">
-      <span class="snippet" :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets"
+    <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)" v-for="sentence in sentences">
+       <div>
+        <span class="snippet" :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets"
         :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
         {{ snippet.text }}
       </span>
-      <div v-if="showNLP && sentences.length > 0">
+         </div>
+      <div v-if="showNLP && sentences.length > 0" class="self-center">
         <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
           :loading="sentence.loading" @click.stop="sendDataToNlp(sentence)" @mouseup.stop>
           <q-tooltip anchor="bottom middle" class="text-subtitle2">
@@ -20,6 +22,8 @@
             </template>
         </q-btn>
       </div>
+
+
     </div>
 
   </div>
@@ -204,5 +208,10 @@ export default {
 <style scoped>
 .document {
   word-wrap: break-word;
+}
+
+#sentence-list{
+  //display: flex;
+  //justify-content: space-between;
 }
 </style>
