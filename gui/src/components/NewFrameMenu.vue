@@ -1,8 +1,8 @@
 <template>
   <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap q-mt-sm">
-    <div>Add new:</div>
+    <div>Add:</div>
     <div>
-      <q-btn v-for="frameType in frameTypes" class="q-ml-xs" size="sm" :color="colors[frameType.id]"
+      <q-btn v-for="frameType in frameTypes" class="q-ml-xs" size="md" :color="colors[frameType.id]"
         :label="frameType.label" @click="createFrame(frameType)">
         <q-tooltip class="text-subtitle2">
           Add frame of type {{ frameType.label }}

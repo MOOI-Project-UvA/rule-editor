@@ -7,7 +7,7 @@
                     <b>{{ frameType.label }}</b>
                 </div>
                 <div class="chips">
-                    <div v-for="frame in frames.filter(
+                    <div v-for="frame in filteredFrames.filter(
             (f) => f.type.id == frameType.id && !f.subType,
         )" @click="onClick(frame)">
                         <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
@@ -20,7 +20,7 @@
                         <q-avatar size="md" :icon="icons[subType.id]" />
                         <b>{{ subType.label }}</b>
                         <div class="chips">
-                            <div v-for="frame in frames.filter(
+                            <div v-for="frame in filteredFrames.filter(
             (f) =>
                 f.type.id == frameType.id &&
                 f.subType &&
@@ -47,16 +47,22 @@ export default {
     data: () => ({
         frameTypes: frameTypes,
         icons: icons,
+        minimumLengthSearchTerm: 2
     }),
-    mounted() {
-        console.log("frameslist mounted: frametypes", this.frameTypes)
-    },
     components: {
         FrameChip,
+    },
+    props: {
+        searchTerm: String
     },
     computed: {
         frames() {
             return this.$store.state.frames;
+        },
+        filteredFrames() {
+            return this.searchTerm.length >= this.minimumLengthSearchTerm
+                ? this.frames.filter(f => f.label.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                : this.frames
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;
