@@ -90,6 +90,7 @@ class Act {
     }
 
     get comments() { return this._comments }
+    set comments(comments) { this._comments = comments }
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
@@ -116,7 +117,7 @@ class Act {
     }
 
     //check if any of the roles has this frame, if so, remove it
-    deleteFrameFromRoles(frame) {
+    deleteReferencesToFrame(frame) {
         if (this._action && this._action.id == frame.id) {
             this._action = null
         }
@@ -129,8 +130,6 @@ class Act {
         if (this._recipient && this._recipient.id == frame.id) {
             this._recipient = null
         }
-
-
         const indexCreates = this._creates.findIndex(f => f.id == frame.id)
         if (indexCreates != -1) {
             this._creates.splice(indexCreates, 1)
@@ -139,7 +138,7 @@ class Act {
         if (indexTerminates != -1) {
             this._creates.splice(indexTerminates, 1)
         }
-        //TODO boolean construct
+        this._precondition.removeFrame(frame)
     }
 
     // returns the ids of the containing facts
@@ -172,7 +171,7 @@ class Act {
             recipientId: this.recipient?.id,
             creates: this.creates.map(f => f.id),
             terminates: this.terminates.map(f => f.id),
-            comments: this.comments,
+            comments: this.comments.map(c => c.toFlatObject()),
         }
     }
 
@@ -189,7 +188,7 @@ class Act {
         this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
-        this._comments = frameData.comments
+        //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
 }
 

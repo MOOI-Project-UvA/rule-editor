@@ -17,6 +17,7 @@ const store = createStore({
       step: 1, //step in the process
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
+      frameBeingDeleted: null, //frame for which confirmation of deletion is being asked
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
@@ -93,12 +94,6 @@ const store = createStore({
       state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
 
     },
-    cancelFrameBeingEdited(state) {
-      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
-      state.framesOpenInEditor.splice(index, 1)
-      const indexFrameBeingEdited = Math.max(0, index - 1)
-      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[indexFrameBeingEdited] : null;
-    },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
@@ -124,34 +119,45 @@ const store = createStore({
       state.annotationBeingEdited = annotation;
     },
     removeFrame(state, frame) {
-      //check if frame in edited list
+      //check if frame in editing list
       const openFrameIndex = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
       if (openFrameIndex != -1) {
         state.framesOpenInEditor.splice(openFrameIndex, 1);
-        state.framesOpenInEditor = [...state.framesOpenInEditor]
+        //state.framesOpenInEditor = [...state.framesOpenInEditor]
       }
       if (state.frameBeingEdited.id == frame.id) {
         const nrFramesOpen = state.framesOpenInEditor.length
+        //if frame is the one being edited, assign other frame
+        //to be open in editor, if there are any other frames being edited
         state.frameBeingEdited = nrFramesOpen > 0
           ? state.framesOpenInEditor[nrFramesOpen - 1]
           : null
         state.booleanConstructBeingEdited = null;
         state.showFrameSource = null;
       }
+      //check if frame is in frames list (containing all saved frames)
       const frameIndex = state.frames.findIndex(f => f.id == frame.id);
-      state.frames.splice(frameIndex, 1);
-      //remove frame from any attribute of frames of type 'relation'.
-      //those frames can be in list of edited frames as well.
-      state.frames.concat(state.framesOpenInEditor).filter(f => f.type.class == "relation").forEach(relation => {
-        relation.deleteFrameFromRoles(frame)
-      })
+      if (frameIndex != -1) {
+        state.frames.splice(frameIndex, 1);
+      }
+
+      //remove frame from any attribute of frames of type 'relation' and from
+      //any boolean construct in a frame
+      //those frames can be in list of edited frames as well
+      const allFrames = state.frames
+        .concat(state.framesOpenInEditor)
+        .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
+      allFrames.forEach(f => f.deleteReferencesToFrame(frame))
 
       //remove frame from its annotations
-      state.sourceDocuments.forEach(doc => {
-        doc.getAnnotationsForFrame(frame).forEach(annotation => {
-          annotation.frame = null
-        })
-      })
+      // state.sourceDocuments.forEach(doc => {
+      //   doc.getAnnotationsForFrame(frame).forEach(annotation => {
+      //     annotation.frame = null
+      //   })
+      // })
+
+      //remove annotations that have this frame as their frame, in all source documents
+      state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))
     },
     setTaskInformation(state, task) {
       console.log("in index.js: ", task);
@@ -210,11 +216,16 @@ const store = createStore({
       context.state.frameBeingEdited = new Act();
     },
     saveInterpretation(context) {
-      //TODO combine frames that are saved with any unsaved
+      //combine frames that are saved with frames open in editor
+      //keep unique list of frames
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
+
       //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
-          context.state.frames,
+          allFrames,
           context.state.sourceDocuments,
         ),
       );

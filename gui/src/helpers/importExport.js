@@ -6,6 +6,7 @@ import { frameTypes } from '../model/frame.js'
 import { Sentence } from '../model/sentence.js'
 import { Annotation } from '../model/annotation.js'
 import { Snippet } from '../model/snippet.js'
+import { Comment } from '../model/comment.js'
 
 
 
@@ -74,16 +75,16 @@ function parseJsonToInterpretation(jsonText) {
         frames.push(frame)
     })
 
-    //go to the loaded json once more, and fill each frame with data
-    //while replacing references by ID with references to frame objects
+    // Go to the loaded json once more, and fill each frame with data
+    // while replacing references by ID with references to frame objects
     parsedInterpretation.frames.forEach(parsedFrame => {
         let frame = frames.find(f => f.id === parsedFrame.id)
         frame.fromFlatObject(parsedFrame, frames)
 
-        //go through the annotations of each frame. Create annotations objects.
-        //go through the snippets of each parsed annotation, and add snippets to the
-        //correct sentence in the correct document. Add the annotation to the snippet
-        //the annotation object links a frame with a snippet.
+        // Go through the annotations of each frame. Create annotations objects.
+        // Go through the snippets of each parsed annotation, and add snippets to the
+        // correct sentence in the correct document. Add the annotation to the snippet
+        // the annotation object links a frame with a snippet.
         parsedFrame.annotations.forEach(parsedAnnotation => {
             const annotation = new Annotation()
             annotation.frame = frame
@@ -102,6 +103,13 @@ function parseJsonToInterpretation(jsonText) {
                 snippet.annotations.push(annotation)
             })
         })
+
+        // Add comments to the frame
+        frame.comments = parsedFrame.comments.map(parsedComment => {
+            let comment = new Comment()
+            comment.fromFlatObject(parsedComment)
+            return comment
+        })
     })
 
     return {
@@ -110,43 +118,7 @@ function parseJsonToInterpretation(jsonText) {
     }
 }
 
-/**
- * Finds snippets for each sentence and adds them to the sentence
- * @param {*} interpretation 
- * @param {*} sourceDoc 
- */
-function addSnippetsToSentences(interpretation, sourceDocs) {
-    const snippetsInInterpretation = interpretation
-        .frames.map(f => f.annotations
-            .map(a => a.snippets))
-        .flat().flat()
-        //get unique snippets
-        .filter((snippet, index, snippets) => snippets
-            .findIndex(s =>
-            (s.documentId == snippet.documentId &&
-                s.sentenceId == snippet.sentenceId &&
-                s.characterRange[0] == snippet.characterRange[0] &&
-                s.characterRange[1] == snippet.characterRange[1])) === index);
 
-    sourceDocs.forEach(doc => {
-        doc.sentences.forEach(sentence => {
-            const snippetsFromInterpretationForSentence = snippetsInInterpretation.filter(s => s.id == sentence.id)
-            sentence.snippets = getSnippetObjectsForSentence(sentence, snippetsFromInterpretationForSentence)
-        })
-    })
-    interpretation
-}
-
-/**
- * Creates snippet objects for sentence. In between the snippets from the interpretation, there will be snippets
- * that are not annotated. These need to be generated.
- * @param {*} sentence 
- * @param {*} snippetsFromInterpretation 
- */
-function getSnippetObjectsForSentence(sentence, snippetsFromInterpretation) {
-    //sort snippets on character range
-
-}
 export {
     convertInterpretationToJson,
     parseJsonToInterpretation

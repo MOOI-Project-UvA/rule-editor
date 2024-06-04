@@ -2,7 +2,13 @@
   <q-card flat bordered v-if="frame">
     <q-card-section>
       <div class="float-right">
-        <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments"></q-btn>
+        <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+          @click="showComments = !showComments">
+          <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+          <q-tooltip class="text-subtitle2">
+            Comments
+          </q-tooltip>
+        </q-btn>
       </div>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.act" label="Act" autogrow />
@@ -17,85 +23,38 @@
     </q-card-section>
     <q-card-section class="q-pa-md q-gutter-sm">
       <div>
-        <FactInputField label="Action" :active="frame.activeField === 'action'"
-          :facts="frame.action ? [frame.action] : []" @factRemoveClicked="frame.action = null" @click="
-    frame.activeField = frame.activeField == 'action' ? null : 'action'
-    " />
-
-        <FactInputField label="Actor" :active="frame.activeField === 'actor'" :facts="frame.actor ? [frame.actor] : []"
-          @factRemoveClicked="frame.actor = null" @click="
-    frame.activeField = frame.activeField == 'actor' ? null : 'actor'
-    " />
-
-        <FactInputField label="Object" :active="frame.activeField === 'object'"
-          :facts="frame.object ? [frame.object] : []" @factRemoveClicked="frame.object = null" @click="
-    frame.activeField = frame.activeField == 'object' ? null : 'object'
-    " />
-
-        <FactInputField label="Recipient" :active="frame.activeField === 'recipient'"
-          :facts="frame.recipient ? [frame.recipient] : []" @factRemoveClicked="frame.recipient = null" @click="
-    frame.activeField =
-    frame.activeField == 'recipient' ? null : 'recipient'
-    " />
+        <RoleSelector :frame="frame" attribute="action" label="Action" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="object" label="Object" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="recipient" label="Recipient" :multipleFramesAllowed="false" />
 
         <div class="label">Precondition</div>
         <BooleanConstructPanel :booleanConstruct="frame.precondition" />
 
         <div class="label">Postcondition</div>
-
-        <FactInputField label="Creates" :active="frame.activeField === 'creates'" :facts="frame.creates"
-          @factRemoveClicked="(fact) => {
-    const index = frame.creates.indexOf(fact);
-    if (index !== -1) {
-      frame.creates.splice(index, 1);
-    }
-  }" @click="
-    frame.activeField =
-    frame.activeField == 'creates' ? null : 'creates'
-    " />
-
-        <FactInputField label="Terminates" :active="frame.activeField === 'terminates'" :facts="frame.terminates"
-          @factRemoveClicked="(fact) => {
-    const index = frame.terminates.indexOf(fact);
-    if (index !== -1) {
-      frame.terminates.splice(index, 1);
-    }
-  }
-    " @click="
-    frame.activeField =
-    frame.activeField == 'terminates' ? null : 'terminates'
-    " />
+        <RoleSelector :frame="frame" attribute="creates" label="Creates" :multipleFramesAllowed="true" />
+        <RoleSelector :frame="frame" attribute="terminates" label="Terminates" :multipleFramesAllowed="true" />
       </div>
-
     </q-card-section>
-    <!-- <q-card-section>
-      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" color="primary"
-        :disable="frame.annotations.length == 0" />
-    </q-card-section> -->
     <q-card-actions align="right">
+      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
       <template v-if="isExistingFrame">
-        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
         <div class="message">Any changes have been saved</div>
         <q-btn color="primary" @click="saveFrame">Close</q-btn>
       </template>
       <template v-else>
-        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
         <q-btn color="primary" @click="saveFrame">Save</q-btn>
       </template>
     </q-card-actions>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="() => {
-    showComments = false;
-  }
-    " />
+  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
 <script>
-import FactInputField from "./FactInputField.vue";
+import RoleSelector from "./RoleSelector.vue";
 import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-
 
 export default {
   emits: ["closed"],
@@ -119,6 +78,9 @@ export default {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited
+    },
     frames() {
       return this.$store.state.frames;
     },
@@ -127,26 +89,19 @@ export default {
     },
   },
   methods: {
-    cancelFrame() {
-      this.frame.activeField = null
-      this.$store.commit("cancelFrameBeingEdited")
-    },
     saveFrame() {
       this.frame.activeField = null
       this.$store.commit("saveFrameBeingEdited");
     },
     deleteFrame() {
-      this.$store.commit("removeFrame", this.frame)
-    },
-    toggleComments() {
-      this.showComments = !this.showComments;
+      this.$store.state.frameBeingDeleted = this.frame
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
   },
   components: {
-    FactInputField,
+    RoleSelector,
     SentenceList,
     CommentsList,
     BooleanConstructPanel,
@@ -158,8 +113,6 @@ export default {
 .label {
   margin-left: 0px;
 }
-
-
 
 .source-text {
   font-style: italic;

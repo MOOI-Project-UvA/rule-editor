@@ -61,11 +61,12 @@ export class SourceDocument {
             .flat()
             .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index)
 
-        return annotations.filter(a => a.frame.id == frame.id)
+        return annotations.filter(a => a.frame?.id == frame.id)
     }
 
     deleteAnnotationsForFrame(frame) {
-
+        const annotations = this.getAnnotationsForFrame(frame)
+        annotations.forEach(a => this.deleteAnnotation(a))
     }
 
     //remove annotation from snippets

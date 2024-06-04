@@ -14,9 +14,11 @@
           </q-btn>
         </div>
         <div class="col-1">
-          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline" @click="toggleComments">
+          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+            @click="showComments = !showComments">
+            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
             <q-tooltip class="text-subtitle2">
-              Add comment
+              Comments
             </q-tooltip>
           </q-btn>
         </div>
@@ -50,18 +52,17 @@
       <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     </q-card-section> -->
     <q-card-actions align="right">
+      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
       <template v-if="isExistingFrame">
-        <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
         <div class="message">Any changes have been saved</div>
         <q-btn color="primary" @click="saveFrame">Close</q-btn>
       </template>
       <template v-else>
-        <q-btn color="negative" @click="cancelFrame">Delete</q-btn>
         <q-btn color="primary" @click="saveFrame">Save</q-btn>
       </template>
     </q-card-actions>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="() => { showComments = false }" />
+  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
 <script>
@@ -111,13 +112,13 @@ export default {
   },
   methods: {
     cancelFrame() {
-      this.$store.commit("cancelFrameBeingEdited")
+      this.$store.commit("removeFrame", this.frame)
     },
     saveFrame() {
       this.$store.commit("saveFrameBeingEdited")
     },
     deleteFrame() {
-      this.$store.commit("removeFrame", this.frame)
+      this.$store.state.frameBeingDeleted = this.frame
     },
     toggleSubdivision() {
       if (this.subdivided) {
@@ -131,9 +132,6 @@ export default {
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)
-    },
-    toggleComments() {
-      this.showComments = !this.showComments
     },
     setSubType(subType) {
       this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType

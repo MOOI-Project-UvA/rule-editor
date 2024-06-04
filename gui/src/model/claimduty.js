@@ -55,6 +55,7 @@ class Claimduty {
     //TODO these methods are also present in fact and claim-duty.
     //maybe use a super-class 'frame' and add them there
     get annotations() { return this._annotations }
+
     addAnnotation(annotation) {
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this
@@ -62,6 +63,19 @@ class Claimduty {
     removeAnnotation(annotation) {
         const index = this._annotations.indexOf(annotation)
         this._annotations.splice(index, 1)
+    }
+
+    //check if any of the roles has this frame, if so, remove it
+    deleteReferencesToFrame(frame) {
+        if (this._duty && this._duty.id == frame.id) {
+            this._duty = null
+        }
+        if (this._actor && this._actor.id == frame.id) {
+            this._actor = null
+        }
+        if (this._holder && this._holder.id == frame.id) {
+            this._holder = null
+        }
     }
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
@@ -92,6 +106,7 @@ class Claimduty {
     }
 
     get comments() { return this._comments }
+    set comments(comments) { this._comments = comments }
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
@@ -107,7 +122,6 @@ class Claimduty {
                 break
         }
     }
-
 
     checkFrameExistance(claimduty, element) {
         const duty = claimduty._duty !== null && claimduty._duty._id === element._id ? true : false;
@@ -153,7 +167,7 @@ class Claimduty {
             dutyId: this.duty?.id, //take frame id instead of frame object
             actorId: this.actor?.id,
             holderId: this.holder?.id,
-            comments: this.comments,
+            comments: this.comments.map(c => c.toFlatObject()),
         }
     }
 
@@ -165,12 +179,7 @@ class Claimduty {
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
-        this._comments = frameData.comments
-        frameData.annotations.forEach(a => {
-            let annotation = new Annotation()
-            annotation.fromFlatObject(a)
-            this.addAnnotation(annotation)
-        })
+        //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
 }
 
