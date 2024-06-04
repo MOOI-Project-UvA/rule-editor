@@ -6,8 +6,18 @@
         {{ snippet.text }}
       </span>
       <div v-if="showNLP && sentences.length > 0">
-        <q-btn size="md" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
-          :loading="sentence.loading" @click.stop="sendDataToNlp(sentence)" @mouseup.stop="">
+        <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
+          :loading="sentence.loading" @click.stop="sendDataToNlp(sentence)" @mouseup.stop>
+          <q-tooltip anchor="bottom middle" class="text-subtitle2">
+              <span
+                >Detect constituents of an act frame. <br />This feature is
+                still experimental, so use it with caution. <br />It is
+                recommended to use it only once per text snippet.</span
+              >
+            </q-tooltip>
+            <template v-slot:loading>
+              <q-spinner-gears />
+            </template>
         </q-btn>
       </div>
     </div>
