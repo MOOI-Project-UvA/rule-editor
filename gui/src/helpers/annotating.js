@@ -4,10 +4,14 @@
 
 import { Snippet } from "../model/snippet"
 
+// This function returns sentences and snippets where that cover the selected text,
+// and it returns the offsets within the snippets of the selected text.
+// It takes into account that selection can be done from right to left as
+// well as from left to right
 export function getSelectionAsSnippets(selection, sentences) {
-    let startSentenceIndex
-    let endSentenceIndex
-    let startSnippet
+    let startSentence //sentence that contains leftmost position of selection
+    let endSentence //sentence that contains rightmost position of selection
+    let startSnippet //snippet that contains leftmost position of 
     let endSnippet
     let startOffset //within snippet
     let endOffset //within snippet
@@ -28,15 +32,15 @@ export function getSelectionAsSnippets(selection, sentences) {
         endSnippet = anchorSnippet //last snippet in selection
         startOffset = selection.focusOffset //character offset in start snippet
         endOffset = selection.anchorOffset //character offset in end snippet
-        startSentenceIndex = focusSentenceIndex
-        endSentenceIndex = anchorSentenceIndex
+        startSentence = focusSentence
+        endSentence = anchorSentence
     } else if (anchorSentenceIndex == focusSentenceIndex) {
         //anchor and focussnippet are in the same sentence. Check the order of the snippets
         //using the index of both within the sentence
         const anchorSnippetIndex = sentences[anchorSentenceIndex].snippets.findIndex(s => s.id == anchorSnippet.id)
         const focusSnippetIndex = sentences[focusSentenceIndex].snippets.findIndex(s => s.id == focusSnippet.id)
-        startSentenceIndex = focusSentenceIndex //same as anchorsentenceindex
-        endSentenceIndex = anchorSentenceIndex
+        startSentence = focusSentence //same as anchorsentence
+        endSentence = anchorSentence
         if (anchorSnippetIndex > focusSnippetIndex) { //user selected from right to left
             startSnippet = focusSnippet //first snippet in selection
             endSnippet = anchorSnippet //last snippet in selection
@@ -64,12 +68,41 @@ export function getSelectionAsSnippets(selection, sentences) {
         endSnippet = focusSnippet //last snippet in selection
         startOffset = selection.anchorOffset
         endOffset = selection.focusOffset
-        startSentenceIndex = anchorSentenceIndex
-        endSentenceIndex = focusSentenceIndex
+        startSentence = anchorSentence
+        endSentence = focusSentence
     }
     return {
-        startSentenceIndex: startSentenceIndex,
-        endSentenceIndex: endSentenceIndex,
+        startSentence: startSentence,
+        endSentence: endSentence,
+        startSnippet: startSnippet,
+        endSnippet: endSnippet,
+        startOffset: startOffset,
+        endOffset: endOffset
+    }
+}
+
+//this function is used to get snippets and offsets within these snippets
+//that cover the given character range
+export function getSelectedRangeAsSnippets(sentence, selectedCharacterRange) {
+    //start- and end-sentence are the same
+    //find start and end snippet within the sentence
+    //find snippet that includes start of selectedCharacterRange
+    const startSnippet = sentence.snippets.find(s => (
+        selectedCharacterRange[0] >= s.characterRange[0] &&
+        selectedCharacterRange[0] < s.characterRange[1]
+    ))
+    //offset in snippet of start of selectedCharacterRange
+    const startOffset = selectedCharacterRange[0] - startSnippet.characterRange[0]
+    //find snippet that includes end of selectedCharacterRange
+    const endSnippet = sentence.snippets.find(s => (
+        selectedCharacterRange[1] > s.characterRange[0] &&
+        selectedCharacterRange[1] <= s.characterRange[1]
+    ))
+    //offset in snippet of end of selectedCharacterRange
+    const endOffset = selectedCharacterRange[1] - endSnippet.characterRange[0]
+    return {
+        startSentence: sentence,
+        endSentence: sentence,
         startSnippet: startSnippet,
         endSnippet: endSnippet,
         startOffset: startOffset,
@@ -82,15 +115,14 @@ export function splitAndReturnSelectedSnippets(
     sentences) {
     //destructure
     const {
-        startSentenceIndex,
-        endSentenceIndex,
+        startSentence,
+        endSentence,
         startSnippet,
         endSnippet,
         startOffset,
         endOffset
     } = selectionAsSnippets
-    const startSentence = sentences[startSentenceIndex]
-    const endSentence = sentences[endSentenceIndex]
+
     //split start snippet and replace it in the sentence by the two new snippets
     const startSubSnippets = splitSnippet(startSnippet, startOffset, startSentence)
     let endSubSnippets
@@ -109,7 +141,7 @@ export function splitAndReturnSelectedSnippets(
     let selectionSnippets = []
     const startSnippetIndexInSentence = startSentence.snippets.findIndex(s => s.id == startSubSnippets[1].id)
     const endSnippetIndexInSentence = endSentence.snippets.findIndex(s => s.id == endSubSnippets[0].id)
-    if (startSentenceIndex == endSentenceIndex) {
+    if (startSentence.id == endSentence.id) {
         //same sentence
         if (startSnippet == endSnippet) {
             //same snippet
@@ -119,8 +151,8 @@ export function splitAndReturnSelectedSnippets(
             selectionSnippets = startSentence.snippets.slice(startSnippetIndexInSentence, endSnippetIndexInSentence + 1)
         }
     } else {
-        // const startSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == startSnippet.sentenceId)
-        // const endSentenceSequenceNumber = sentences.findIndex(sentence => sentence.id == endSnippet.sentenceId)
+        const startSentenceIndex = sentences.findIndex(sentence => sentence.id == startSentence.id)
+        const endSentenceIndex = sentences.findIndex(sentence => sentence.id == endSentence.id)
         selectionSnippets = startSentence.snippets.slice(startSnippetIndexInSentence) //copy start snippet plus rest of sentence
         for (let sentenceNr = startSentenceIndex + 1; sentenceNr < endSentenceIndex; sentenceNr++) {
             //add all snippets of intermediate sentences

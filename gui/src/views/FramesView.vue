@@ -31,7 +31,7 @@
         </div>
 
         <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
-          <FramesList :searchTerm="searchTerm" />
+          <FramesList />
         </div>
       </div>
 
@@ -46,12 +46,10 @@
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import FramesList from "../components/FramesList.vue";
 import FrameEditorPanel from "../components/FrameEditorPanel.vue";
-import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
 
 export default {
   data: () => ({
-    frameTypes: frameTypes,
     icons: icons,
     colors: colors,
     searchTerm: ""
@@ -75,13 +73,13 @@ export default {
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        this.frameBeingEdited.type.class == "relation"
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? this.frameBeingEdited.allowedSubClassesForActiveField
         : [];
     },
     message() {
       return this.frameBeingEdited &&
-        ["act", "claim_duty"].includes(this.frameBeingEdited)
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? "Add to frame"
         : "";
     },

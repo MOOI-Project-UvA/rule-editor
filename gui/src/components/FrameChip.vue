@@ -8,9 +8,14 @@
   </q-chip> -->
   <div>
     <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
-      :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]">
-      {{ frame.label != "" ? frame.label : frame.subType ? frame.subType.label : frame.type.label }}
+      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
+      {{ frame.label != "" ? frame.label : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
+        frameTypes[frame.typeId].label }}
     </div>
+    <!-- <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
+      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
+      {{ frame.typeId }} |{{ frame.subTypeId }}|
+    </div> -->
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
         {{ frame.label != "" ? frame.label : "- no label given yet -" }}
@@ -21,11 +26,13 @@
 
 <script>
 import { icons, colors } from "../helpers/config.js";
+import { frameTypes } from "../model/frame";
 export default {
   data: () => ({
     icons: icons,
     colors: colors,
     hover: false,
+    frameTypes: frameTypes
   }),
   props: {
     frame: Object,

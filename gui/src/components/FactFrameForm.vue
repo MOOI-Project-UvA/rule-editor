@@ -2,12 +2,13 @@
   <q-card flat bordered class="my-card">
     <q-card-section>
       <div class="row">
-        <div class="col-2">FACT {{ frame.subType && !frame.isComplex ? "of sub-type " + frame.subType.label : "" }}
+        <div class="col-2">FACT {{ frame.subTypeId ? "of sub-type " + frameTypes.fact.subTypes[frame.subTypeId].label :
+          "" }}
         </div>
         <div class="col q-gutter-sm">
-          <q-btn size="sm" round v-for="subType in factSubTypes"
-            :color="frame.subType && frame.subType.id == subType.id ? colors[subType.id] : 'grey-6'"
-            :icon="icons[subType.id]" @click="setSubType(subType)">
+          <q-btn size="sm" round v-for="(subType, subTypeId) in frameTypes.fact.subTypes"
+            :color="frame.subTypeId == subTypeId ? colors[subTypeId] : 'grey-6'" :icon="icons[subTypeId]"
+            @click="setSubType(subTypeId)">
             <q-tooltip class="text-subtitle2">
               Set subtype to {{ subType.label }}
             </q-tooltip>
@@ -53,13 +54,13 @@
     </q-card-section> -->
     <q-card-actions align="right">
       <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
-      <template v-if="isExistingFrame">
-        <div class="message">Any changes have been saved</div>
-        <q-btn color="primary" @click="saveFrame">Close</q-btn>
-      </template>
-      <template v-else>
-        <q-btn color="primary" @click="saveFrame">Save</q-btn>
-      </template>
+
+      <q-btn color="primary" @click="closeFrame">Close
+        <q-tooltip class="text-subtitle2">
+          Any changes have been saved
+        </q-tooltip>
+      </q-btn>
+
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
@@ -80,7 +81,8 @@ export default {
     colors: colors,
     subdivided: false,
     showSource: false,
-    showComments: false
+    showComments: false,
+    frameTypes: frameTypes
   }),
   computed: {
     sourceDocuments() {
@@ -94,28 +96,10 @@ export default {
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    frames() {
-      return this.$store.state.frames;
-    },
-    isExistingFrame() {
-      return this.frames.some((f) => f.id == this.frame.id)
-    },
-    factSubTypes() {
-      const factType = frameTypes.find(f => f.id == "fact")
-      return factType.subTypes
-    },
-  },
-  mounted() {
-    if (this.frame.booleanConstruct) {
-      this.subdivided = true
-    }
   },
   methods: {
-    cancelFrame() {
-      this.$store.commit("removeFrame", this.frame)
-    },
-    saveFrame() {
-      this.$store.commit("saveFrameBeingEdited")
+    closeFrame() {
+      this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
       this.$store.state.frameBeingDeleted = this.frame
@@ -133,8 +117,8 @@ export default {
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)
     },
-    setSubType(subType) {
-      this.frame.subType = this.frame.subType && this.frame.subType.id == subType.id ? null : subType
+    setSubType(subTypeId) {
+      this.frame.subTypeId = this.frame.subTypeId == subTypeId ? null : subTypeId
     }
   },
   components: { BooleanConstructPanel, CommentsList, SentenceList }

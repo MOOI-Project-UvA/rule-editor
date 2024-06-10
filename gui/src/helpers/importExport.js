@@ -55,11 +55,9 @@ function parseJsonToInterpretation(jsonText) {
     // create an empty frame for each frame in the loaded json
     // each frame gets its id from the json data
     parsedInterpretation.frames.forEach(d => {
-        const frameType = frameTypes.find(f => f.id == d.typeId)
-
         let frame
         //create empty frame of correct type
-        switch (frameType.id) {
+        switch (d.typeId) {
             case 'fact':
                 frame = new Fact()
                 break
@@ -71,7 +69,7 @@ function parseJsonToInterpretation(jsonText) {
                 break
         }
         frame.id = d.id
-        frame.type = frameType
+        frame.typeId = d.typeId
         frames.push(frame)
     })
 

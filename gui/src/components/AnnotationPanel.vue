@@ -1,13 +1,8 @@
 <template>
-  <div
-    id="annotationPanel"
-    ref="annotationPanel"
-    v-if="annotation"
-    :style="{
-      left: coordX + 50 + 'px',
-      top: coordY - 100 + 'px',
-    }"
-  >
+  <div id="annotationPanel" ref="annotationPanel" v-if="annotation" :style="{
+    left: coordX + 50 + 'px',
+    top: coordY - 100 + 'px',
+  }">
     <q-card bordered>
       <q-card-section>
         <div>
@@ -17,34 +12,17 @@
         </div>
       </q-card-section>
       <q-card-section>
-        <template v-if="annotation.frame">
-          <div class="label">Change type of fact frame</div>
-        </template>
-        <template v-else>
-          <div class="label">Create new frame</div>
-        </template>
+
+        <div class="label">Create new frame</div>
+
         <div>
-          <q-btn
-            v-for="frameType in frameTypes"
-            class="q-mr-sm"
-            :label="frameType.label"
-            :color="
-              !annotation.frame || annotation.frame.type == frameType
-                ? colors[frameType.id]
-                : 'grey-6'
-            "
-            @click="frameTypeButtonClicked(frameType)"
-          />
+          <q-btn v-for="(frameType, frameTypeId) in frameTypes" class="q-mr-sm" :label="frameType.label"
+            :color="colors[frameTypeId]" @click="frameTypeButtonClicked(frameTypeId)" />
         </div>
       </q-card-section>
       <q-card-actions>
         <div class="label">Or</div>
-        <q-btn
-          flat
-          @click="addingToExistingFrame"
-          color="primary"
-          :disabled="frames.length == 0"
-        >
+        <q-btn flat @click="addingToExistingFrame" color="primary" :disabled="frames.length == 0">
           Add to existing frame
         </q-btn>
       </q-card-actions>
@@ -56,14 +34,14 @@
 </template>
 
 <script>
-import { frameTypes } from "../model/frame.js";
 import { colors } from "../helpers/config.js";
+import { frameTypes } from "../model/frame";
 export default {
   data: () => ({
-    frameTypes: frameTypes,
     colors: colors,
     coordX: 0,
     coordY: 0,
+    frameTypes: frameTypes
   }),
   computed: {
     annotation() {
@@ -91,12 +69,13 @@ export default {
     }
   },
   methods: {
-    frameTypeButtonClicked(frameType) {
+    frameTypeButtonClicked(frameTypeId) {
       //create new frame, set annotation's frame to this new frame
       this.$store.commit("addNewFrame", {
-        frameType: frameType,
+        frameTypeId: frameTypeId,
+        subTypeId: null,
         annotation: this.annotation,
-        subType: null,
+        openInEditor: true
       });
       this.$store.commit("setAnnotationBeingEdited", null);
     },

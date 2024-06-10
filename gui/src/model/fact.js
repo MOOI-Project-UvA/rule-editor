@@ -7,8 +7,8 @@ export class Fact {
         this._id = uuid4() //unique ID
         this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
-        this._type = null //type object {id, class, label} 
-        this._subType = null //optional subtype {id, class, label}
+        this._typeId = null //type id
+        this._subTypeId = null //subtype id
         this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
@@ -18,21 +18,17 @@ export class Fact {
     get id() { return this._id }
     set id(id) { this._id = id }
 
-    get type() { return this._type }
-    set type(type) { this._type = type }
+    get typeId() { return this._typeId }
+    set typeId(typeId) { this._typeId = typeId }
 
-    get subType() { return this._subType }
-    set subType(subType) { this._subType = subType }
+    get subTypeId() { return this._subTypeId }
+    set subTypeId(subTypeId) { this._subTypeId = subTypeId }
 
     get isComplex() { return this._isComplex }
     set isComplex(isComplex) { this._isComplex = isComplex }
 
     get label() {
         return this._label
-        // ? this._label
-        // : this.fact.length > 25
-        //     ? this.fact.substring(0, 25) + "..."
-        //     : this.fact
     }
     set label(label) { this._label = label }
 

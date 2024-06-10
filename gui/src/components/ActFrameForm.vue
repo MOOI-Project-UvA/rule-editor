@@ -38,13 +38,15 @@
     </q-card-section>
     <q-card-actions align="right">
       <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
-      <template v-if="isExistingFrame">
-        <div class="message">Any changes have been saved</div>
-        <q-btn color="primary" @click="saveFrame">Close</q-btn>
-      </template>
-      <template v-else>
-        <q-btn color="primary" @click="saveFrame">Save</q-btn>
-      </template>
+
+
+      <q-btn color="primary" @click="closeFrame">Close
+        <q-tooltip class="text-subtitle2">
+          Any changes have been saved
+        </q-tooltip>
+      </q-btn>
+
+
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
@@ -81,17 +83,11 @@ export default {
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited
     },
-    frames() {
-      return this.$store.state.frames;
-    },
-    isExistingFrame() {
-      return this.frames.some((f) => f.id == this.frame.id)
-    },
   },
   methods: {
-    saveFrame() {
+    closeFrame() {
       this.frame.activeField = null
-      this.$store.commit("saveFrameBeingEdited");
+      this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
       this.$store.state.frameBeingDeleted = this.frame
