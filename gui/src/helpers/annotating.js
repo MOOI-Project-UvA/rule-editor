@@ -92,7 +92,7 @@ export function getSelectedRangeAsSnippets(sentence, selectedCharacterRange) {
         selectedCharacterRange[0] < s.characterRange[1]
     ))
     //offset in snippet of start of selectedCharacterRange
-    const startOffset = selectedCharacterRange[0] - endSnippet.characterRange[0]
+    const startOffset = selectedCharacterRange[0] - startSnippet.characterRange[0]
     //find snippet that includes end of selectedCharacterRange
     const endSnippet = sentence.snippets.find(s => (
         selectedCharacterRange[1] > s.characterRange[0] &&

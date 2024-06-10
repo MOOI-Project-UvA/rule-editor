@@ -2,8 +2,8 @@
   <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap q-mt-sm">
     <div>Add new:</div>
     <div>
-      <q-btn v-for="frameType in frameTypes" class="q-ml-xs" size="sm" :color="colors[frameType.id]"
-        :label="frameType.label" @click="createFrame(frameType)">
+      <q-btn v-for="(frameType, frameTypeId) in frameTypes" class="q-ml-xs" size="sm" :color="colors[frameTypeId]"
+        :label="frameType.label" @click="createFrame(frameTypeId)">
         <q-tooltip class="text-subtitle2">
           Add frame of type {{ frameType.label }}
         </q-tooltip>
@@ -14,7 +14,7 @@
 
 <script>
 import { icons, colors } from "../helpers/config.js";
-import { frameTypes } from "../model/frame";
+import { frameTypes } from "../model/frame.js";
 
 export default {
   data: () => ({
@@ -23,12 +23,13 @@ export default {
     frameTypes: frameTypes,
   }),
   methods: {
-    createFrame(frameType) {
+    createFrame(frameTypeId) {
       //add frame with empty annotation
-      this.$store.commit("addNewFrame", {
-        frameType: frameType,
+      const newFrame = this.$store.commit("addNewFrame", {
+        frameTypeId: frameTypeId,
         annotation: null,
-        subType: null
+        subTypeId: null,
+        openInEditor: true
       });
     },
     saveInterpretationClicked() {

@@ -135,7 +135,7 @@ export default {
           ? null
           : this.booleanConstruct;
         //de-select any other properties of the active frame, if it is a relation
-        if (this.frameBeingEdited.type.class == "relation") {
+        if ('activeField' in this.frameBeingEdited) {
           this.frameBeingEdited.activeField = null
         }
       }

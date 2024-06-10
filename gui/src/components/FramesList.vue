@@ -1,41 +1,35 @@
 <template>
     <div>
-        <template v-for="frameClass in ['fact', 'relation']">
-            <div class="class-label">{{ frameClass }}</div>
-            <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
-                <div v-if="frameType.class != 'fact'">
-                    <b>{{ frameType.label }}</b>
-                </div>
-                <div class="chips">
-                    <div v-for="frame in frames.filter(
-            (f) => f.type.id == frameType.id && !f.subType,
+        <div class="fact-container" v-for="(frameType, frameTypeId) in frameTypes">
+            <b>{{ frameType.label }}</b>
+            <div class="chips">
+                <div v-for="frame in frames.filter(
+            (f) => f.typeId == frameTypeId && !f.subTypeId,
         )" @click="onClick(frame)">
-                        <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            frameBeingEdited.type.class == 'relation' &&
+                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
             frameBeingEdited.activeField != null" />
-                    </div>
                 </div>
-                <div v-if="'subTypes' in frameType">
-                    <div v-for="subType in frameType.subTypes" class="q-ml-sm">
-                        <q-avatar size="md" :icon="icons[subType.id]" />
-                        <b>{{ subType.label }}</b>
-                        <div class="chips">
-                            <div v-for="frame in frames.filter(
+            </div>
+            <div v-if="'subTypes' in frameType">
+                <div v-for="(subType, subTypeId) in frameType.subTypes" class="q-ml-sm">
+                    <q-avatar size="md" :icon="icons[subTypeId]" />
+                    <b>{{ subType.label }}</b>
+                    <div class="chips">
+                        <div v-for="frame in frames.filter(
             (f) =>
-                f.type.id == frameType.id &&
-                f.subType &&
-                f.subType.id == subType.id,
+                f.typeId == frameTypeId &&
+                f.subTypeId == subTypeId,
         )" @click="onClick(frame)">
-                                <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            frameBeingEdited.type.class == 'relation' &&
+                            <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
             frameBeingEdited.activeField != null &&
-            !frameBeingEdited.allowedSubTypesForActiveField.includes(subType.id)" />
-                            </div>
+            !frameBeingEdited.allowedSubTypesForActiveField.includes(subTypeId)" />
                         </div>
                     </div>
                 </div>
             </div>
-        </template>
+        </div>
     </div>
 </template>
 
@@ -48,9 +42,6 @@ export default {
         frameTypes: frameTypes,
         icons: icons,
     }),
-    mounted() {
-        console.log("frameslist mounted: frametypes", this.frameTypes)
-    },
     components: {
         FrameChip,
     },
@@ -86,7 +77,7 @@ export default {
                 this.$store.state.annotationToBeAddedToExistingFrame = null;
             } else if (
                 this.frameBeingEdited &&
-                this.frameBeingEdited.type.class == "relation" &&
+                'activeField' in this.frameBeingEdited &&
                 this.frameBeingEdited.activeField
             ) {
                 //add frame to field in frame being edited

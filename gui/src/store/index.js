@@ -42,58 +42,76 @@ const store = createStore({
     //add new frame to list of frames being edited. does not permanently store
     //the frame to the frames list yet. storing permanently is done when the save
     //button in the frame editor is clicked.
-    addNewFrame(state, { frameType, annotation, subType }) {
+    addNewFrame(state, { frameTypeId, subTypeId, annotation, openInEditor }) {
       let frame;
-      switch (frameType.class) {
+      switch (frameTypeId) {
         case "fact":
           frame = new Fact();
           break;
-        case "relation":
-          switch (frameType.id) {
-            case "act":
-              frame = new Act();
-              break;
-            case "claim_duty":
-              frame = new Claimduty();
-              break;
-          }
+        case "act":
+          frame = new Act();
+          break;
+        case "claim_duty":
+          frame = new Claimduty();
           break;
       }
-      frame.type = frameType;
-      frame.subType = subType ? subType : null
-      state.frameBeingEdited = frame;
-      state.framesOpenInEditor.push(frame)
+      frame.typeId = frameTypeId;
+      if (subTypeId) { frame.subTypeId = subTypeId }
+
       if (annotation) {
         annotation.frame = frame
       }
+
+      state.frames = [...state.frames, frame];
+
       if (state.booleanConstructBeingEdited) {
         state.booleanConstructBeingEdited.frame = frame
         state.booleanConstructBeingEdited = null
       }
-    },
-    saveFrameBeingEdited(state) {
-      //if frameBeingEdited is new, add it to the list
-      //refresh the list to force rerendering of the view
-      if (!state.frames.some((f) => f.id == state.frameBeingEdited.id)) {
-        state.frames.push(state.frameBeingEdited);
+
+      if (openInEditor) {
+        this.commit("setFrameBeingEdited", frame)
       }
-      state.frames = [...state.frames];
-      //if a booleanconstruct is being edited, add the new frame to it
-      // if (state.booleanConstructBeingEdited) {
-      //   state.booleanConstructBeingEdited.frame = frame;
-      //   state.booleanConstructBeingEdited = null; //deselect boolean construct
-      //   //if frame is being edited and is has an active field, add frame to that field
-      // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
-      //   state.frameBeingEdited.addFrame(frame);
-      // }
+      console.log("frame added", frame)
+    },
+    setFrameBeingEdited(state, frame) {
+      console.log("setFrameBeingEdited", frame)
+      state.frameBeingEdited = frame;
+      if (!(state.framesOpenInEditor.some(f => f.id == frame.id))) {
+        state.framesOpenInEditor.push(frame)
+      }
+    },
+    removeFrameFromEditList(state, frame) {
       //remove the frame from the list of frames that are open in the editor
-      const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+      const index = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
       state.framesOpenInEditor.splice(index, 1)
       //if there are any frames left open in the editor, set frameBeingEdited to
-      //the first of those
+      //the first of those. else set frameBeingEdited to null.s
       state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
-
     },
+    // saveFrameBeingEdited(state) {
+    //   //if frameBeingEdited is new, add it to the list
+    //   //refresh the list to force rerendering of the view
+    //   if (!state.frames.some((f) => f.id == state.frameBeingEdited.id)) {
+    //     state.frames.push(state.frameBeingEdited);
+    //   }
+    //   state.frames = [...state.frames];
+    //   //if a booleanconstruct is being edited, add the new frame to it
+    //   // if (state.booleanConstructBeingEdited) {
+    //   //   state.booleanConstructBeingEdited.frame = frame;
+    //   //   state.booleanConstructBeingEdited = null; //deselect boolean construct
+    //   //   //if frame is being edited and is has an active field, add frame to that field
+    //   // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
+    //   //   state.frameBeingEdited.addFrame(frame);
+    //   // }
+    //   //remove the frame from the list of frames that are open in the editor
+    //   const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+    //   state.framesOpenInEditor.splice(index, 1)
+    //   //if there are any frames left open in the editor, set frameBeingEdited to
+    //   //the first of those
+    //   state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+
+    // },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
@@ -123,7 +141,6 @@ const store = createStore({
       const openFrameIndex = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
       if (openFrameIndex != -1) {
         state.framesOpenInEditor.splice(openFrameIndex, 1);
-        //state.framesOpenInEditor = [...state.framesOpenInEditor]
       }
       if (state.frameBeingEdited.id == frame.id) {
         const nrFramesOpen = state.framesOpenInEditor.length
@@ -135,7 +152,7 @@ const store = createStore({
         state.booleanConstructBeingEdited = null;
         state.showFrameSource = null;
       }
-      //check if frame is in frames list (containing all saved frames)
+      //remove frame from frames list
       const frameIndex = state.frames.findIndex(f => f.id == frame.id);
       if (frameIndex != -1) {
         state.frames.splice(frameIndex, 1);
@@ -143,18 +160,7 @@ const store = createStore({
 
       //remove frame from any attribute of frames of type 'relation' and from
       //any boolean construct in a frame
-      //those frames can be in list of edited frames as well
-      const allFrames = state.frames
-        .concat(state.framesOpenInEditor)
-        .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
-      allFrames.forEach(f => f.deleteReferencesToFrame(frame))
-
-      //remove frame from its annotations
-      // state.sourceDocuments.forEach(doc => {
-      //   doc.getAnnotationsForFrame(frame).forEach(annotation => {
-      //     annotation.frame = null
-      //   })
-      // })
+      state.frames.forEach(f => f.deleteReferencesToFrame(frame))
 
       //remove annotations that have this frame as their frame, in all source documents
       state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))

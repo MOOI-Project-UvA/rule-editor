@@ -21,9 +21,9 @@ export function getStyleForUnderlining(snippet, sentence) {
         let lineColor
         if (snippet.annotations.some(a => a.id == annotation.id)) {
             if (annotation.frame) {
-                lineColor = annotation.frame.subType
-                    ? hexColors[annotation.frame.subType.id]
-                    : hexColors[annotation.frame.type.id]
+                lineColor = annotation.frame.subTypeId
+                    ? hexColors[annotation.frame.subTypeId]
+                    : hexColors[annotation.frame.typeId]
             } else {
                 lineColor = grey
             }

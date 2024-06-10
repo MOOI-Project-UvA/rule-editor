@@ -4,8 +4,8 @@ import { Annotation } from './annotation.js'
 class Claimduty {
     constructor() {
         this._id = uuid4() //unique ID
-        this._type = null //{id, class, label}
-        this._subType = null
+        this._typeId = null
+        this._subTypeId = null
         this._label = ""
         this._claimduty = ""
         this._activeField = null
@@ -21,8 +21,8 @@ class Claimduty {
     get id() { return this._id }
     set id(id) { this._id = id }
 
-    get type() { return this._type }
-    set type(type) { console.log("setting type to", type); this._type = type }
+    get typeId() { return this._typeId }
+    set typeId(typeId) { this._typeId = typeId }
 
     get label() {
         return this._label// && this._label.length > 0

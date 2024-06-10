@@ -10,10 +10,7 @@
           </div>
           <div class="col-1">
             <q-avatar class="float-right" size="lg">
-              <q-icon
-                name="mdi-information-outline"
-                class="cursor-pointer"
-              ></q-icon>
+              <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
               <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
                 <div style="max-width: 300px">
                   In this view, you can see the annotations made in the source
@@ -26,19 +23,12 @@
           </div>
         </div>
 
-        <div
-          :class="{ 'height-fill-available': !sourceViewIsCollapsed }"
-          class="q-pa-sm"
-        >
+        <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
           <FramesList />
         </div>
       </div>
 
-      <div
-        v-if="frameBeingEdited"
-        :class="{ 'height-content': !sourceViewIsCollapsed }"
-        class="frame-editor-panel"
-      >
+      <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
         <FrameEditorPanel />
       </div>
     </div>
@@ -49,12 +39,10 @@
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import FramesList from "../components/FramesList.vue";
 import FrameEditorPanel from "../components/FrameEditorPanel.vue";
-import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
 
 export default {
   data: () => ({
-    frameTypes: frameTypes,
     icons: icons,
     colors: colors,
   }),
@@ -77,13 +65,13 @@ export default {
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        this.frameBeingEdited.type.class == "relation"
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? this.frameBeingEdited.allowedSubClassesForActiveField
         : [];
     },
     message() {
       return this.frameBeingEdited &&
-        ["act", "claim_duty"].includes(this.frameBeingEdited)
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? "Add to frame"
         : "";
     },
