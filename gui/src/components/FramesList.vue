@@ -41,13 +41,22 @@ export default {
     data: () => ({
         frameTypes: frameTypes,
         icons: icons,
+        minimumLengthSearchTerm: 2
     }),
     components: {
         FrameChip,
     },
+    props: {
+        searchTerm: String
+    },
     computed: {
         frames() {
             return this.$store.state.frames;
+        },
+        filteredFrames() {
+            return this.searchTerm.length >= this.minimumLengthSearchTerm
+                ? this.frames.filter(f => f.label.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                : this.frames
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;

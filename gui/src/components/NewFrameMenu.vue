@@ -1,6 +1,6 @@
 <template>
   <div id="frame-type-buttons" class="row inline justify-start items-baseline no-wrap q-mt-sm">
-    <div>Add new:</div>
+    <div>Add:</div>
     <div>
       <q-btn v-for="(frameType, frameTypeId) in frameTypes" class="q-ml-xs" size="sm" :color="colors[frameTypeId]"
         :label="frameType.label" @click="createFrame(frameTypeId)">
