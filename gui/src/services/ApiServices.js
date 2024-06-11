@@ -1,3 +1,5 @@
+import {alertWidget} from "../helpers/alertWidget.js";
+
 export async function fetchNlpPrediction(text) {
   try {
     const response = await fetch("/api/predict", {
@@ -36,20 +38,22 @@ export async function convertToRDF(dataset) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+          // "X-API-KEY": import.meta.env.VITE_X_API_KEY,
         },
         body: dataset,
       },
     );
 
     if (!response.ok) {
-      throw new Error("An error occurred during sending the data.");
+      throw new Error("An error occurred while sending the data.");
     }
 
     const data = await response.text();
-    console.log("response:", data);
+    alertWidget("success", "Successful conversion to RDF!")
+
     return data;
   } catch (error) {
+    alertWidget("error", "An error occured while converting data to rdf! Details:" + error.message)
     throw new Error(
       "An error occurred while converting data to rdf: " + error.message,
     );
