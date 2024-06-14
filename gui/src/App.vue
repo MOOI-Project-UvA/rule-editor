@@ -104,6 +104,7 @@ import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
 import { alertWidget } from "./helpers/alertWidget.js";
+import { retrieveDeploymentInformation } from "./helpers/utilities.js";
 export default {
   name: "app",
   data: () => ({
@@ -119,24 +120,17 @@ export default {
   },
 
   mounted() {
+
     //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
     // this.$store.state.step = 3
     // this.$store.dispatch("loadInterpretationForDebugging")
-    const urlToRender = `https://${this.repo.split(":").join("/")}/-/tree/${
-      this.branch
-    }`;
-    const commitUrl = `https://${this.repo.split(":").join("/")}/-/commit/${
-      this.hash
-    }`;
-    const message = `Welcome to the Norm editor! This version is based on the <a class='anchorTags' href='${urlToRender}' target='_blank'>${
-      this.branch
-    }</a> branch.
-    <br/>Commit hash: <a class='anchorTags' href='${commitUrl}' target='_blank'>${this.hash.substring(
-      0,
-      9,
-    )}</a>.`;
+    console.log("this.repo", this.repo, this.repo!=null)
+    // if there is deployment information, show them
+    if(this.repo != null){
+       const message = retrieveDeploymentInformation(this.repo, this.branch, this.hash)
+       alertWidget("welcome", message);
+    }
 
-    alertWidget("welcome", message);
     this.$store.dispatch("readAvailableSources");
   },
   methods: {
