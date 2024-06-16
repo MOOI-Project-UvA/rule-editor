@@ -2,11 +2,14 @@
   <div class="panel flex flex-row" :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
     @click="handleClick">
     <div class="col">
+      <!-- negation label -->
       <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
       <template v-if="booleanConstruct.frame">
         <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
         <div class="row-container">
+          <!-- selected chip -->
           <FrameChip :frame="booleanConstruct.frame" :disable="false" />
+          <!-- remove chip button -->
           <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="removeFrame" />
         </div>
       </template>
@@ -39,7 +42,7 @@
         Select frame or create new frame from source
       </div>
     </div>
-    <div class="col-1 row-container">
+    <div class="col-1 buttons-container">
       <div>
         <q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
       </div>
@@ -162,17 +165,18 @@ export default {
 
 <style>
 .panel {
-  /* border: 1px solid #333333; */
-  padding: 10px;
+  padding: 10px 4px;
   border-radius: 5px;
-  margin-left: 15px;
+  margin-left: 2px;
   box-shadow: 0px 0px 4px #aaaaaa;
   background-color: #ffffff;
   border: solid 2px #ffffff;
 }
 
+
 .panel.active {
   border: solid 2px rgb(25, 118, 210);
+
 }
 
 .panel.negated {
@@ -206,5 +210,10 @@ export default {
 .row-container {
   display: flex;
   flex-direction: row;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
 }
 </style>
