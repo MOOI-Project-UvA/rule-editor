@@ -19,6 +19,11 @@
 
         <!-- buttons for changing operator and adding another child -->
         <!-- show options for boolean operator -->
+        <!-- TODO:
+         Step 1: consider switching to alternative visual representations for deeply nested levels. A searchable select element or a q-btn with dropdown might be good alternatives
+         Step 2: set a min-width to the panel
+         Step 3: set an information dialog with a message
+         -->
         <q-btn-group class="q-ml-md q-my-xs" flat v-if="i !== booleanConstruct.children.length - 1">
           <q-btn v-for="option in booleanOptions" size="sm" padding="xs md" :color="booleanConstruct.operatorToJoinChildren == option.value
     ? 'primary'
