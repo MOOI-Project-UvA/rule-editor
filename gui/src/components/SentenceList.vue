@@ -27,7 +27,7 @@ import {
 import { Annotation } from "../model/annotation";
 import { frameTypes } from "../model/frame";
 import { Snippet } from "../model/snippet";
-import ApiServices from "../services/ApiServices.js";
+import {fetchNlpPrediction} from "../services/ApiServices.js";
 export default {
   props: {
     sentences: Array,
@@ -115,7 +115,7 @@ export default {
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.text);
+      const response = await fetchNlpPrediction(sentence.text);
 
       sentence.loading = false;
 
