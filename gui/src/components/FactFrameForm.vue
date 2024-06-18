@@ -112,6 +112,7 @@ export default {
       this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
+      this.frameIsBeingDeleted = null
       this.$store.commit("removeFrame", this.frame)
     },
     toggleSubdivision() {
