@@ -37,16 +37,23 @@
       </div>
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
-
-
-      <q-btn color="primary" @click="closeFrame">Close
-        <q-tooltip class="text-subtitle2">
-          Any changes have been saved
-        </q-tooltip>
-      </q-btn>
-
-
+      <template v-if="frameIsBeingDeleted">
+        <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
+        <q-btn color="negative" @click="deleteFrame">Yes
+          <q-tooltip class="text-subtitle2">
+            Delete this frame
+          </q-tooltip>
+        </q-btn>
+        <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="frameIsBeingDeleted = true">Delete</q-btn>
+        <q-btn color="primary" @click="closeFrame">Close
+          <q-tooltip class="text-subtitle2">
+            Any changes have been saved
+          </q-tooltip>
+        </q-btn>
+      </template>
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
@@ -63,7 +70,7 @@ export default {
   data: () => ({
     showSource: false,
     showComments: false,
-    // loading: false,
+    frameIsBeingDeleted: false //true when user clicked delete button
   }),
   computed: {
     frame() {
@@ -90,7 +97,7 @@ export default {
       this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
-      this.$store.state.frameBeingDeleted = this.frame
+      this.$store.commit("removeFrame", this.frame)
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);

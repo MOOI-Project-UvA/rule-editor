@@ -55,7 +55,11 @@
     <q-card-actions align="right">
       <template v-if="frameIsBeingDeleted">
         <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
-        <q-btn color="negative" @click="deleteFrame">Yes</q-btn>
+        <q-btn color="negative" @click="deleteFrame">Yes
+          <q-tooltip class="text-subtitle2">
+            Delete this frame
+          </q-tooltip>
+        </q-btn>
         <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
       </template>
       <template v-else>
@@ -66,8 +70,6 @@
           </q-tooltip>
         </q-btn>
       </template>
-
-
     </q-card-actions>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
