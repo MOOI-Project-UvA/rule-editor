@@ -53,13 +53,20 @@
       <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
     </q-card-section> -->
     <q-card-actions align="right">
-      <q-btn color="negative" @click="deleteFrame">Delete</q-btn>
+      <template v-if="frameIsBeingDeleted">
+        <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
+        <q-btn color="negative" @click="deleteFrame">Yes</q-btn>
+        <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="frameIsBeingDeleted = true">Delete</q-btn>
+        <q-btn color="primary" @click="closeFrame">Close
+          <q-tooltip class="text-subtitle2">
+            Any changes have been saved
+          </q-tooltip>
+        </q-btn>
+      </template>
 
-      <q-btn color="primary" @click="closeFrame">Close
-        <q-tooltip class="text-subtitle2">
-          Any changes have been saved
-        </q-tooltip>
-      </q-btn>
 
     </q-card-actions>
   </q-card>
@@ -82,7 +89,8 @@ export default {
     subdivided: false,
     showSource: false,
     showComments: false,
-    frameTypes: frameTypes
+    frameTypes: frameTypes,
+    frameIsBeingDeleted: false //true when user clicked delete button
   }),
   computed: {
     sourceDocuments() {
@@ -102,7 +110,7 @@ export default {
       this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
-      this.$store.state.frameBeingDeleted = this.frame
+      this.$store.commit("removeFrame", this.frame)
     },
     toggleSubdivision() {
       if (this.subdivided) {
