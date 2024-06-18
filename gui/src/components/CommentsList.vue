@@ -17,13 +17,13 @@
                         <q-btn class="q-mt-sm" color="primary" @click="commentBeingEdited = null">Save</q-btn>
                     </template>
                     <template v-else-if="commentBeingDeleted == comment">
-                        <div class="my-sm">{{ comment.content }}</div>
+                        <div class="q-my-sm">{{ comment.content }}</div>
                         <div>Are you sure to delete this comment?</div>
                         <q-btn class="q-mt-sm q-mr-sm" color="negative" @click="deleteComment">Yes</q-btn>
                         <q-btn class="q-mt-sm" color="primary" @click="commentBeingDeleted = null">No</q-btn>
                     </template>
                     <template v-else>
-                        <div class="my-sm cursor-pointer" @click="commentBeingEdited = comment">
+                        <div class="q-my-sm cursor-pointer" @click="commentBeingEdited = comment">
                             {{ comment.content }}
                         </div>
                     </template>
@@ -33,7 +33,6 @@
                 <div v-if="!commentBeingEdited && !commentBeingDeleted">
                     <q-input v-model="newComment.content" filled type="textarea" label="New comment" />
                     <q-btn class="q-mt-sm" color="primary" @click="addComment">Add</q-btn>
-
                 </div>
             </q-card-section>
         </q-card>
