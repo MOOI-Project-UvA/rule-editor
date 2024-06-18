@@ -43,10 +43,10 @@ function getHtmlWithHighlights(text, snippets) {
   snippets.forEach((snippet) => {
     // console.log("snippet:", snippet);
 
-    const frameType = snippet.annotation.frame.subType
-      ? snippet.annotation.frame.subType
-      : snippet.annotation.frame.type;
-    const color = frameType ? colors[frameType.id] : "grey-6";
+    const frameTypeId = snippet.annotation.frame.subTypeId
+      ? snippet.annotation.frame.subTypeId
+      : snippet.annotation.frame.typeId
+    const color = frameTypeId ? colors[frameTypeId] : "grey-6";
     htmlText =
       htmlText.substring(0, snippet.characterRange[1]) +
       "</span>" +

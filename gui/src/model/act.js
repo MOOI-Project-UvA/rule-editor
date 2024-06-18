@@ -161,7 +161,7 @@ class Act {
         console.log("toFlatObject act", this)
         return {
             id: this.id,
-            typeId: this.type.id, //type is an object {id, class, label}
+            typeId: this.typeId, //type is an object {id, class, label}
             label: this.label,
             act: this.act,
             actionId: this.action?.id, //take frame id instead of frame object
@@ -178,7 +178,7 @@ class Act {
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
         this._label = frameData.label
-        //this._type is instantiated in importExport.js
+        this._typeId = frameData.typeId
         this._act = frameData.act
         this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null

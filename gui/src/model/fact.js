@@ -72,8 +72,8 @@ export class Fact {
             id: this.id,
             label: this.label,
             fact: this.fact,
-            typeId: this.type.id,
-            subTypeId: this.subType ? this.subType.id : null,
+            typeId: this.typeId,
+            subTypeId: this.subTypeId,
             comments: this.comments.map(c => c.toFlatObject()),
             isComplex: this.isComplex,
             subdivision: this.subdivision.toFlatObject()
@@ -84,11 +84,8 @@ export class Fact {
     fromFlatObject(data, allFrames) {
         this.label = data.label
         this.fact = data.fact
-        if (data.subTypeId) {
-            //this.type is instantiated in importExport.js
-            //find corresponding subtype in type
-            this.subType = this.type.subTypes.find(t => t.id == data.subTypeId)
-        }
+        this.typeId = data.typeId
+        this.subTypeId = data.subTypeId
         data.annotations.forEach(a => {
             let annotation = new Annotation()
             annotation.fromFlatObject(a)

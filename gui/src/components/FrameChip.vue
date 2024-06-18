@@ -1,11 +1,5 @@
 <template>
-  <!-- <q-chip :class="{ chip: true }" :removable="removable" :disable="disable" @remove="onRemove" :color="disable
-    ? 'grey-5'
-    : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
-    " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
-    {{ frame.label }}
-    <q-badge v-if="!!frame.isComplex" style="margin-top: -2px;" dense color="secondary" rounded floating></q-badge>
-  </q-chip> -->
+
   <div>
     <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
       :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">

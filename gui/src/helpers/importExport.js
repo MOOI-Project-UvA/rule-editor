@@ -69,7 +69,6 @@ function parseJsonToInterpretation(jsonText) {
                 break
         }
         frame.id = d.id
-        frame.typeId = d.typeId
         frames.push(frame)
     })
 
