@@ -31,7 +31,7 @@
         </div>
 
         <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
-          <FramesList />
+          <FramesList :searchTerm="searchTerm" />
         </div>
       </div>
 

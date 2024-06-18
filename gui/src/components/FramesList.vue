@@ -3,7 +3,7 @@
         <div class="fact-container" v-for="(frameType, frameTypeId) in frameTypes">
             <b>{{ frameType.label }}</b>
             <div class="chips">
-                <div v-for="frame in frames.filter(
+                <div v-for="frame in filteredFrames.filter(
             (f) => f.typeId == frameTypeId && !f.subTypeId,
         )" @click="onClick(frame)">
                     <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
@@ -16,7 +16,7 @@
                     <q-avatar size="md" :icon="icons[subTypeId]" />
                     <b>{{ subType.label }}</b>
                     <div class="chips">
-                        <div v-for="frame in frames.filter(
+                        <div v-for="frame in filteredFrames.filter(
             (f) =>
                 f.typeId == frameTypeId &&
                 f.subTypeId == subTypeId,
@@ -76,7 +76,6 @@ export default {
     },
     methods: {
         onClick(frame) {
-            console.log("clicked frame", frame)
             if (
                 this.addingAnnotationToExistingFrame
             ) {

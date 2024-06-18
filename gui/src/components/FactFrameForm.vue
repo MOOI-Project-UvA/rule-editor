@@ -34,7 +34,7 @@
       </template>
     </q-card-section>
     <q-card-section>
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
     </q-card-section>
     <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />

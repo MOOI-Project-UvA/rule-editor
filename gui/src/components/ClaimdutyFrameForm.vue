@@ -11,7 +11,7 @@
           </q-tooltip>
         </q-btn>
       </div>
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 16pt; font-weight:bold" />
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>
     <q-card-section>
