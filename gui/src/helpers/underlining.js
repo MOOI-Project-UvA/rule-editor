@@ -1,29 +1,44 @@
 //functions that return style for underlining pieces of text (snippets and sentences)
-import { hexColors } from "./config.js";
+import { hexColors, hexColorsLight } from "./config.js";
 const lineThickness = 3
 const marginBottom = 20 //space between sentences
 const charHeight = 14
 const spaceBetweenCharsAndLines = 1
-const highlightColor = "#ffe999"
 const white = "#ffffff"
 const grey = "#666666"
 
-export function getStyleForUnderlining(snippet, sentence, highlight) {
+export function getStyleForUnderlining(snippet, sentence, activeFrame) {
+    console.log("getStyleForUnderlining")
+    //check if snippet has annotation with a frame that is currently being edited (activeFrame),
+    //if so, highlight the snippet
+    const highlight = activeFrame && snippet.annotations.some(annotation => annotation.frame?.id == activeFrame.id)
+
+
+    let backgroundStyle = "linear-gradient(180deg"
+
+    if (highlight) {
+        console.log("yes")
+        const highlightColor = activeFrame.subTypeId
+            ? hexColorsLight[activeFrame.subTypeId]
+            : hexColorsLight[activeFrame.typeId]
+        backgroundStyle +=
+            `, ${highlightColor} 0px`
+            + `, ${highlightColor} ${charHeight}px`
+            + `, ${white} ${charHeight}px`
+    } else {
+        backgroundStyle += `, ${white} 0px`
+            + `, ${white} ${charHeight}px`
+    }
+
+    const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
+
     //each annotation within a sentence gets its own vertical position
     const annotationsInSentence = sentence.snippets.map(snippet => snippet.annotations)
         .filter(annotations => annotations.length > 0)
         .flat()
         .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index);
-
     //loop through all annotations for this sentence and see if this snippet
     //has the annotation. if so, add coloured line, if not, add white line
-    let backgroundStyle = "linear-gradient(180deg"
-    backgroundStyle += highlight
-        ? `, ${highlightColor} 0px`
-        + `, ${highlightColor} ${charHeight}px`
-        + `, ${white} ${charHeight}px`
-        : `, ${white} 0px`
-    const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
     annotationsInSentence.forEach((annotation, annotationNumber) => {
         let lineColor
         if (snippet.annotations.some(a => a.id == annotation.id)) {

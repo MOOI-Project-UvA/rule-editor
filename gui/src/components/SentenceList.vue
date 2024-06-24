@@ -3,8 +3,8 @@
     <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
       v-for="sentence in sentences">
       <div>
-        <span :style="getStyleForUnderlining(snippet, sentence, snippetIdsOfFrameBeingEdited.includes(snippet.id))"
-          v-for="snippet in sentence.snippets" :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
+        <span :style="getStyleForUnderlining(snippet, sentence, frameBeingEdited)" v-for="snippet in sentence.snippets"
+          :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
         </span>
       </div>
@@ -57,17 +57,6 @@ export default {
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
-    },
-    snippetIdsOfFrameBeingEdited() {
-      let snippetIds = []
-      if (this.frameBeingEdited) {
-        const snippetsInSentenceList = this.sentences.map(sentence => sentence.snippets).flat()
-        const snippets = snippetsInSentenceList.filter(snippet => snippet.annotations.some(
-          annotation => annotation.frame?.id == this.frameBeingEdited.id
-        ))
-        snippetIds = snippets.map(snippet => snippet.id)
-      }
-      return snippetIds
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
