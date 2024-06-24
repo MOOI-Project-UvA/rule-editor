@@ -26,11 +26,8 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <template v-if="sentences?.length > 0">
-        <SentenceList :sentences="sentences" />
-      </template>
-      <template v-else>
-        <div class="source-text">No source added yet</div>
+      <template v-if="sentences?.length == 0">
+        <div class="text-italic">No source added yet</div>
       </template>
     </q-card-section>
     <q-card-section>
@@ -134,11 +131,3 @@ export default {
   components: { BooleanConstructPanel, CommentsList, SentenceList }
 }
 </script>
-
-<style lang="css" scoped>
-.message {
-  font-size: 10pt;
-  font-style: italic;
-  margin-right: 10px;
-}
-</style>

@@ -8,7 +8,6 @@ const white = "#ffffff"
 const grey = "#666666"
 
 export function getStyleForUnderlining(snippet, sentence, activeFrame) {
-    console.log("getStyleForUnderlining")
     //check if snippet has annotation with a frame that is currently being edited (activeFrame),
     //if so, highlight the snippet
     const highlight = activeFrame && snippet.annotations.some(annotation => annotation.frame?.id == activeFrame.id)
@@ -17,7 +16,6 @@ export function getStyleForUnderlining(snippet, sentence, activeFrame) {
     let backgroundStyle = "linear-gradient(180deg"
 
     if (highlight) {
-        console.log("yes")
         const highlightColor = activeFrame.subTypeId
             ? hexColorsLight[activeFrame.subTypeId]
             : hexColorsLight[activeFrame.typeId]
