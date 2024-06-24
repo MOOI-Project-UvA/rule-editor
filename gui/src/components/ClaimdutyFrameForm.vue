@@ -1,16 +1,28 @@
 <template>
   <q-card flat bordered v-if="frame">
-
     <q-card-section>
-      <div class="float-right">
-        <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-          @click="showComments = !showComments">
-          <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
-          <q-tooltip class="text-subtitle2">
-            Comments
-          </q-tooltip>
-        </q-btn>
+      <div class="row items-center">
+        <div class="col-2">CLAIM-DUTY</div>
+        <div class="col">
+          <template v-if="sentences?.length == 0">
+            <div class="text-italic">No source added yet</div>
+          </template>
+          <template v-else>
+            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
+          </template>
+        </div>
+        <div class="col-1">
+          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+            @click="showComments = !showComments">
+            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+            <q-tooltip class="text-subtitle2">
+              Comments
+            </q-tooltip>
+          </q-btn>
+        </div>
       </div>
+    </q-card-section>
+    <q-card-section>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
     </q-card-section>
@@ -63,17 +75,15 @@ export default {
     frameIsBeingDeleted: false //true when user clicked delete button
   }),
   computed: {
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument
+    },
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    sourceDocuments() {
-      return this.$store.state.sourceDocuments;
-    },
     sentences() {
-      return this.sourceDocuments
-        .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
-        .flat()
-    },
+      return this.displayedSourceDocument.getSentencesForFrame(this.frame)
+    }
   },
   methods: {
     closeFrame() {
@@ -86,6 +96,11 @@ export default {
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)
     },
+    //scroll to source of frame, in source panel
+    scrollToSource() {
+      //take the first sentence to scroll to
+      this.$store.state.sentenceToScrollTo = this.sentences[0]
+    }
   },
   components: {
     RoleSelector,

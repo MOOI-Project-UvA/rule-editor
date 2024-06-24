@@ -1,7 +1,7 @@
 <template>
   <div class="document" @mouseup="handleSelection">
     <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
-      v-for="sentence in sentences">
+      v-for="sentence in sentences" :ref="`sentence-${sentence.id}`">
       <div>
         <span :style="getStyleForUnderlining(snippet, sentence, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
@@ -61,6 +61,9 @@ export default {
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
     },
+    sentenceToScrollTo() {
+      return this.$store.state.sentenceToScrollTo
+    }
   },
   methods: {
     getStyleForUnderlining,
@@ -197,6 +200,13 @@ export default {
     },
     snippetIdsOfFrameBeingEdited() {
       console.log("this.snippetIdsOfFramesBeingEdited", this.snippetIdsOfFrameBeingEdited)
+    },
+    sentenceToScrollTo() {
+      if (this.sentenceToScrollTo) {
+        const element = this.$refs[`sentence-${this.sentenceToScrollTo.id}`][0];
+        element.scrollIntoView({ block: "center", behavior: 'smooth' });
+        this.$store.state.sentenceToScrollTo = null
+      }
     }
   },
 };

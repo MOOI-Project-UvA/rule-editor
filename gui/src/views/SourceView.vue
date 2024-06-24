@@ -4,8 +4,8 @@
       <div class="col-1 text-bold">Sources</div>
       <div class="col">
         <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
-          :color="doc.id == displayedSource?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
-          @click="displayedSource = doc">
+          :color="doc.id == displayedSourceDocument?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
+          @click="setDisplayedSourceDocument(doc)">
           {{ doc.title }}
         </q-btn>
       </div>
@@ -26,10 +26,10 @@
     <q-separator />
 
     <q-card-section class="q-pa-none">
-      <template v-if="displayedSource && displayedSource.sentences.length > 0">
+      <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
         <!-- show all sentences in document -->
         <div class="fill-height scrollable q-pa-md">
-          <SentenceList :sentences="displayedSource.sentences.filter((s) => s.checked)" :showNLP="false" />
+          <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.checked)" :showNLP="false" />
         </div>
       </template>
       <template v-else>
@@ -55,17 +55,25 @@ export default {
   }),
   mounted() {
     //show by default the first document in the list of source documents
-    this.displayedSource =
+    this.$store.state.displayedSourceDocument =
       this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null;
   },
   computed: {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument;
+    }
+  },
+  methods: {
+    setDisplayedSourceDocument(document) {
+      this.$store.state.displayedSourceDocument = document
+    }
   },
   watch: {
     sourceDocuments() {
-      this.displayedSource = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
+      this.$store.state.displayedSourceDocument = this.sourceDocuments.length > 0 ? this.sourceDocuments[0] : null
     }
   }
 };
