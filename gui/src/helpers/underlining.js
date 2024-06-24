@@ -3,11 +3,12 @@ import { hexColors } from "./config.js";
 const lineThickness = 3
 const marginBottom = 20 //space between sentences
 const charHeight = 14
-//const highlightColor = "#c7dcee"
+const spaceBetweenCharsAndLines = 1
+const highlightColor = "#ffe999"
 const white = "#ffffff"
 const grey = "#666666"
 
-export function getStyleForUnderlining(snippet, sentence) {
+export function getStyleForUnderlining(snippet, sentence, highlight) {
     //each annotation within a sentence gets its own vertical position
     const annotationsInSentence = sentence.snippets.map(snippet => snippet.annotations)
         .filter(annotations => annotations.length > 0)
@@ -17,6 +18,12 @@ export function getStyleForUnderlining(snippet, sentence) {
     //loop through all annotations for this sentence and see if this snippet
     //has the annotation. if so, add coloured line, if not, add white line
     let backgroundStyle = "linear-gradient(180deg"
+    backgroundStyle += highlight
+        ? `, ${highlightColor} 0px`
+        + `, ${highlightColor} ${charHeight}px`
+        + `, ${white} ${charHeight}px`
+        : `, ${white} 0px`
+    const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
     annotationsInSentence.forEach((annotation, annotationNumber) => {
         let lineColor
         if (snippet.annotations.some(a => a.id == annotation.id)) {
@@ -31,16 +38,16 @@ export function getStyleForUnderlining(snippet, sentence) {
             lineColor = white
         }
         backgroundStyle +=
-            `, ${white} ${annotationNumber * 2 * lineThickness}px`
-            + `, ${lineColor} ${annotationNumber * 2 * lineThickness}px`
-            + `, ${lineColor} ${(annotationNumber * 2 + 1) * lineThickness}px`
-            + `, ${white} ${(annotationNumber * 2 + 1) * lineThickness}px`
+            `, ${white} ${firstLineStartPosition + annotationNumber * 2 * lineThickness}px`
+            + `, ${lineColor} ${firstLineStartPosition + annotationNumber * 2 * lineThickness}px`
+            + `, ${lineColor} ${firstLineStartPosition + (annotationNumber * 2 + 1) * lineThickness}px`
+            + `, ${white} ${firstLineStartPosition + (annotationNumber * 2 + 1) * lineThickness}px`
     })
     backgroundStyle += ")"
 
     const backgroundSize = annotationsInSentence.length == 0
-        ? 0
-        : (2 * annotationsInSentence.length - 1) * lineThickness
+        ? charHeight
+        : firstLineStartPosition + (2 * annotationsInSentence.length) * lineThickness
 
     //if snippet has annotation that is being edited: highlight text background
     //disabled for now: highlighting covers line beneath as well
@@ -52,7 +59,7 @@ export function getStyleForUnderlining(snippet, sentence) {
     //backgroundStyle = "linear-gradient(180deg, #00ff00 2px, #ffffff 2px, #ffffff 4px, #ffff00 4px, #ffff00 6px, #ffffff 6px, #ffffff 8px, #ff00ff 8px, #ff00ff 10px, #ffffff 10px)"
 
     return {
-        paddingBottom: `${backgroundSize + charHeight}px`, //determines how far upper line is from text
+        paddingBottom: `${backgroundSize - charHeight}px`, //determines how far upper line is from text
         background: backgroundStyle,
         backgroundSize: `100% ${backgroundSize}px`,
         backgroundRepeat: "no-repeat",

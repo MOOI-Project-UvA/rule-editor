@@ -3,8 +3,8 @@
     <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
       v-for="sentence in sentences">
       <div>
-        <span class="snippet" :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets"
-          :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
+        <span :style="getStyleForUnderlining(snippet, sentence, snippetIdsOfFrameBeingEdited.includes(snippet.id))"
+          v-for="snippet in sentence.snippets" :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
         </span>
       </div>
@@ -21,10 +21,7 @@
           </template>
         </q-btn>
       </div>
-
-
     </div>
-
   </div>
 </template>
 
@@ -60,6 +57,17 @@ export default {
     },
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited;
+    },
+    snippetIdsOfFrameBeingEdited() {
+      let snippetIds = []
+      if (this.frameBeingEdited) {
+        const snippetsInSentenceList = this.sentences.map(sentence => sentence.snippets).flat()
+        const snippets = snippetsInSentenceList.filter(snippet => snippet.annotations.some(
+          annotation => annotation.frame?.id == this.frameBeingEdited.id
+        ))
+        snippetIds = snippets.map(snippet => snippet.id)
+      }
+      return snippetIds
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
@@ -198,6 +206,9 @@ export default {
     sentences() {
       console.log("this.sentences", this.sentences);
     },
+    snippetIdsOfFrameBeingEdited() {
+      console.log("this.snippetIdsOfFramesBeingEdited", this.snippetIdsOfFrameBeingEdited)
+    }
   },
 };
 </script>
@@ -205,10 +216,5 @@ export default {
 <style scoped>
 .document {
   word-wrap: break-word;
-}
-
-#sentence-list {
-  //display: flex;
-  //justify-content: space-between;
 }
 </style>
