@@ -83,6 +83,7 @@ import SentenceList from "./SentenceList.vue"
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 
 export default {
   emits: ["closed"],
@@ -112,6 +113,7 @@ export default {
     },
     deleteFrame() {
       this.$store.commit("removeFrame", this.frame)
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
     toggleSubdivision() {
       if (this.subdivided) {

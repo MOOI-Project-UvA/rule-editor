@@ -66,6 +66,7 @@ import RoleSelector from "./RoleSelector.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import SentenceList from "./SentenceList.vue";
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 
 export default {
   emits: ["closed"],
@@ -92,6 +93,7 @@ export default {
     },
     deleteFrame() {
       this.$store.commit("removeFrame", this.frame)
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource)
