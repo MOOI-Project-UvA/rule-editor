@@ -17,6 +17,12 @@ export default defineConfig({
         secure: false,
         changeOrigin: true,
       },
+      "/api/wrapUp": {
+        target: "https://wrap-up-api-normativesystems.tnodatalab.nl",
+        secure: false,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/wrapUp/, ""),
+      },
     },
   },
 });

@@ -10,6 +10,7 @@ import {
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
+import {convertToRDF} from "../services/ApiServices.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -220,7 +221,7 @@ const store = createStore({
       console.log("create act frame");
       context.state.frameBeingEdited = new Act();
     },
-    saveInterpretation(context) {
+    saveInterpretationAsJson(context) {
       //combine frames that are saved with frames open in editor
       //keep unique list of frames
       const allFrames = context.state.frames
@@ -239,6 +240,30 @@ const store = createStore({
       });
       const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
+    },
+    async saveInterpretationAsTurtle(context){
+      //combine frames that are saved with frames open in editor
+      //keep unique list of frames
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
+
+      //ones and open in the editor
+      const jsonString = JSON.stringify(
+        convertInterpretationToJson(
+          allFrames,
+          context.state.sourceDocuments,
+        ),
+      )
+      console.log("jsonString:", jsonString)
+      const response = await convertToRDF(jsonString);
+      console.log("response from convertToRDF:", response);
+      const blob = new Blob([response], {
+        type: "text/turtle;charset=utf-8",
+      });
+      const dateString = new Date().toISOString().substring(0, 10);
+      saveAs(blob, `${dateString}_interpretation.ttl`);
+
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText)

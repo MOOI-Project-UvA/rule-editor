@@ -21,8 +21,6 @@
           </template>
         </q-btn>
       </div>
-
-
     </div>
 
   </div>
@@ -39,7 +37,7 @@ import {
   getStyleForLineSpacing,
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
-import ApiServices from "../services/ApiServices.js";
+import { fetchNlpPrediction } from "../services/ApiServices.js";
 export default {
   data: () => ({
     nlpRoleToSubtype: {
@@ -135,7 +133,7 @@ export default {
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.text);
+      const response = await fetchNlpPrediction(sentence.text);
       //filter out entries with no role
       const entities = response.predicted_entities //.filter(([_, role]) => role != "None")
 
@@ -205,10 +203,5 @@ export default {
 <style scoped>
 .document {
   word-wrap: break-word;
-}
-
-#sentence-list {
-  //display: flex;
-  //justify-content: space-between;
 }
 </style>
