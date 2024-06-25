@@ -1,5 +1,6 @@
 //functions that return style for underlining pieces of text (snippets and sentences)
 import { hexColors, hexColorsLight } from "./config.js";
+import { max } from "d3-array"
 const lineThickness = 3
 const marginBottom = 20 //space between sentences
 const charHeight = 14
@@ -7,11 +8,10 @@ const spaceBetweenCharsAndLines = 1
 const white = "#ffffff"
 const grey = "#666666"
 
-export function getStyleForUnderlining(snippet, sentence, activeFrame) {
+export function getStyleForUnderlining(snippet, activeFrame) {
     //check if snippet has annotation with a frame that is currently being edited (activeFrame),
     //if so, highlight the snippet
     const highlight = activeFrame && snippet.annotations.some(annotation => annotation.frame?.id == activeFrame.id)
-
 
     let backgroundStyle = "linear-gradient(180deg"
 
@@ -30,37 +30,34 @@ export function getStyleForUnderlining(snippet, sentence, activeFrame) {
 
     const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
 
-    //each annotation within a sentence gets its own vertical position
-    const annotationsInSentence = sentence.snippets.map(snippet => snippet.annotations)
-        .filter(annotations => annotations.length > 0)
-        .flat()
-        .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index);
-    //loop through all annotations for this sentence and see if this snippet
-    //has the annotation. if so, add coloured line, if not, add white line
-    annotationsInSentence.forEach((annotation, annotationNumber) => {
+    //sort annotations for this snippet according to vertical position.
+    //loop through all annotations for this snippet and build the backgroundStyle.
+    //keep track of the lowest position of any line, to calculate the backgroundSize
+    let backgroundSize = charHeight
+    snippet.annotations.sort((a1, a2) => a1.verticalPosition - a2.verticalPosition)
+    snippet.annotations.forEach((annotation) => {
         let lineColor
-        if (snippet.annotations.some(a => a.id == annotation.id)) {
-            if (annotation.frame) {
-                lineColor = annotation.frame.subTypeId
-                    ? hexColors[annotation.frame.subTypeId]
-                    : hexColors[annotation.frame.typeId]
-            } else {
-                lineColor = grey
-            }
+        if (annotation.frame) {
+            lineColor = annotation.frame.subTypeId
+                ? hexColors[annotation.frame.subTypeId]
+                : hexColors[annotation.frame.typeId]
         } else {
-            lineColor = white
+            lineColor = grey
         }
+        const lineStartYPos = firstLineStartPosition + annotation.verticalPosition * 2 * lineThickness
+        const lineEndYpos = lineStartYPos + lineThickness
         backgroundStyle +=
-            `, ${white} ${firstLineStartPosition + annotationNumber * 2 * lineThickness}px`
-            + `, ${lineColor} ${firstLineStartPosition + annotationNumber * 2 * lineThickness}px`
-            + `, ${lineColor} ${firstLineStartPosition + (annotationNumber * 2 + 1) * lineThickness}px`
-            + `, ${white} ${firstLineStartPosition + (annotationNumber * 2 + 1) * lineThickness}px`
+            `, ${white} ${lineStartYPos}px`
+            + `, ${lineColor} ${lineStartYPos}px`
+            + `, ${lineColor} ${lineEndYpos}px`
+            + `, ${white} ${lineEndYpos}px`
+        backgroundSize = Math.max(backgroundSize, lineEndYpos)
     })
     backgroundStyle += ")"
 
-    const backgroundSize = annotationsInSentence.length == 0
-        ? charHeight
-        : firstLineStartPosition + (2 * annotationsInSentence.length) * lineThickness
+    // const backgroundSize = annotationsInSentence.length == 0
+    //     ? charHeight
+    //     : firstLineStartPosition + (2 * annotationsInSentence.length) * lineThickness
 
     //if snippet has annotation that is being edited: highlight text background
     //disabled for now: highlighting covers line beneath as well
@@ -81,7 +78,6 @@ export function getStyleForUnderlining(snippet, sentence, activeFrame) {
         //backgroundColor: backgroundColor
     }
 
-    const test = "linear-gradient(180deg, #007bc6 2px, #ffffff 2px, #ffffff 4px, #007bc6 4px, #007bc6 6px, #ffffff 6px, #ffffff 8px, #007bc6 8px, #007bc6 10px, #ffffff 10px)"
 }
 
 export function getStyleForLineSpacing(sentence) {
@@ -94,4 +90,28 @@ export function getStyleForLineSpacing(sentence) {
         lineHeight: `${lineHeight}px`,
         marginBottom: `${marginBottom}px`
     }
+}
+
+export function setVerticalPositionOfAnnotationLines(sourceDoc) {
+    const snippetsWithAnnotation = sourceDoc.sentences
+        .map(sentence => sentence.snippets.filter(snippet => snippet.annotations.length > 0))
+        .flat()
+    console.log("snippetsWithAnnotation", snippetsWithAnnotation)
+    //TODO for each snippet that contains annotations: sort annotations according to length, so that
+    //long annotations appear closer to the source text, and shorter ones further down
+
+    //determine vertical position of the line for each annotation.
+    //to determine at what position the line should be drawn, we check the highest index
+    //of the annotation in all of its snippets. This will be the vertical position
+    //of the line for this annotation
+    const annotations = snippetsWithAnnotation.map(snippet => snippet.annotations).flat()
+        .filter((annotation, index, snippetAnnotations) => snippetAnnotations.findIndex(a => a.id == annotation.id) === index);
+    annotations.forEach(annotation => {
+        console.log(annotation.id)
+        console.log(snippetsWithAnnotation.filter(snippet => snippet.annotations.some(a => a.id == annotation.id)))
+        annotation.verticalPosition = max(snippetsWithAnnotation
+            .filter(snippet => snippet.annotations.some(a => a.id == annotation.id))
+            .map(snippet => snippet.annotations.findIndex(a => a.id == annotation.id)))
+        console.log("annotation", annotation.verticalPosition, annotation)
+    })
 }

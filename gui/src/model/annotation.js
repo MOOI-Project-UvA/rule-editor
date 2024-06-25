@@ -6,6 +6,7 @@ class Annotation {
     this._id = uuid4() //unique ID
     this._frame = null; //fact, act, or duty that is annotation is the source of
     this._addingToExistingFrame = false; //true if user wants to add this annotation to an existing frame
+    this._verticalPosition = 0 //used for displaying underlining in source for this annotation
   }
 
   get id() {
@@ -24,6 +25,13 @@ class Annotation {
   }
   set addingToExistingFrame(addingToExistingFrame) {
     this._addingToExistingFrame = addingToExistingFrame;
+  }
+
+  get verticalPosition() {
+    return this._verticalPosition
+  }
+  set verticalPosition(verticalPosition) {
+    this._verticalPosition = verticalPosition
   }
 
   // addSimilarAnnotationsToFrame(documents) {

@@ -3,7 +3,7 @@
     <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
       v-for="sentence in sentences" :ref="`sentence-${sentence.id}`">
       <div>
-        <span :style="getStyleForUnderlining(snippet, sentence, frameBeingEdited)" v-for="snippet in sentence.snippets"
+        <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
         </span>
@@ -34,9 +34,11 @@ import {
 import {
   getStyleForUnderlining,
   getStyleForLineSpacing,
+  setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
 import ApiServices from "../services/ApiServices.js";
+
 export default {
   data: () => ({
     nlpRoleToSubtype: {
@@ -63,6 +65,9 @@ export default {
     },
     sentenceToScrollTo() {
       return this.$store.state.sentenceToScrollTo
+    },
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument
     }
   },
   methods: {
@@ -121,6 +126,8 @@ export default {
         selectedSnippets.forEach((s) => {
           s.addAnnotation(annotation);
         });
+        //update underlining of annotations in the source text, for the currently showing document
+        setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
       } else {
         const clickedSentence = this.sentences.find(
           (s) => s.id == selection.anchorNode.parentNode.dataset.sentenceId,
