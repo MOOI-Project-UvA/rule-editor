@@ -126,6 +126,8 @@ export default {
         selectedSnippets.forEach((s) => {
           s.addAnnotation(annotation);
         });
+        //set length of annotation in number of snippets. this is used to set the order of the underlining.
+        annotation.nrSnippets = selectedSnippets.length
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
       } else {

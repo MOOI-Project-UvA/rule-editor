@@ -97,8 +97,11 @@ export function setVerticalPositionOfAnnotationLines(sourceDoc) {
         .map(sentence => sentence.snippets.filter(snippet => snippet.annotations.length > 0))
         .flat()
     console.log("snippetsWithAnnotation", snippetsWithAnnotation)
-    //TODO for each snippet that contains annotations: sort annotations according to length, so that
+    //for each snippet that contains annotations: sort annotations according to length, so that
     //long annotations appear closer to the source text, and shorter ones further down
+    snippetsWithAnnotation.forEach(snippet => {
+        snippet.annotations.sort((a1, a2) => a2.nrSnippets - a1.nrSnippets)
+    })
 
     //determine vertical position of the line for each annotation.
     //to determine at what position the line should be drawn, we check the highest index
