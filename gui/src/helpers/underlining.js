@@ -5,6 +5,7 @@ const lineThickness = 3
 const marginBottom = 20 //space between sentences
 const charHeight = 14
 const spaceBetweenCharsAndLines = 1
+const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
 const white = "#ffffff"
 const grey = "#666666"
 
@@ -27,8 +28,6 @@ export function getStyleForUnderlining(snippet, activeFrame) {
         backgroundStyle += `, ${white} 0px`
             + `, ${white} ${charHeight}px`
     }
-
-    const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
 
     //sort annotations for this snippet according to vertical position.
     //loop through all annotations for this snippet and build the backgroundStyle.
@@ -81,13 +80,17 @@ export function getStyleForUnderlining(snippet, activeFrame) {
 }
 
 export function getStyleForLineSpacing(sentence) {
-    const annotationIdsInSentence = sentence.snippets.map(s => s.annotations)
+    //line spacing is determined by the snippet with the lowest annotation line
+
+    const annotationsInSentence = sentence.snippets.map(s => s.annotations)
         .flat()
-        .map(a => a.id)
         .filter((value, index, array) => array.indexOf(value) === index);
-    const lineHeight = charHeight + annotationIdsInSentence.length * lineThickness * 2
+
+    const maxVerticalPosition = max(annotationsInSentence.map(a => a.verticalPosition))
+    const lowestYPos = firstLineStartPosition + (maxVerticalPosition * 2 + 1) * lineThickness
+
     return {
-        lineHeight: `${lineHeight}px`,
+        lineHeight: `${lowestYPos}px`,
         marginBottom: `${marginBottom}px`
     }
 }
