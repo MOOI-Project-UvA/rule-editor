@@ -21,6 +21,8 @@
           </template>
         </q-btn>
       </div>
+
+
     </div>
   </div>
 </template>
@@ -37,8 +39,7 @@ import {
   setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
-import ApiServices from "../services/ApiServices.js";
-
+import { fetchNlpPrediction } from "../services/ApiServices.js";
 export default {
   data: () => ({
     nlpRoleToSubtype: {
@@ -118,7 +119,6 @@ export default {
           this.sentences,
         );
         //split snippets and return those that correspond with the selection
-        console.log("selectionAsSnippets", selectionAsSnippets);
         const selectedSnippets = splitAndReturnSelectedSnippets(
           selectionAsSnippets,
           this.sentences,
@@ -144,7 +144,7 @@ export default {
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.text);
+      const response = await fetchNlpPrediction(sentence.text);
       //filter out entries with no role
       const entities = response.predicted_entities //.filter(([_, role]) => role != "None")
 
@@ -204,12 +204,6 @@ export default {
     },
   },
   watch: {
-    sentences() {
-      console.log("this.sentences", this.sentences);
-    },
-    snippetIdsOfFrameBeingEdited() {
-      console.log("this.snippetIdsOfFramesBeingEdited", this.snippetIdsOfFrameBeingEdited)
-    },
     sentenceToScrollTo() {
       if (this.sentenceToScrollTo) {
         const element = this.$refs[`sentence-${this.sentenceToScrollTo.id}`][0];
