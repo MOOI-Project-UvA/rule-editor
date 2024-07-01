@@ -21,13 +21,11 @@
           </q-btn>
         </div>
       </div>
-    </q-card-section>
-    <q-card-section>
+
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.act" label="Act" autogrow />
-    </q-card-section>
-    <q-card-section class="q-pa-md q-gutter-sm">
-      <div>
+
+      <div class="q-pa-md">
         <RoleSelector :frame="frame" attribute="action" label="Action" :multipleFramesAllowed="false" />
         <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
         <RoleSelector :frame="frame" attribute="object" label="Object" :multipleFramesAllowed="false" />

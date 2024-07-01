@@ -32,27 +32,14 @@
           </q-btn>
         </div>
       </div>
-    </q-card-section>
 
-    <q-card-section>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
-    </q-card-section>
-    <q-card-section>
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
-    <!-- <div class="row">
-      <div class="col q-gutter-sm">
-        <q-checkbox size="sm" v-model="frame.isComplex" label="Fact is subdivided" />
-      </div>
-    </div> -->
     <q-card-section v-if="frame.isComplex">
       <div class="label">Subdivision</div>
       <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />
     </q-card-section>
-    <!-- <q-card-section>
-      <q-toggle v-model="showSource" label="Show source" @update:model-value="toggleShowSource" />
-      <q-toggle v-model="subdivided" label="Subdivide in facts" @update:model-value="toggleSubdivision" />
-    </q-card-section> -->
     <q-card-actions align="right">
       <template v-if="frameIsBeingDeleted">
         <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
