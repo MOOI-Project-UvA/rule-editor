@@ -29,7 +29,7 @@
       <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
         <!-- show all sentences in document -->
         <div class="fill-height scrollable q-pa-md">
-          <SentenceList :sentences="displayedSource.sentences.filter((s) => s.checked)" :showNLP="true" />
+          <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.checked)" :showNLP="true" />
         </div>
       </template>
       <template v-else>
@@ -50,9 +50,6 @@ export default {
   components: {
     SentenceList,
   },
-  data: () => ({
-    displayedSource: null,
-  }),
   mounted() {
     //show by default the first document in the list of source documents
     this.$store.state.displayedSourceDocument =
