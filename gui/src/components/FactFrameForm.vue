@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered class="my-card">
     <q-card-section>
-      <div class="row">
+      <div class="row items-center">
         <div class="col-2">FACT {{ frame.subTypeId ? "of sub-type " + frameTypes.fact.subTypes[frame.subTypeId].label :
           "" }}
         </div>
@@ -14,6 +14,14 @@
             </q-tooltip>
           </q-btn>
         </div>
+        <div class="col">
+          <template v-if="sentences?.length == 0">
+            <div class="text-italic">No source added yet</div>
+          </template>
+          <template v-else>
+            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
+          </template>
+        </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
             @click="showComments = !showComments">
@@ -25,14 +33,7 @@
         </div>
       </div>
     </q-card-section>
-    <q-card-section>
-      <template v-if="sentences?.length > 0">
-        <SentenceList :sentences="sentences" />
-      </template>
-      <template v-else>
-        <div class="source-text">No source added yet</div>
-      </template>
-    </q-card-section>
+
     <q-card-section>
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
     </q-card-section>
@@ -82,6 +83,7 @@ import SentenceList from "./SentenceList.vue"
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 
 export default {
   emits: ["closed"],
@@ -95,17 +97,15 @@ export default {
     frameIsBeingDeleted: false //true when user clicked delete button
   }),
   computed: {
-    sourceDocuments() {
-      return this.$store.state.sourceDocuments;
-    },
-    sentences() {
-      return this.sourceDocuments
-        .map(sourceDoc => sourceDoc.getSentencesForFrame(this.frame))
-        .flat()
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument
     },
     frame() {
       return this.$store.state.frameBeingEdited;
     },
+    sentences() {
+      return this.displayedSourceDocument.getSentencesForFrame(this.frame)
+    }
   },
   methods: {
     closeFrame() {
@@ -114,6 +114,7 @@ export default {
     deleteFrame() {
       this.frameIsBeingDeleted = null
       this.$store.commit("removeFrame", this.frame)
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
     toggleSubdivision() {
       if (this.subdivided) {
@@ -130,16 +131,13 @@ export default {
     },
     setSubType(subTypeId) {
       this.frame.subTypeId = this.frame.subTypeId == subTypeId ? null : subTypeId
+    },
+    //scroll to source of frame, in source panel
+    scrollToSource() {
+      //take the first sentence to scroll to
+      this.$store.state.sentenceToScrollTo = this.sentences[0]
     }
   },
   components: { BooleanConstructPanel, CommentsList, SentenceList }
 }
 </script>
-
-<style lang="css" scoped>
-.message {
-  font-size: 10pt;
-  font-style: italic;
-  margin-right: 10px;
-}
-</style>

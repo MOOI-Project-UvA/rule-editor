@@ -46,7 +46,7 @@
                     </div>
                 </q-card-section>
                 <q-card-actions>
-                    <q-btn flat @click="cancelAnnotation">Cancel</q-btn>
+                    <q-btn flat @click="closePanel">Close</q-btn>
                 </q-card-actions>
             </template>
 
@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 export default {
     data: () => ({
         coordX: 0,
@@ -95,7 +96,7 @@ export default {
 
     },
     methods: {
-        cancelAnnotation() {
+        closePanel() {
             this.$store.state.selectedSnippet = null
         },
         deleteAnnotation(annotation) {
@@ -105,6 +106,8 @@ export default {
                 this.$store.state.selectedSnippet = null
             }
             this.annotationBeingDeleted = null
+            //redraw the annotation lines
+            setVerticalPositionOfAnnotationLines(this.selectedSourceDocument)
         },
         getSnippets(annotation) {
             return this.selectedSourceDocument ? this.selectedSourceDocument.getSnippetsForAnnotation(annotation) : []

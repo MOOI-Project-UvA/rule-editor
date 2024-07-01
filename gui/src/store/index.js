@@ -21,7 +21,9 @@ const store = createStore({
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
       showFrameSource: false, //show sources for currently edited frame
-      sourceDocuments: [], // documents that are opened in the current interpretation
+      sourceDocuments: [], // documents that are used in the current interpretation
+      sentenceToScrollTo: null, // sentence that should be visible in source panel, because 'scroll to source' is clicked in frame editor
+      displayedSourceDocument: null, //document that is currently showing in the source view
       annotationBeingEdited: null, //annotation for which source text has been selected / is being selected
       annotationToBeAddedToExistingFrame: null, //annotation selected to be added to an existing frame
       addingAnnotationToExistingFrame: false, //true if user is in the process of selecting a frame to add the annotationBeingEdited to

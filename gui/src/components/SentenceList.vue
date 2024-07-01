@@ -1,9 +1,9 @@
 <template>
   <div class="document" @mouseup="handleSelection">
     <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
-      v-for="sentence in sentences">
+      v-for="sentence in sentences" :ref="`sentence-${sentence.id}`">
       <div>
-        <span class="snippet" :style="getStyleForUnderlining(snippet, sentence)" v-for="snippet in sentence.snippets"
+        <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
         </span>
@@ -21,8 +21,9 @@
           </template>
         </q-btn>
       </div>
-    </div>
 
+
+    </div>
   </div>
 </template>
 
@@ -35,6 +36,7 @@ import {
 import {
   getStyleForUnderlining,
   getStyleForLineSpacing,
+  setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
 import { fetchNlpPrediction } from "../services/ApiServices.js";
@@ -62,6 +64,12 @@ export default {
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
     },
+    sentenceToScrollTo() {
+      return this.$store.state.sentenceToScrollTo
+    },
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument
+    }
   },
   methods: {
     getStyleForUnderlining,
@@ -111,7 +119,6 @@ export default {
           this.sentences,
         );
         //split snippets and return those that correspond with the selection
-        console.log("selectionAsSnippets", selectionAsSnippets);
         const selectedSnippets = splitAndReturnSelectedSnippets(
           selectionAsSnippets,
           this.sentences,
@@ -119,6 +126,10 @@ export default {
         selectedSnippets.forEach((s) => {
           s.addAnnotation(annotation);
         });
+        //set length of annotation in number of snippets. this is used to set the order of the underlining.
+        annotation.nrSnippets = selectedSnippets.length
+        //update underlining of annotations in the source text, for the currently showing document
+        setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
       } else {
         const clickedSentence = this.sentences.find(
           (s) => s.id == selection.anchorNode.parentNode.dataset.sentenceId,
@@ -193,9 +204,13 @@ export default {
     },
   },
   watch: {
-    sentences() {
-      console.log("this.sentences", this.sentences);
-    },
+    sentenceToScrollTo() {
+      if (this.sentenceToScrollTo) {
+        const element = this.$refs[`sentence-${this.sentenceToScrollTo.id}`][0];
+        element.scrollIntoView({ block: "center", behavior: 'smooth' });
+        this.$store.state.sentenceToScrollTo = null
+      }
+    }
   },
 };
 </script>
