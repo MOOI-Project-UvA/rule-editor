@@ -76,6 +76,9 @@ export default {
     showComments: false,
     frameIsBeingDeleted: false //true when user clicked delete button
   }),
+  mounted() {
+    if (this.frame.label.length == 0) this.frame.label = "<action> <object> <actor> <recipient>"
+  },
   computed: {
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument
