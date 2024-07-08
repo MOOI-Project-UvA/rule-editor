@@ -22,7 +22,8 @@
         </div>
       </div>
 
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold"
+        @update:model-value="userChangedLabel" @blur="updateLabel" />
       <q-input v-model="frame.act" label="Act" autogrow />
 
       <div class="q-pa-md">
@@ -77,7 +78,8 @@ export default {
     frameIsBeingDeleted: false //true when user clicked delete button
   }),
   mounted() {
-    if (this.frame.label.length == 0) this.frame.label = "<action> <object> <actor> <recipient>"
+    console.log("mounted")
+    this.updateLabel()
   },
   computed: {
     displayedSourceDocument() {
@@ -113,13 +115,41 @@ export default {
     scrollToSource() {
       //take the first sentence to scroll to
       this.$store.state.sentenceToScrollTo = this.sentences[0]
+    },
+    userChangedLabel() {
+      //stop generating label automatically when user types their own label
+      //when user deletes label, set auto generating to true
+      this.frame.generateLabelAutomatically = this.frame.label.length == 0
+    },
+    updateLabel() {
+      console.log("updateLabel")
+      //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
+      //therefore: check for frame equals null
+      if (this.frame && this.frame.generateLabelAutomatically) {
+        this.frame.generateLabel()
+      }
     }
+
+  },
+  watch: {
+    "frame.action"() {
+      this.updateLabel()
+    },
+    "frame.object"() {
+      this.updateLabel()
+    },
+    "frame.actor"() {
+      this.updateLabel()
+    },
+    "frame.recipient"() {
+      this.updateLabel()
+    },
   },
   components: {
     RoleSelector,
     SentenceList,
     CommentsList,
     BooleanConstructPanel,
-  },
+  }
 };
 </script>

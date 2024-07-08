@@ -61,8 +61,6 @@ export default {
         chipClicked(frame) {
             this.$store.commit("setFrameBeingEdited", frame)
         }
-
-
     }
 }
 </script>

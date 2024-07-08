@@ -14,7 +14,6 @@ class Act {
         this._actor = null
         this._object = null
         this._precondition = new BooleanConstruct()
-        //this._precondition.addEmptyChild()
         this._recipient = null
         this._creates = []
         this._terminates = []
@@ -23,6 +22,8 @@ class Act {
         this._comments = []
 
         this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
+
+        this._generateLabelAutomatically = true //by default, label is generated automatically 
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -92,6 +93,9 @@ class Act {
     get comments() { return this._comments }
     set comments(comments) { this._comments = comments }
 
+    get generateLabelAutomatically() { return this._generateLabelAutomatically }
+    set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
         switch (this._activeField) {
@@ -141,22 +145,6 @@ class Act {
         this._precondition.removeFrame(frame)
     }
 
-    // returns the ids of the containing facts
-    //TODO: do we need this? needs updating because precondition is a BooleanConstruct now
-    get childrenIds() {
-        const facts = [
-            this._action,
-            this._actor,
-            this._object,
-            this._precondition,
-            this._recipient,
-            ...this._creates,
-            ...this._terminates
-        ]
-
-        return facts.filter(f => f).map(f => f._id)
-    }
-
     toFlatObject() {
         console.log("toFlatObject act", this)
         return {
@@ -190,16 +178,16 @@ class Act {
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
-}
 
-//construct label [action] [object] [actor] [recipient]
-function constructActLabel(act) {
-    const actLabel = act.action ? act.action.label : '.'
-    const objectLabel = act.object ? act.object.label : '.'
-    const actorLabel = act.actor ? act.actor.label : '.'
-    const recipientLabel = act.recipient ? act.recipient.label : '.'
+    //construct label [action] [object] [actor] [recipient]
+    generateLabel() {
+        const actionLabel = this._action ? this._action.label : '<action>'
+        const objectLabel = this._object ? this._object.label : '<obj>'
+        const actorLabel = this._actor ? this._actor.label : '<actor>'
+        const recipientLabel = this._recipient ? this._recipient.label : '<rec>'
 
-    return `${actLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+        this._label = `${actionLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+    }
 }
 
 export {
