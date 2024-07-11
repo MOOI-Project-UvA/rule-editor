@@ -12,16 +12,18 @@
           </template>
         </div>
         <div class="col">
-          <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition" :loading="nlpIsBusy"
-            @click.stop="applyNlpToSource" @mouseup.stop>
-            <q-tooltip anchor="bottom middle" class="text-subtitle2">
-              <span>Detect roles of an act frame. <br />This feature is
-                still experimental, so use it with caution.</span>
-            </q-tooltip>
-            <template v-slot:loading>
-              <q-spinner-gears />
-            </template>
-          </q-btn>
+          <template v-if="sentences?.length > 0">
+            <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition" :loading="nlpIsBusy"
+              @click.stop="applyNlpToSource" @mouseup.stop>
+              <q-tooltip anchor="bottom middle" class="text-subtitle2">
+                <span>Detect roles of an act frame. <br />This feature is
+                  still experimental, so use it with caution.</span>
+              </q-tooltip>
+              <template v-slot:loading>
+                <q-spinner-gears />
+              </template>
+            </q-btn>
+          </template>
         </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
@@ -204,8 +206,14 @@ export default {
               this.sentences,
             );
             selectedSnippets.forEach((s) => {
+              console.log("adding", annotation, "to snippet", s)
               s.addAnnotation(annotation);
             });
+            //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+            //will be closer to the text than shorter ones
+            annotation.nrSnippets = selectedSnippets.length
+            //update underlining of annotations in the source text, for the currently showing document
+            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
           }
           //start new sequence of tokens
           characterRangeStart = tokenRange[0]

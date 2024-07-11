@@ -51,7 +51,6 @@ export default {
     handleSelection(event) {
       const selection = window.getSelection();
       if (selection.toString().length > 0) {
-        console.log("selection", selection);
         //if no annotation is open, create a new one, else use the existing one that is open
         let annotation;
         if (this.annotationBeingEdited) {
@@ -100,7 +99,8 @@ export default {
         selectedSnippets.forEach((s) => {
           s.addAnnotation(annotation);
         });
-        //set length of annotation in number of snippets. this is used to set the order of the underlining.
+        //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+        //will be closer to the text than shorter ones
         annotation.nrSnippets = selectedSnippets.length
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
