@@ -8,21 +8,6 @@
           {{ snippet.text }}
         </span>
       </div>
-      <div v-if="showNLP && sentences.length > 0" class="self-center">
-        <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
-          :loading="sentence.loading" @click.stop="sendDataToNlp(sentence)" @mouseup.stop>
-          <q-tooltip anchor="bottom middle" class="text-subtitle2">
-            <span>Detect constituents of an act frame. <br />This feature is
-              still experimental, so use it with caution. <br />It is
-              recommended to use it only once per text snippet.</span>
-          </q-tooltip>
-          <template v-slot:loading>
-            <q-spinner-gears />
-          </template>
-        </q-btn>
-      </div>
-
-
     </div>
   </div>
 </template>
@@ -30,7 +15,6 @@
 <script>
 import {
   getSelectionAsSnippets,
-  getSelectedRangeAsSnippets,
   splitAndReturnSelectedSnippets,
 } from "../helpers/annotating.js";
 import {
@@ -39,20 +23,10 @@ import {
   setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
 import { Annotation } from "../model/annotation";
-import { fetchNlpPrediction } from "../services/ApiServices.js";
+
 export default {
-  data: () => ({
-    nlpRoleToSubtype: {
-      "Actor": "agent",
-      "Recipient": "agent",
-      "Action": "action",
-      "Object": "object",
-      "Duty": "duty"
-    }
-  }),
   props: {
-    sentences: Array,
-    showNLP: Boolean
+    sentences: Array
   },
   computed: {
     annotationBeingEdited() {
@@ -77,7 +51,6 @@ export default {
     handleSelection(event) {
       const selection = window.getSelection();
       if (selection.toString().length > 0) {
-        console.log("selection", selection);
         //if no annotation is open, create a new one, else use the existing one that is open
         let annotation;
         if (this.annotationBeingEdited) {
@@ -126,7 +99,8 @@ export default {
         selectedSnippets.forEach((s) => {
           s.addAnnotation(annotation);
         });
-        //set length of annotation in number of snippets. this is used to set the order of the underlining.
+        //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+        //will be closer to the text than shorter ones
         annotation.nrSnippets = selectedSnippets.length
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
@@ -140,68 +114,7 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
-    },
-    async sendDataToNlp(sentence) {
-      console.log("sentence: ", sentence);
-      sentence.loading = true;
-      const response = await fetchNlpPrediction(sentence.text);
-      //filter out entries with no role
-      const entities = response.predicted_entities //.filter(([_, role]) => role != "None")
-
-      sentence.loading = false;
-      console.log("entities", entities)
-
-      //current character range of subsequent tokens with equal roles
-      let characterRangeStart = 0
-      let characterRangeEnd = 0
-      entities.forEach(([token, role], index) => {
-
-        //get start and end index of token in sentence
-        const tokenRange = this.getRange(sentence.text, token, characterRangeEnd);
-
-        characterRangeEnd = tokenRange[1]
-
-        if (index < entities.length - 1 && role != entities[index + 1][1] || index == entities.length - 1) {
-          //next token has different role, or this is last token
-          //create annotation for current sequence of tokens with same role
-          //unless the role is None
-          if (role != "None") {
-            const annotation = new Annotation()
-            //create fact for this annotation, use the role suggested by NLP to set the correct subtype
-            const subTypeId = this.nlpRoleToSubtype[role]
-            this.$store.commit("addNewFrame", {
-              frameTypeId: 'fact',
-              subTypeId: subTypeId,
-              annotation: annotation,
-              openInEditor: false
-            })
-            //get snippets that are covered by the character range
-            const selectionAsSnippets = getSelectedRangeAsSnippets(
-              sentence,
-              [characterRangeStart, characterRangeEnd]
-            )
-            //split snippets, and return those that fit the character range
-            const selectedSnippets = splitAndReturnSelectedSnippets(
-              selectionAsSnippets,
-              this.sentences,
-            );
-            selectedSnippets.forEach((s) => {
-              s.addAnnotation(annotation);
-            });
-          }
-          //start new sequence of tokens
-          characterRangeStart = tokenRange[0]
-        }
-      });
-    },
-    getRange(string, token, lastIndex) {
-      // how about a potential second occurrence of the same token?
-      const index = string.indexOf(token, lastIndex);
-      if (index !== -1) {
-        const endIndex = index + token.length;
-        return [index, endIndex];
-      }
-    },
+    }
   },
   watch: {
     sentenceToScrollTo() {
