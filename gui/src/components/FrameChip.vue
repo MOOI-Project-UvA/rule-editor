@@ -1,19 +1,18 @@
 <template>
-  <!-- <q-chip :class="{ chip: true }" :removable="removable" :disable="disable" @remove="onRemove" :color="disable
-    ? 'grey-5'
-    : frame.subType ? colors[frame.subType.id] : colors[frame.type.id]
-    " text-color="white" :icon="icons[frame.type.id]" v-on:mouseover="onOver(frame)" v-on:mouseleave="onLeave(frame)">
-    {{ frame.label }}
-    <q-badge v-if="!!frame.isComplex" style="margin-top: -2px;" dense color="secondary" rounded floating></q-badge>
-  </q-chip> -->
+
   <div>
     <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
-      :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]">
-      {{ frame.label }}
+      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
+      {{ frame.label != "" ? frame.label : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
+        frameTypes[frame.typeId].label }}
     </div>
+    <!-- <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
+      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
+      {{ frame.typeId }} |{{ frame.subTypeId }}|
+    </div> -->
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
-        {{ frame.label }}
+        {{ frame.label != "" ? frame.label : "- no label given yet -" }}
       </div>
     </q-tooltip>
   </div>
@@ -21,25 +20,19 @@
 
 <script>
 import { icons, colors } from "../helpers/config.js";
+import { frameTypes } from "../model/frame";
 export default {
   data: () => ({
     icons: icons,
     colors: colors,
     hover: false,
+    frameTypes: frameTypes
   }),
   props: {
     frame: Object,
-    removable: {
-      default: false,
-      type: Boolean,
-    },
     disable: {
       default: false,
       type: Boolean,
-    },
-    functionality: {
-      default: "chip-container",
-      type: String,
     },
   },
   emits: ["remove"],

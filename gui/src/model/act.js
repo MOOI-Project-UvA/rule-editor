@@ -5,8 +5,8 @@ import { Annotation } from './annotation.js'
 class Act {
     constructor() {
         this._id = uuid4() //unique ID
-        this._type = null //{id, class, label}
-        this._subType = null
+        this._typeId = null
+        this._subTypeId = null
         this._label = ""
         this._act = ""
         this._activeField = null
@@ -14,7 +14,6 @@ class Act {
         this._actor = null
         this._object = null
         this._precondition = new BooleanConstruct()
-        //this._precondition.addEmptyChild()
         this._recipient = null
         this._creates = []
         this._terminates = []
@@ -23,12 +22,14 @@ class Act {
         this._comments = []
 
         this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
+
+        this._generateLabelAutomatically = true //by default, label is generated automatically 
     }
     get id() { return this._id }
     set id(id) { this._id = id }
 
-    get type() { return this._type }
-    set type(type) { this._type = type }
+    get typeId() { return this._typeId }
+    set typeId(typeId) { this._typeId = typeId }
 
     get label() {
         return this._label //&& this._label.length > 0
@@ -70,41 +71,7 @@ class Act {
     get terminates() { return this._terminates }
     set terminates(terminates) { this._terminates = terminates }
 
-    //TODO these methods are also present in fact and claim-duty.
-    //maybe use a super-class 'frame' and add them there
-    get annotations() { return this._annotations }
-    addAnnotation(annotation) {
-        this._annotations = [...this._annotations, annotation]
-        annotation.frame = this
-    }
-    removeAnnotation(annotation) {
-        const index = this._annotations.indexOf(annotation)
-        this._annotations.splice(index, 1)
-    }
-
-    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
-
-    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
-    getSentences(sourceDocs) {
-        const snippets = this._annotations.map(a => a.snippets).flat()
-        //group snippets according to document
-        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
-        console.log("snippetsPerDoc", snippetsPerDoc)
-        let sentences = []
-        Object.entries(snippetsPerDoc).forEach(([docId, snippetsInDoc]) => {
-            console.log("snippetsInDoc", snippetsInDoc)
-            //get sentence object for each snippet from the current document
-            const doc = sourceDocs.find(d => d.id == docId)
-            let sentencesForSnippets = snippetsInDoc
-                .map(snippet => doc.sentences.find(s => s.id == snippet.sentenceId))
-            sentencesForSnippets.sort((s1, s2) => s1.orderId - s2.orderId)
-            sentences = sentences.concat(sentencesForSnippets)
-        })
-        console.log("sentences", sentences)
-        return sentences
-    }
-
-    get allowedSubClassesForActiveField() {
+    get allowedSubTypesForActiveField() {
         switch (this._activeField) {
             case 'action':
                 return ['action']
@@ -115,15 +82,19 @@ class Act {
             case 'recipient':
                 return ['agent']
             case 'creates':
-                return ['agent', 'action', 'object', 'other']
+                return ['agent', 'action', 'object']
             case 'terminates':
-                return ['agent', 'action', 'object', 'other']
+                return ['agent', 'action', 'object']
             default:
                 return []
         }
     }
 
     get comments() { return this._comments }
+    set comments(comments) { this._comments = comments }
+
+    get generateLabelAutomatically() { return this._generateLabelAutomatically }
+    set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
@@ -149,64 +120,36 @@ class Act {
         }
     }
 
-
-
-
-    checkFrameExistance(act, element) {
-        const term = act._terminates.find((d) => act._id === element._id) ? true : false;
-        const creates = act._creates.find((d) => act._id === element._id) ? true : false;
-        const action = act._action !== null && act._action._id === element._id ? true : false;
-        const actor = act._actor !== null && act._actor._id == element._id
-            ? true
-            : false;
-        const object = act._object !== null && act._object._id == element._id
-            ? true
-            : false;
-        const precondition = act._precondition !== null && act._precondition._id == element._id
-            ? true
-            : false;
-        const recipient = (act._recipient !== null && act._recipient._id == element._id)
-            ? true
-            : false;
-
-        const exist = [
-            term,
-            creates,
-            action,
-            actor,
-            object,
-            precondition,
-            recipient,
-        ];
-
-        if (exist.some((d) => d)) {
-            act._highlight = false
-        } else {
-            act._highlight = true
+    //check if any of the roles has this frame, if so, remove it
+    deleteReferencesToFrame(frame) {
+        if (this._action && this._action.id == frame.id) {
+            this._action = null
         }
-        return exist.some((d) => d)
-    }
-
-    // returns the ids of the containing facts
-    //TODO: do we need this? needs updating because precondition is a BooleanConstruct now
-    get childrenIds() {
-        const facts = [
-            this._action,
-            this._actor,
-            this._object,
-            this._precondition,
-            this._recipient,
-            ...this._creates,
-            ...this._terminates
-        ]
-
-        return facts.filter(f => f).map(f => f._id)
+        if (this._actor && this._actor.id == frame.id) {
+            this._actor = null
+        }
+        if (this._object && this._object.id == frame.id) {
+            this._object = null
+        }
+        if (this._recipient && this._recipient.id == frame.id) {
+            this._recipient = null
+        }
+        const indexCreates = this._creates.findIndex(f => f.id == frame.id)
+        if (indexCreates != -1) {
+            this._creates.splice(indexCreates, 1)
+        }
+        const indexTerminates = this._creates.findIndex(f => f.id == frame.id)
+        if (indexTerminates != -1) {
+            this._creates.splice(indexTerminates, 1)
+        }
+        this._precondition.removeFrame(frame)
     }
 
     toFlatObject() {
+        console.log("toFlatObject act", this)
         return {
             id: this.id,
-            typeId: this.type.id, //type is an object {id, class, label}
+            typeId: this.typeId, //type is an object {id, class, label}
             label: this.label,
             act: this.act,
             actionId: this.action?.id, //take frame id instead of frame object
@@ -216,15 +159,14 @@ class Act {
             recipientId: this.recipient?.id,
             creates: this.creates.map(f => f.id),
             terminates: this.terminates.map(f => f.id),
-            comments: this.comments,
-            annotations: this.annotations.map(a => a.toFlatObject())
+            comments: this.comments.map(c => c.toFlatObject()),
         }
     }
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
         this._label = frameData.label
-        //this._type is instantiated in importExport.js
+        this._typeId = frameData.typeId
         this._act = frameData.act
         this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
@@ -232,25 +174,20 @@ class Act {
         this._precondition = new BooleanConstruct()
         this._precondition.fromFlatObject(frameData.precondition, allFrames)
         this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
-        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id))
-        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id))
-        this._comments = frameData.comments
-        frameData.annotations.forEach(a => {
-            let annotation = new Annotation()
-            annotation.fromFlatObject(a)
-            this.addAnnotation(annotation)
-        })
+        this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
+        this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
+        //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
-}
 
-//construct label [action] [object] [actor] [recipient]
-function constructActLabel(act) {
-    const actLabel = act.action ? act.action.label : '.'
-    const objectLabel = act.object ? act.object.label : '.'
-    const actorLabel = act.actor ? act.actor.label : '.'
-    const recipientLabel = act.recipient ? act.recipient.label : '.'
+    //construct label [action] [object] [actor] [recipient]
+    generateLabel() {
+        const actionLabel = this._action ? this._action.label : '<action>'
+        const objectLabel = this._object ? this._object.label : '<obj>'
+        const actorLabel = this._actor ? this._actor.label : '<actor>'
+        const recipientLabel = this._recipient ? this._recipient.label : '<rec>'
 
-    return `${actLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+        this._label = `${actionLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+    }
 }
 
 export {

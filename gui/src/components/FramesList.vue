@@ -1,44 +1,35 @@
 <template>
     <div>
-        <template v-for="frameClass in ['fact', 'relation']">
-            <div class="class-label">{{ frameClass }}</div>
-            <div class="fact-container" v-for="frameType in frameTypes.filter((t) => t.class == frameClass)">
-                <div v-if="frameType.class != 'fact'">
-                    <b>{{ frameType.label }}</b>
-                </div>
-                <div class="chips">
-                    <div v-for="frame in frames.filter(
-            (f) => f.type.id == frameType.id && !f.subType,
+        <div class="fact-container" v-for="(frameType, frameTypeId) in frameTypes">
+            <b>{{ frameType.label }}</b>
+            <div class="chips">
+                <div v-for="frame in filteredFrames.filter(
+            (f) => f.typeId == frameTypeId && !f.subTypeId,
         )" @click="onClick(frame)">
-                        <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(frameType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
-                    </div>
+                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
+            frameBeingEdited.activeField != null" />
                 </div>
-                <div v-if="'subTypes' in frameType">
-                    <div v-for="subType in frameType.subTypes" class="q-ml-sm">
-                        <q-avatar size="md" :icon="icons[subType.id]" />
-                        <b>{{ subType.label }}</b>
-                        <div class="chips">
-                            <div v-for="frame in frames.filter(
+            </div>
+            <div v-if="'subTypes' in frameType">
+                <div v-for="(subType, subTypeId) in frameType.subTypes" class="q-ml-sm">
+                    <q-avatar size="md" :icon="icons[subTypeId]" />
+                    <b>{{ subType.label }}</b>
+                    <div class="chips">
+                        <div v-for="frame in filteredFrames.filter(
             (f) =>
-                f.type.id == frameType.id &&
-                f.subType &&
-                f.subType.id == subType.id,
+                f.typeId == frameTypeId &&
+                f.subTypeId == subTypeId,
         )" @click="onClick(frame)">
-                                <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            frameBeingEdited.type.class == 'relation' &&
-            frameBeingEdited.activeField &&
-            !allowedSubTypes.includes(subType.id)
-            " :removable="message === 'Click to edit'" functionality="chip-container" />
-                            </div>
+                            <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
+            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
+            frameBeingEdited.activeField != null &&
+            !frameBeingEdited.allowedSubTypesForActiveField.includes(subTypeId)" />
                         </div>
                     </div>
                 </div>
             </div>
-        </template>
+        </div>
     </div>
 </template>
 
@@ -50,50 +41,51 @@ export default {
     data: () => ({
         frameTypes: frameTypes,
         icons: icons,
+        minimumLengthSearchTerm: 2
     }),
-    mounted() {
-        console.log("frameslist mounted: frametypes", this.frameTypes)
-    },
     components: {
         FrameChip,
+    },
+    props: {
+        searchTerm: String
     },
     computed: {
         frames() {
             return this.$store.state.frames;
         },
+        filteredFrames() {
+            return this.searchTerm.length >= this.minimumLengthSearchTerm
+                ? this.frames.filter(f => f.label.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                : this.frames
+        },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;
         },
-        allowedSubTypes() {
-            console.log("frameBeingEdited", this.frameBeingEdited);
-            return this.$store.state.frameBeingEdited &&
-                this.frameBeingEdited.type.class == "relation"
-                ? this.frameBeingEdited.allowedSubClassesForActiveField
-                : [];
+        annotationToBeAddedToExistingFrame() {
+            return this.$store.state.annotationToBeAddedToExistingFrame
         },
-        message() {
-            return this.frameBeingEdited &&
-                ["act", "claim_duty"].includes(this.frameBeingEdited)
-                ? "Add to frame"
-                : "";
+        addingAnnotationToExistingFrame() {
+            return this.$store.state.addingAnnotationToExistingFrame
         },
+        framesOpenInEditor() {
+            return this.$store.state.framesOpenInEditor
+        },
+        booleanConstructBeingEdited() {
+            return this.$store.state.booleanConstructBeingEdited
+        }
     },
     methods: {
         onClick(frame) {
-            console.log("clicked frame", frame);
-            console.log("this.frameBeingEdited", this.frameBeingEdited);
-            console.log("this.annotationBeingEdited", this.annotationBeingEdited);
-
             if (
-                this.annotationBeingEdited &&
-                this.annotationBeingEdited.addingToExistingFrame
+                this.addingAnnotationToExistingFrame
             ) {
-                frame.addAnnotation(this.annotationBeingEdited);
-                this.annotationBeingEdited.addingToExistingFrame = false;
-                this.$store.state.annotationBeingEdited = null;
+                //add annotation to this frame
+                this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
+                this.$store.state.addingAnnotationToExistingFrame = false;
+                this.$store.state.annotationToBeAddedToExistingFrame = null;
             } else if (
                 this.frameBeingEdited &&
-                this.frameBeingEdited.type.class == "relation" &&
+                'activeField' in this.frameBeingEdited &&
                 this.frameBeingEdited.activeField
             ) {
                 //add frame to field in frame being edited
@@ -104,10 +96,12 @@ export default {
                 this.booleanConstructBeingEdited.frame = frame;
                 this.$store.state.booleanConstructBeingEdited = null;
             } else {
-                console.log("setting frame being edited");
-                // it opens the frame form in the middle
+                //open this frame in edit panel
                 this.$store.state.frameBeingEdited = frame
-                this.$store.state.framesOpenInEditor.push(frame)
+                //if the frame is not yet in the list of edited frames, add it
+                if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {
+                    this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, frame]
+                }
             }
         },
     },

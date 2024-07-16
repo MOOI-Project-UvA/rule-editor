@@ -20,7 +20,7 @@
 
   <q-stepper
     id="stepper-id"
-    v-model="step"
+    v-model="this.$store.state.step"
     ref="stepper"
     color="primary"
     animated
@@ -31,11 +31,11 @@
       :name="1"
       title="Define a task"
       icon="mdi-head-dots-horizontal-outline"
-      :done="step > 1"
+      :done="this.$store.state.step > 1"
       done-color="green"
       caption="Step 1"
       class="row justify-center content-center"
-      :header-nav="step > 1"
+      :header-nav="this.$store.state.step > 1"
     >
       <TaskDefinitionView @update-stepper="updateStepperValue" />
     </q-step>
@@ -44,10 +44,10 @@
       title="Collect sources"
       icon="mdi-bookmark-box-multiple-outline"
       class="row justify-center content-start"
-      :done="step > 2"
+      :done="this.$store.state.step > 2"
       done-color="green"
       caption="Step 2"
-      :header-nav="step > 2"
+      :header-nav="this.$store.state.step > 2"
     >
       <SourceCollectionView
         @update-stepper="updateStepperValue"
@@ -59,10 +59,10 @@
       :name="3"
       title="Interpret sources"
       icon="mdi-thought-bubble-outline"
-      :done="step > 3"
+      :done="this.$store.state.step > 3"
       done-color="green"
       caption="Step 3"
-      :header-nav="step > 3"
+      :header-nav="this.$store.state.step > 3"
     >
       <InterpretationView />
       <!-- <TestView/> -->
@@ -71,7 +71,7 @@
       :name="4"
       title="Validate interpretations"
       icon="mdi-timeline-check-outline"
-      :done="step > 4"
+      :done="this.$store.state.step > 4"
       disable
       caption="Step 4"
     >
@@ -80,7 +80,7 @@
       :name="5"
       title="Perform task"
       icon="mdi-playlist-check"
-      :done="step > 5"
+      :done="this.$store.state.step > 5"
       disable
       caption="Step 5"
     >
@@ -93,16 +93,6 @@
         style="padding-top: 1px; padding-bottom: 1px"
       >
         <load-save-interpretation-banner></load-save-interpretation-banner>
-        <!--        <a :href="hash" target="_blank">{{ hash }}</a-->
-        <!--        ><br />-->
-        <!--        <a :href="context" target="_blank">{{ context }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank">{{ head }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank" :href="repo">{{ repo }}</a-->
-        <!--        ><br />-->
-        <!--        <a target="_blank" :href="branch">{{ branch }}</a-->
-        <!--        ><br />-->
       </q-banner>
     </template>
   </q-stepper>
@@ -114,15 +104,14 @@ import SourceCollectionView from "./views/SourceCollectionView.vue";
 import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
 import { alertWidget } from "./helpers/alertWidget.js";
+import { retrieveDeploymentInformation } from "./helpers/utilities.js";
 export default {
   name: "app",
   data: () => ({
-    step: 1,
     hash: import.meta.env.VITE_VERSION,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
   }),
-
   components: {
     LoadSaveInterpretationBanner,
     InterpretationView,
@@ -131,24 +120,18 @@ export default {
   },
 
   mounted() {
-    //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
-    // this.step = 3
-    // this.$store.dispatch("loadInterpretationForDebugging")
-    const urlToRender = `https://${this.repo.split(":").join("/")}/-/tree/${
-      this.branch
-    }`;
-    const commitUrl = `https://${this.repo.split(":").join("/")}/-/commit/${
-      this.hash
-    }`;
-    const message = `Welcome to the Norm editor! This version is based on the <a href='${urlToRender}' target='_blank'>${
-      this.branch
-    }</a> branch.
-    <br/>Commit hash: <a href='${commitUrl}' target='_blank'>${this.hash.substring(
-      0,
-      9,
-    )}</a>.`;
 
-    alertWidget("welcome", message);
+    //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
+    // this.$store.state.step = 3
+    // this.$store.dispatch("loadInterpretationForDebugging")
+    console.log("this.repo", this.repo, this.repo!=null)
+    // if there is deployment information, show them
+    if(this.repo != null){
+       const message = retrieveDeploymentInformation(this.repo, this.branch, this.hash)
+       alertWidget("welcome", message);
+    }
+
+    this.$store.dispatch("readAvailableSources");
   },
   methods: {
     updateStepperValue() {
@@ -160,3 +143,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.anchorTags {
+  color: #ffffff;
+}
+.anchorTags:hover {
+  font-weight: bold;
+}
+</style>

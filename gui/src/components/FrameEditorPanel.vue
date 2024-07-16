@@ -8,22 +8,23 @@
         <div class="edit-entry">
           <div :class="{ dot: frame == frameBeingEdited }" />
           <div class="text-white frame-label chip ellipsis" style="max-width: 200px;"
-            :class="frame.subType ? 'bg-' + colors[frame.subType.id] : 'bg-' + colors[frame.type.id]"
+            :class="frame.typeId == 'fact' && frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]"
             @click="frameChipClicked(frame)">
-            {{ frame.label != "" ? frame.label : frame.subType ? frame.subType.label : frame.type.label }}
+            {{ frame.label != "" ? frame.label : frame.typeId == 'fact' && frame.subTypeId ?
+      frameTypes.fact.subTypes[frame.subTypeId].label : frameTypes[frame.typeId].label }}
           </div>
         </div>
       </div>
     </div>
     <div class="col">
       <q-card flat bordered v-if="frameBeingEdited" class="my-card q-ma-sm">
-        <template v-if="frameBeingEdited.type.class == 'fact'">
+        <template v-if="frameBeingEdited.typeId == 'fact'">
           <FactFrameForm />
         </template>
-        <template v-else-if="frameBeingEdited.type.id == 'act'">
+        <template v-else-if="frameBeingEdited.typeId == 'act'">
           <ActFrameForm />
         </template>
-        <template v-else-if="frameBeingEdited.type.id == 'claim_duty'">
+        <template v-else-if="frameBeingEdited.typeId == 'claim_duty'">
           <ClaimdutyFrameForm />
         </template>
       </q-card>
@@ -37,11 +38,13 @@ import ActFrameForm from "../components/ActFrameForm.vue";
 import FactFrameForm from "../components/FactFrameForm.vue";
 import ClaimdutyFrameForm from "../components/ClaimdutyFrameForm.vue";
 import { icons, colors } from "../helpers/config.js";
+import { frameTypes } from "../model/frame";
 
 export default {
   data: () => ({
     icons: icons,
     colors: colors,
+    frameTypes: frameTypes
   }),
   components: {
     ActFrameForm,
@@ -55,8 +58,8 @@ export default {
     framesOpenInEditor() {
       return this.$store.state.framesOpenInEditor
     },
-    annotationBeingEdited() {
-      return this.$store.state.annotationBeingEdited;
+    addingAnnotationToExistingFrame() {
+      return this.$store.state.addingAnnotationToExistingFrame;
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
@@ -65,17 +68,18 @@ export default {
   methods: {
     frameChipClicked(frame) {
       if (
-        this.annotationBeingEdited &&
-        this.annotationBeingEdited.addingToExistingFrame
+        this.addingAnnotationToExistingFrame
       ) {
-        frame.addAnnotation(this.annotationBeingEdited);
-        this.annotationBeingEdited.addingToExistingFrame = false;
-        this.$store.state.annotationBeingEdited = null;
+        this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
+        this.$store.state.addingAnnotationToExistingFrame = false;
+        this.$store.state.annotationToBeAddedToExistingFrame = null;
       } else if (
         this.frameBeingEdited &&
-        this.frameBeingEdited.type.class == "relation" &&
+        'activeField' in this.frameBeingEdited &&
         this.frameBeingEdited.activeField
       ) {
+        //add frame to field in frame being edited
+        console.log("adding frame to", this.frameBeingEdited);
         this.frameBeingEdited.addFrame(frame);
         this.frameBeingEdited.activeField = null
       } else if (this.booleanConstructBeingEdited) {

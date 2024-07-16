@@ -4,8 +4,8 @@ import { Annotation } from './annotation.js'
 class Claimduty {
     constructor() {
         this._id = uuid4() //unique ID
-        this._type = null //{id, class, label}
-        this._subType = null
+        this._typeId = null
+        this._subTypeId = null
         this._label = ""
         this._claimduty = ""
         this._activeField = null
@@ -21,8 +21,8 @@ class Claimduty {
     get id() { return this._id }
     set id(id) { this._id = id }
 
-    get type() { return this._type }
-    set type(type) { console.log("setting type to", type); this._type = type }
+    get typeId() { return this._typeId }
+    set typeId(typeId) { this._typeId = typeId }
 
     get label() {
         return this._label// && this._label.length > 0
@@ -55,6 +55,7 @@ class Claimduty {
     //TODO these methods are also present in fact and claim-duty.
     //maybe use a super-class 'frame' and add them there
     get annotations() { return this._annotations }
+
     addAnnotation(annotation) {
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this
@@ -62,6 +63,19 @@ class Claimduty {
     removeAnnotation(annotation) {
         const index = this._annotations.indexOf(annotation)
         this._annotations.splice(index, 1)
+    }
+
+    //check if any of the roles has this frame, if so, remove it
+    deleteReferencesToFrame(frame) {
+        if (this._duty && this._duty.id == frame.id) {
+            this._duty = null
+        }
+        if (this._actor && this._actor.id == frame.id) {
+            this._actor = null
+        }
+        if (this._holder && this._holder.id == frame.id) {
+            this._holder = null
+        }
     }
 
     get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
@@ -78,7 +92,7 @@ class Claimduty {
         return sentences
     }
 
-    get allowedSubClassesForActiveField() {
+    get allowedSubTypesForActiveField() {
         switch (this._activeField) {
             case 'duty':
                 return ['duty']
@@ -92,6 +106,7 @@ class Claimduty {
     }
 
     get comments() { return this._comments }
+    set comments(comments) { this._comments = comments }
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
@@ -107,7 +122,6 @@ class Claimduty {
                 break
         }
     }
-
 
     checkFrameExistance(claimduty, element) {
         const duty = claimduty._duty !== null && claimduty._duty._id === element._id ? true : false;
@@ -147,31 +161,26 @@ class Claimduty {
     toFlatObject() {
         return {
             id: this.id,
-            typeId: this.type.id, //type is an object {id, class, label}
+            typeId: this.typeId,
             label: this.label,
             claimduty: this.claimduty,
-            dutyId: this.duty?.id, //take frame id instead of frame object
+            dutyId: this.duty?.id,
             actorId: this.actor?.id,
             holderId: this.holder?.id,
-            comments: this.comments,
-            annotations: this.annotations.map(a => a.toFlatObject())
+            comments: this.comments.map(c => c.toFlatObject()),
         }
     }
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
         this._label = frameData.label
-        //this._type is instantiated in importExport.js
+        this._typeId = frameData.typeId
+        this._subTypeId = null //claimduty has no subtype
         this._claimduty = frameData.claimduty
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
-        this._comments = frameData.comments
-        frameData.annotations.forEach(a => {
-            let annotation = new Annotation()
-            annotation.fromFlatObject(a)
-            this.addAnnotation(annotation)
-        })
+        //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
 }
 

@@ -3,42 +3,39 @@
     <!-- card title section -->
     <div :class="sourceViewIsCollapsed ? 'container-row' : 'container-column'">
       <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }">
-        <div class="height-content row q-pa-sm">
+        <div class="height-content row q-pa-sm items-center">
           <div class="col-1 text-bold">Frames</div>
           <div class="col q-ml-md">
             <NewFrameMenu />
           </div>
+
+          <q-input bottom-slots v-model="searchTerm" label="Filter frames on label" dense>
+            <template v-slot:prepend>
+              <q-icon name="mdi-magnify" />
+            </template>
+            <template v-slot:append>
+              <q-icon size="xs" name="mdi-close" @click="searchTerm = ''" class="cursor-pointer" />
+            </template>
+          </q-input>
           <div class="col-1">
             <q-avatar class="float-right" size="lg">
-              <q-icon
-                name="mdi-information-outline"
-                class="cursor-pointer"
-              ></q-icon>
+              <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
               <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
                 <div style="max-width: 300px">
-                  In this view, you can see the annotations made in the source
-                  view. The annotations are facts and are grouped by subtype. By
-                  clicking on a fact, you can add them to complex facts, acts
-                  and/or claim-duties (right view).
+                  This view lists the frames in the interpretation, grouped by type and, if applicable, subtype. Click a
+                  frame to edit it or view its details.
                 </div>
               </q-tooltip>
             </q-avatar>
           </div>
         </div>
 
-        <div
-          :class="{ 'height-fill-available': !sourceViewIsCollapsed }"
-          class="q-pa-sm"
-        >
-          <FramesList />
+        <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="q-pa-sm">
+          <FramesList :searchTerm="searchTerm" />
         </div>
       </div>
 
-      <div
-        v-if="frameBeingEdited"
-        :class="{ 'height-content': !sourceViewIsCollapsed }"
-        class="frame-editor-panel"
-      >
+      <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
         <FrameEditorPanel />
       </div>
     </div>
@@ -49,14 +46,13 @@
 import NewFrameMenu from "../components/NewFrameMenu.vue";
 import FramesList from "../components/FramesList.vue";
 import FrameEditorPanel from "../components/FrameEditorPanel.vue";
-import { frameTypes } from "../model/frame";
 import { icons, colors } from "../helpers/config";
 
 export default {
   data: () => ({
-    frameTypes: frameTypes,
     icons: icons,
     colors: colors,
+    searchTerm: ""
   }),
   computed: {
     sourceViewIsCollapsed() {
@@ -77,13 +73,13 @@ export default {
     allowedSubTypes() {
       console.log("frameBeingEdited", this.frameBeingEdited);
       return this.$store.state.frameBeingEdited &&
-        this.frameBeingEdited.type.class == "relation"
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? this.frameBeingEdited.allowedSubClassesForActiveField
         : [];
     },
     message() {
       return this.frameBeingEdited &&
-        ["act", "claim_duty"].includes(this.frameBeingEdited)
+        ["act", "claim_duty"].includes(this.frameBeingEdited.typeId)
         ? "Add to frame"
         : "";
     },

@@ -1,269 +1,222 @@
 <template>
   <q-card flat bordered v-if="frame">
     <q-card-section>
-      <div class="float-right">
-        <q-btn
-          size="sm"
-          round
-          flat
-          color="primary"
-          icon="mdi-comment-text-outline"
-          @click="toggleComments"
-        ></q-btn>
-      </div>
-      <q-input
-        v-model="frame.label"
-        label="Label"
-        input-style="font-size: 16pt; font-weight:bold"
-      />
-      <q-input v-model="frame.act" label="Act" autogrow />
-    </q-card-section>
-    <q-card-section>
-      <template v-if="sentences?.length > 0">
-        <div
-          v-for="sentence in sentences"
-          class="row no-wrap justify-between items-center"
-        >
-          <TextElement :textPiece="sentence" />
-          <q-btn
-            size="md"
-            round
-            flat
-            color="primary"
-            class="q-mt-sm"
-            icon="mdi-text-recognition"
-            v-if="sentences.length > 0"
-            :loading="sentence.loading"
-            @click="sendDataToNlp(sentence)"
-          >
-            <q-tooltip anchor="bottom middle" class="text-subtitle2">
-              <span
-                >Detect constituents of an act frame. <br />This feature is
-                still experimental, so use it with caution. <br />It is
-                recommended to use it only once per text snippet.</span
-              >
+      <div class="row items-center">
+        <div class="col-2">ACT</div>
+        <div class="col">
+          <template v-if="sentences?.length == 0">
+            <div class="text-italic">No source added yet</div>
+          </template>
+          <template v-else>
+            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
+          </template>
+        </div>
+        <div class="col">
+          <template v-if="sentences?.length > 0">
+            <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition" :loading="nlpIsBusy"
+              @click.stop="applyNlpToSource" @mouseup.stop>
+              <q-tooltip anchor="bottom middle" class="text-subtitle2">
+                <span>Detect roles of an act frame. <br />This feature is
+                  still experimental, so use it with caution.</span>
+              </q-tooltip>
+              <template v-slot:loading>
+                <q-spinner-gears />
+              </template>
+            </q-btn>
+          </template>
+        </div>
+        <div class="col-1">
+          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+            @click="showComments = !showComments">
+            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+            <q-tooltip class="text-subtitle2">
+              Comments
             </q-tooltip>
-            <template v-slot:loading>
-              <q-spinner-gears />
-            </template>
           </q-btn>
         </div>
-      </template>
-      <template v-else>
-        <div class="source-text">No source added yet</div>
-      </template>
-    </q-card-section>
-    <q-card-section class="q-pa-md q-gutter-sm">
-      <div>
-        <FactInputField
-          label="Action"
-          :active="frame.activeField === 'action'"
-          :facts="frame.action ? [frame.action] : []"
-          @factRemoveClicked="frame.action = null"
-          @click="
-            frame.activeField = frame.activeField == 'action' ? null : 'action'
-          "
-        />
+      </div>
 
-        <FactInputField
-          label="Actor"
-          :active="frame.activeField === 'actor'"
-          :facts="frame.actor ? [frame.actor] : []"
-          @factRemoveClicked="frame.actor = null"
-          @click="
-            frame.activeField = frame.activeField == 'actor' ? null : 'actor'
-          "
-        />
+      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold"
+        @update:model-value="userChangedLabel" @blur="updateLabel" />
+      <q-input v-model="frame.act" label="Act" autogrow />
 
-        <FactInputField
-          label="Object"
-          :active="frame.activeField === 'object'"
-          :facts="frame.object ? [frame.object] : []"
-          @factRemoveClicked="frame.object = null"
-          @click="
-            frame.activeField = frame.activeField == 'object' ? null : 'object'
-          "
-        />
-
-        <FactInputField
-          label="Recipient"
-          :active="frame.activeField === 'recipient'"
-          :facts="frame.recipient ? [frame.recipient] : []"
-          @factRemoveClicked="frame.recipient = null"
-          @click="
-            frame.activeField =
-              frame.activeField == 'recipient' ? null : 'recipient'
-          "
-        />
+      <div class="q-pa-md">
+        <RoleSelector :frame="frame" attribute="action" label="Action" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="object" label="Object" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="recipient" label="Recipient" :multipleFramesAllowed="false" />
 
         <div class="label">Precondition</div>
         <BooleanConstructPanel :booleanConstruct="frame.precondition" />
 
         <div class="label">Postcondition</div>
-
-        <FactInputField
-          label="Creates"
-          :active="frame.activeField === 'creates'"
-          :facts="frame.creates"
-          @factRemoveClicked="
-            (fact) => {
-              const index = frame.creates.indexOf(fact);
-              if (index !== -1) {
-                frame.creates.splice(index, 1);
-              }
-            }
-          "
-          @click="
-            frame.activeField =
-              frame.activeField == 'creates' ? null : 'creates'
-          "
-        />
-
-        <FactInputField
-          label="Terminates"
-          :active="frame.activeField === 'terminates'"
-          :facts="frame.terminates"
-          @factRemoveClicked="
-            (fact) => {
-              const index = frame.terminates.indexOf(fact);
-              if (index !== -1) {
-                frame.terminates.splice(index, 1);
-              }
-            }
-          "
-          @click="
-            frame.activeField =
-              frame.activeField == 'terminates' ? null : 'terminates'
-          "
-        />
+        <RoleSelector :frame="frame" attribute="creates" label="Creates" :multipleFramesAllowed="true" />
+        <RoleSelector :frame="frame" attribute="terminates" label="Terminates" :multipleFramesAllowed="true" />
       </div>
-
-    </q-card-section>
-    <q-card-section>
-      <q-toggle
-        v-model="showSource"
-        label="Show source"
-        @update:model-value="toggleShowSource"
-        color="primary"
-        :disable="frame.annotations.length == 0"
-      />
     </q-card-section>
     <q-card-actions align="right">
-      <q-btn color="primary" @click="closeForm">Cancel</q-btn>
-      <q-btn color="primary" @click="saveFrame">Save</q-btn>
+      <template v-if="frameIsBeingDeleted">
+        <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
+        <q-btn color="negative" @click="deleteFrame">Yes
+          <q-tooltip class="text-subtitle2">
+            Delete this frame
+          </q-tooltip>
+        </q-btn>
+        <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
+      </template>
+      <template v-else>
+        <q-btn color="negative" @click="frameIsBeingDeleted = true">Delete</q-btn>
+        <q-btn color="primary" @click="closeFrame">Close
+          <q-tooltip class="text-subtitle2">
+            Any changes have been saved
+          </q-tooltip>
+        </q-btn>
+      </template>
     </q-card-actions>
   </q-card>
-  <CommentsList
-    :fact="frame"
-    :showComments="showComments"
-    @closed="
-      () => {
-        showComments = false;
-      }
-    "
-  />
+  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
 <script>
-import FactInputField from "./FactInputField.vue";
+import RoleSelector from "./RoleSelector.vue";
+import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import TextElement from "./TextElement.vue";
-import ApiServices from "../services/ApiServices.js";
-import { Annotation, Snippet } from "../model/annotation.js";
-import { frameTypes } from "../model/frame.js";
-
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
+import { fetchNlpPrediction } from "../services/ApiServices.js";
+import {
+  getSelectedRangeAsSnippets,
+  splitAndReturnSelectedSnippets,
+} from "../helpers/annotating.js";
+import { Annotation } from "../model/annotation";
 export default {
   emits: ["closed"],
   data: () => ({
     showSource: false,
     showComments: false,
-    // loading: false,
+    frameIsBeingDeleted: false, //true when user clicked delete button
+    nlpRoleToSubtype: {
+      "Actor": "agent",
+      "Recipient": "agent",
+      "Action": "action",
+      "Object": "object",
+      "Duty": "duty"
+    }
   }),
+  mounted() {
+    console.log("mounted")
+    this.updateLabel()
+  },
   computed: {
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument
+    },
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    sourceDocuments() {
-      return this.$store.state.sourceDocuments;
-    },
     sentences() {
-      return this.frame.getSentences(this.sourceDocuments);
+      return this.displayedSourceDocument.getSentencesForFrame(this.frame)
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited
+    },
+    nlpIsBusy() {
+      //if nlp is not ready for one or more of this act's sentences, return true
+      return this.sentences.some(s => s.loading)
+    }
   },
   methods: {
-    closeForm() {
-      this.$store.commit("cancelFrameBeingEdited")
+    closeFrame() {
+      this.frame.activeField = null
+      this.$store.commit("removeFrameFromEditList", this.frame)
     },
-    saveFrame() {
-      this.$store.commit("saveFrameBeingEdited");
-    },
-    toggleComments() {
-      this.showComments = !this.showComments;
+    deleteFrame() {
+      this.frameIsBeingDeleted = null
+      this.$store.commit("removeFrame", this.frame)
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
     toggleShowSource() {
       this.$store.commit("setShowFrameSource", this.showSource);
     },
+    //scroll to source of frame, in source panel
+    scrollToSource() {
+      //take the first sentence to scroll to
+      this.$store.state.sentenceToScrollTo = this.sentences[0]
+    },
+    userChangedLabel() {
+      //stop generating label automatically when user types their own label
+      //when user deletes label, set auto generating to true
+      this.frame.generateLabelAutomatically = this.frame.label.length == 0
+    },
+    updateLabel() {
+      console.log("updateLabel")
+      //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
+      //therefore: check for frame equals null
+      if (this.frame && this.frame.generateLabelAutomatically) {
+        this.frame.generateLabel()
+      }
+    },
     async sendDataToNlp(sentence) {
       console.log("sentence: ", sentence);
       sentence.loading = true;
-      const response = await ApiServices.fetchNlpPrediction(sentence.content);
+      const response = await fetchNlpPrediction(sentence.text);
+      //filter out entries with no role
+      let entities = response.predicted_entities //.filter(([_, role]) => role != "None")
 
       sentence.loading = false;
+      console.log("entities", entities)
+      //ignore entities that have special tokens like '[CLS]'.
+      entities = entities.filter(([token, _]) => sentence.text.indexOf(token) != -1)
 
-      let lastIndex = 0;
-      // create a new annotation
-      let annotation = new Annotation();
-      response.predicted_entities.forEach((pair, index, arr) => {
-        const token = pair[0];
-        const role = pair[1];
+      //current character range of subsequent tokens with equal roles
+      let characterRangeStart = 0
+      let characterRangeEnd = 0
+      entities.forEach(([token, role], index) => {
 
-        const range = this.getRange(sentence.content, token, lastIndex);
+        //get start and end index of token in sentence
+        const tokenRange = this.getRange(sentence.text, token, characterRangeEnd);
 
-        lastIndex = range[1];
+        characterRangeEnd = tokenRange[1]
 
-        if (role === "None") return;
-
-        if (arr[index + 1][1] === role) {
-          range[1] += 1;
-          const snippet = new Snippet(
-            // this.textPiece.documentId, //document id
-            // this.textPiece.id, //sentence id
-            // this.textPiece, //sentence
-            sentence.documentId,
-            sentence.id,
-            // sentence, //sentence object
-            range, //[start, end]
-            token, //selected text
-          );
-
-          annotation.addSnippet(snippet); //this also sets snippet.annotation
-
-          return;
-        } else {
-          const snippet = new Snippet(
-            sentence.documentId, // documentId
-            sentence.id, // sentence.id
-            // sentence, //sentence object
-            range, //[start, end]
-            token, //selected text
-          );
-
-          annotation.addSnippet(snippet); //this also sets snippet.annotation
-
-          const selectedType = frameTypes.filter((d) => d.id == "fact")[0];
-
-          // create frame
-          this.$store.commit("createNewFrameViaNlp", {
-            frameType: selectedType,
-            annotation: annotation,
-            subType: role === "Recipient" || role === "Actor" ? "Agent" : role,
-            role: role,
-          });
-          annotation = new Annotation();
+        if (index < entities.length - 1 && role != entities[index + 1][1] || index == entities.length - 1) {
+          //next token has different role, or this is last token
+          //create annotation for current sequence of tokens with same role
+          //unless the role is None
+          if (role != "None") {
+            const annotation = new Annotation()
+            //create fact for this annotation, use the role suggested by NLP to set the correct subtype
+            const subTypeId = this.nlpRoleToSubtype[role]
+            this.$store.commit("addNewFrame", {
+              frameTypeId: 'fact',
+              subTypeId: subTypeId,
+              annotation: annotation,
+              openInEditor: false
+            })
+            //get snippets that are covered by the character range
+            const selectionAsSnippets = getSelectedRangeAsSnippets(
+              sentence,
+              [characterRangeStart, characterRangeEnd]
+            )
+            //split snippets, and return those that fit the character range
+            const selectedSnippets = splitAndReturnSelectedSnippets(
+              selectionAsSnippets,
+              this.sentences,
+            );
+            selectedSnippets.forEach((s) => {
+              console.log("adding", annotation, "to snippet", s)
+              s.addAnnotation(annotation);
+            });
+            //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+            //will be closer to the text than shorter ones
+            annotation.nrSnippets = selectedSnippets.length
+            //update underlining of annotations in the source text, for the currently showing document
+            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+          }
+          //start new sequence of tokens
+          characterRangeStart = tokenRange[0]
         }
       });
     },
@@ -272,29 +225,38 @@ export default {
       const index = string.indexOf(token, lastIndex);
       if (index !== -1) {
         const endIndex = index + token.length;
-        // console.log(index, endIndex);
-
         return [index, endIndex];
+      } else {
+        return null
       }
+    },
+    applyNlpToSource() {
+      console.log("nlp")
+      this.sentences.forEach(sentence => {
+        this.sendDataToNlp(sentence)
+      })
+    }
+
+  },
+  watch: {
+    "frame.action"() {
+      this.updateLabel()
+    },
+    "frame.object"() {
+      this.updateLabel()
+    },
+    "frame.actor"() {
+      this.updateLabel()
+    },
+    "frame.recipient"() {
+      this.updateLabel()
     },
   },
   components: {
-    FactInputField,
+    RoleSelector,
+    SentenceList,
     CommentsList,
     BooleanConstructPanel,
-    TextElement,
-  },
+  }
 };
 </script>
-
-<style lang="css" scoped>
-.label {
-  margin-left: 0px;
-}
-
-
-
-.source-text {
-  font-style: italic;
-}
-</style>
