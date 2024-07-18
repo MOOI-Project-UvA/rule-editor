@@ -21,6 +21,26 @@ export class BooleanConstruct {
 
     get level() { return this._parent ? this._parent.level + 1 : 0 }
 
+    get frame() { return this._frame }
+    set frame(frame) { this._frame = frame }
+
+    get isNegated() { return this._isNegated }
+    set isNegated(isNegated) { this._isNegated = isNegated }
+
+    //get all frames in this expression, on all levels
+    get allFrames() {
+        let frames = []
+        if (this._frame) {
+            frames = [this._frame]
+        } else {
+            this._children.forEach(child => {
+                console.log("child", child)
+                frames = frames.concat(child.allFrames)
+            })
+        }
+        return frames
+    }
+
     addChild(child) {
         this._children.push(child)
         child.parent = this
@@ -82,11 +102,7 @@ export class BooleanConstruct {
     }
 
 
-    get frame() { return this._frame }
-    set frame(frame) { this._frame = frame }
 
-    get isNegated() { return this._isNegated }
-    set isNegated(isNegated) { this._isNegated = isNegated }
 
     removeFrame(frame) {
         if (this._frame?.id == frame.id) {

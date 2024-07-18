@@ -177,6 +177,7 @@ class Act {
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        this._generateLabelAutomatically = false
     }
 
     //construct label [action] [object] [actor] [recipient]
