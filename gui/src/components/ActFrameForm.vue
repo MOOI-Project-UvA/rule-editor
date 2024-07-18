@@ -11,28 +11,28 @@
             <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
           </template>
         </div>
-        <div class="col">
-          <template v-if="sentences?.length > 0">
-            <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition" :loading="nlpIsBusy"
-              @click.stop="applyNlpToSource" @mouseup.stop>
-              <q-tooltip anchor="bottom middle" class="text-subtitle2">
-                <span>Detect roles of an act frame. <br />This feature is
-                  still experimental, so use it with caution.</span>
+        <div class="col-2">
+          <div class="row items-center float-right">
+            <template v-if="sentences?.length > 0">
+              <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
+                :loading="nlpIsBusy" @click.stop="applyNlpToSource" @mouseup.stop>
+                <q-tooltip anchor="bottom middle" class="text-subtitle2">
+                  <span>Detect roles of an act frame. <br />This feature is
+                    still experimental, so use it with caution.</span>
+                </q-tooltip>
+                <template v-slot:loading>
+                  <q-spinner-gears />
+                </template>
+              </q-btn>
+            </template>
+            <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+              @click="showComments = !showComments">
+              <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+              <q-tooltip class="text-subtitle2">
+                Comments
               </q-tooltip>
-              <template v-slot:loading>
-                <q-spinner-gears />
-              </template>
             </q-btn>
-          </template>
-        </div>
-        <div class="col-1">
-          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-            @click="showComments = !showComments">
-            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
-            <q-tooltip class="text-subtitle2">
-              Comments
-            </q-tooltip>
-          </q-btn>
+          </div>
         </div>
       </div>
 
