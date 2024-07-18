@@ -29,10 +29,8 @@ export default {
 </script>
 
 <template>
-  <!-- banner container questions to save or load interpretations -->
-
-  <div class="row q-gutter-sm q-ma-sm">
-    <q-btn round size="sm" icon="mdi-file-upload-outline" color="primary">
+  <div class="row q-gutter-sm q-ma-sm save-load-button-container ">
+    <q-btn round size="sm" icon="mdi-file-upload-outline" color="white" text-color="primary">
       <q-menu fit transition-show="jump-down" transition-hide="jump-up">
         <q-list>
           <q-item class="label" disable>
@@ -61,7 +59,7 @@ export default {
         </div>
       </q-tooltip>
     </q-btn>
-    <q-btn round size="sm" icon="mdi-content-save" color="primary">
+    <q-btn round size="sm" icon="mdi-content-save" color="white" text-color="primary">
       <q-menu fit transition-show="jump-down" transition-hide="jump-up">
         <q-list>
           <q-item class="label" disable>
@@ -100,5 +98,12 @@ export default {
 <style scoped lang="css">
 .label {
   min-height: 20px;
+}
+
+.save-load-button-container {
+  /* border-left: 2px solid #1976D2; */
+  background-color: #b6d1ec;
+  padding: 0px 7px 7px 0px;
+  border-radius: 5px;
 }
 </style>
