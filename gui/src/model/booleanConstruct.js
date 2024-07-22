@@ -2,7 +2,8 @@ import { v4 as uuid4 } from 'uuid'
 
 export class BooleanConstruct {
     constructor() {
-        this._id = uuid4() //unique ID, used to create anonymous frames in the network visualization
+        this._id = uuid4() //unique ID, used to create anonymous frames in the network visualization needed by the only
+        // used for the hierarchical view, too
         this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
         this._isNegated = false
         this._children = [] // list of BooleanConstructs if _frame is null
@@ -11,26 +12,24 @@ export class BooleanConstruct {
     }
 
     get id() { return this._id }
+    set id(id){ this._id = id }
 
     get isNegated() { return this._isNegated }
     set isNegated(isNegated) { this._isNegated = isNegated }
-
-    get operatorToJoinChildren() { return this._operatorToJoinChildren }
-    set operatorToJoinChildren(operator) { this._operatorToJoinChildren = operator }
-
-    get children() { return this._children }
-    set children(children) { this._children = children }
 
     get parent() { return this._parent }
     set parent(parent) { this._parent = parent }
 
-    get level() { return this._parent ? this._parent.level + 1 : 0 }
+    get operatorToJoinChildren() { return this._operatorToJoinChildren; }
+    set operatorToJoinChildren(operator) { this._operatorToJoinChildren = operator; }
+
+    get children() { return this._children; }
+    set children(children) { this._children = children; }
+
+    get level() { return this._parent ? this._parent.level + 1 : 0; }
 
     get frame() { return this._frame }
     set frame(frame) { this._frame = frame }
-
-    get isNegated() { return this._isNegated }
-    set isNegated(isNegated) { this._isNegated = isNegated }
 
     //get all frames in this expression, on all levels
     get allFrames() {
@@ -46,56 +45,55 @@ export class BooleanConstruct {
     }
 
     addChild(child) {
-        this._children.push(child)
-        child.parent = this
+        this._children.push(child);
+        child.parent = this;
     }
 
     addEmptyChild() {
-        let child = new BooleanConstruct()
-        this.addChild(child)
-        return child //boolean construct being edited is set to newly created child
+        let child = new BooleanConstruct();
+        this.addChild(child);
+        return child; //boolean construct being edited is set to newly created child
     }
 
     removeChild(child) {
-        const index = this._children.indexOf(child)
+        const index = this._children.indexOf(child);
         if (index != -1) {
-            this._children.splice(index, 1)
+            this._children.splice(index, 1);
         }
     }
 
     addParent() {
-        let newParent = new BooleanConstruct()
-        const oldParent = this.parent
+        let newParent = new BooleanConstruct();
+        const oldParent = this.parent;
         //replace child of existing parent by new parent
         if (this.parent) {
-            const index = this.parent.children.indexOf(this)
-            oldParent.children[index] = newParent
-            newParent.parent = oldParent
-        } else {
-
+            const index = this.parent.children.indexOf(this);
+            oldParent.children[index] = newParent;
+            newParent.parent = oldParent;
         }
-        newParent.addChild(this)
-        this.parent = newParent
-        console.log("added parent", this)
+
+        newParent.addChild(this);
+        this.parent = newParent;
+        console.log("added parent", this);
     }
 
     subdivide() {
-        //create copy of current
-        let bcCopy = new BooleanConstruct()
-        bcCopy.frame = this.frame
-        bcCopy.children = [...this.children]
-        bcCopy.isNegated = this.isNegated
-        bcCopy.operatorToJoinChildren = this.operatorToJoinChildren
-        //clean current
-        this.clean()
-        this.addChild(bcCopy)
-        //this.addEmptyChild()
+       //create copy of current
+       let bcCopy = new BooleanConstruct();
+       bcCopy.frame = this.frame;
+       bcCopy.children = [...this.children];
+       bcCopy.isNegated = this.isNegated;
+       bcCopy.operatorToJoinChildren = this.operatorToJoinChildren;
+       //clean current
+       this.clean();
+       this.addChild(bcCopy);
+       //this.addEmptyChild()
     }
 
     delete() {
-        const index = this.parent.children.indexOf(this)
-        console.log("index", index)
-        this.parent.children.splice(index, 1)
+        const index = this.parent.children.indexOf(this);
+        console.log("index", index);
+        this.parent.children.splice(index, 1);
     }
 
     clean() {
@@ -133,10 +131,10 @@ export class BooleanConstruct {
             frame: this.frame?.id,
             isNegated: this.isNegated,
             children: this._children
-                .filter(c => c.frame || c.children.length > 0)
-                .map(c => c.toFlatObject()),
-            operatorToJoinChildren: this._operatorToJoinChildren
-        }
+                .filter((c) => c.frame || c.children.length > 0)
+                .map((c) => c.toFlatObject()),
+            operatorToJoinChildren: this._operatorToJoinChildren,
+        };
     }
 
     //populate the attributes of this object with the given data
