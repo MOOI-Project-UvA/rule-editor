@@ -1001,15 +1001,14 @@ export default {
       });
     },
     // adds children to the selected node.
-    addChild(nodeId) {
+    addChild(nodeData) {
       console.log("adding child to booleanConstruct")
 
       const newChild = new BooleanConstruct()
-      console.log("newChild:", newChild)
-
-      const selectedData = this.getNodeByKey(nodeId);
-      console.log("selectedData:", selectedData)
-      selectedData.children.push(newChild)
+      // const selectedData = this.getNodeByKey(nodeId);
+      // console.log("selectedData:", selectedData)
+      nodeData.children.push(newChild)
+      newChild.parent = nodeData
 
       //set focus to new child
       // this.$store.state.booleanConstructBeingEdited = newChild;
@@ -1017,7 +1016,7 @@ export default {
     // adds an extra level of hierarchy to the selected node
     subdivide(event, nodeData){
       event.stopPropagation();
-      console.log("subdividing!")
+      console.log("subdividing!", nodeData)
       nodeData.subdivide();
     },
     removeChild(nodeId) {
@@ -1032,14 +1031,15 @@ export default {
       const selectedData = this.getNodeByKey(nodeId)
       selectedData.removeFrame(this.booleanConstruct.frame);
     },
-    deleteBooleanConstruct(event) {
+    // removing extra level of hierarchy from a node
+    deleteBooleanConstruct(event, nodeData) {
       event.stopPropagation();
       //if bc has no parent, do not delete, since that would leave precondition empty
       //instead: clean
-      if (this.booleanConstruct.parent) {
-        this.booleanConstruct.delete();
+      if (nodeData.parent) {
+        nodeData.delete();
       } else {
-        this.booleanConstruct.clean();
+        nodeData.clean();
       }
     },
   },
@@ -1112,7 +1112,7 @@ export default {
                 dense
                 outline
                 class="q-ml-sm"
-                @click="addChild(prop.node.id)"
+                @click="addChild(prop.node)"
                 >Add child</q-btn
               >
             </div>
@@ -1126,28 +1126,28 @@ export default {
         <div
           class="panel flex flex-row"
           :class="{ active: isBeingEdited, negated: prop.node.isNegated }"
-          v-if="prop.node.children.length === 0"
         >
           <div class="col">
             <!-- negation label -->
             <div v-if="prop.node.isNegated" class="negation-label">NOT</div>
-            <template v-if="prop.node.frame">
-              <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
-              <div class="row-container">
-                <!-- selected chip -->
-                <FrameChip :frame="prop.node.frame" :disable="false" />
-                <!-- remove chip button -->
-                <q-btn
-                    round
-                    size="xs"
-                    flat
-                    color="negative"
-                    icon="mdi-close"
-                    @click="removeFrame(prop.node.id)"
-                />
-              </div>
-            </template>
+<!--            <template v-if="prop.node.frame">-->
+<!--              &lt;!&ndash; boolean construct is 'atomic': it refers to a frame, and has no children &ndash;&gt;-->
+<!--              <div class="row-container">-->
+<!--                &lt;!&ndash; selected chip &ndash;&gt;-->
+<!--                <FrameChip :frame="prop.node.frame" :disable="false" />-->
+<!--                &lt;!&ndash; remove chip button &ndash;&gt;-->
+<!--                <q-btn-->
+<!--                    round-->
+<!--                    size="xs"-->
+<!--                    flat-->
+<!--                    color="negative"-->
+<!--                    icon="mdi-close"-->
+<!--                    @click="removeFrame(prop.node.id)"-->
+<!--                />-->
+<!--              </div>-->
+<!--            </template>-->
           </div>
+          <!--  list of buttons on the right  -->
           <div class="col-1 buttons-container">
             <div>
               <q-btn
@@ -1169,6 +1169,7 @@ export default {
                   @click="subdivide($event,prop.node)"
               />
             </div>
+            {{ Object.hasOwn(prop.node, "parent") }}
             <div v-if="prop.node.parent">
               <q-btn
                   size="sm"
@@ -1176,7 +1177,7 @@ export default {
                   dense
                   flat
                   icon="mdi-close"
-                  @click="deleteBooleanConstruct"
+                  @click="deleteBooleanConstruct($event,prop.node)"
               />
             </div>
           </div>
@@ -1185,11 +1186,12 @@ export default {
           <!--                {{ prop.node.label }}-->
           <!--              </div>-->
           <!--              <span v-else class="text-weight-light text-black"-->
+          <!--              <span v-else class="text-weight-light text-black"-->
           <!--                >This is some default content.</span>-->
         </div>
-        <div v-else class="panel">
-          <p>additional options</p>
-        </div>
+<!--        <div v-else class="panel">-->
+<!--          <p>additional options</p>-->
+<!--        </div>-->
       </template>
     </q-tree>
   </div>
