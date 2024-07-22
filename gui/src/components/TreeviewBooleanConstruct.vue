@@ -970,8 +970,9 @@ export default {
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
     },
+
     isBeingEdited() {
-      return this.booleanConstruct == this.booleanConstructBeingEdited;
+      return this.selectedNode == this.booleanConstructBeingEdited.id
     },
   },
   mounted() {
@@ -1009,9 +1010,10 @@ export default {
       // console.log("selectedData:", selectedData)
       nodeData.children.push(newChild)
       newChild.parent = nodeData
-
+      console.log("newCHild: ", newChild)
+      this.selectedNode = newChild.id
       //set focus to new child
-      // this.$store.state.booleanConstructBeingEdited = newChild;
+      this.$store.state.booleanConstructBeingEdited = this.getNodeByKey(this.selectedNode);
     },
     // adds an extra level of hierarchy to the selected node
     subdivide(event, nodeData){
@@ -1027,9 +1029,8 @@ export default {
       const selectedData = this.getNodeByKey(nodeId);
       selectedData.isNegated = !selectedData.isNegated;
     },
-    removeFrame(nodeId){
-      const selectedData = this.getNodeByKey(nodeId)
-      selectedData.removeFrame(this.booleanConstruct.frame);
+    removeFrame(node){
+      node.removeFrame(node.frame);
     },
     // removing extra level of hierarchy from a node
     deleteBooleanConstruct(event, nodeData) {
@@ -1042,6 +1043,24 @@ export default {
         nodeData.clean();
       }
     },
+    //  while clicking the body of each node in the treeview
+    handleClick(event, node) {
+      //prevent propagation to underlying panels
+      event.stopPropagation();
+      //if empty leaf node, select for adding frame
+      if (
+        !node.frame &&
+        node.children.length == 0
+      ) {
+        this.$store.state.booleanConstructBeingEdited = this.isBeingEdited
+          ? null
+          : node;
+        //de-select any other properties of the active frame, if it is a relation
+        if ('activeField' in this.frameBeingEdited) {
+          this.frameBeingEdited.activeField = null
+        }
+      }
+    },
   },
 };
 </script>
@@ -1051,8 +1070,11 @@ export default {
 
     <br /><br />
     Selected: {{ selectedNode }} <br />
-    q-select values : {{ selectModel }}
-<!--    <q-btn class="q-mt-md" @click="getNodeByKey(3)">Get node by id</q-btn>-->
+    q-select values : {{ selectModel }}<br/>
+    beingEdited: {{isBeingEdited}}<br/>
+    booleanConstructBeing: {{booleanConstructBeingEdited.id}}
+
+    <!--    <q-btn class="q-mt-md" @click="getNodeByKey(3)">Get node by id</q-btn>-->
     <q-tree
       class="q-mt-md"
       ref="tree-structure"
@@ -1071,8 +1093,6 @@ export default {
           <!--            size="28px"-->
           <!--            class="q-mr-sm"-->
           <!--          />-->
-
-
           <div
             class="boolean-menu row items-center "
             v-on:click.stop
@@ -1118,7 +1138,7 @@ export default {
             </div>
           </div>
           <div v-else>
-            <span>I don't have children!</span>
+            <span>This is the header of the node: I don't have children!</span>
           </div>
         </div>
       </template>
@@ -1126,26 +1146,30 @@ export default {
         <div
           class="panel flex flex-row"
           :class="{ active: isBeingEdited, negated: prop.node.isNegated }"
+          @click="handleClick($event, prop.node)"
         >
           <div class="col">
             <!-- negation label -->
             <div v-if="prop.node.isNegated" class="negation-label">NOT</div>
-<!--            <template v-if="prop.node.frame">-->
-<!--              &lt;!&ndash; boolean construct is 'atomic': it refers to a frame, and has no children &ndash;&gt;-->
-<!--              <div class="row-container">-->
-<!--                &lt;!&ndash; selected chip &ndash;&gt;-->
-<!--                <FrameChip :frame="prop.node.frame" :disable="false" />-->
-<!--                &lt;!&ndash; remove chip button &ndash;&gt;-->
-<!--                <q-btn-->
-<!--                    round-->
-<!--                    size="xs"-->
-<!--                    flat-->
-<!--                    color="negative"-->
-<!--                    icon="mdi-close"-->
-<!--                    @click="removeFrame(prop.node.id)"-->
-<!--                />-->
-<!--              </div>-->
-<!--            </template>-->
+            <template v-if="prop.node.frame">
+              <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
+              <div class="row-container">
+                <!-- selected chip -->
+                <FrameChip :frame="prop.node.frame" :disable="false" />
+                <!-- remove chip button -->
+                <q-btn
+                    round
+                    size="xs"
+                    flat
+                    color="negative"
+                    icon="mdi-close"
+                    @click="removeFrame(prop.node)"
+                />
+              </div>
+            </template>
+             <div v-if="isBeingEdited" class="button-label">
+               Select frame or create new frame from source
+             </div>
           </div>
           <!--  list of buttons on the right  -->
           <div class="col-1 buttons-container">
@@ -1169,7 +1193,6 @@ export default {
                   @click="subdivide($event,prop.node)"
               />
             </div>
-            {{ Object.hasOwn(prop.node, "parent") }}
             <div v-if="prop.node.parent">
               <q-btn
                   size="sm"
