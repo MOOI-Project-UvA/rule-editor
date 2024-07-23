@@ -41,6 +41,7 @@ const hexColorsLight = {
   duty: "#80e9ff",
   act: "#c0b3ff",
   claim_duty: "#c0b3ff",
+  anonymous: "#ffffff"
 };
 
 export { icons, colors, hexColors, hexColorsLight };

@@ -37,7 +37,7 @@
       </div>
 
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold"
-        @update:model-value="userChangedLabel" @blur="updateLabel" />
+        @update:model-value="userChangedLabel" @blur="updateLabel" clearable />
       <q-input v-model="frame.act" label="Act" autogrow />
 
       <div class="q-pa-md">
@@ -147,6 +147,10 @@ export default {
       this.$store.state.sentenceToScrollTo = this.sentences[0]
     },
     userChangedLabel() {
+      //when clearing, label is null, set it to ''
+      if (this.frame.label == null) {
+        this.frame.label = ""
+      }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
       this.frame.generateLabelAutomatically = this.frame.label.length == 0

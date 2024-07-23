@@ -5,7 +5,7 @@
                 <!-- A marker to be used as an arrowhead -->
                 <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6"
                     orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" />
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333333" />
                 </marker>
             </defs>
             <rect :width="width" :height="height" fill="#dddddd" />
@@ -14,14 +14,15 @@
 
                     <g id="links">
                         <line v-for="link in linksInSimulation" :x1="link.source.x" :y1="link.source.y"
-                            :x2="getArrowEndpointX(link)" :y2="getArrowEndpointY(link)" stroke="#ffffff"
+                            :x2="getArrowEndpointX(link)" :y2="getArrowEndpointY(link)" :stroke="link.color"
                             :marker-end="link.drawArrow ? 'url(#arrow)' : ''" />
                     </g>
                     <g id="nodes">
                         <circle v-for="node in nodesInSimulation" :cx="node.x" :cy="node.y" :r="node.radius"
-                            :fill="node.color" stroke="#ffffff" @click="$emit('node-clicked', node)" />
+                            :fill="node.color" stroke="#ffffff" @click="$emit('node-clicked', node)"
+                            @mouseover="printNode(node)" />
                     </g>
-                    <g id=" labels">
+                    <g id="labels">
                         <text v-for="node in nodesInSimulation" :x="node.x" :y="node.y" dy="4" text-anchor="middle"
                             fill="#333333">{{ node.label
                             }}</text>
@@ -69,13 +70,14 @@ export default {
             ))
         },
         initSimulation() {
-            const fX = forceX(0).strength(0.1);
+            //const fX = forceX(0).strength(0.1);
+            const fX = forceX((node) => { return node.preferredX }).strength((node) => { return node.strengthX })
             const fY = forceY(0).strength(0.1);
             this.simulation = forceSimulation(this.nodesInSimulation)
                 .force("x", fX)
                 .force("y", fY)
                 .force("charge", forceManyBody().strength(-500))
-                .force("link", forceLink(this.linksInSimulation).id((d) => d.id).strength(.01))
+                .force("link", forceLink(this.linksInSimulation).id((d) => d.id).strength(.4))
                 // .force(
                 //     "collide",
                 //     forceCollide()
@@ -83,7 +85,8 @@ export default {
                 //         .iterations(3)
                 // )
                 .on("tick", () => this.tick())
-                .alphaDecay(0.0228)
+                // .alphaDecay(0.0228)
+                .alphaDecay(0.01)
 
         },
         tick() {
@@ -92,20 +95,31 @@ export default {
         },
         restartSimulation() {
             //todo keep location if node already exists, so that network
-            //updates are more smooty
+            //updates are more smoothly
+            //store location of each node in simulation
+            let locations = {}
+            this.nodesInSimulation.forEach(node => {
+                if ("x" in node && "y" in node) {
+                    locations[node.id] = [node.x, node.y]
+                }
+            })
+            console.log("locaitons", locations)
             this.nodesInSimulation = [...this.nodesAndLinks.nodes]
             this.linksInSimulation = [...this.nodesAndLinks.links]
-            console.log("linksInsimulation", this.linksInSimulation)
+            //re-assign locations
+            this.nodesInSimulation.forEach(node => {
+                if (node.id in locations) {
+                    [node.x, node.y] = locations[node.id]
+                }
+            })
+            console.log("restart | nodesInsimulation", this.nodesInSimulation)
             if (this.simulation) {
                 this.simulation.stop();
                 this.simulation.nodes(this.nodesInSimulation);
                 this.simulation
                     .force("link")
                     .links(this.linksInSimulation)
-                //if (restart) {
                 this.simulation.alpha(1).restart();
-                //}
-
             }
         },
         setSize() {
@@ -124,6 +138,9 @@ export default {
         },
         getArrowEndpointY(link) {
             return link.drawArrow ? link.target.y - (link.target.radius + 2) * (link.target.y - link.source.y) / this.getLength(link) : link.target.y
+        },
+        printNode(node) {
+            console.log("node", node)
         }
     },
     watch: {

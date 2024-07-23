@@ -1,11 +1,16 @@
+import { v4 as uuid4 } from 'uuid'
+
 export class BooleanConstruct {
     constructor() {
+        this._id = uuid4() //unique ID, used to create anonymous frames in the network visualization
         this._frame = null // if _frame has a value, this BC is 'atomic', it has no children. Its value is a frame.
         this._isNegated = false
         this._children = [] // list of BooleanConstructs if _frame is null
         this._operatorToJoinChildren = null //"and" // or "or"
         this._parent = null
     }
+
+    get id() { return this._id }
 
     get isNegated() { return this._isNegated }
     set isNegated(isNegated) { this._isNegated = isNegated }
@@ -101,9 +106,6 @@ export class BooleanConstruct {
         this.operatorToJoinChildren = null
     }
 
-
-
-
     removeFrame(frame) {
         if (this._frame?.id == frame.id) {
             this._frame = null
@@ -150,5 +152,19 @@ export class BooleanConstruct {
             child._parent = this
             return child
         })
+    }
+
+    //return human-readable string representing this boolean construct
+    toString() {
+        let s = "\t-"
+        if (this.frame) {
+            return this.frame.label
+        } else if (this.children.length > 0) {
+            s = this.operatorToJoinChildren
+            s += this.children.map(child =>
+                "\t" + child.toString()
+            ).join("\n")
+        }
+        return s
     }
 }
