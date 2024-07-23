@@ -76,8 +76,11 @@ export default {
       console.log(this.$refs["tree-structure"].getNodeByKey(key));
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
-    selectValue(val, id) {
-      console.log("using the q-select: value", val.value, id);
+    selectValue(val, node) {
+      console.log("using the q-select: value", val.value, node);
+      node.operatorToJoinChildren = val.value
+
+
       // console.log("this.value", this.sampleStructure[0]);
     },
     passFunctionToLines() {
@@ -191,7 +194,7 @@ export default {
                 v-model="prop.node.operatorToJoinChildren"
                 @update:model-value="
                   (value) => {
-                    selectValue(value, prop.node.id);
+                    selectValue(value, prop.node);
                   }
                 "
                 @filter="filterFn"
