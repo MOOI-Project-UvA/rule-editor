@@ -64,7 +64,7 @@ export function getBooleanConstructAsNodesAndLinks(booleanConstruct) {
             links.push({
                 source: anonymousNode.id,
                 target: childNodesAndLinks.nodes[0],
-                type: "bc",
+                type: "booleanConstruct",
                 color: "#ffffff",
                 drawArrow: false
             })

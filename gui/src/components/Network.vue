@@ -1,5 +1,5 @@
 <template>
-    <ForceDirectedGraph :nodesAndLinks="nodesAndLinks" @node-clicked="openFrame" />
+    <ForceDirectedGraph :nodesAndLinks="nodesAndLinks" @node-clicked="toggleOpenFrame" />
 </template>
 
 <script>
@@ -22,6 +22,9 @@ export default {
         },
         acts() {
             return this.frames.filter(frame => frame.typeId == "act")
+        },
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
         },
         framesOpenInEditor() {
             return this.$store.state.framesOpenInEditor
@@ -62,16 +65,26 @@ export default {
         },
     },
     methods: {
-        openFrame(node) {
-            console.log("open frame", node)
-            //find corresponding frame
-            const frame = this.frames.find(f => f.id == node.id)
-            //open this frame in edit panel
-            this.$store.state.frameBeingEdited = frame
-            //if the frame is not yet in the list of edited frames, add it
-            if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {
-                this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, frame]
+        toggleOpenFrame(node) {
+            //check if node's frame is already open in editor. If so, close it.
+            const index = this.framesOpenInEditor.findIndex(f => f.id == node.id)
+            if (index == -1) {
+                //not yet open in editor, add it
+                const frame = this.frames.find(f => f.id == node.id)
+                this.$store.state.frameBeingEdited = frame
+                this.$store.state.framesOpenInEditor.push(frame)
+            } else {
+                //node is already open; close it.
+                this.$store.state.framesOpenInEditor.splice(index, 1)
+                //if node's frame was the one being edited, and there are other frames
+                //open, assign one of the others to be edited.
+                if (this.frameBeingEdited.id == node.id && this.framesOpenInEditor.length > 0) {
+                    this.$store.state.frameBeingEdited = this.framesOpenInEditor[this.framesOpenInEditor.length - 1]
+                } else {
+                    this.$store.state.frameBeingEdited = null
+                }
             }
+            //this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor]
         },
     },
     watch: {

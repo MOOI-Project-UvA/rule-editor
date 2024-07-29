@@ -138,9 +138,6 @@ export default {
       this.$store.commit("removeFrame", this.frame)
       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
-    toggleShowSource() {
-      this.$store.commit("setShowFrameSource", this.showSource);
-    },
     //scroll to source of frame, in source panel
     scrollToSource() {
       //take the first sentence to scroll to

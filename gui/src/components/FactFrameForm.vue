@@ -113,9 +113,6 @@ export default {
         this.frame.booleanConstruct = null
       }
     },
-    toggleShowSource() {
-      this.$store.commit("setShowFrameSource", this.showSource)
-    },
     setSubType(subTypeId) {
       this.frame.subTypeId = this.frame.subTypeId == subTypeId ? null : subTypeId
     },
