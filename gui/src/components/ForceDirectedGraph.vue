@@ -19,7 +19,7 @@
                     </g>
                     <g id="nodes">
                         <circle v-for="node in nodesInSimulation" :cx="node.x" :cy="node.y" :r="node.radius"
-                            :fill="node.color" stroke="#ffffff" @click="$emit('node-clicked', node)"
+                            :fill="node.color" :stroke="node.stroke" @click="$emit('node-clicked', node)"
                             @mouseover="printNode(node)" />
                     </g>
                     <g id="labels">
@@ -27,7 +27,6 @@
                             fill="#333333">{{ node.label
                             }}</text>
                     </g>
-
                 </g>
             </g>
         </svg>
@@ -71,7 +70,8 @@ export default {
         },
         initSimulation() {
             //const fX = forceX(0).strength(0.1);
-            const fX = forceX((node) => { return node.preferredX }).strength((node) => { return node.strengthX })
+            const fX = forceX((node) => { return 'preferredPosition' in node ? node.preferredPosition.x : 0 })
+                .strength((node) => { return 'preferredPosition' in node ? node.preferredPosition.strength : 0.1 })
             const fY = forceY(0).strength(0.1);
             this.simulation = forceSimulation(this.nodesInSimulation)
                 .force("x", fX)
@@ -103,7 +103,6 @@ export default {
                     locations[node.id] = [node.x, node.y]
                 }
             })
-            console.log("locaitons", locations)
             this.nodesInSimulation = [...this.nodesAndLinks.nodes]
             this.linksInSimulation = [...this.nodesAndLinks.links]
             //re-assign locations

@@ -9,7 +9,8 @@ import {
     getFrameListAsNodesAndLinks,
     setSequenceOfActnodes
 } from "../helpers/network.js"
-import { hexColorsLight } from "../helpers/config.js"
+import { Network } from "../model/network.js"
+import { hexColorsLight, nodeSizes } from "../helpers/config.js"
 import ForceDirectedGraph from "./ForceDirectedGraph.vue";
 import { max } from "d3-array"
 export default {
@@ -25,16 +26,52 @@ export default {
         frames() {
             return this.$store.state.frames;
         },
+        acts() {
+            return this.frames.filter(frame => frame.typeId == "act")
+        },
         framesOpenInEditor() {
             return this.$store.state.framesOpenInEditor
         },
-        dependenciesBetweenActs() {
-            return getDependencyRelationsBetweenActs(this.frames)
+        actsOpenInEditor() {
+            return this.framesOpenInEditor.filter(frame => frame.typeId == "act")
         },
         nodesAndLinks() {
+            let network = new Network()
+            network.addNodesAndDependencyRelationsForActs(this.acts, this.actsOpenInEditor)
+            //add preferred position
+            //add colors
+            //add node sizes
+            // color: frame.subtypeId ? hexColorsLight[frame.subtypeId] : hexColorsLight[frame.typeId],
+            //     radius: nodeSizes[frame.typeId],
+            //     preferredPosition: null
+            network.nodes.forEach(node => {
+                node.color = node.subType ? hexColorsLight[node.subType] : hexColorsLight[node.type]
+                node.radius = nodeSizes[node.type]
+                node.stroke = node.type == "act" ? "#333333" : "#ffffff"
+
+            })
+            network.links.forEach(link => {
+                link.color = link.type == "dependency" ? '#333333' : "#ffffff"
+                link.drawArrow = link.type == "dependency"
+            })
+            //add preferred positions for act nodes
+            const actNodes = network.nodes.filter(n => n.type == "act")
+            //get largest sequence index
+            const largestSequenceNumber = max(actNodes.map(n => n.sequenceIndex))
+            actNodes.forEach(actNode => {
+                actNode.preferredPosition = {
+                    x: (actNode.sequenceIndex - largestSequenceNumber / 2) * this.horizontalDistanceBetweenActs,
+                    strength: 0.3
+                }
+            })
+            network.printInConsole()
+            return network
+        },
+        nodesAndLinks2() {
+            let network = new Network()
             //for debugging: print all frames
             console.log("frames", this.frames)
-
+            network.addNodesAndDependencyRelationsForActs(this.acts)
             //as a default, only show acts and their dependency links
             let nodes = this.frames.filter(frame => frame.typeId == "act").map(act =>
             ({
@@ -123,7 +160,7 @@ export default {
             // ) === index)
             nodes = nodes.concat(nodesFromRoles)
             links = links.concat(linksFromRoles)
-            const network = { nodes: nodes, links: links }
+            //const network = { nodes: nodes, links: links }
             setSequenceOfActnodes(network)
             //use sequence index to set preferred x position and the strength of the force pushing the node to that x position
             const largestSequenceNumber = max(network.nodes.filter(n => n.typeId == "act").map(act => act.sequenceIndex))
