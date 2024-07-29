@@ -23,6 +23,7 @@ class Act {
         this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
 
         this._generateLabelAutomatically = true //by default, label is generated automatically
+        this.generateLabel()
     }
     get id() { return this._id }
     set id(id) { this._id = id }

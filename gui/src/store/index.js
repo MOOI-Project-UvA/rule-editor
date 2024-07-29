@@ -87,8 +87,8 @@ const store = createStore({
       const index = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
       state.framesOpenInEditor.splice(index, 1)
       //if there are any frames left open in the editor, set frameBeingEdited to
-      //the first of those. else set frameBeingEdited to null.s
-      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+      //the last of those. else set frameBeingEdited to null.s
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[state.framesOpenInEditor.length - 1] : null;
     },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();

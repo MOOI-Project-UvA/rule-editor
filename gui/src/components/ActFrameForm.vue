@@ -103,8 +103,7 @@ export default {
       "Duty": "duty"
     }
   }),
-  mounted() {
-    console.log("mounted")
+  updated() {
     this.updateLabel()
   },
   computed: {

@@ -68,23 +68,15 @@ export default {
         toggleOpenFrame(node) {
             //check if node's frame is already open in editor. If so, close it.
             const index = this.framesOpenInEditor.findIndex(f => f.id == node.id)
+            const frame = this.frames.find(f => f.id == node.id)
             if (index == -1) {
                 //not yet open in editor, add it
-                const frame = this.frames.find(f => f.id == node.id)
                 this.$store.state.frameBeingEdited = frame
                 this.$store.state.framesOpenInEditor.push(frame)
             } else {
                 //node is already open; close it.
-                this.$store.state.framesOpenInEditor.splice(index, 1)
-                //if node's frame was the one being edited, and there are other frames
-                //open, assign one of the others to be edited.
-                if (this.frameBeingEdited.id == node.id && this.framesOpenInEditor.length > 0) {
-                    this.$store.state.frameBeingEdited = this.framesOpenInEditor[this.framesOpenInEditor.length - 1]
-                } else {
-                    this.$store.state.frameBeingEdited = null
-                }
+                this.$store.commit("removeFrameFromEditList", frame)
             }
-            //this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor]
         },
     },
     watch: {
