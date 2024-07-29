@@ -5,10 +5,10 @@
                 <!-- A marker to be used as an arrowhead -->
                 <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6"
                     orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333333" />
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0b3ff" />
                 </marker>
             </defs>
-            <rect :width="width" :height="height" fill="#dddddd" />
+            <rect :width="width" :height="height" fill="#eeeeee" />
             <g ref="network">
                 <g :transform="`translate(${width / 2},${height / 2})`">
 
@@ -19,12 +19,12 @@
                     </g>
                     <g id="nodes">
                         <circle v-for="node in nodesInSimulation" :cx="node.x" :cy="node.y" :r="node.radius"
-                            :fill="node.color" :stroke="node.stroke" @click="$emit('node-clicked', node)"
-                            @mouseover="printNode(node)" />
+                            :fill="node.color" :stroke="node.stroke" stroke-width="2"
+                            @click="$emit('node-clicked', node)" @mouseover="printNode(node)" />
                     </g>
                     <g id="labels">
-                        <text v-for="node in nodesInSimulation" :x="node.x" :y="node.y" dy="4" text-anchor="middle"
-                            fill="#333333">{{ node.label
+                        <text v-for="node in nodesInSimulation" :x="node.x" :y="node.y" dy="2" text-anchor="middle"
+                            fill="#333333" font-size="9">{{ node.label
                             }}</text>
                     </g>
                 </g>
