@@ -104,6 +104,8 @@ export default {
         annotation.nrSnippets = selectedSnippets.length
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+
+        selection.empty()
       } else {
         const clickedSentence = this.sentences.find(
           (s) => s.id == selection.anchorNode.parentNode.dataset.sentenceId,

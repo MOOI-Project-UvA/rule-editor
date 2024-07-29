@@ -10,7 +10,7 @@ import {
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
-import {convertToRDF} from "../services/ApiServices.js";
+import { convertToRDF } from "../services/ApiServices.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -20,7 +20,6 @@ const store = createStore({
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
-      showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are used in the current interpretation
       sentenceToScrollTo: null, // sentence that should be visible in source panel, because 'scroll to source' is clicked in frame editor
       displayedSourceDocument: null, //document that is currently showing in the source view
@@ -91,29 +90,6 @@ const store = createStore({
       //the first of those. else set frameBeingEdited to null.s
       state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
     },
-    // saveFrameBeingEdited(state) {
-    //   //if frameBeingEdited is new, add it to the list
-    //   //refresh the list to force rerendering of the view
-    //   if (!state.frames.some((f) => f.id == state.frameBeingEdited.id)) {
-    //     state.frames.push(state.frameBeingEdited);
-    //   }
-    //   state.frames = [...state.frames];
-    //   //if a booleanconstruct is being edited, add the new frame to it
-    //   // if (state.booleanConstructBeingEdited) {
-    //   //   state.booleanConstructBeingEdited.frame = frame;
-    //   //   state.booleanConstructBeingEdited = null; //deselect boolean construct
-    //   //   //if frame is being edited and is has an active field, add frame to that field
-    //   // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
-    //   //   state.frameBeingEdited.addFrame(frame);
-    //   // }
-    //   //remove the frame from the list of frames that are open in the editor
-    //   const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
-    //   state.framesOpenInEditor.splice(index, 1)
-    //   //if there are any frames left open in the editor, set frameBeingEdited to
-    //   //the first of those
-    //   state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
-
-    // },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
@@ -132,9 +108,6 @@ const store = createStore({
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
     },
-    setShowFrameSource(state, show) {
-      state.showFrameSource = show;
-    },
     setAnnotationBeingEdited(state, annotation) {
       state.annotationBeingEdited = annotation;
     },
@@ -152,7 +125,6 @@ const store = createStore({
           ? state.framesOpenInEditor[nrFramesOpen - 1]
           : null
         state.booleanConstructBeingEdited = null;
-        state.showFrameSource = null;
       }
       //remove frame from frames list
       const frameIndex = state.frames.findIndex(f => f.id == frame.id);
@@ -243,7 +215,7 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
-    async saveInterpretationAsTurtle(context){
+    async saveInterpretationAsTurtle(context) {
       //combine frames that are saved with frames open in editor
       //keep unique list of frames
       const allFrames = context.state.frames
@@ -272,7 +244,10 @@ const store = createStore({
       console.log("loaded interpretation", interpretation)
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames
-
+      //reset selection
+      context.state.frameBeingEdited = null
+      context.state.framesOpenInEditor = []
+      context.state.booleanConstructBeingEdited = null
       /**
        * at this point, the source docs created from the loaded interpretation
        * do not contain sentence text yet, and they miss snippets that are

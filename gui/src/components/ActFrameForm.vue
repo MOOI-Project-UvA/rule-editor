@@ -11,33 +11,33 @@
             <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
           </template>
         </div>
-        <div class="col">
-          <template v-if="sentences?.length > 0">
-            <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition" :loading="nlpIsBusy"
-              @click.stop="applyNlpToSource" @mouseup.stop>
-              <q-tooltip anchor="bottom middle" class="text-subtitle2">
-                <span>Detect roles of an act frame. <br />This feature is
-                  still experimental, so use it with caution.</span>
+        <div class="col-2">
+          <div class="row items-center float-right">
+            <template v-if="sentences?.length > 0">
+              <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
+                :loading="nlpIsBusy" @click.stop="applyNlpToSource" @mouseup.stop>
+                <q-tooltip anchor="bottom middle" class="text-subtitle2">
+                  <span>Detect roles of an act frame. <br />This feature is
+                    still experimental, so use it with caution.</span>
+                </q-tooltip>
+                <template v-slot:loading>
+                  <q-spinner-gears />
+                </template>
+              </q-btn>
+            </template>
+            <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
+              @click="showComments = !showComments">
+              <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
+              <q-tooltip class="text-subtitle2">
+                Comments
               </q-tooltip>
-              <template v-slot:loading>
-                <q-spinner-gears />
-              </template>
             </q-btn>
-          </template>
-        </div>
-        <div class="col-1">
-          <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-            @click="showComments = !showComments">
-            <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
-            <q-tooltip class="text-subtitle2">
-              Comments
-            </q-tooltip>
-          </q-btn>
+          </div>
         </div>
       </div>
 
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold"
-        @update:model-value="userChangedLabel" @blur="updateLabel" />
+        @update:model-value="userChangedLabel" @blur="updateLabel" clearable />
       <q-input v-model="frame.act" label="Act" autogrow />
 
       <div class="q-pa-md">
@@ -138,15 +138,16 @@ export default {
       this.$store.commit("removeFrame", this.frame)
       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
-    toggleShowSource() {
-      this.$store.commit("setShowFrameSource", this.showSource);
-    },
     //scroll to source of frame, in source panel
     scrollToSource() {
       //take the first sentence to scroll to
       this.$store.state.sentenceToScrollTo = this.sentences[0]
     },
     userChangedLabel() {
+      //when clearing, label is null, set it to ''
+      if (this.frame.label == null) {
+        this.frame.label = ""
+      }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
       this.frame.generateLabelAutomatically = this.frame.label.length == 0
