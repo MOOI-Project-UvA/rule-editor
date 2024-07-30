@@ -47,7 +47,7 @@ export default {
                 node.stroke = this.framesOpenInEditor.map(f => f.id).includes(node.id) ? "#ffa900" : "none"
             })
             network.links.forEach(link => {
-                link.color = link.type == "dependency" ? hexColorsLight["act"] : "#ffffff"
+                link.color = link.type == "dependency" ? hexColorsLight["act"] : "#dddddd"
                 link.drawArrow = link.type == "dependency"
             })
             //add preferred positions for act nodes
@@ -60,7 +60,6 @@ export default {
                     strength: 0.3
                 }
             })
-            network.printInConsole()
             return network
         },
     },

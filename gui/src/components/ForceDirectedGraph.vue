@@ -8,7 +8,7 @@
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0b3ff" />
                 </marker>
             </defs>
-            <rect :width="width" :height="height" fill="#eeeeee" />
+            <rect :width="width" :height="height" fill="#ffffff" />
             <g ref="network">
                 <g :transform="`translate(${width / 2},${height / 2})`">
 
@@ -22,10 +22,14 @@
                             :fill="node.color" :stroke="node.stroke" stroke-width="2"
                             @click="$emit('node-clicked', node)" @mouseover="printNode(node)" />
                     </g>
-                    <g id="labels">
+                    <g id="edge-labels">
+                        <g v-for="link in linksInSimulation" :transform="getTransformForLinkLabel(link)">
+                            <text dy="-2" text-anchor="middle" :fill="link.color" font-size="7">{{ link.label }}</text>
+                        </g>
+                    </g>
+                    <g id="node-labels">
                         <text v-for="node in nodesInSimulation" :x="node.x" :y="node.y" dy="2" text-anchor="middle"
-                            fill="#333333" font-size="9">{{ node.label
-                            }}</text>
+                            fill="#333333" font-size="9">{{ node.label }}</text>
                     </g>
                 </g>
             </g>
@@ -140,6 +144,20 @@ export default {
         },
         printNode(node) {
             console.log("node", node)
+        },
+        getTransformForLinkLabel(link) {
+            let rightPoint
+            let leftPoint
+            if (link.source.x > link.target.x) {
+                rightPoint = link.source
+                leftPoint = link.target
+            } else {
+                rightPoint = link.target
+                leftPoint = link.source
+            }
+            const rotationRad = Math.atan2(rightPoint.y - leftPoint.y, rightPoint.x - leftPoint.x)
+            const rotationDegrees = 360 * rotationRad / (2 * Math.PI)
+            return `translate(${(link.source.x + link.target.x) / 2},${(link.source.y + link.target.y) / 2}) rotate(${rotationDegrees})`
         }
     },
     watch: {
@@ -149,7 +167,6 @@ export default {
             //this prevents from updating when a label is edited
             // const numberOfNodesOrLinksChanged =
             //     newNetwork.nodes.length != oldNetwork.nodes.length || newNetwork.links.length != oldNetwork.links.length
-
             this.restartSimulation()
         }
     }
