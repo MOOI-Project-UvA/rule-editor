@@ -41,8 +41,8 @@ const hexColorsLight = {
   duty: "#80e9ff",
   act: "#c0b3ff",
   claim_duty: "#c0b3ff",
-  list: "#ffffff",
-  booleanConstruct: "#ffffff"
+  list: "#dddddd",
+  booleanConstruct: "#dddddd"
 };
 
 //used for sizing nodes in network
