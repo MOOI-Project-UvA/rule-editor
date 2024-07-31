@@ -4,7 +4,7 @@ export class Comment {
     constructor() {
         this._id = uuid4() //unique ID
         this._content = ""; //the actual content (text) of the comment
-        this._author = "user"; //id of the user that created this comment, for now: 'user'
+        this._author = "Guest"; //id of the user that created this comment, for now: 'user'
         this._createdAt = new Date(); //date and time of creation of this comment TODO: init here?
         this._lastEditedAt = null; //date and time of updating of this comment
     }
@@ -12,8 +12,8 @@ export class Comment {
     get content() { return this._content }
     set content(content) { this._content = content }
 
-    get content() { return this._content }
-    set content(content) { this._content = content }
+    get author() { return this._author }
+    set author(author) { this._author = author }
 
     get createdAt() { return this._createdAt }
     set createdAt(createdAt) { this._createdAt = createdAt }
