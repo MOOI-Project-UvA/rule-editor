@@ -40,7 +40,7 @@
                                     {{ comment.content }}
                                 </div>
                                 <div class="col-1 border-left">
-                                    <q-btn size="sm" round flat color="primary" icon="mdi-pen"
+                                    <q-btn size="sm" round flat color="primary" icon="mdi-pencil"
                                         @click="commentBeingEdited = comment">
                                         <q-tooltip class="text-subtitle2">
                                             Edit or delete comment
