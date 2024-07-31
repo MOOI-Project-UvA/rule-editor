@@ -32,7 +32,6 @@
           </q-btn>
         </div>
       </div>
-
       <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.fact" label="Fact" autogrow />
     </q-card-section>
@@ -40,6 +39,7 @@
       <div class="label">Subdivision</div>
       <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />
     </q-card-section>
+
     <q-card-actions align="right">
       <template v-if="frameIsBeingDeleted">
         <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
@@ -59,7 +59,21 @@
         </q-btn>
       </template>
     </q-card-actions>
+    <div class="flex flex-row items-center">
+      <div class="frame-id">Frame id: {{ frame.id }}</div>
+      <div class="col">
+        <q-btn size="sm" round flat color="primary"
+          :icon="idIsCopiedToClipboard ? 'mdi-clipboard-check-outline' : 'mdi-clipboard-arrow-left-outline'"
+          @click="copyIdToClipboard">
+          <q-tooltip class="text-subtitle2">
+            {{ idIsCopiedToClipboard ? 'Copied' : 'Copy to clipboard' }}
+          </q-tooltip>
+        </q-btn>
+      </div>
+    </div>
   </q-card>
+
+
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
 
@@ -81,7 +95,8 @@ export default {
     showSource: false,
     showComments: false,
     frameTypes: frameTypes,
-    frameIsBeingDeleted: false //true when user clicked delete button
+    frameIsBeingDeleted: false, //true when user clicked delete button
+    idIsCopiedToClipboard: false
   }),
   computed: {
     displayedSourceDocument() {
@@ -120,8 +135,19 @@ export default {
     scrollToSource() {
       //take the first sentence to scroll to
       this.$store.state.sentenceToScrollTo = this.sentences[0]
+    },
+    copyIdToClipboard() {
+      navigator.clipboard.writeText(this.frame.id);
+      this.idIsCopiedToClipboard = true
     }
   },
   components: { BooleanConstructPanel, CommentsList, SentenceList }
 }
 </script>
+
+<style>
+.frame-id {
+  font-size: 9pt;
+  margin-left: 6px;
+}
+</style>
