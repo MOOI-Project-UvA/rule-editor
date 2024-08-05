@@ -44,6 +44,7 @@ export class Fact {
     set comments(comments) { this._comments = comments }
 
     get annotations() { return this._annotations }
+
     addAnnotation(annotation) {
         this._annotations = [...this._annotations, annotation]
         annotation.frame = this

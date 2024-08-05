@@ -36,11 +36,10 @@ export class BooleanConstruct {
     get allFrames() {
         let frames = []
         if (this._frame) {
-            frames = [this._frame]
+            frames = [this._frame].concat(this._frame.subdivision.allFrames)
         } else {
-            this._children.forEach(child => {
-                console.log("child", child)
-                frames = frames.concat(child.allFrames)
+            this._children.forEach(booleanConstruct => {
+                frames = frames.concat(booleanConstruct.allFrames)
             })
         }
         return frames

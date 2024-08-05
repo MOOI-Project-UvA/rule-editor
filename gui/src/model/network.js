@@ -10,46 +10,40 @@ export class Network {
     get nodes() { return this._nodes }
     get links() { return this._links }
 
-    addNodesAndDependencyRelationsForActs(acts, expandedActs) {
-        //add node for each act. add nodes for roles as well, when act is expanded.
-        //(which is the case when the act is open in the editor)
-        acts.forEach(act => this.addNodeForAct(act, expandedActs.some(a => a.id == act.id)))
-        //ompare each act with each other act to see if there is a dependency.
-        //this is the case when one act creates a frame that is part of the precondition
-        //of the other act
-        acts.forEach(targetAct => {
-            const targetPreconditionFacts = targetAct.precondition.allFrames
-            acts.forEach(sourceAct => {
-                if (sourceAct.id != targetAct.id) {
-                    //check if there is at least one frame created by the sourceAct
-                    //that is part of the precondition of the targetAct
-                    if (sourceAct.creates.some(createdFact =>
-                        targetPreconditionFacts.some(targetFact => targetFact.id == createdFact.id)
-                    )) {
-                        this.addLink(sourceAct, targetAct, "dependency", "before")
-                    }
-                }
-            })
+    //create all nodes and links for the interpretation
+    //each node corresponds to a frame. Links are derived from
+    //relations between frames (roles, subdivision, operand).
+    //In addition we add links between acts, indicating that an act
+    //has to finish before another can start.
+    createNetwork(frames) {
+        console.log("createNetwork")
+        frames.forEach(frame => {
+            switch (frame.typeId) {
+                case "act":
+                    this.addTreeForAct(frame)
+                    break;
+                case "fact":
+                    this.addTreeForFact(frame)
+                    break;
+            }
         })
+        //add dependency relations between acts: act1 - before - act2
+        this.addDependencyLinksBetweenActNodes()
         //for each act, determine position in dependency-chain. this is used for positioning the acts
         //from left to right
-        setSequenceOfActnodes(
-            this._nodes.filter(n => n.type == "act"),
-            this._links.filter(l => l.type == "dependency")
-        )
+        this.setSequenceOfActnodes()
     }
 
-    //add node for act. relate act to existing nodes, if node is a role of the act.
-    //add nodes for roles if 'addNodesForRoles' is true
-    addNodeForAct(act, addNodesForRoles) {
-        let actNode = this.getNode(act, true)
-        console.log("actNode", actNode)
+    addTreeForAct(act) {
+        const actNode = this.getNodeForFrame(act)
         //add nodes and links for roles with one frame
         const rolesWithOneFrame = ["action", "actor", "object", "recipient"]
         rolesWithOneFrame.forEach(roleAttribute => {
             if (act[roleAttribute]) {
-                //if act has this role filled in, get corresponding node
-                const roleNode = this.getNode(act[roleAttribute], addNodesForRoles)
+                //if act has this role filled in, get corresponding nodeTree
+                //the fact for this role can be subdivided, so in general this
+                //is a node tree
+                const roleNode = this.addTreeForFact(act[roleAttribute])
                 if (roleNode) {
                     this.addLink(actNode, roleNode, "role", roleAttribute)
                 }
@@ -58,40 +52,48 @@ export class Network {
         //add nodes and links for roles with multiple frames
         const rolesWithMultipleFrames = ["creates", "terminates"]
         rolesWithMultipleFrames.forEach(roleAttribute => {
-            //get nodes for this attribute, filter out empty nodes (which may happen if addNodesForRoles is false)
-            const roleNodes = act[roleAttribute].map(frame => this.getNode(frame, addNodesForRoles)).filter(node => node)
-            if (roleNodes.length == 1) {
+            //get node trees for this attribute,
+            const roleRootNodes = act[roleAttribute].map(frame => this.addTreeForFact(frame))
+            if (roleRootNodes.length == 1) {
                 //only one frame in this property: create node and connect with act
-                this.addLink(actNode, roleNodes[0], "role", roleAttribute)
-            } else if (roleNodes.length > 1) {
+                this.addLink(actNode, roleRootNodes[0], "role", roleAttribute)
+            } else if (roleRootNodes.length > 1) {
                 //multiple nodes for this property: add anonymous node
                 const anonymousNode = this.createAnonymousNode("", "list") //label, subType
-                this.addLink(actNode, anonymousNode, "role", roleAttribute)
-                roleNodes.forEach(roleNode => {
+                this.addLink(actNode, anonymousNode, "role", roleAttribute) //source, target, linktype, label
+                roleRootNodes.forEach(roleNode => {
                     this.addLink(anonymousNode, roleNode, "list", "") //source, target, linktype, label
                 })
             }
         })
         //add nodes and links for boolean construct (precondition role)
-        const booleanConstructNode = this.addNodesAndLinksForBooleanConstruct(act.precondition, addNodesForRoles)
-        console.log(act.label, "booleanConstructNode", booleanConstructNode)
-        if (booleanConstructNode) {
-            this.addLink(actNode, booleanConstructNode, "role", "precondition") //source, target, linktype, label
+        const booleanConstructRootNode = this.addTreeForBooleanConstruct(act.precondition)
+        if (booleanConstructRootNode) {
+            this.addLink(actNode, booleanConstructRootNode, "role", "precondition") //source, target, linktype, label
         }
+        return actNode
     }
 
-    //creates tree of nodes for facts and operators in boolean construct
-    //returns root node of the tree
-    addNodesAndLinksForBooleanConstruct(booleanConstruct, addNodesForRoles) {
-        //if BC has a frame, create corresponding node, else create an anonymous node
+    addTreeForFact(fact) {
+        const { node: factNode, isNew: isNewNode } = this.getNode(fact)
+        if (isNewNode) {
+            const subdivisionRoot = this.addTreeForBooleanConstruct(fact.subdivision)
+            if (subdivisionRoot) {
+                this.addLink(factNode, subdivisionRoot, "subdivision", "subdivision")
+            }
+        }
+        return factNode
+    }
+
+    addTreeForBooleanConstruct(booleanConstruct) {
+        //if BC has a frame, create corresponding nodeTree, else create an anonymous node
         if (booleanConstruct.frame) {
-            console.log("getting node for", booleanConstruct.frame)
-            return this.getNode(booleanConstruct.frame, addNodesForRoles)
+            return this.addTreeForFact(booleanConstruct.frame)
         } else {
             //create nodes for children. If there are more than zero: create
             //anonymous node to connect them
             const childrenNodes = booleanConstruct.children
-                .map(child => this.addNodesAndLinksForBooleanConstruct(child, addNodesForRoles))
+                .map(child => this.addTreeForBooleanConstruct(child))
                 .filter(node => node)
             if (childrenNodes.length > 0) {
                 const anonymousNode = this.createAnonymousNode(booleanConstruct.operatorToJoinChildren, "booleanConstruct")
@@ -100,16 +102,28 @@ export class Network {
                 })
                 return anonymousNode
             } else {
-                return null
+                return null //this happens when BC is empty: it has no frame and no children
             }
         }
     }
 
+    //return nodes that are in the subtree of the node
+    //are considered only in the direction from source to target.
+    //returned list includes node itself
+    getDescendants(node) {
+        let nodeList = [node]
+        const childNodes = this._links.filter(l => l.source.id == node.id).map(l => l.target)
+        childNodes.forEach(childNode => {
+            nodeList = nodeList.concat(this.getDescendants(childNode))
+        })
+        return nodeList
+    }
+
     //get node for frame. if there is not already a node for this frame,
     //create one, if 'createIfNotExists' is true
-    getNode(frame, createIfNotExists) {
+    getNodeForFrame(frame) {
         let node = this._nodes.find(n => n.id == frame.id)
-        if (!node && createIfNotExists) {
+        if (!node) {
             node = {
                 id: frame.id,
                 label: frame.label,
@@ -120,6 +134,35 @@ export class Network {
             this._nodes.push(node)
         }
         return node
+    }
+
+    addLink(sourceNode, targetNode, linkType, label) {
+        //TODO: do we need to check if link is already there?
+        this._links.push({
+            source: sourceNode,
+            target: targetNode,
+            type: linkType, //TODO: needed?
+            label: label
+        })
+    }
+
+    //get node for frame. if there is not already a node for this frame,
+    //create a new one.
+    getNode(frame) {
+        let node = this._nodes.find(n => n.id == frame.id)
+        let isNew = false
+        if (!node) {
+            node = {
+                id: frame.id,
+                label: frame.label,
+                type: frame.typeId,
+                subType: frame.subTypeId,
+                sequenceIndex: null //index of act nodes in chain of dependency
+            }
+            this._nodes.push(node)
+            isNew = true
+        }
+        return { node, isNew }
     }
 
     createAnonymousNode(label, subType) {
@@ -137,11 +180,65 @@ export class Network {
     addLink(sourceNode, targetNode, linkType, label) {
         //TODO: do we need to check if link is already there?
         this._links.push({
-            source: sourceNode.id,
-            target: targetNode.id,
+            source: sourceNode,
+            target: targetNode,
             type: linkType, //TODO: needed?
             label: label
         })
+    }
+
+    //compare each act node with all other act nodes to see if there is a dependency.
+    //this is the case when one act creates a frame that is part of the precondition
+    //of the other act
+    addDependencyLinksBetweenActNodes() {
+        console.log("addDependencyLinksBetweenActNodes")
+        console.log("links", this._links)
+        const actNodes = this._nodes.filter(n => n.type == "act")
+        actNodes.forEach(sourceActNode => {
+            console.log("sourceActNode", sourceActNode)
+            const createdRoleNode = this.findRelatedNode(sourceActNode, "creates")
+            console.log("createdRoleNode", createdRoleNode)
+            if (createdRoleNode) {
+                const factNodesCreatedBySource = this.getDescendants(createdRoleNode)
+                console.log("factNodesCreatedBySource", factNodesCreatedBySource)
+                actNodes.forEach(targetActNode => {
+                    const preconditionNode = this.findRelatedNode(targetActNode, "precondition")
+                    if (preconditionNode) {
+                        const factNodesInPreconditionOfTargetAct = this.getDescendants(preconditionNode)
+                        //if there is a fact present in both factNodesCreatedBySource and factNodesInPreconditionOfTargetAct
+                        //then target act is dependent of source act
+                        if (factNodesCreatedBySource.some(sourceNode => factNodesInPreconditionOfTargetAct.some(targetNode => sourceNode.id == targetNode.id))) {
+                            this.addLink(sourceActNode, targetActNode, "dependency", "before")
+                        }
+                    }
+                })
+            }
+
+        })
+    }
+
+    //assign sequence index to each act node, indicating how far in the sequence of dependencies this
+    //act is. we use this to position act nodes in the network, laying out chains of dependent acts
+    //from left to right.
+    setSequenceOfActnodes() {
+        const actNodes = this._nodes.filter(n => n.type == "act")
+        const dependencyLinks = this._links.filter(l => l.type == "dependency")
+        //start with act nodes that are at the beginning of a sequence
+        const actNodesAtBeginning = actNodes.filter(act => !(dependencyLinks.some(link => link.target == act.id)))
+        //set all sequence index values to null
+        actNodes.forEach(actNode => { actNode.sequenceIndex = null })
+        actNodesAtBeginning.forEach(actNode => {
+            setSequenceIndexOfAct(actNode, 0, dependencyLinks, actNodes)
+        })
+    }
+
+    //returns node that is related to the sourceNode by a relation
+    //with the given relationType
+    //TODO return list of nodes?
+    findRelatedNode(sourceNode, linkLabel) {
+        const link = this._links.find(l => l.source.id == sourceNode.id && l.label == linkLabel)
+        console.log("found link", link)
+        return link ? link.target : null
     }
 
     printInConsole() {
@@ -154,19 +251,6 @@ export class Network {
             console.log(l.label, l.type, l.source.id, l.target.id)
         })
     }
-}
-
-//assign sequence index to each act node, indicating how far in the sequence of dependencies this
-//act is. we use this to position act nodes in the network, laying out chains of dependent acts
-//from left to right.
-function setSequenceOfActnodes(actNodes, dependencyLinks) {
-    //start with act nodes that are at the beginning of a sequence
-    const actNodesAtBeginning = actNodes.filter(act => !(dependencyLinks.some(link => link.target == act.id)))
-    //set all sequence index values to null
-    actNodes.forEach(actNode => { actNode.sequenceIndex = null })
-    actNodesAtBeginning.forEach(actNode => {
-        setSequenceIndexOfAct(actNode, 0, dependencyLinks, actNodes)
-    })
 }
 
 function setSequenceIndexOfAct(actNode, newIndex, links, nodes) {

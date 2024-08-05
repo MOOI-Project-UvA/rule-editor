@@ -34,13 +34,7 @@ export default {
         },
         nodesAndLinks() {
             let network = new Network()
-            network.addNodesAndDependencyRelationsForActs(this.acts, this.actsOpenInEditor)
-            //add preferred position
-            //add colors
-            //add node sizes
-            // color: frame.subtypeId ? hexColorsLight[frame.subtypeId] : hexColorsLight[frame.typeId],
-            //     radius: nodeSizes[frame.typeId],
-            //     preferredPosition: null
+            network.createNetwork(this.frames)
             network.nodes.forEach(node => {
                 node.color = node.subType ? hexColorsLight[node.subType] : hexColorsLight[node.type]
                 node.radius = nodeSizes[node.type]

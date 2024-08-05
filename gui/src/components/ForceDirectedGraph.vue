@@ -81,7 +81,7 @@ export default {
                 .force("x", fX)
                 .force("y", fY)
                 .force("charge", forceManyBody().strength(-500))
-                .force("link", forceLink(this.linksInSimulation).id((d) => d.id).strength(.4))
+                .force("link", forceLink(this.linksInSimulation).strength(.4))
                 // .force(
                 //     "collide",
                 //     forceCollide()
@@ -115,7 +115,6 @@ export default {
                     [node.x, node.y] = locations[node.id]
                 }
             })
-            console.log("restart | nodesInsimulation", this.nodesInSimulation)
             if (this.simulation) {
                 this.simulation.stop();
                 this.simulation.nodes(this.nodesInSimulation);
