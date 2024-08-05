@@ -32,6 +32,7 @@ export class Network {
         //for each act, determine position in dependency-chain. this is used for positioning the acts
         //from left to right
         this.setSequenceOfActnodes()
+        console.log("act nodes", this._nodes.filter(n => n.type == "act"))
     }
 
     addTreeForAct(act) {
@@ -208,7 +209,7 @@ export class Network {
                         //if there is a fact present in both factNodesCreatedBySource and factNodesInPreconditionOfTargetAct
                         //then target act is dependent of source act
                         if (factNodesCreatedBySource.some(sourceNode => factNodesInPreconditionOfTargetAct.some(targetNode => sourceNode.id == targetNode.id))) {
-                            this.addLink(sourceActNode, targetActNode, "dependency", "before")
+                            this.addLink(sourceActNode, targetActNode, "dependency", "before") //source, target, type, label
                         }
                     }
                 })
@@ -224,7 +225,7 @@ export class Network {
         const actNodes = this._nodes.filter(n => n.type == "act")
         const dependencyLinks = this._links.filter(l => l.type == "dependency")
         //start with act nodes that are at the beginning of a sequence
-        const actNodesAtBeginning = actNodes.filter(act => !(dependencyLinks.some(link => link.target == act.id)))
+        const actNodesAtBeginning = actNodes.filter(act => !(dependencyLinks.some(link => link.target.id == act.id)))
         //set all sequence index values to null
         actNodes.forEach(actNode => { actNode.sequenceIndex = null })
         actNodesAtBeginning.forEach(actNode => {
@@ -259,9 +260,9 @@ function setSequenceIndexOfAct(actNode, newIndex, links, nodes) {
     if ((!(actNode.sequenceIndex)) || actNode.sequenceIndex < newIndex) {
         actNode.sequenceIndex = newIndex
         //follow outgoing relations only
-        const outgoingLinks = links.filter(l => l.source == actNode.id)
+        const outgoingLinks = links.filter(l => l.source.id == actNode.id)
         outgoingLinks.forEach(link => {
-            const nextActNode = nodes.find(n => n.id == link.target)
+            const nextActNode = nodes.find(n => n.id == link.target.id)
             setSequenceIndexOfAct(nextActNode, newIndex + 1, links, nodes)
         })
     }
