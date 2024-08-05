@@ -16,7 +16,7 @@ export class Network {
     //In addition we add links between acts, indicating that an act
     //has to finish before another can start.
     createNetwork(frames) {
-        console.log("createNetwork")
+        console.log("createNetwork, frames = ", frames)
         frames.forEach(frame => {
             switch (frame.typeId) {
                 case "act":
@@ -88,8 +88,9 @@ export class Network {
 
     addTreeForBooleanConstruct(booleanConstruct) {
         //if BC has a frame, create corresponding nodeTree, else create an anonymous node
+        let bcRoot = null
         if (booleanConstruct.frame) {
-            return this.addTreeForFact(booleanConstruct.frame)
+            bcRoot = this.addTreeForFact(booleanConstruct.frame)
         } else {
             //create nodes for children. If there are more than zero: create
             //anonymous node to connect them
@@ -101,11 +102,18 @@ export class Network {
                 childrenNodes.forEach(node => {
                     this.addLink(anonymousNode, node, "booleanConstruct", "")
                 })
-                return anonymousNode
-            } else {
-                return null //this happens when BC is empty: it has no frame and no children
+                bcRoot = anonymousNode
             }
         }
+        //if this bc is negated and not empty, add an extra anonymous node representing 'NOT'
+        if (bcRoot && booleanConstruct.isNegated) {
+            const notNode = this.createAnonymousNode("not", "booleanConstruct") //label, subtype
+            this.addLink(notNode, bcRoot, "booleanConstruct", "") //type, label
+            return notNode
+        } else {
+            return bcRoot
+        }
+
     }
 
     //return nodes that are in the subtree of the node
