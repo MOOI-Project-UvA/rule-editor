@@ -1,5 +1,5 @@
 <template>
-    <ForceDirectedGraph :nodesAndLinks="nodesAndLinks" @node-clicked="toggleOpenFrame" />
+    <ForceDirectedGraph :nodesAndLinks="highlightedAndFilteredNetwork" @node-clicked="toggleOpenFrame" />
 </template>
 
 <script>
@@ -20,25 +20,22 @@ export default {
         frames() {
             return this.$store.state.frames;
         },
-        acts() {
-            return this.frames.filter(frame => frame.typeId == "act")
-        },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
         },
         framesOpenInEditor() {
             return this.$store.state.framesOpenInEditor
         },
-        actsOpenInEditor() {
-            return this.framesOpenInEditor.filter(frame => frame.typeId == "act")
+        idsOfActsOpenInEditor() {
+            return this.framesOpenInEditor.filter(f => f.typeId == "act").map(act => act.id)
         },
-        nodesAndLinks() {
-            let network = new Network()
+        network() {
+            const network = new Network()
             network.createNetwork(this.frames)
+            console.log("created network")
             network.nodes.forEach(node => {
                 node.color = node.subType ? hexColorsLight[node.subType] : hexColorsLight[node.type]
                 node.radius = nodeSizes[node.type]
-                node.stroke = this.framesOpenInEditor.map(f => f.id).includes(node.id) ? "#ffa900" : "none"
             })
             network.links.forEach(link => {
                 link.color = link.type == "dependency" ? hexColorsLight["act"] : "#dddddd"
@@ -56,6 +53,13 @@ export default {
             })
             return network
         },
+        highlightedAndFilteredNetwork() {
+            this.network.nodes.forEach(node => {
+                node.stroke = this.framesOpenInEditor.map(f => f.id).includes(node.id) ? "#ffa900" : "none"
+            })
+            this.network.setNodeVisibility(this.idsOfActsOpenInEditor)
+            return { nodes: this.network.nodes, links: this.network.links } //this triggers redrawing the network
+        }
     },
     methods: {
         toggleOpenFrame(node) {
@@ -73,9 +77,8 @@ export default {
         },
     },
     watch: {
-        nodesAndLinks() {
-            console.log("***this.nodesAndLinks", this.nodesAndLinks)
-
+        idsOfActsOpenInEditor() {
+            console.log("ids of acts open", this.idsOfActsOpenInEditor)
         }
     }
 }
