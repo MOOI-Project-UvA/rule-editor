@@ -152,7 +152,6 @@ export default {
       this.frame.generateLabelAutomatically = this.frame.label.length == 0
     },
     updateLabel() {
-      console.log("updateLabel")
       //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
       //therefore: check for frame equals null
       if (this.frame && this.frame.generateLabelAutomatically) {

@@ -81,7 +81,7 @@ export default {
                 .force("x", fX)
                 .force("y", fY)
                 .force("charge", forceManyBody().strength(-500))
-                .force("link", forceLink(this.linksInSimulation).id((d) => d.id).strength(.4))
+                .force("link", forceLink(this.linksInSimulation).strength(.4))
                 // .force(
                 //     "collide",
                 //     forceCollide()
@@ -98,6 +98,7 @@ export default {
             this.linksInSimulation = [...this.linksInSimulation]
         },
         restartSimulation() {
+            console.log("restartSimulation")
             //todo keep location if node already exists, so that network
             //updates are more smoothly
             //store location of each node in simulation
@@ -107,15 +108,14 @@ export default {
                     locations[node.id] = [node.x, node.y]
                 }
             })
-            this.nodesInSimulation = [...this.nodesAndLinks.nodes]
-            this.linksInSimulation = [...this.nodesAndLinks.links]
+            this.nodesInSimulation = [...this.nodesAndLinks.nodes.filter(n => n.visible)]
+            this.linksInSimulation = [...this.nodesAndLinks.links.filter(l => l.source.visible && l.target.visible)]
             //re-assign locations
             this.nodesInSimulation.forEach(node => {
                 if (node.id in locations) {
                     [node.x, node.y] = locations[node.id]
                 }
             })
-            console.log("restart | nodesInsimulation", this.nodesInSimulation)
             if (this.simulation) {
                 this.simulation.stop();
                 this.simulation.nodes(this.nodesInSimulation);
