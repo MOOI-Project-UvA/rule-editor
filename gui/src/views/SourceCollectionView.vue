@@ -44,7 +44,7 @@
                 <q-tab-panel v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex">
                   <q-card flat square>
                     <q-card-section class="q-pt-none expansion-items">
-                      <ListComponent :textPiece="sourceDocument.sentences" :docId="docIndex" />
+                      <ListComponent :sourceDocument="sourceDocument" />
                     </q-card-section>
                   </q-card>
                 </q-tab-panel>
@@ -82,15 +82,6 @@ export default {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
-    // at least a sentence must be selected per source...
-    // anyCheckedSentences() {
-    //   return this.sourceDocuments.length > 0
-    //     ? this.sourceDocuments
-    //         .map((d) => d.sentences.some((e) => e.checked))
-    //         .every((e) => e)
-    //     : false;
-    // },
-    //   no need for sentence selection per source
     anyCheckedSentences() {
       return this.sourceDocuments.length > 0;
     },
@@ -110,20 +101,7 @@ export default {
     filterNames: function (name) {
       return name === "General Data Protection Regulation" ? "GDPR" : name;
     },
-  },
-  watch: {
-    sourceDocuments() {
-      console.log(
-        "sourceDocuments",
-        this.sourceDocuments,
-        this.sourceDocuments
-          .map((d) => d.sentences)
-          .filter((d) => {
-            return d.some((e) => e.checked);
-          }),
-      );
-    },
-  },
+  }
 };
 </script>
 

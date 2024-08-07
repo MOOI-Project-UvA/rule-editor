@@ -1,20 +1,24 @@
 import { Snippet } from "./snippet.js";
 
 export class Sentence {
-  constructor(id, iri, sourceDocument) {
+  constructor(id, sourceDocument) {
     this._id = id;
-    this._iri = iri;
+    this._iri = null;
     this._sourceDocument = sourceDocument;
     this._loading = false;
     this._snippets = [];
     this._text = "";
+    this._parent = null
     this._checked = true;
+    this._children = []
+    this._contentType = "",
+      this._level = null
   }
 
-  //set text and create sniippets. if there are snippets (from a loaded interpretation)
+  //set text and create snippets. if there are snippets (from a loaded interpretation)
   //add missing snippets, else create one snippet covering the complete sentence
-  addTextFromChopperLeafElement(documentLeafElement) {
-    this._text = documentLeafElement.content.trim();
+  addTextFromChopperLeafElement(content) {
+    this._text = content.trim();
     if (this._snippets.length == 0) {
       this._snippets.push(
         new Snippet(this._text, this, [0, this._text.length]),
@@ -32,11 +36,16 @@ export class Sentence {
   get id() {
     return this._id;
   }
+
   get iri() {
     return this._iri;
   }
   set iri(iri) {
     this._iri = iri;
+  }
+  get parent() { return this._parent }
+  set parent(parent) {
+    this._parent = parent
   }
   get snippets() {
     return this._snippets;
@@ -50,14 +59,29 @@ export class Sentence {
   get checked() {
     return this._checked;
   }
-
   set checked(checked) {
     this._checked = checked;
   }
+  get children() { return this._children }
+  addChild(child) { this._children.push(child) }
+
+  set contentType(contentType) { this._contentType = contentType }
+  get contentType() { return this._contentType }
+
+  //return sentence tree as list, do not include empty sentences
+  get sentenceTreeAsList() {
+    let list = this._text.length == 0 ? [] : [this]
+    this._children.forEach(child => {
+      list = list.concat(child.sentenceTreeAsList)
+    })
+    return list
+  }
+  //level in sentence hierarchy
+  set level(level) { this._level = level }
+  get level() { return this._level }
 }
 //add snippets not covered by annotations
 function findMissingSnippets(sentence) {
-  console.log("addMissingSnippets", sentence);
   //sort existing snippets on range (start)
   sentence.snippets.sort(
     (s1, s2) => s1.characterRange[0] - s2.characterRange[0],
@@ -88,7 +112,5 @@ function findMissingSnippets(sentence) {
     ]);
     missingSnippets.push(snippet);
   }
-  console.log("missingSnippets", missingSnippets);
-  //extend current snippets with missing snippets
   return missingSnippets;
 }

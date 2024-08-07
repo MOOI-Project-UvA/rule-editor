@@ -51,9 +51,9 @@ export default {
       const reader = new FileReader();
       reader.onload = (evt) => {
         //this.$store.dispatch("loadInterpretation", evt.target.result);
-        console.log("source file loaded", evt.target.result)
         const jsonLdObject = JSON.parse(evt.target.result)
-        this.$store.dispatch("createSourceDocFromJsonLD", { jsonLdObject, checkedSentenceIds: null })
+        console.log("loaded source, jsonLdObject", jsonLdObject)
+        this.$store.dispatch("createSourceDocFromJsonLD", jsonLdObject)
 
       };
       reader.readAsText(evt.target.files[0]);

@@ -164,31 +164,19 @@ const store = createStore({
     //source object contains filename where to read the source from
     //checkedSentences is used when reading an existing interpretation: it contains
     //the sentences that are selected by the user as relevant for the interpretation.
-    addSource(context, { sourceId, checkedSentenceIds }) {
+    addSource(context, sourceId) {
       const source = this.state.availableSources.find((s) => s.id == sourceId);
-      console.log("source", source)
-      console.log("reading", source.fileName)
       json(source.fileName).then((jsonLdObject) => {
-        context.dispatch("createSourceDocFromJsonLD", { jsonLdObject, checkedSentenceIds })
+        context.dispatch("createSourceDocFromJsonLD", jsonLdObject)
       })
     },
-    createSourceDocFromJsonLD(context, { jsonLdObject, checkedSentenceIds }) {
-      //get document from chopper data.
-      const document = jsonLdObject["@graph"].find((d) => ('document' in d)).document;
-      console.log("document", document)
-      //TODO check if source doc already exists, from a loaded interpretation
-      let sourceDoc = context.state.sourceDocuments.find(d => d.id == document['@id'])
-      if (!sourceDoc) {
-        sourceDoc = new SourceDocument(document['@id'], checkedSentenceIds)
-        context.state.sourceDocuments = [
-          ...context.state.sourceDocuments,
-          sourceDoc
-        ];
-      }
-
-      sourceDoc.fillSentencesFromChopperDocument(document)
-      //sourceDoc.title = source.title
-
+    createSourceDocFromJsonLD(context, jsonLdObject) {
+      const sourceDoc = new SourceDocument(jsonLdObject)
+      //todo: check if sourceDoc is already in list
+      context.state.sourceDocuments = [
+        ...context.state.sourceDocuments,
+        sourceDoc
+      ];
       //sort alphabetically on title
       context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
       context.state.sourceDocuments
