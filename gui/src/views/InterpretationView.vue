@@ -2,8 +2,6 @@
 import SourceView from "./SourceView.vue";
 import FramesView from "./FramesView.vue";
 
-import NewFrameMenu from "../components/NewFrameMenu.vue";
-import LoadSaveMenu from "../components/LoadSaveMenu.vue";
 import AnnotationPanel from "../components/AnnotationPanel.vue";
 import AnnotationList from "../components/AnnotationList.vue"
 import AddingAnnotationToFramePanel from "../components/AddingAnnotationToFramePanel.vue"
@@ -13,8 +11,6 @@ export default {
   components: {
     FramesView,
     SourceView,
-    NewFrameMenu,
-    LoadSaveMenu,
     AnnotationPanel,
     AnnotationList,
     AddingAnnotationToFramePanel,

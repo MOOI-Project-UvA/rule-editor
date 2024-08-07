@@ -13,15 +13,10 @@
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
-            <q-icon
-              name="mdi-information-outline"
-              class="cursor-pointer"
-            ></q-icon>
+            <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
-                In this view, you can select legal sources from the repository.
-                After selection, a legal source is reconstructed and you are
-                able to select parts of the sources for interpretation.
+                In this view, you can select legal sources either from the server or from your local file system.
               </div>
             </q-tooltip>
           </q-avatar>
@@ -37,44 +32,19 @@
         <div>
           <q-splitter v-model="splitterModel" class="q-mt-lg">
             <template v-slot:before>
-              <q-tabs
-                v-model="tab"
-                vertical
-                shrink
-                dense
-                class="text-grey"
-                active-color="primary"
-                indicator-color="primary"
-              >
-                <q-tab
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                  icon="mdi-book-outline"
-                  :label="filterNames(sourceDocument.title)"
-                />
+              <q-tabs v-model="tab" vertical shrink dense class="text-grey" active-color="primary"
+                indicator-color="primary">
+                <q-tab v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex"
+                  icon="mdi-book-outline" :label="filterNames(sourceDocument.title)" />
               </q-tabs>
             </template>
             <template v-slot:after>
-              <q-tab-panels
-                v-model="tab"
-                animated
-                swipeable
-                vertical
-                transition-prev="jump-up"
-                transition-next="jump-up"
-              >
-                <q-tab-panel
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                >
+              <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up"
+                transition-next="jump-up">
+                <q-tab-panel v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex">
                   <q-card flat square>
                     <q-card-section class="q-pt-none expansion-items">
-                      <ListComponent
-                        :textPiece="sourceDocument.sentences"
-                        :docId="docIndex"
-                      />
+                      <ListComponent :textPiece="sourceDocument.sentences" :docId="docIndex" />
                     </q-card-section>
                   </q-card>
                 </q-tab-panel>
@@ -85,18 +55,11 @@
       </div>
       <!--  action section  -->
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
-        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')"
-          >Back</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')">Back</q-btn>
         <q-space></q-space>
 
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeSelectSources"
-          :disable="!anyCheckedSentences"
-          >Continue</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="storeSelectSources"
+          :disable="!anyCheckedSentences">Continue</q-btn>
       </q-card-actions>
     </q-card>
   </div>

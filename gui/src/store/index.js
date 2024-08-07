@@ -154,8 +154,8 @@ const store = createStore({
         })
       });
     },
+    //read sources that are available on server
     readAvailableSources(context) {
-      console.log("reading available sources");
       json(`./sources.json`).then((data) => {
         context.state.availableSources = data;
       });
@@ -168,28 +168,30 @@ const store = createStore({
       const source = this.state.availableSources.find((s) => s.id == sourceId);
       console.log("source", source)
       console.log("reading", source.fileName)
-      json(source.fileName).then((chopperData) => {
-        console.log("chopperData", chopperData)
-        //get document from chopper data.
-        const document = chopperData["@graph"].find((d) => ('document' in d)).document;
-        console.log("document", document)
-        //TODO check if source doc already exists, from a loaded interpretation
-        let sourceDoc = context.state.sourceDocuments.find(d => d.id == document['@id'])
-        if (!sourceDoc) {
-          sourceDoc = new SourceDocument(document['@id'], checkedSentenceIds)
-          context.state.sourceDocuments = [
-            ...context.state.sourceDocuments,
-            sourceDoc
-          ];
-        }
-
-        sourceDoc.fillSentencesFromChopperDocument(document)
-        sourceDoc.title = source.title
-
-        //sort alphabetically on title
-        context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
-        context.state.sourceDocuments
+      json(source.fileName).then((jsonLdObject) => {
+        context.dispatch("createSourceDocFromJsonLD", { jsonLdObject, checkedSentenceIds })
       })
+    },
+    createSourceDocFromJsonLD(context, { jsonLdObject, checkedSentenceIds }) {
+      //get document from chopper data.
+      const document = jsonLdObject["@graph"].find((d) => ('document' in d)).document;
+      console.log("document", document)
+      //TODO check if source doc already exists, from a loaded interpretation
+      let sourceDoc = context.state.sourceDocuments.find(d => d.id == document['@id'])
+      if (!sourceDoc) {
+        sourceDoc = new SourceDocument(document['@id'], checkedSentenceIds)
+        context.state.sourceDocuments = [
+          ...context.state.sourceDocuments,
+          sourceDoc
+        ];
+      }
+
+      sourceDoc.fillSentencesFromChopperDocument(document)
+      //sourceDoc.title = source.title
+
+      //sort alphabetically on title
+      context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
+      context.state.sourceDocuments
     },
     createAct(context) {
       console.log("create act frame");
