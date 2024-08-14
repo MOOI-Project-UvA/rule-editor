@@ -1,69 +1,26 @@
 <template>
   <!--
-        displays recursively the content fields ('sentences') in a document.
+        displays the content fields ('sentences') in a document.
         Allows the end-user to include a sentence into an interpretation by checking
         the corresponding checkbox.
     -->
-  <div v-for="(item, index) in textPiece" :key="index">
-    <q-item tag="label" v-ripple :id="`q-item-${item.id}`">
-      <q-item-section side top>
-        <q-checkbox
-          :name="item.id + index"
-          :id="`q-checkbox-${item.id}`"
-          v-model="item.checked"
-          size="sm"
-        />
-      </q-item-section>
+  <div>
+    <div v-for="sentence in sourceDocument.sentences">
+      <q-checkbox v-model="sentence.checked" size="xs">
+        <slot>
+          <div :style="`margin-left:${sentence.level * 5}px`"> {{ sentence.text }}</div>
+        </slot>
+      </q-checkbox>
 
-      <q-item-section
-        class="text-piece text-chunk"
-        v-html="item.text"
-        ref="sentenceElement"
-      >
-      </q-item-section>
-    </q-item>
+    </div>
+
   </div>
 </template>
 
 <script>
 export default {
-  data: () => ({}),
   props: {
-    textPiece: Array,
-    docId: Number,
-  },
-  computed: {
-    // checkedChunks() {
-    //   return this.textPiece.filter((item) => item.checked);
-    // },
-  },
-  mounted() {
-    console.log("ListComponent:", this.textPiece);
-  },
-  methods: {
-    // toggleBox: function (val, evt) {
-    //   console.log("toggling", val, this.checkedChunks);
-    //   console.log(
-    //     "toggling2: ",
-    //     this.textPiece.some((d) => d.checked),
-    //   );
-    //   // this.$emit("anyCheckedSentences", {
-    //   //   id: this.docId,
-    //   //   checkedSentences: this.textPiece.some((d) => d.checked),
-    //   // });
-    // },
-  },
-};
+    sourceDocument: Object
+  }
+}
 </script>
-
-<style lang="css" scoped>
-.text-chunk {
-  margin: 5px 0px;
-  display: grid;
-  grid-template-columns: 10px auto;
-}
-
-.text-piece {
-  display: inline-block;
-}
-</style>
