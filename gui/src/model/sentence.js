@@ -11,8 +11,10 @@ export class Sentence {
     this._parent = null
     this._checked = true;
     this._children = []
-    this._contentType = "",
-      this._level = null
+    this._contentType = ""
+    this._level = null
+    this._visible = false //show or hide sentence
+    this._collapsed = true //collapse or expand this node to hide/show its children
   }
 
   //set text and create snippets. if there are snippets (from a loaded interpretation)
@@ -79,6 +81,23 @@ export class Sentence {
   //level in sentence hierarchy
   set level(level) { this._level = level }
   get level() { return this._level }
+
+  toggleCollapse() {
+    this.collapsed = !this.collapsed
+  }
+
+  set collapsed(collapsed) { this._collapsed = collapsed; this.visible = true }
+
+  set visible(visible) {
+    this._visible = visible
+    //set visibility of children
+    this._children.forEach(child => {
+      child.visible = (!this._collapsed) && this._visible
+    })
+  }
+
+  get collapsed() { return this._collapsed }
+  get visible() { return this._visible }
 }
 //add snippets not covered by annotations
 function findMissingSnippets(sentence) {

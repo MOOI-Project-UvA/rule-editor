@@ -3,13 +3,14 @@ import { Sentence } from "./sentence.js"
 export class SourceDocument {
     constructor(jsonLdObject) {
         //console.log("selectedSentenceIds", selectedSentenceIds)
-        const rootElement = jsonLdObject["@graph"].find((d) => d["@type"] == "src:Element")
+        const rootElement = jsonLdObject["@graph"].find((d) => d["@type"] == "src:Source")
         this._iri = rootElement["@id"]
         this._id = rootElement["@id"]
         this._title = ""
-        this._sentenceTree = this.parseElementTree(rootElement)
+        this._sentenceTree = this.parseElementTree(rootElement, 0) //root is level 0
 
-        console.log("created source document", this)
+        //all sentences are collapsed by default. expand the root to show sentences at the highest level
+        this._sentenceTree.collapsed = false
     }
 
     get id() { return this._id }
@@ -32,7 +33,7 @@ export class SourceDocument {
     }
 
     getAnnotationsForFrame(frame) {
-        const annotations = this._sentences
+        const annotations = this.sentences
             .map(s => s.snippets.map(snippet => snippet.annotations))
             .flat()
             .flat()
@@ -61,33 +62,32 @@ export class SourceDocument {
     }
 
     //parse element into tree of sentences
-    parseElementTree(element) {
+    parseElementTree(element, level) {
         const sentence = new Sentence(element.id, this)
-        if (element["@type"] == "src:Element") {
+        sentence.level = level
+        if (element["@type"] == "src:Source") {
             sentence.parent = null
             sentence.contentType = "root"
-            sentence.level = 0
             element.children.forEach(childElement => {
-                const childSentence = this.parseElementTree(childElement)
+                const childSentence = this.parseElementTree(childElement, level + 1)
                 sentence.addChild(childSentence)
                 childSentence.parent = sentence
-                childSentence.level = 1
             })
         } else if (element.class == "src:NonLeafElement") {
-            //content for this element is in one if its childs
+            //content for this element is in one if its children
             let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
             if (!headerChildElement) {
+                //if containsAsHeader does not specify a valid child, take the first child from the list of children
                 headerChildElement = element.children[0]
             }
             sentence.addTextFromChopperLeafElement(headerChildElement.content)
-            sentence.contentType = element.typelabel
+            sentence.contentType = element.typelabel //e.g. 'Onderdeel'
             //add children, except the one that is the header child element
             element.children.forEach(childElement => {
                 if (childElement != headerChildElement) {
-                    const childSentence = this.parseElementTree(childElement)
+                    const childSentence = this.parseElementTree(childElement, level + 1)
                     sentence.addChild(childSentence)
                     childSentence.parent = sentence
-                    childSentence.level = sentence.level + 1
                 }
             })
         } else if (element.class == "src:LeafElement") {

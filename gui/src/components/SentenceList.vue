@@ -1,8 +1,13 @@
 <template>
-  <div class="document" @mouseup="handleSelection">
-    <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
-      v-for="sentence in sentences" :ref="`sentence-${sentence.id}`">
+  <div class="document">
+    <div class="q-mb-md row no-wrap items-baseline" v-for="sentence in sentences.filter(s => s.visible)">
       <div>
+        <q-btn v-if="sentence.children.filter(c => c.text.length > 0).length > 0" round size="sm"
+          :icon="sentence.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" flat text-color="primary"
+          @click="sentence.toggleCollapse()"></q-btn>
+      </div>
+
+      <div :ref="`sentence-${sentence.id}`" @mouseup="handleSelection" :style="getStyleForSentence(sentence)">
         <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
@@ -22,6 +27,7 @@ import {
   getStyleForLineSpacing,
   setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
+import { getStyleForSentenceFormat } from "../helpers/sourceFormatting.js"
 import { Annotation } from "../model/annotation";
 
 export default {
@@ -45,9 +51,17 @@ export default {
       return this.$store.state.displayedSourceDocument
     }
   },
+  mounted() {
+    console.log("sentences", this.sentences)
+  },
   methods: {
     getStyleForUnderlining,
-    getStyleForLineSpacing,
+    getStyleForSentence(sentence) {
+      return {
+        ...getStyleForLineSpacing(sentence),
+        ...getStyleForSentenceFormat(sentence)
+      }
+    },
     handleSelection(event) {
       const selection = window.getSelection();
       if (selection.toString().length > 0) {
