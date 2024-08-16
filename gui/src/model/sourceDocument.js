@@ -65,6 +65,7 @@ export class SourceDocument {
     parseElementTree(element, level) {
         const sentence = new Sentence(element.id, this)
         sentence.level = level
+
         if (element["@type"] == "src:Source") {
             sentence.parent = null
             sentence.contentType = "root"
@@ -73,7 +74,7 @@ export class SourceDocument {
                 sentence.addChild(childSentence)
                 childSentence.parent = sentence
             })
-        } else if (element.class == "src:NonLeafElement") {
+        } else if (element["@type"].includes("src:NonLeafElement")) {
             //content for this element is in one if its children
             let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
             if (!headerChildElement) {
@@ -90,7 +91,7 @@ export class SourceDocument {
                     childSentence.parent = sentence
                 }
             })
-        } else if (element.class == "src:LeafElement") {
+        } else if (element["@type"].includes("src:LeafElement")) {
             sentence.addTextFromChopperLeafElement(element.content)
             sentence.iri = element.IRI
             sentence.contentType = "leaf"
