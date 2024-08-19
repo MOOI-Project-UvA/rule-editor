@@ -1,10 +1,9 @@
 import { v4 as uuid4 } from "uuid";
 
 export class Snippet {
-  constructor(text, sentence, characterRange) {
+  constructor(sentence, characterRange) {
     this._id = uuid4(); //unique ID
     this._sentence = sentence;
-    this._text = text;
     this._characterRange = characterRange;
     this._annotations = [];
     this._checked = true; //needed for step2
@@ -13,7 +12,7 @@ export class Snippet {
     return this._id;
   }
   get text() {
-    return this._text;
+    return this._sentence._text.substring(...this._characterRange)
   }
   get annotations() {
     return this._annotations;

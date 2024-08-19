@@ -11,9 +11,9 @@ import { Comment } from '../model/comment.js'
 
 
 function convertInterpretationToJson(frames, sourceDocuments) {
-    const sourceDocsString = sourceDocuments.map(d => ({
-        id: d.id,
-        checkedSentenceIds: d.sentences.map(s => s.id)
+    const sourceDocsString = sourceDocuments.map(doc => ({
+        jsonLd: doc.jsonLd,
+        collapsedSentencesIds: doc.sentences.filter(s => s.collapsed).map(s => s.id)
     }))
     const framesFlat = frames.map((f) => f.toFlatObject())
     //add annotations per frame
@@ -41,16 +41,21 @@ function convertInterpretationToJson(frames, sourceDocuments) {
 
 function parseJsonToInterpretation(jsonText) {
     const parsedInterpretation = JSON.parse(jsonText)
+
     let sourceDocs = []
     let frames = []
-    //create sourceDocs from loaded interpretation
+
+    //read sourceDocs from loaded interpretation
     parsedInterpretation.sourceDocs.forEach(doc => {
-        const sourceDoc = new SourceDocument(doc.id, doc.checkedSentenceIds)
-        // create empty sentences with one snippet
-        sourceDoc.sentences = doc.checkedSentenceIds.map(sId => new Sentence(sId, "", sourceDoc)) //IRI will be filled later
-        //text of these sentences will be loaded later from the source
+        const sourceDoc = new SourceDocument(doc.jsonLd)
+        //set collapse status
+        sourceDoc.sentences.forEach(sentence => {
+            sentence.collapsed = doc.collapsedSentencesIds.includes(sentence.id)
+        })
         sourceDocs.push(sourceDoc)
     })
+    console.log("sourceDocs created")
+
 
     // create an empty frame for each frame in the loaded json
     // each frame gets its id from the json data
@@ -92,10 +97,29 @@ function parseJsonToInterpretation(jsonText) {
                 //find sentence for this snippet
                 const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
                 //snippet possibly exists, added by another annotation
-                let snippet = sentence.snippets.find(snippet => snippet.characterRange[0] == parsedSnippet.characterRange[0] && snippet.characterRange[1] == parsedSnippet.characterRange[1])
+                let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
                 if (!snippet) {
-                    snippet = new Snippet(parsedSnippet.text, sentence, parsedSnippet.characterRange)
+                    snippet = new Snippet(sentence, parsedSnippet.characterRange)
+                    //this new snippet overlaps the original snippet that contains the whole sentence,
+                    //created when the sentence was created
+                    const overlappedSnippetIndex = sentence.snippets.findIndex(s => snippet.characterRange[0] < s.characterRange[1] && snippet.characterRange[1] > s.characterRange[0])
+                    const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
+                    console.log("overlappedSnippet", overlappedSnippet)
+                    //create new snippets, replacing the overlapped snippet
+                    if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
+                        //create snippet left of new snippet
+                        sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
+                    }
+                    if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
+                        //create snippet left of new snippet
+                        sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
+                    }
+                    // //remove original overlapped snippet
+                    sentence.snippets.splice(overlappedSnippetIndex, 1)
+                    // //add new snippet
                     sentence.snippets.push(snippet)
+                    //sort snippets according to character range start
+                    sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
                 }
                 snippet.annotations.push(annotation)
             })
@@ -108,6 +132,8 @@ function parseJsonToInterpretation(jsonText) {
             return comment
         })
     })
+
+    console.log("frames loaded")
 
     return {
         sourceDocs: sourceDocs,
