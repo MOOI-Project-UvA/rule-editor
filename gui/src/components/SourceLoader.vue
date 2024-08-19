@@ -35,13 +35,13 @@ export default {
       return this.$store.state.sourceDocuments;
     },
     sourcesNotYetLoaded() {
-      const loadedDocIds = this.sourceDocuments.map((d) => d["@id"]);
-      return this.availableSources.filter((s) => !loadedDocIds.includes(s.id));
+      //TODO: filter out loaded documents
+      return this.availableSources
     },
   },
   methods: {
     handleSelection() {
-      this.$store.dispatch("addSource", { sourceId: this.selectedSource.id, checkedSentenceIds: null });
+      this.$store.dispatch("addSource", this.selectedSource);
       this.selectedSource = null;
     },
     chooseFile() {

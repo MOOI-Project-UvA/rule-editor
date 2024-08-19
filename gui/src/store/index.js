@@ -160,13 +160,9 @@ const store = createStore({
         context.state.availableSources = data;
       });
     },
-    //reads source, so user can annotate and create frames
-    //source object contains filename where to read the source from
-    //checkedSentences is used when reading an existing interpretation: it contains
-    //the sentences that are selected by the user as relevant for the interpretation.
-    addSource(context, sourceId) {
-      const source = this.state.availableSources.find((s) => s.id == sourceId);
-      json(source.fileName).then((jsonLdObject) => {
+    //reads source
+    addSource(context, sourceDescription) {
+      json(sourceDescription.fileName).then((jsonLdObject) => {
         context.dispatch("createSourceDocFromJsonLD", jsonLdObject)
       })
     },
