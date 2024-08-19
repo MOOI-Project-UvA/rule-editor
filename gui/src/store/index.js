@@ -239,12 +239,12 @@ const store = createStore({
        * do not contain sentence text yet, and they miss snippets that are
        * not annotated. Read source files and add this missing information
       */
-      JSON.parse(jsonText).sourceDocs.forEach((d) => {
-        context.dispatch("addSource", {
-          sourceId: d.id,
-          checkedSentenceIds: d.checkedSentenceIds,
-        });
-      });
+      // JSON.parse(jsonText).sourceDocs.forEach((d) => {
+      //   context.dispatch("addSource", {
+      //     sourceId: d.id,
+      //     checkedSentenceIds: d.checkedSentenceIds,
+      //   });
+      // });
       //skip to step 3 to show the interpretation
       context.state.step = 3
     },

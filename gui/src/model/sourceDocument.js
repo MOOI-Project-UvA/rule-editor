@@ -11,6 +11,10 @@ export class SourceDocument {
 
         //all sentences are collapsed by default. expand the root to show sentences at the highest level
         this._sentenceTree.collapsed = false
+        this._sentenceTree.visible = true
+
+        //keep original jsonLd so it can be stored together with the interpretation
+        this._jsonLd = jsonLdObject
     }
 
     get id() { return this._id }
@@ -20,6 +24,8 @@ export class SourceDocument {
 
     //sentence tree as list
     get sentences() { return this._sentenceTree.sentenceTreeAsList }
+
+    get jsonLd() { return this._jsonLd }
 
 
     getSnippetsForAnnotation(annotation) {
@@ -81,7 +87,7 @@ export class SourceDocument {
                 //if containsAsHeader does not specify a valid child, take the first child from the list of children
                 headerChildElement = element.children[0]
             }
-            sentence.addTextFromChopperLeafElement(headerChildElement.content)
+            sentence.content = headerChildElement.content
             sentence.contentType = element.typelabel //e.g. 'Onderdeel'
             //add children, except the one that is the header child element
             element.children.forEach(childElement => {
@@ -92,7 +98,7 @@ export class SourceDocument {
                 }
             })
         } else if (element["@type"].includes("src:LeafElement")) {
-            sentence.addTextFromChopperLeafElement(element.content)
+            sentence.content = element.content
             sentence.iri = element.IRI
             sentence.contentType = "leaf"
         }

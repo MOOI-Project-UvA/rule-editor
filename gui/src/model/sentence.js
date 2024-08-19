@@ -17,22 +17,13 @@ export class Sentence {
     this._collapsed = true //collapse or expand this node to hide/show its children
   }
 
-  //set text and create snippets. if there are snippets (from a loaded interpretation)
-  //add missing snippets, else create one snippet covering the complete sentence
-  addTextFromChopperLeafElement(content) {
+  //set text and create snippet
+  set content(content) {
     this._text = content.trim();
-    if (this._snippets.length == 0) {
-      this._snippets.push(
-        new Snippet(this._text, this, [0, this._text.length]),
-      );
-    } else {
-      const missingSnippets = findMissingSnippets(this);
-      this._snippets = this._snippets.concat(missingSnippets);
-      console.log("this._snippets", this._snippets);
-      this._snippets.sort(
-        (s1, s2) => s1.characterRange[0] - s2.characterRange[0],
-      );
-    }
+    this._snippets = [
+      new Snippet(this, [0, this._text.length]), //sentence, character range
+    ]
+
   }
 
   get id() {
@@ -86,18 +77,21 @@ export class Sentence {
     this.collapsed = !this.collapsed
   }
 
-  set collapsed(collapsed) { this._collapsed = collapsed; this.visible = true }
+  set collapsed(collapsed) { this._collapsed = collapsed; this.updateVisibilityOfChildren() }
+  get collapsed() { return this._collapsed }
 
   set visible(visible) {
     this._visible = visible
-    //set visibility of children
+    this.updateVisibilityOfChildren()
+  }
+
+  get visible() { return this._visible }
+
+  updateVisibilityOfChildren() {
     this._children.forEach(child => {
       child.visible = (!this._collapsed) && this._visible
     })
   }
-
-  get collapsed() { return this._collapsed }
-  get visible() { return this._visible }
 }
 //add snippets not covered by annotations
 function findMissingSnippets(sentence) {
@@ -111,10 +105,7 @@ function findMissingSnippets(sentence) {
     const rangeEnd = existingSnippet.characterRange[0]; //end of current snippet is start of next one
     if (rangeStart < rangeEnd) {
       const snippetText = sentence.text.substring(rangeStart, rangeEnd);
-      const snippet = new Snippet(snippetText, sentence, [
-        rangeStart,
-        rangeEnd,
-      ]);
+      const snippet = new Snippet(sentence, [rangeStart, rangeEnd]);
       missingSnippets.push(snippet);
     }
     rangeStart = existingSnippet.characterRange[1];
@@ -125,10 +116,7 @@ function findMissingSnippets(sentence) {
       rangeStart,
       sentence.text.length,
     );
-    const snippet = new Snippet(snippetText, sentence, [
-      rangeStart,
-      sentence.text.length,
-    ]);
+    const snippet = new Snippet(sentence, [rangeStart, sentence.text.length]);
     missingSnippets.push(snippet);
   }
   return missingSnippets;
