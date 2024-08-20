@@ -94,6 +94,7 @@ function parseJsonToInterpretation(jsonText) {
             parsedAnnotation.snippets.forEach(parsedSnippet => {
                 //find sourceDoc for this snippet
                 const sourceDoc = sourceDocs.find(doc => doc.id == parsedSnippet.documentId)
+
                 //find sentence for this snippet
                 const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
                 //snippet possibly exists, added by another annotation
@@ -104,7 +105,6 @@ function parseJsonToInterpretation(jsonText) {
                     //created when the sentence was created
                     const overlappedSnippetIndex = sentence.snippets.findIndex(s => snippet.characterRange[0] < s.characterRange[1] && snippet.characterRange[1] > s.characterRange[0])
                     const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
-                    console.log("overlappedSnippet", overlappedSnippet)
                     //create new snippets, replacing the overlapped snippet
                     if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
                         //create snippet left of new snippet

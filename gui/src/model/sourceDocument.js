@@ -84,11 +84,14 @@ export class SourceDocument {
             //content for this element is in one if its children
             let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
             if (!headerChildElement) {
-                //if containsAsHeader does not specify a valid child, take the first child from the list of children
+                console.log("element reffered by containsAsHeader attribute not found", element)
+                //take first child
                 headerChildElement = element.children[0]
             }
             sentence.content = headerChildElement.content
             sentence.contentType = element.typelabel //e.g. 'Onderdeel'
+            //for backward compatibility with previous interpretations, use id of headerChildElement as sentence id
+            sentence.id = headerChildElement.id
             //add children, except the one that is the header child element
             element.children.forEach(childElement => {
                 if (childElement != headerChildElement) {

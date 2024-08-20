@@ -23,7 +23,10 @@ export class Sentence {
     this._snippets = [
       new Snippet(this, [0, this._text.length]), //sentence, character range
     ]
+  }
 
+  set id(id) {
+    this._id = id
   }
 
   get id() {
