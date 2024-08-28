@@ -73,6 +73,18 @@
         </q-btn>
       </template>
     </q-card-actions>
+    <div class="flex flex-row items-center">
+      <div class="frame-id">Frame id: {{ frame.id }}</div>
+      <div class="col">
+        <q-btn size="sm" round flat color="primary"
+          :icon="idIsCopiedToClipboard ? 'mdi-clipboard-check-outline' : 'mdi-clipboard-arrow-left-outline'"
+          @click="copyIdToClipboard">
+          <q-tooltip class="text-subtitle2">
+            {{ idIsCopiedToClipboard ? 'Copied' : 'Copy to clipboard' }}
+          </q-tooltip>
+        </q-btn>
+      </div>
+    </div>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
@@ -101,7 +113,8 @@ export default {
       "Action": "action",
       "Object": "object",
       "Duty": "duty"
-    }
+    },
+    idIsCopiedToClipboard: false
   }),
   updated() {
     this.updateLabel()
@@ -234,8 +247,11 @@ export default {
       this.sentences.forEach(sentence => {
         this.sendDataToNlp(sentence)
       })
+    },
+    copyIdToClipboard() {
+      navigator.clipboard.writeText(this.frame.id);
+      this.idIsCopiedToClipboard = true
     }
-
   },
   watch: {
     "frame.action"() {
