@@ -2,11 +2,10 @@ import { SourceDocument } from '../model/sourceDocument.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
 import { Claimduty } from '../model/claimduty.js'
-import { frameTypes } from '../model/frame.js'
-import { Sentence } from '../model/sentence.js'
 import { Annotation } from '../model/annotation.js'
 import { Snippet } from '../model/snippet.js'
 import { Comment } from '../model/comment.js'
+import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
 
 
 
@@ -36,9 +35,6 @@ function convertInterpretationToJson(frames, sourceDocuments) {
 }
 
 //parse json to sourcedoc and frames
-//sourcedoc will be missing the actual sentence texts from the source, these
-//will be filled in later, as will the non-annotated snippets
-
 function parseJsonToInterpretation(jsonText) {
     const parsedInterpretation = JSON.parse(jsonText)
 
@@ -114,9 +110,9 @@ function parseJsonToInterpretation(jsonText) {
                         //create snippet left of new snippet
                         sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
                     }
-                    // //remove original overlapped snippet
+                    //remove original overlapped snippet
                     sentence.snippets.splice(overlappedSnippetIndex, 1)
-                    // //add new snippet
+                    //add new snippet
                     sentence.snippets.push(snippet)
                     //sort snippets according to character range start
                     sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
@@ -134,6 +130,12 @@ function parseJsonToInterpretation(jsonText) {
     })
 
     console.log("frames loaded")
+
+    //update underlining of annotations in the source text. each annotation contains the
+    //vertical position of the underline
+    sourceDocs.forEach(sourceDoc => {
+        setVerticalPositionOfAnnotationLines(sourceDoc)
+    })
 
     return {
         sourceDocs: sourceDocs,
