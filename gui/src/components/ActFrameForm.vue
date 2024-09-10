@@ -48,6 +48,7 @@
 
         <div class="label">Precondition</div>
         <BooleanConstructPanel :booleanConstruct="frame.precondition" />
+        <TreeviewBooleanConstruct :boolean-construct="frame.precondition"></TreeviewBooleanConstruct>
 
         <div class="label">Postcondition</div>
         <RoleSelector :frame="frame" attribute="creates" label="Creates" :multipleFramesAllowed="true" />
@@ -58,9 +59,7 @@
       <template v-if="frameIsBeingDeleted">
         <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
         <q-btn color="negative" @click="deleteFrame">Yes
-          <q-tooltip class="text-subtitle2">
-            Delete this frame
-          </q-tooltip>
+          <q-tooltip class="text-subtitle2"> Delete this frame </q-tooltip>
         </q-btn>
         <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
       </template>
@@ -94,13 +93,14 @@ import RoleSelector from "./RoleSelector.vue";
 import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
 import { fetchNlpPrediction } from "../services/ApiServices.js";
 import {
   getSelectedRangeAsSnippets,
   splitAndReturnSelectedSnippets,
 } from "../helpers/annotating.js";
 import { Annotation } from "../model/annotation";
+import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
 export default {
   emits: ["closed"],
   data: () => ({
@@ -112,48 +112,49 @@ export default {
       "Recipient": "agent",
       "Action": "action",
       "Object": "object",
-      "Duty": "duty"
+      "Duty": "duty",
     },
     idIsCopiedToClipboard: false
   }),
-  updated() {
-    this.updateLabel()
+  mounted() {
+    console.log("mounted");
+    this.updateLabel();
   },
   computed: {
     displayedSourceDocument() {
-      return this.$store.state.displayedSourceDocument
+      return this.$store.state.displayedSourceDocument;
     },
     frame() {
       return this.$store.state.frameBeingEdited;
     },
     sentences() {
-      return this.displayedSourceDocument.getSentencesForFrame(this.frame)
+      return this.displayedSourceDocument.getSentencesForFrame(this.frame);
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
     booleanConstructBeingEdited() {
-      return this.$store.state.booleanConstructBeingEdited
+      return this.$store.state.booleanConstructBeingEdited;
     },
     nlpIsBusy() {
       //if nlp is not ready for one or more of this act's sentences, return true
-      return this.sentences.some(s => s.loading)
-    }
+      return this.sentences.some((s) => s.loading);
+    },
   },
   methods: {
     closeFrame() {
-      this.frame.activeField = null
-      this.$store.commit("removeFrameFromEditList", this.frame)
+      this.frame.activeField = null;
+      this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
-      this.frameIsBeingDeleted = null
-      this.$store.commit("removeFrame", this.frame)
-      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+      this.frameIsBeingDeleted = null;
+      this.$store.commit("removeFrame", this.frame);
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
     },
     //scroll to source of frame, in source panel
     scrollToSource() {
       //take the first sentence to scroll to
-      this.$store.state.sentenceToScrollTo = this.sentences[0]
+      this.$store.state.sentenceToScrollTo = this.sentences[0];
     },
     userChangedLabel() {
       //when clearing, label is null, set it to ''
@@ -162,13 +163,13 @@ export default {
       }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
-      this.frame.generateLabelAutomatically = this.frame.label.length == 0
+      this.frame.generateLabelAutomatically = this.frame.label.length === 0;
     },
     updateLabel() {
       //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
       //therefore: check for frame equals null
       if (this.frame && this.frame.generateLabelAutomatically) {
-        this.frame.generateLabel()
+        this.frame.generateLabel();
       }
     },
     async sendDataToNlp(sentence) {
@@ -176,16 +177,16 @@ export default {
       sentence.loading = true;
       const response = await fetchNlpPrediction(sentence.text);
       //filter out entries with no role
-      let entities = response.predicted_entities //.filter(([_, role]) => role != "None")
+      let entities = response.predicted_entities; //.filter(([_, role]) => role != "None")
 
       sentence.loading = false;
-      console.log("entities", entities)
+      console.log("entities", entities);
       //ignore entities that have special tokens like '[CLS]'.
       entities = entities.filter(([token, _]) => sentence.text.indexOf(token) != -1)
 
       //current character range of subsequent tokens with equal roles
-      let characterRangeStart = 0
-      let characterRangeEnd = 0
+      let characterRangeStart = 0;
+      let characterRangeEnd = 0;
       entities.forEach(([token, role], index) => {
 
         //get start and end index of token in sentence
@@ -205,8 +206,8 @@ export default {
               frameTypeId: 'fact',
               subTypeId: subTypeId,
               annotation: annotation,
-              openInEditor: false
-            })
+              openInEditor: false,
+            });
             //get snippets that are covered by the character range
             const selectionAsSnippets = getSelectedRangeAsSnippets(
               sentence,
@@ -215,20 +216,20 @@ export default {
             //split snippets, and return those that fit the character range
             const selectedSnippets = splitAndReturnSelectedSnippets(
               selectionAsSnippets,
-              this.sentences,
+              this.sentences
             );
             selectedSnippets.forEach((s) => {
-              console.log("adding", annotation, "to snippet", s)
+              console.log("adding", annotation, "to snippet", s);
               s.addAnnotation(annotation);
             });
             //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
             //will be closer to the text than shorter ones
-            annotation.nrSnippets = selectedSnippets.length
+            annotation.nrSnippets = selectedSnippets.length;
             //update underlining of annotations in the source text, for the currently showing document
-            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
           }
           //start new sequence of tokens
-          characterRangeStart = tokenRange[0]
+          characterRangeStart = tokenRange[0];
         }
       });
     },
@@ -239,14 +240,14 @@ export default {
         const endIndex = index + token.length;
         return [index, endIndex];
       } else {
-        return null
+        return null;
       }
     },
     applyNlpToSource() {
-      console.log("nlp")
-      this.sentences.forEach(sentence => {
-        this.sendDataToNlp(sentence)
-      })
+      console.log("nlp");
+      this.sentences.forEach((sentence) => {
+        this.sendDataToNlp(sentence);
+      });
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
@@ -255,19 +256,20 @@ export default {
   },
   watch: {
     "frame.action"() {
-      this.updateLabel()
+      this.updateLabel();
     },
     "frame.object"() {
-      this.updateLabel()
+      this.updateLabel();
     },
     "frame.actor"() {
-      this.updateLabel()
+      this.updateLabel();
     },
     "frame.recipient"() {
-      this.updateLabel()
+      this.updateLabel();
     },
   },
   components: {
+    TreeviewBooleanConstruct,
     RoleSelector,
     SentenceList,
     CommentsList,
