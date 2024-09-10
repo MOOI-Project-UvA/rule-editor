@@ -108,8 +108,8 @@ export default {
                     locations[node.id] = [node.x, node.y]
                 }
             })
-            this.nodesInSimulation = [...this.nodesAndLinks.nodes.filter(n => n.visible)]
-            this.linksInSimulation = [...this.nodesAndLinks.links.filter(l => l.source.visible && l.target.visible)]
+            this.nodesInSimulation = [...this.nodesAndLinks.nodes]
+            this.linksInSimulation = [...this.nodesAndLinks.links]
             //re-assign locations
             this.nodesInSimulation.forEach(node => {
                 if (node.id in locations) {
