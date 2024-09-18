@@ -39,7 +39,7 @@ export default {
     selectModel: [],
     options: null,
     selectedNode: null,
-    margined: true,
+    notMargined: true,
   }),
   computed: {
     frameBeingEdited() {
@@ -110,9 +110,13 @@ export default {
       event.stopPropagation();
       console.log("subdividing!", nodeData);
       nodeData.subdivide();
+      console.log(
+        "expression: ",
+        !nodeData.parent && nodeData.children.length > 0,
+      );
       !nodeData.parent && nodeData.children.length > 0
-        ? (this.margined = true)
-        : (this.margined = false);
+        ? (this.notMargined = false)
+        : null;
     },
     toggleNegation(nodeId) {
       const selectedData = this.getNodeByKey(nodeId);
@@ -133,6 +137,10 @@ export default {
       } else {
         nodeData.clean();
       }
+      // set the initial margin to negative for styling purposes
+      !nodeData.parent.parent && nodeData.parent.children.length == 0
+        ? (this.notMargined = true)
+        : null;
       this.selectedNode = null;
     },
     //  while clicking the body of each node in the treeview
@@ -157,7 +165,7 @@ export default {
   <div
     id="treeview"
     :class="{
-      notMargined: this.margined,
+      notMargined: notMargined,
     }"
   >
     <q-tree
