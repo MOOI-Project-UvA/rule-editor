@@ -67,6 +67,20 @@ export default {
       selectionNew ? (selectionNew.beingEdited = true) : null;
       // set the focus to the new node
       this.$store.state.booleanConstructBeingEdited = selectionNew;
+
+      console.log("selectionNew:", selectionNew);
+    },
+    booleanConstructBeingEdited: {
+      handler(n, o) {
+        console.log("n,o", n, o);
+        if (o?.frame) {
+          o.beingEdited = false;
+          console.log("this.selectedNode!!!!:", this.selectedNode);
+          this.selectedNode = null;
+        }
+      },
+
+      once: true,
     },
   },
   mounted() {
@@ -74,8 +88,10 @@ export default {
   },
   methods: {
     getNodeByKey(key) {
-      console.log("returned node in the tree:", key);
-      console.log(this.$refs["tree-structure"].getNodeByKey(key));
+      console.log(
+        "nodes.data in the tree:",
+        this.$refs["tree-structure"].getNodeByKey(key),
+      );
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
     selectValue(val, node) {
@@ -145,16 +161,30 @@ export default {
     },
     //  while clicking the body of each node in the treeview
     handleClick(event, node) {
+      console.log("node", node, node.beingEdited, this.selectedNode);
       //prevent propagation to underlying panels
       event.stopPropagation();
+      //
+      if (this.selectedNode == node.id && !node.frame) {
+        console.log("selected!");
+        this.selectedNode = null;
+        return;
+      }
+      if (this.selectedNode == node.id && node.frame) {
+        console.log("selected with frame!");
+        this.selectedNode = null;
+        return;
+      }
+      // console.log("this.isBeingEdited", this.isBeingEdited);
+      // console.log("this.booleanConstruct", this.booleanConstruct);
+      // console.log("this.selectedNode", this.selectedNode);
+      // console.log("this.frameBeingEdited", this.frameBeingEdited);
       //if empty leaf node, select for adding frame
       if (!node.frame && node.children.length == 0) {
-        // this.$store.state.booleanConstructBeingEdited =  node;
+        //   // this.$store.state.booleanConstructBeingEdited =  node;
         this.selectedNode = node.id;
-        //de-select any other properties of the active frame, if it is a relation
-        if ("activeField" in this.frameBeingEdited) {
-          this.frameBeingEdited.activeField = null;
-        }
+        //
+        //   //de-select any other properties of the active frame, if it is a relation
       }
     },
   },
