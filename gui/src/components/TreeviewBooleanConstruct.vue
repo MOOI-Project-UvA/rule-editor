@@ -67,19 +67,15 @@ export default {
       selectionNew ? (selectionNew.beingEdited = true) : null;
       // set the focus to the new node
       this.$store.state.booleanConstructBeingEdited = selectionNew;
-
-      console.log("selectionNew:", selectionNew);
     },
     booleanConstructBeingEdited: {
       handler(n, o) {
         console.log("n,o", n, o);
         if (o?.frame) {
           o.beingEdited = false;
-          console.log("this.selectedNode!!!!:", this.selectedNode);
           this.selectedNode = null;
         }
       },
-
       once: true,
     },
   },
@@ -210,17 +206,17 @@ export default {
     >
       <!-- header section per node -->
       <template v-slot:default-header="prop">
-        <div
-          class="row items-center full-width justify-between"
-          v-if="prop.node.children.length > 0"
-        >
+        <div v-if="prop.node.children.length > 0">
           <!--          <q-icon-->
           <!--            :name="prop.node.icon || 'share'"-->
           <!--            color="orange"-->
           <!--            size="28px"-->
           <!--            class="q-mr-sm"-->
           <!--          />-->
-          <div class="boolean-menu row items-center mt-2" v-on:click.stop>
+          <div
+            class="boolean-menu row items-center mt-2 no-wrap"
+            v-on:click.stop
+          >
             <!-- dropdown menu with provided functions -->
             <div class="select-element">
               <q-select
@@ -256,7 +252,7 @@ export default {
                 size="sm"
                 dense
                 outline
-                class="q-ml-sm"
+                class="q-ml-sm add-child-btn"
                 @click="addChild(prop.node)"
                 >Add child</q-btn
               >
@@ -291,7 +287,7 @@ export default {
       <!-- main body section per node -->
       <template v-slot:default-body="prop">
         <div
-          class="panel flex flex-row"
+          class="panel flex flex-row q-pr-md"
           :class="{
             active: prop.node.beingEdited,
             negated: prop.node.isNegated,
@@ -382,10 +378,10 @@ export default {
   padding: 10px 4px;
   border-radius: 5px;
   margin-left: 2px;
-  box-shadow: 0px 0px 4px #aaaaaa;
+  box-shadow: 0px 0px 2px #aaaaaa;
   background-color: #ffffff;
-  border: solid 2px #ffffff;
-  max-width: 200px;
+  border: solid 1px #dddddd;
+  width: 270px;
 }
 
 .panel.active {
@@ -415,5 +411,12 @@ export default {
 
 :deep(.q-tree__node-header)::before {
   padding-top: 25px;
+}
+#treeview {
+  overflow-y: auto;
+  margin-right: 10px !important;
+}
+.add-child-btn {
+  min-width: 60px !important;
 }
 </style>
