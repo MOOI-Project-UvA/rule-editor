@@ -172,10 +172,7 @@ export default {
         this.selectedNode = null;
         return;
       }
-      // console.log("this.isBeingEdited", this.isBeingEdited);
-      // console.log("this.booleanConstruct", this.booleanConstruct);
-      // console.log("this.selectedNode", this.selectedNode);
-      // console.log("this.frameBeingEdited", this.frameBeingEdited);
+
       //if empty leaf node, select for adding frame
       if (!node.frame && node.children.length == 0) {
         //   // this.$store.state.booleanConstructBeingEdited =  node;
@@ -262,7 +259,6 @@ export default {
             <div>
               <q-btn
                 size="sm"
-                color="#007bc7"
                 dense
                 flat
                 icon="mdi-format-list-bulleted-square"
@@ -338,7 +334,7 @@ export default {
             <div>
               <q-btn
                 size="sm"
-                color="#007bc7"
+                class="button-label"
                 dense
                 flat
                 icon="mdi-format-list-bulleted-square"
@@ -347,8 +343,9 @@ export default {
             </div>
             <div v-if="prop.node.parent">
               <q-btn
+                class="button-label"
+
                 size="sm"
-                color="#007bc7"
                 dense
                 flat
                 icon="mdi-close"
@@ -398,7 +395,7 @@ export default {
   display: inline-block;
   font-style: italic;
   margin-left: 5px;
-  color: #1a1a1a;
+  color: #1a1a1a !important;
 }
 
 .row-container {
