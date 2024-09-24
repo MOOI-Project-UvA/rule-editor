@@ -91,13 +91,9 @@ export default {
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
     selectValue(val, node) {
-      console.log("using the q-select: value", val.value, node);
       node.operatorToJoinChildren = val.value;
       // temporary fix: if the selected function is not, update the corresponding property
       val.value === "not" ? (node.isNegated = true) : (node.isNegated = false);
-    },
-    passFunctionToLines() {
-      //TODO: filter data structure, then pick its children and next to those children add the operator.
     },
     // filters the lists of operators in the select panel
     filterFn(val, update, abort) {
@@ -189,12 +185,13 @@ export default {
     }"
   >
     <q-tree
-      class="q-mt-md"
+      class="q-mt-sm"
       ref="tree-structure"
       :nodes="[booleanConstruct]"
       node-key="id"
       v-model:selected="selectedNode"
-      selected-color="primary"
+      selected-color="black"
+      selectable="false"
       dense
       default-expand-all
     >
@@ -261,19 +258,6 @@ export default {
                 @click="subdivide($event, prop.node)"
               />
             </div>
-            <!-- negation button -->
-            <!--            <div>-->
-            <!--              <q-btn-->
-            <!--                size="sm"-->
-            <!--                :text-color="prop.node.isNegated ? 'red' : '#d42d19'"-->
-            <!--                color="#d42d19"-->
-            <!--                dense-->
-            <!--                :outline="prop.node.isNegated ? true : false"-->
-            <!--                :flat="prop.node.isNegated ? false : true"-->
-            <!--                icon="mdi-minus-circle-outline"-->
-            <!--                @click="toggleNegation(prop.node.id)"-->
-            <!--              />-->
-            <!--            </div>-->
           </div>
         </div>
       </template>

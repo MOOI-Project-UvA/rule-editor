@@ -37,7 +37,9 @@
     </q-card-section>
     <q-card-section v-if="frame.isComplex">
       <div class="label">Subdivision</div>
-      <BooleanConstructPanel :booleanConstruct="frame.subdivision" :frame="frame" />
+      <TreeviewBooleanConstruct
+          :boolean-construct="frame.subdivision"
+        ></TreeviewBooleanConstruct>
     </q-card-section>
 
     <q-card-actions align="right">
@@ -85,6 +87,7 @@ import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
+import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
 
 export default {
   emits: ["closed"],
@@ -141,7 +144,7 @@ export default {
       this.idIsCopiedToClipboard = true
     }
   },
-  components: { BooleanConstructPanel, CommentsList, SentenceList }
+  components: {TreeviewBooleanConstruct, BooleanConstructPanel, CommentsList, SentenceList }
 }
 </script>
 

@@ -8,64 +8,127 @@
             <div class="text-italic">No source added yet</div>
           </template>
           <template v-else>
-            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
+            <q-btn size="sm" flat @click="scrollToSource"
+              >Scroll to source</q-btn
+            >
           </template>
         </div>
         <div class="col-2">
           <div class="row items-center float-right">
             <template v-if="sentences?.length > 0">
-              <q-btn size="sm" round flat color="primary" class="q-mt-sm" icon="mdi-text-recognition"
-                :loading="nlpIsBusy" @click.stop="applyNlpToSource" @mouseup.stop>
+              <q-btn
+                size="sm"
+                round
+                flat
+                color="primary"
+                class="q-mt-sm"
+                icon="mdi-text-recognition"
+                :loading="nlpIsBusy"
+                @click.stop="applyNlpToSource"
+                @mouseup.stop
+              >
                 <q-tooltip anchor="bottom middle" class="text-subtitle2">
-                  <span>Detect roles of an act frame. <br />This feature is
-                    still experimental, so use it with caution.</span>
+                  <span
+                    >Detect roles of an act frame. <br />This feature is still
+                    experimental, so use it with caution.</span
+                  >
                 </q-tooltip>
                 <template v-slot:loading>
                   <q-spinner-gears />
                 </template>
               </q-btn>
             </template>
-            <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
-              @click="showComments = !showComments">
-              <q-badge v-if="frame.comments.length > 0" color="primary" floating>{{ frame.comments.length }}</q-badge>
-              <q-tooltip class="text-subtitle2">
-                Comments
-              </q-tooltip>
+            <q-btn
+              size="sm"
+              round
+              flat
+              color="primary"
+              icon="mdi-comment-text-outline"
+              @click="showComments = !showComments"
+            >
+              <q-badge
+                v-if="frame.comments.length > 0"
+                color="primary"
+                floating
+                >{{ frame.comments.length }}</q-badge
+              >
+              <q-tooltip class="text-subtitle2"> Comments </q-tooltip>
             </q-btn>
           </div>
         </div>
       </div>
 
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold"
-        @update:model-value="userChangedLabel" @blur="updateLabel" clearable />
+      <q-input
+        v-model="frame.label"
+        label="Label"
+        input-style="font-size: 12pt; font-weight:bold"
+        @update:model-value="userChangedLabel"
+        @blur="updateLabel"
+        clearable
+      />
       <q-input v-model="frame.act" label="Act" autogrow />
 
       <div class="q-pa-md">
-        <RoleSelector :frame="frame" attribute="action" label="Action" :multipleFramesAllowed="false" />
-        <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
-        <RoleSelector :frame="frame" attribute="object" label="Object" :multipleFramesAllowed="false" />
-        <RoleSelector :frame="frame" attribute="recipient" label="Recipient" :multipleFramesAllowed="false" />
+        <RoleSelector
+          :frame="frame"
+          attribute="action"
+          label="Action"
+          :multipleFramesAllowed="false"
+        />
+        <RoleSelector
+          :frame="frame"
+          attribute="actor"
+          label="Actor"
+          :multipleFramesAllowed="false"
+        />
+        <RoleSelector
+          :frame="frame"
+          attribute="object"
+          label="Object"
+          :multipleFramesAllowed="false"
+        />
+        <RoleSelector
+          :frame="frame"
+          attribute="recipient"
+          label="Recipient"
+          :multipleFramesAllowed="false"
+        />
 
         <div class="label">Precondition</div>
-        <BooleanConstructPanel :booleanConstruct="frame.precondition" />
-        <TreeviewBooleanConstruct :boolean-construct="frame.precondition"></TreeviewBooleanConstruct>
+        <TreeviewBooleanConstruct
+          :boolean-construct="frame.precondition"
+        ></TreeviewBooleanConstruct>
 
         <div class="label">Postcondition</div>
-        <RoleSelector :frame="frame" attribute="creates" label="Creates" :multipleFramesAllowed="true" />
-        <RoleSelector :frame="frame" attribute="terminates" label="Terminates" :multipleFramesAllowed="true" />
+        <RoleSelector
+          :frame="frame"
+          attribute="creates"
+          label="Creates"
+          :multipleFramesAllowed="true"
+        />
+        <RoleSelector
+          :frame="frame"
+          attribute="terminates"
+          label="Terminates"
+          :multipleFramesAllowed="true"
+        />
       </div>
     </q-card-section>
     <q-card-actions align="right">
       <template v-if="frameIsBeingDeleted">
         <div class="q-mr-sm">Are you sure you want to delete this frame?</div>
-        <q-btn color="negative" @click="deleteFrame">Yes
+        <q-btn color="negative" @click="deleteFrame"
+          >Yes
           <q-tooltip class="text-subtitle2"> Delete this frame </q-tooltip>
         </q-btn>
         <q-btn color="primary" @click="frameIsBeingDeleted = false">No</q-btn>
       </template>
       <template v-else>
-        <q-btn color="negative" @click="frameIsBeingDeleted = true">Delete</q-btn>
-        <q-btn color="primary" @click="closeFrame">Close
+        <q-btn color="negative" @click="frameIsBeingDeleted = true"
+          >Delete</q-btn
+        >
+        <q-btn color="primary" @click="closeFrame"
+          >Close
           <q-tooltip class="text-subtitle2">
             Any changes have been saved
           </q-tooltip>
@@ -75,17 +138,30 @@
     <div class="flex flex-row items-center">
       <div class="frame-id">Frame id: {{ frame.id }}</div>
       <div class="col">
-        <q-btn size="sm" round flat color="primary"
-          :icon="idIsCopiedToClipboard ? 'mdi-clipboard-check-outline' : 'mdi-clipboard-arrow-left-outline'"
-          @click="copyIdToClipboard">
+        <q-btn
+          size="sm"
+          round
+          flat
+          color="primary"
+          :icon="
+            idIsCopiedToClipboard
+              ? 'mdi-clipboard-check-outline'
+              : 'mdi-clipboard-arrow-left-outline'
+          "
+          @click="copyIdToClipboard"
+        >
           <q-tooltip class="text-subtitle2">
-            {{ idIsCopiedToClipboard ? 'Copied' : 'Copy to clipboard' }}
+            {{ idIsCopiedToClipboard ? "Copied" : "Copy to clipboard" }}
           </q-tooltip>
         </q-btn>
       </div>
     </div>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
+  <CommentsList
+    :fact="frame"
+    :showComments="showComments"
+    @closed="showComments = false"
+  />
 </template>
 
 <script>
@@ -108,13 +184,13 @@ export default {
     showComments: false,
     frameIsBeingDeleted: false, //true when user clicked delete button
     nlpRoleToSubtype: {
-      "Actor": "agent",
-      "Recipient": "agent",
-      "Action": "action",
-      "Object": "object",
-      "Duty": "duty",
+      Actor: "agent",
+      Recipient: "agent",
+      Action: "action",
+      Object: "object",
+      Duty: "duty",
     },
-    idIsCopiedToClipboard: false
+    idIsCopiedToClipboard: false,
   }),
   mounted() {
     console.log("mounted");
@@ -159,7 +235,7 @@ export default {
     userChangedLabel() {
       //when clearing, label is null, set it to ''
       if (this.frame.label == null) {
-        this.frame.label = ""
+        this.frame.label = "";
       }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
@@ -182,41 +258,49 @@ export default {
       sentence.loading = false;
       console.log("entities", entities);
       //ignore entities that have special tokens like '[CLS]'.
-      entities = entities.filter(([token, _]) => sentence.text.indexOf(token) != -1)
+      entities = entities.filter(
+        ([token, _]) => sentence.text.indexOf(token) != -1,
+      );
 
       //current character range of subsequent tokens with equal roles
       let characterRangeStart = 0;
       let characterRangeEnd = 0;
       entities.forEach(([token, role], index) => {
-
         //get start and end index of token in sentence
-        const tokenRange = this.getRange(sentence.text, token, characterRangeEnd);
+        const tokenRange = this.getRange(
+          sentence.text,
+          token,
+          characterRangeEnd,
+        );
 
-        characterRangeEnd = tokenRange[1]
+        characterRangeEnd = tokenRange[1];
 
-        if (index < entities.length - 1 && role != entities[index + 1][1] || index == entities.length - 1) {
+        if (
+          (index < entities.length - 1 && role != entities[index + 1][1]) ||
+          index == entities.length - 1
+        ) {
           //next token has different role, or this is last token
           //create annotation for current sequence of tokens with same role
           //unless the role is None
           if (role != "None") {
-            const annotation = new Annotation()
+            const annotation = new Annotation();
             //create fact for this annotation, use the role suggested by NLP to set the correct subtype
-            const subTypeId = this.nlpRoleToSubtype[role]
+            const subTypeId = this.nlpRoleToSubtype[role];
             this.$store.commit("addNewFrame", {
-              frameTypeId: 'fact',
+              frameTypeId: "fact",
               subTypeId: subTypeId,
               annotation: annotation,
               openInEditor: false,
             });
             //get snippets that are covered by the character range
-            const selectionAsSnippets = getSelectedRangeAsSnippets(
-              sentence,
-              [characterRangeStart, characterRangeEnd]
-            )
+            const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
+              characterRangeStart,
+              characterRangeEnd,
+            ]);
             //split snippets, and return those that fit the character range
             const selectedSnippets = splitAndReturnSelectedSnippets(
               selectionAsSnippets,
-              this.sentences
+              this.sentences,
             );
             selectedSnippets.forEach((s) => {
               console.log("adding", annotation, "to snippet", s);
@@ -251,8 +335,8 @@ export default {
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
-      this.idIsCopiedToClipboard = true
-    }
+      this.idIsCopiedToClipboard = true;
+    },
   },
   watch: {
     "frame.action"() {
@@ -274,6 +358,6 @@ export default {
     SentenceList,
     CommentsList,
     BooleanConstructPanel,
-  }
+  },
 };
 </script>
