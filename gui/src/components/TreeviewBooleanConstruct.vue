@@ -136,7 +136,8 @@ export default {
     },
     removeFrame(node) {
       node.beingEdited = false;
-      node.removeFrame(node.frame);
+      node.frame = null
+      // node.removeFrame(node.frame)
     },
     // removing extra level of hierarchy from a node
     deleteBooleanConstruct(event, nodeData) {
