@@ -120,12 +120,8 @@ export default {
     // adds an extra level of hierarchy to the selected node
     subdivide(event, nodeData) {
       event.stopPropagation();
-      console.log("subdividing!", nodeData);
       nodeData.subdivide();
-      console.log(
-        "expression: ",
-        !nodeData.parent && nodeData.children.length > 0,
-      );
+      // determine margin of parent
       !nodeData.parent && nodeData.children.length > 0
         ? (this.notMargined = false)
         : null;
