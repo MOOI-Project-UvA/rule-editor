@@ -74,7 +74,6 @@ export class BooleanConstruct {
 
         newParent.addChild(this);
         this.parent = newParent;
-        console.log("added parent", this);
     }
 
     subdivide() {
@@ -87,6 +86,8 @@ export class BooleanConstruct {
        //clean current
        this.clean();
        this.addChild(bcCopy);
+       // the default function should be AND
+       this.operatorToJoinChildren = 'and'
        //this.addEmptyChild()
     }
 
