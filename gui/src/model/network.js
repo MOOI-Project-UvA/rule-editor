@@ -68,7 +68,7 @@ export class Network {
         //add nodes and links for boolean construct (precondition role)
         const booleanConstructRootNode = this.addTreeForBooleanConstruct(act.precondition)
         if (booleanConstructRootNode) {
-            this.addLink(actNode, booleanConstructRootNode, "role", "precondition") //source, target, linktype, label
+            this.addLink(booleanConstructRootNode, actNode, "role", "precondition") //source, target, linktype, label
         }
         return actNode
     }
@@ -116,8 +116,9 @@ export class Network {
 
     //return nodes that are in the subtree of the node
     //are considered only in the direction from source to target.
-    //returned list does not include node itsel
+    //returned list does not include node itself
     getDescendants(node) {
+        console.log("getting descendants of", node)
         let nodeList = []
         const childNodes = this._links.filter(l => l.source.id == node.id).map(l => l.target)
         childNodes.forEach(childNode => {
@@ -130,13 +131,22 @@ export class Network {
     //return nodes that are related to this node, independent of link direction
     //go nr of levels deep, recursively. if nrLevels == -1 return everything
     //pass down nodeList to check if node is already added to prevent running in loops
-    getRelatedNodes(node, nrLevels, relatedNodes) {
-        if (nrLevels == 0) return []
-        const nodesRelatedToCurrentNode = this._links.filter(l => l.source == node || l.target == node)
-            .map(l => l.source == node ? l.target : l.source)
-            .filter((value, index, array) => array.indexOf(value) === index)
-            .filter(n => !(relatedNodes.includes(n)))
+    // getRelatedNodes(node, nrLevels, relatedNodes) {
+    //     if (nrLevels == 0) return []
+    //     const nodesRelatedToCurrentNode = this._links.filter(l => l.source == node || l.target == node)
+    //         .map(l => l.source == node ? l.target : l.source)
+    //         .filter((value, index, array) => array.indexOf(value) === index)
+    //         .filter(n => !(relatedNodes.includes(n)))
 
+    // }
+
+    //get nodes that are linked to the given node, regardless of the direction of the link
+    getDirectlyLinkedNodes(node) {
+        const descendingNodes = this._links.filter(l => l.source.id == node.id).map(l => l.target)
+        const ascendingNodes = this._links.filter(l => l.target.id == node.id).map(l => l.source)
+        return descendingNodes
+            .concat(ascendingNodes)
+            .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
     }
 
     //get node for frame. if there is not already a node for this frame,
@@ -218,8 +228,10 @@ export class Network {
                 const factNodesCreatedBySource = [createdRoleNode].concat(this.getDescendants(createdRoleNode))
                 actNodes.forEach(targetActNode => {
                     const preconditionNode = this.findRelatedNode(targetActNode, "precondition")
+                    console.log("act", targetActNode, "preconditionNode", preconditionNode)
                     if (preconditionNode) {
                         const factNodesInPreconditionOfTargetAct = [preconditionNode].concat(this.getDescendants(preconditionNode))
+                        console.log("act", targetActNode, "factNodesInPreconditionOfTargetAct", factNodesInPreconditionOfTargetAct)
                         //if there is a fact present in both factNodesCreatedBySource and factNodesInPreconditionOfTargetAct
                         //then target act is dependent of source act
                         if (factNodesCreatedBySource.some(sourceNode => factNodesInPreconditionOfTargetAct.some(targetNode => sourceNode.id == targetNode.id))) {
@@ -247,12 +259,16 @@ export class Network {
         })
     }
 
-    //returns node that is related to the sourceNode by a relation
-    //with the given relationType
+    //returns node that is related to the given node by a relation
+    //with the given relationType, regardless of the direction of the relation
     //TODO return list of nodes?
-    findRelatedNode(sourceNode, linkLabel) {
-        const link = this._links.find(l => l.source.id == sourceNode.id && l.label == linkLabel)
-        return link ? link.target : null
+    findRelatedNode(node, linkLabel) {
+        const link = this._links.find(l => (l.source.id == node.id || l.target.id == node.id) && l.label == linkLabel)
+        return link
+            ? link.source.id == node.id
+                ? link.target
+                : link.source
+            : null
     }
 
     //depending on which act nodes are selected, set visibility of nodes and links

@@ -23,8 +23,11 @@ export default {
     },
     mounted() {
         //check if a frame is selected, if so, set this as starting point for the network
+        //else show all nodes
         if (this.frameBeingEdited) {
             this.idsOfNodesInNetwork = [this.frameBeingEdited.id]
+        } else {
+            this.idsOfNodesInNetwork = this.network.nodes.map(n => n.id)
         }
     },
     computed: {
@@ -43,10 +46,10 @@ export default {
         idsOfActsOpenInEditor() {
             return this.framesOpenInEditor.filter(f => f.typeId == "act").map(act => act.id)
         },
+        //get the complete network, with all nodes and links based on the interpretation
         network() {
             const network = new Network()
             network.createNetwork(this.frames)
-            console.log("created network")
             //add styling: color and size
             network.nodes.forEach(node => {
                 node.color = node.subType ? hexColorsLight[node.subType] : hexColorsLight[node.type]
@@ -56,8 +59,7 @@ export default {
             })
             //add styling: color and arrow
             network.links.forEach(link => {
-                link.color = link.type == "dependency" ? hexColorsLight["act"] : "#dddddd"
-                link.drawArrow = link.type == "dependency"
+                link.color = link.type == "dependency" ? hexColorsLight["act"] : "#999999"
             })
             //add preferred positions for act nodes
             const actNodes = network.nodes.filter(n => n.type == "act")
@@ -72,11 +74,11 @@ export default {
             return network
         },
         visibleNetwork() {
-            console.log("visibleNetwork")
-            //apply filter, leaving out nodes that are not part of the visible network or that do not apply to filter
+            //get the nodes and links that comply with 'idsOfNodesInNetwork', before applying the filter
             const visibleNodes = this.network.nodes.filter(n => this.idsOfNodesInNetwork.includes(n.id) && this.nodeFitsFilter(n))
-            const visibleLinks = this.network.links.filter(l => visibleNodes.includes(l.source.visible)
-                && visibleNodes.includes(l.target.visible))
+            const visibleNodeIds = visibleNodes.map(n => n.id)
+            const visibleLinks = this.network.links.filter(l => visibleNodeIds.includes(l.source.id)
+                && visibleNodeIds.includes(l.target.id))
             return { nodes: visibleNodes, links: visibleLinks } //this triggers redrawing the network
         }
     },
@@ -95,29 +97,25 @@ export default {
         //     }
         // },
         toggleCollapse(node) {
-            console.log("clicked node", node)
-            console.log("related nodes",)
-            // if (node.isCollapsed) {
-            //     console.log("node is collapsed. Expanding node...")
-            //     //show immediate children
-            //     node.isCollapsed = false
-            //     this.network.getRelatedNodes(node).forEach(child => {
-            //         console.log("related node", child)
-            //         if (!(this.idsOfNodesInNetwork.includes(child.id))) {
-            //             this.idsOfNodesInNetwork.push(child.id)
-            //         }
-            //     })
-            // } else {
-            //     //hide all descendants and collapse all descendants
-            //     node.isCollapsed = true
-            //     this.network.getDescendants(node).forEach(descendant => {
-            //         console.log("descendant", descendant)
-            //         const nodeIndex = this.idsOfNodesInNetwork.findIndex(descendant.id)
-            //         this.idsOfNodesInNetwork.splice(nodeIndex, 1)
-            //         descendant.isCollapsed = true
-            //     })
-            // }
-            // this.idsOfNodesInNetwork = [...this.idsOfNodesInNetwork]
+            const relatedNodes = this.network.getDirectlyLinkedNodes(node)
+            if (node.isCollapsed) {
+                //show immediate children
+                node.isCollapsed = false
+                relatedNodes.forEach(relatedNode => {
+                    if (!(this.idsOfNodesInNetwork.includes(relatedNode.id))) {
+                        this.idsOfNodesInNetwork.push(relatedNode.id)
+                    }
+                })
+            } else {
+                //hide all descendants and collapse all descendants
+                node.isCollapsed = true
+                relatedNodes.forEach(relatedNode => {
+                    const nodeIndex = this.idsOfNodesInNetwork.findIndex(relatedNode.id)
+                    this.idsOfNodesInNetwork.splice(nodeIndex, 1)
+                    relatedNode.isCollapsed = true
+                })
+            }
+            this.idsOfNodesInNetwork = [...this.idsOfNodesInNetwork]
         },
         nodeFitsFilter(node) {
             return Object.keys(this.frameFilter).length == 0

@@ -7,7 +7,7 @@
             {{ frameType.label }}
         </label>
         <template v-if="'subTypes' in frameType">
-            <div v-for="subType in frameType.subTypes">
+            <div v-for="subType in frameType.subTypes" class="q-ml-md">
                 <label><input type="checkbox" v-model="subType.selected" @change="updateFilter">
                     {{ subType.label }}
                 </label>
@@ -35,6 +35,11 @@ export default {
                     })
                 }
             })
+            // this.filter['anonymous'] = {
+            //     class: 'anonymous',
+            //     label: 'Other',
+            //     selected: true
+            // }
         } else {
             //copy current filter to local filter
             this.filter = this.frameFilter

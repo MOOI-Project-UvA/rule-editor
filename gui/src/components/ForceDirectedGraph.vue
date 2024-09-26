@@ -7,6 +7,10 @@
                     orient="auto-start-reverse">
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0b3ff" />
                 </marker>
+                <marker id="arrowGrey" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6"
+                    orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#999999" />
+                </marker>
             </defs>
             <rect :width="width" :height="height" fill="#ffffff" />
             <g ref="network">
@@ -15,7 +19,7 @@
                     <g id="links">
                         <line v-for="link in linksInSimulation" :x1="link.source.x" :y1="link.source.y"
                             :x2="getArrowEndpointX(link)" :y2="getArrowEndpointY(link)" :stroke="link.color"
-                            :marker-end="link.drawArrow ? 'url(#arrow)' : ''" />
+                            :marker-end="link.type == 'dependency' ? 'url(#arrow)' : 'url(#arrowGrey)'" />
                     </g>
                     <g id="nodes">
                         <circle v-for="node in nodesInSimulation" :cx="node.x" :cy="node.y" :r="node.radius"
@@ -98,7 +102,6 @@ export default {
             this.linksInSimulation = [...this.linksInSimulation]
         },
         restartSimulation() {
-            console.log("restartSimulation")
             //todo keep location if node already exists, so that network
             //updates are more smoothly
             //store location of each node in simulation
@@ -137,10 +140,10 @@ export default {
         },
         //+2: make line a little shorter, so end of line is not extending underneath arrow's triangle
         getArrowEndpointX(link) {
-            return link.drawArrow ? link.target.x - (link.target.radius + 2) * (link.target.x - link.source.x) / this.getLength(link) : link.target.x
+            return link.target.x - (link.target.radius + 2) * (link.target.x - link.source.x) / this.getLength(link)
         },
         getArrowEndpointY(link) {
-            return link.drawArrow ? link.target.y - (link.target.radius + 2) * (link.target.y - link.source.y) / this.getLength(link) : link.target.y
+            return link.target.y - (link.target.radius + 2) * (link.target.y - link.source.y) / this.getLength(link)
         },
         printNode(node) {
             console.log("node", node)
