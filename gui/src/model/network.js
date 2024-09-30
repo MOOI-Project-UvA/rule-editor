@@ -34,7 +34,7 @@ export class Network {
     }
 
     addTreeForAct(act) {
-        const actNode = this.getNodeForFrame(act)
+        const { node: actNode } = this.getNode(act)
         //add nodes and links for roles with one frame
         const rolesWithOneFrame = ["action", "actor", "object", "recipient"]
         rolesWithOneFrame.forEach(roleAttribute => {
@@ -66,6 +66,8 @@ export class Network {
             }
         })
         //add nodes and links for boolean construct (precondition role)
+        //precondition is never null, it always contains a booleanconstruct, but the booleanconstruct
+        //can be empty (i.e. no frame and no children). In that case, an empty node is returned.
         const booleanConstructRootNode = this.addTreeForBooleanConstruct(act.precondition)
         if (booleanConstructRootNode) {
             this.addLink(booleanConstructRootNode, actNode, "role", "precondition") //source, target, linktype, label
@@ -75,6 +77,7 @@ export class Network {
 
     addTreeForFact(fact) {
         const { node: factNode, isNew: isNewNode } = this.getNode(fact)
+        //if fact node already exists, we don't want to have another link to its subdivision
         if (isNewNode) {
             const subdivisionRoot = this.addTreeForBooleanConstruct(fact.subdivision)
             if (subdivisionRoot) {
@@ -102,6 +105,7 @@ export class Network {
                 })
                 bcRoot = anonymousNode
             }
+            //if childrenNodes.length == 0, bcRoot stays null. That means that the 
         }
         //if this bc is negated and not empty, add an extra anonymous node representing 'NOT'
         if (bcRoot && booleanConstruct.isNegated) {
@@ -149,22 +153,22 @@ export class Network {
             .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
     }
 
-    //get node for frame. if there is not already a node for this frame,
-    //create one, if 'createIfNotExists' is true
-    getNodeForFrame(frame) {
-        let node = this._nodes.find(n => n.id == frame.id)
-        if (!node) {
-            node = {
-                id: frame.id,
-                label: frame.label,
-                type: frame.typeId,
-                subType: frame.subTypeId,
-                sequenceIndex: null //index of act nodes in chain of dependency
-            }
-            this._nodes.push(node)
-        }
-        return node
-    }
+    // //get node for frame. if there is not already a node for this frame,
+    // //create one, if 'createIfNotExists' is true
+    // getNodeForFrame(frame) {
+    //     let node = this._nodes.find(n => n.id == frame.id)
+    //     if (!node) {
+    //         node = {
+    //             id: frame.id,
+    //             label: frame.label,
+    //             type: frame.typeId,
+    //             subType: frame.subTypeId,
+    //             sequenceIndex: null //index of act nodes in chain of dependency
+    //         }
+    //         this._nodes.push(node)
+    //     }
+    //     return node
+    // }
 
     addLink(sourceNode, targetNode, linkType, label) {
         //TODO: do we need to check if link is already there?
@@ -308,23 +312,23 @@ export class Network {
     // }
 
 
-    setToVisibleIfAncestorIsSelectedAct(node, selectedActnodeIds) {
-        console.log("setToVisibleIfAncestorIsSelectedAct", node.label)
-        if ((node.type != "act" && node.visible) || selectedActnodeIds.includes(node.id)) {
-            return true
-        } else {
-            //check if one the parents lead to a selected act node
-            const parentNodes = this._links.filter(l => l.target.id == node.id).map(l => l.source)
-            let pathToSelectedActFound = false
-            parentNodes.forEach(parentNode => {
-                if (this.setToVisibleIfAncestorIsSelectedAct(parentNode, selectedActnodeIds)) {
-                    node.visible = true
-                    pathToSelectedActFound = true
-                }
-            })
-            return pathToSelectedActFound
-        }
-    }
+    // setToVisibleIfAncestorIsSelectedAct(node, selectedActnodeIds) {
+    //     console.log("setToVisibleIfAncestorIsSelectedAct", node.label)
+    //     if ((node.type != "act" && node.visible) || selectedActnodeIds.includes(node.id)) {
+    //         return true
+    //     } else {
+    //         //check if one the parents lead to a selected act node
+    //         const parentNodes = this._links.filter(l => l.target.id == node.id).map(l => l.source)
+    //         let pathToSelectedActFound = false
+    //         parentNodes.forEach(parentNode => {
+    //             if (this.setToVisibleIfAncestorIsSelectedAct(parentNode, selectedActnodeIds)) {
+    //                 node.visible = true
+    //                 pathToSelectedActFound = true
+    //             }
+    //         })
+    //         return pathToSelectedActFound
+    //     }
+    // }
 
     // getFilteredNetwork(actNodeIds) {
     //     const actNodes = this._nodes.filter(n => n.type == "act")

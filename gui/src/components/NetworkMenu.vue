@@ -2,13 +2,17 @@
     <!-- button for adding all nodes to network -->
 
     <!-- filter -->
-    <div v-for="frameType in Object.values(filter)">
-        <label><input type="checkbox" v-model="frameType.selected" @change="updateFilter">
+
+    <div class="inline-block">Show frames of type:</div>
+    <div class="inline-block q-ml-md" v-for="frameType in Object.values(filter)">
+        <label class="text-weight-bold text-subtitle1"><input type="checkbox" v-model="frameType.selected"
+                @change="updateFilter">
             {{ frameType.label }}
         </label>
         <template v-if="'subTypes' in frameType">
-            <div v-for="subType in frameType.subTypes" class="q-ml-md">
-                <label><input type="checkbox" v-model="subType.selected" @change="updateFilter">
+            <div class="inline-block q-ml-sm" v-for="subType in frameType.subTypes">
+                <label><input type="checkbox" v-model="subType.selected" @change="updateFilter"
+                        :disabled="!frameType.selected">
                     {{ subType.label }}
                 </label>
             </div>

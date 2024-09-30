@@ -74,7 +74,7 @@ export default {
             return network
         },
         visibleNetwork() {
-            //get the nodes and links that comply with 'idsOfNodesInNetwork', before applying the filter
+            //get the nodes and links that comply with 'idsOfNodesInNetwork' and the filter
             const visibleNodes = this.network.nodes.filter(n => this.idsOfNodesInNetwork.includes(n.id) && this.nodeFitsFilter(n))
             const visibleNodeIds = visibleNodes.map(n => n.id)
             const visibleLinks = this.network.links.filter(l => visibleNodeIds.includes(l.source.id)
@@ -107,18 +107,19 @@ export default {
                     }
                 })
             } else {
-                //hide all descendants and collapse all descendants
-                node.isCollapsed = true
-                relatedNodes.forEach(relatedNode => {
-                    const nodeIndex = this.idsOfNodesInNetwork.findIndex(relatedNode.id)
-                    this.idsOfNodesInNetwork.splice(nodeIndex, 1)
-                    relatedNode.isCollapsed = true
-                })
+                //TODO: what will happen if you click a expanded node?
+                // node.isCollapsed = true
+                // relatedNodes.forEach(relatedNode => {
+                //     const nodeIndex = this.idsOfNodesInNetwork.indexOf(relatedNode.id)
+                //     this.idsOfNodesInNetwork.splice(nodeIndex, 1)
+                //     relatedNode.isCollapsed = true
+                // })
             }
             this.idsOfNodesInNetwork = [...this.idsOfNodesInNetwork]
         },
         nodeFitsFilter(node) {
-            return Object.keys(this.frameFilter).length == 0
+            console.log("node", node)
+            return Object.keys(this.frameFilter).length == 0 || node.type == "anonymous"
                 || (this.frameFilter[node.type].selected && (!(node.subType) || this.frameFilter[node.type].subTypes[node.subType].selected))
         }
     }
