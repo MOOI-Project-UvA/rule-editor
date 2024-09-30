@@ -33,7 +33,8 @@ const store = createStore({
         title: "",
         description: "",
       }, // information about the task
-      sourceViewIsCollapsed: false //whether or not the panel showing the source is collapsed
+      sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
+      frameFilter: {} //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
     };
   },
   getters: {
