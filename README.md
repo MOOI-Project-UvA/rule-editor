@@ -4,6 +4,8 @@ Tne Norm Editor is an application, built using web-based
 technologies, which allows a user to create interpretations of sources of norms in FLINT in a
 user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
 
+The develop branch is deployed at https://develop--norm-editor.netlify.app/. This environment is used for testing new features and bug fixes before they are merged into the main branch.
+
 ## Running the Norm editor locally
 
 To run the editor locally for development purposes. You can do the following:
