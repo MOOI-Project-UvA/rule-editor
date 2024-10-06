@@ -121,28 +121,19 @@ export class Network {
     //return nodes that are in the subtree of the node
     //are considered only in the direction from source to target.
     //returned list does not include node itself
-    getDescendants(node) {
-        console.log("getting descendants of", node)
+    //we need to keep track of foundDescendants to prevent getting stuck in a loops
+    getDescendants(node, foundDescendantsIds) {
         let nodeList = []
         const childNodes = this._links.filter(l => l.source.id == node.id).map(l => l.target)
         childNodes.forEach(childNode => {
-            nodeList.push(childNode)
-            nodeList = nodeList.concat(this.getDescendants(childNode))
+            if (!(foundDescendantsIds.includes(childNode.id))) {
+                nodeList.push(childNode)
+                foundDescendantsIds.push(childNode.id)
+                nodeList = nodeList.concat(this.getDescendants(childNode, foundDescendantsIds))
+            }
         })
         return nodeList
     }
-
-    //return nodes that are related to this node, independent of link direction
-    //go nr of levels deep, recursively. if nrLevels == -1 return everything
-    //pass down nodeList to check if node is already added to prevent running in loops
-    // getRelatedNodes(node, nrLevels, relatedNodes) {
-    //     if (nrLevels == 0) return []
-    //     const nodesRelatedToCurrentNode = this._links.filter(l => l.source == node || l.target == node)
-    //         .map(l => l.source == node ? l.target : l.source)
-    //         .filter((value, index, array) => array.indexOf(value) === index)
-    //         .filter(n => !(relatedNodes.includes(n)))
-
-    // }
 
     //get nodes that are linked to the given node, regardless of the direction of the link
     getDirectlyLinkedNodes(node) {
@@ -152,23 +143,6 @@ export class Network {
             .concat(ascendingNodes)
             .filter((frame, index, array) => array.findIndex(f => f.id == frame.id) === index)
     }
-
-    // //get node for frame. if there is not already a node for this frame,
-    // //create one, if 'createIfNotExists' is true
-    // getNodeForFrame(frame) {
-    //     let node = this._nodes.find(n => n.id == frame.id)
-    //     if (!node) {
-    //         node = {
-    //             id: frame.id,
-    //             label: frame.label,
-    //             type: frame.typeId,
-    //             subType: frame.subTypeId,
-    //             sequenceIndex: null //index of act nodes in chain of dependency
-    //         }
-    //         this._nodes.push(node)
-    //     }
-    //     return node
-    // }
 
     addLink(sourceNode, targetNode, linkType, label) {
         //TODO: do we need to check if link is already there?
@@ -224,27 +198,30 @@ export class Network {
     //compare each act node with all other act nodes to see if there is a dependency.
     //this is the case when one act creates a frame that is part of the precondition
     //of the other act
+    //we assume (for now) that there are no dependency links where source act == target act,
+    //i.e. an act is not dependent on itself
+    //(which actually does happen in the Participatiewet, this could be a modeling error)
     addDependencyLinksBetweenActNodes() {
         const actNodes = this._nodes.filter(n => n.type == "act")
         actNodes.forEach(sourceActNode => {
             const createdRoleNode = this.findRelatedNode(sourceActNode, "creates")
             if (createdRoleNode) {
-                const factNodesCreatedBySource = [createdRoleNode].concat(this.getDescendants(createdRoleNode))
+                const factNodesCreatedBySourceAct = [createdRoleNode].concat(this.getDescendants(createdRoleNode, [createdRoleNode.id]))
                 actNodes.forEach(targetActNode => {
-                    const preconditionNode = this.findRelatedNode(targetActNode, "precondition")
-                    console.log("act", targetActNode, "preconditionNode", preconditionNode)
-                    if (preconditionNode) {
-                        const factNodesInPreconditionOfTargetAct = [preconditionNode].concat(this.getDescendants(preconditionNode))
-                        console.log("act", targetActNode, "factNodesInPreconditionOfTargetAct", factNodesInPreconditionOfTargetAct)
-                        //if there is a fact present in both factNodesCreatedBySource and factNodesInPreconditionOfTargetAct
-                        //then target act is dependent of source act
-                        if (factNodesCreatedBySource.some(sourceNode => factNodesInPreconditionOfTargetAct.some(targetNode => sourceNode.id == targetNode.id))) {
-                            this.addLink(sourceActNode, targetActNode, "dependency", "before") //source, target, type, label
+                    //exclude self-loops
+                    if (targetActNode.id != sourceActNode.id) {
+                        const preconditionNode = this.findRelatedNode(targetActNode, "precondition")
+                        if (preconditionNode) {
+                            const factNodesInPreconditionOfTargetAct = [preconditionNode].concat(this.getDescendants(preconditionNode, [preconditionNode.id]))
+                            //if there is a fact present in both factNodesCreatedBySource and factNodesInPreconditionOfTargetAct
+                            //then target act is dependent of source act
+                            if (factNodesCreatedBySourceAct.some(sourceNode => factNodesInPreconditionOfTargetAct.some(targetNode => sourceNode.id == targetNode.id))) {
+                                this.addLink(sourceActNode, targetActNode, "dependency", "before") //source, target, type, label
+                            }
                         }
                     }
                 })
             }
-
         })
     }
 
@@ -275,70 +252,6 @@ export class Network {
             : null
     }
 
-    //depending on which act nodes are selected, set visibility of nodes and links
-    //acts are visible by default, other nodes are visible if they are a descendant
-    //of all selected acts, or if one of their descendents is a descendant of all selected
-    //acts
-    // setNodeVisibility(selectedActNodeIds, frameFilter) {
-    //     //set all nodes to invisible, except act nodes
-    //     this._nodes.forEach(n => n.visible = n.type == "act")
-    //     //show overlapping descendants of selected act nodes
-    //     let overlappingDescendants = []
-    //     const selectedActNodes = this._nodes.filter(n => selectedActNodeIds.includes(n.id))
-    //     selectedActNodes.forEach((actNode, i) => {
-    //         const descendants = this.getDescendants(actNode)
-    //         if (i == 0) {
-    //             overlappingDescendants = descendants
-    //         } else {
-    //             const descendantsIds = descendants.map(n => n.id)
-    //             overlappingDescendants = overlappingDescendants.filter(n => descendantsIds.includes(n.id))
-    //         }
-    //     })
-    //     overlappingDescendants.forEach(n => {
-    //         console.log("overlapping node", n.label)
-    //         n.visible = true
-
-    //     })
-    //     //fill in paths between the overlapping descendants and the
-    //     //selected act nodes
-    //     overlappingDescendants.forEach(n => {
-    //         const parentNodes = this._links.filter(l => l.target.id == n.id).map(l => l.source)
-    //         parentNodes.forEach(parentNode => {
-    //             this.setToVisibleIfAncestorIsSelectedAct(parentNode, selectedActNodeIds)
-    //         })
-    //     })
-    //     console.log("nodes", this._nodes)
-
-    // }
-
-
-    // setToVisibleIfAncestorIsSelectedAct(node, selectedActnodeIds) {
-    //     console.log("setToVisibleIfAncestorIsSelectedAct", node.label)
-    //     if ((node.type != "act" && node.visible) || selectedActnodeIds.includes(node.id)) {
-    //         return true
-    //     } else {
-    //         //check if one the parents lead to a selected act node
-    //         const parentNodes = this._links.filter(l => l.target.id == node.id).map(l => l.source)
-    //         let pathToSelectedActFound = false
-    //         parentNodes.forEach(parentNode => {
-    //             if (this.setToVisibleIfAncestorIsSelectedAct(parentNode, selectedActnodeIds)) {
-    //                 node.visible = true
-    //                 pathToSelectedActFound = true
-    //             }
-    //         })
-    //         return pathToSelectedActFound
-    //     }
-    // }
-
-    // getFilteredNetwork(actNodeIds) {
-    //     const actNodes = this._nodes.filter(n => n.type == "act")
-    //     let filteredNodes = actNodes.map(actNode => actNodeIds.includes(actNode.id) ? this.getDescendants(actNode) : [actNode]).flat()
-    //     //keep unique nodes
-    //     filteredNodes = filteredNodes.filter((value, index, nodes) => nodes.findIndex(n => n.id == value.id) === index)
-    //     const filteredNodesIds = filteredNodes.map(n => n.id)
-    //     const filteredLinks = this._links.filter(l => filteredNodesIds.includes(l.source.id) && filteredNodesIds.includes(l.target.id))
-    //     return { nodes: filteredNodes, links: filteredLinks }
-    // }
 
     printInConsole() {
         console.log("=== NODES ===")

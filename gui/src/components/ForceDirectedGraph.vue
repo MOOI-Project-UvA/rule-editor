@@ -133,6 +133,7 @@ export default {
             this.width = bbox.width
             this.height = bbox.height
         },
+        //assumption: there are no links where source == target
         getLength(link) {
             const deltaX = link.target.x - link.source.x
             const deltaY = link.target.y - link.source.y
@@ -165,6 +166,7 @@ export default {
     },
     watch: {
         nodesAndLinks: function (newNetwork, oldNetwork) {
+            console.log("new nodesAndLinks")
             //TODO: update only when number of nodes or links has changed.
             //create function: updateLabels
             //this prevents from updating when a label is edited

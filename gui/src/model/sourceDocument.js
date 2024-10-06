@@ -84,7 +84,7 @@ export class SourceDocument {
             //content for this element is in one if its children
             let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
             if (!headerChildElement) {
-                console.log("element reffered by containsAsHeader attribute not found", element)
+                //console.log("element reffered by containsAsHeader attribute not found", element)
                 //take first child
                 headerChildElement = element.children[0]
             }
