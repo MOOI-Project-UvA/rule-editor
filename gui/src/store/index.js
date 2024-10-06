@@ -34,7 +34,8 @@ const store = createStore({
         description: "",
       }, // information about the task
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
-      frameFilter: {} //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
+      frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
+      showDependenciesBetweenActs: false //whether or not to show dependeny relations 'Before' between acts
     };
   },
   getters: {

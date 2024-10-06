@@ -111,11 +111,8 @@ export function setVerticalPositionOfAnnotationLines(sourceDoc) {
     const annotations = snippetsWithAnnotation.map(snippet => snippet.annotations).flat()
         .filter((annotation, index, snippetAnnotations) => snippetAnnotations.findIndex(a => a.id == annotation.id) === index);
     annotations.forEach(annotation => {
-        console.log(annotation.id)
-        console.log(snippetsWithAnnotation.filter(snippet => snippet.annotations.some(a => a.id == annotation.id)))
         annotation.verticalPosition = max(snippetsWithAnnotation
             .filter(snippet => snippet.annotations.some(a => a.id == annotation.id))
             .map(snippet => snippet.annotations.findIndex(a => a.id == annotation.id)))
-        console.log("annotation", annotation.verticalPosition, annotation)
     })
 }

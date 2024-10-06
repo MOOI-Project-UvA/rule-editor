@@ -43,6 +43,9 @@ export default {
         frameFilter() {
             return this.$store.state.frameFilter
         },
+        showDependenciesBetweenActs() {
+            return this.$store.state.showDependenciesBetweenActs
+        },
         idsOfActsOpenInEditor() {
             return this.framesOpenInEditor.filter(f => f.typeId == "act").map(act => act.id)
         },
@@ -75,10 +78,14 @@ export default {
         },
         visibleNetwork() {
             //get the nodes and links that comply with 'idsOfNodesInNetwork' and the filter
-            const visibleNodes = this.network.nodes.filter(n => this.idsOfNodesInNetwork.includes(n.id) && this.nodeFitsFilter(n))
+            const visibleNodes = this.network.nodes.filter(n => this.idsOfNodesInNetwork.includes(n.id) && this.nodeFitsFilter(n, this.frameFilter))
+            console.log("visibleNodes", visibleNodes)
             const visibleNodeIds = visibleNodes.map(n => n.id)
-            const visibleLinks = this.network.links.filter(l => visibleNodeIds.includes(l.source.id)
+            const visibleLinks = this.network.links
+                .filter(l => visibleNodeIds.includes(l.source.id)
                 && visibleNodeIds.includes(l.target.id))
+                .filter(l => this.showDependenciesBetweenActs || l.type != "dependency")
+            console.log("visible links", visibleLinks)
             return { nodes: visibleNodes, links: visibleLinks } //this triggers redrawing the network
         }
     },
@@ -107,7 +114,7 @@ export default {
                     }
                 })
             } else {
-                //TODO: what will happen if you click a expanded node?
+                //TODO: what should happen if you click an expanded node?
                 // node.isCollapsed = true
                 // relatedNodes.forEach(relatedNode => {
                 //     const nodeIndex = this.idsOfNodesInNetwork.indexOf(relatedNode.id)
@@ -117,10 +124,13 @@ export default {
             }
             this.idsOfNodesInNetwork = [...this.idsOfNodesInNetwork]
         },
-        nodeFitsFilter(node) {
-            console.log("node", node)
-            return Object.keys(this.frameFilter).length == 0 || node.type == "anonymous"
-                || (this.frameFilter[node.type].selected && (!(node.subType) || this.frameFilter[node.type].subTypes[node.subType].selected))
+        nodeFitsFilter(node, filter) {
+            return Object.keys(filter).length == 0
+                || (filter[node.type].selected && (
+                    !("subTypes" in filter[node.type]) ||
+                    !(node.subType) ||
+                    filter[node.type].subTypes[node.subType].selected)
+                )
         }
     }
 }
