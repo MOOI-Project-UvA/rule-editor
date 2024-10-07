@@ -6,15 +6,7 @@ export default {
     title: null,
   }),
   computed: {
-    validateForm() {
-      console.log(
-        "!this.description",
-        !this.description,
-        "!this.title",
-        !this.title,
-        "AND",
-        !this.description || !this.title,
-      );
+    formIsInvalid() {
       return !this.description || !this.title;
     },
     getDescription() {
@@ -61,7 +53,7 @@ export default {
             ></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
-                At this step, you can define a task and its description.
+                Define a task and its description.
               </div>
             </q-tooltip>
           </q-avatar>
@@ -112,7 +104,7 @@ export default {
           type="submit"
           color="primary"
           @click="storeTaskData"
-          :disable="validateForm"
+          :disable="formIsInvalid"
           >Continue</q-btn
         >
         <!-- TODO: form validation and next step of process -->

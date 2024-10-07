@@ -1,7 +1,7 @@
 const fontSizes = [
-    16, //level 1
+    14, //level 1
     14, //level 2
-    14, //level 3
+    12, //level 3
     12, //level 4
     12  //level 5
 ]
@@ -20,6 +20,11 @@ const defaultFontWeight = "normal"
 
 const indentationPerLevel = 10
 
+//sentences with no children are displayed without expand/collapse button. Add some extra
+//space to account for this, aligning these sentences with other sentences on the same level
+//that do have children (and thus an expand/colapse button)
+const extraIdentationForLeafSentences = 24
+
 //font size and weight depends on level in tree, i.e. the depth of the sentence seen from the root
 //if a sentence has no children, which means that it is not a header, it will get the default
 //formatting, regardless of its level in the tree
@@ -27,8 +32,8 @@ const indentationPerLevel = 10
 //first visible level
 
 export function getStyleForSentenceFormat(sentence) {
-    const level = sentence.level - 1 //
-    const marginLeft = level * indentationPerLevel
+    const level = sentence.level - 1 //root level is not displayed, set first level to 0
+    const marginLeft = level * indentationPerLevel + (sentence.children.length == 0 ? extraIdentationForLeafSentences : 0)
     const fontSize = level >= fontSizes.length || sentence.children.length == 0 ? defaultFontSize : fontSizes[level]
     const fontWeight = level >= fontWeights.length || sentence.children.length == 0 ? defaultFontWeight : fontWeights[level]
     return {

@@ -51,9 +51,6 @@ export default {
       return this.$store.state.displayedSourceDocument
     }
   },
-  mounted() {
-    console.log("sentences", this.sentences)
-  },
   methods: {
     getStyleForUnderlining,
     getStyleForSentence(sentence) {

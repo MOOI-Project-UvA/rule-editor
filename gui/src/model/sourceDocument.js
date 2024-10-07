@@ -12,6 +12,7 @@ export class SourceDocument {
         //all sentences are collapsed by default. expand the root to show sentences at the highest level
         this._sentenceTree.collapsed = false
         this._sentenceTree.visible = true
+        this._sentenceTree.selected = true //this recursively sets all sentences to be selected
 
         //keep original jsonLd so it can be stored together with the interpretation
         this._jsonLd = jsonLdObject
@@ -67,7 +68,7 @@ export class SourceDocument {
         )
     }
 
-    //parse element into tree of sentences
+    //parse Choppr element into tree of sentences
     parseElementTree(element, level) {
         const sentence = new Sentence(element.id, this)
         sentence.level = level
