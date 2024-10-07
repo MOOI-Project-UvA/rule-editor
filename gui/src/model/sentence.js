@@ -15,6 +15,7 @@ export class Sentence {
     this._level = null
     this._visible = false //show or hide sentence
     this._collapsed = true //collapse or expand this node to hide/show its children
+    this._selected = false //selected by the user to be included in the interpretation
   }
 
   //set text and create snippet
@@ -83,6 +84,16 @@ export class Sentence {
   set collapsed(collapsed) { this._collapsed = collapsed; this.updateVisibilityOfChildren() }
   get collapsed() { return this._collapsed }
 
+  set selected(selected) {
+    this._selected = selected
+    //propagate this down the tree. if this sentence is selected, set all its children to
+    //selected as well, if this sentence is de-selected, set all its children to not-selected too
+    this._children.forEach(child => {
+      child.selected = selected
+    })
+  }
+  get selected() { return this._selected }
+
   set visible(visible) {
     this._visible = visible
     this.updateVisibilityOfChildren()
@@ -90,6 +101,7 @@ export class Sentence {
 
   get visible() { return this._visible }
 
+  //visibility depends on the collapse status of the sentences
   updateVisibilityOfChildren() {
     this._children.forEach(child => {
       child.visible = (!this._collapsed) && this._visible
