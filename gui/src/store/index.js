@@ -45,11 +45,11 @@ const store = createStore({
     //add new frame to list of frames being edited. does not permanently store
     //the frame to the frames list yet. storing permanently is done when the save
     //button in the frame editor is clicked.
-    addNewFrame(state, { frameTypeId, subTypeId, annotation, openInEditor }) {
+    addNewFrame(state, { frameTypeId, subTypeId, annotation, openInEditor, initialLabel }) {
       let frame;
       switch (frameTypeId) {
         case "fact":
-          frame = new Fact();
+          frame = new Fact(initialLabel);
           break;
         case "act":
           frame = new Act();
@@ -95,10 +95,10 @@ const store = createStore({
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
-        frame.addAnnotation(annotation); //this also sets annotation.frame
+        annotation.frame = frame
       }
       frame.type = frameType;
-      frame.label = frame.fact.substring(0, 20);
+      //frame.label = frame.fact.substring(0, 20);
 
       subType === "Agent"
         ? frame.comments.push(`Recommended role by the NLP model: ${role}`)
