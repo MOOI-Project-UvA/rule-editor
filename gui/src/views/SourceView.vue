@@ -16,8 +16,7 @@
           <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
             <div style="max-width: 300px">
               In this view, you are able to start the interpretation process by
-              selecting text snippets and assigning one of the four supported
-              labels: 1) Fact, 2) Act, and 3) Claim duty relation.
+              selecting text snippets and assigning a frame type.
             </div>
           </q-tooltip>
         </q-avatar>
@@ -27,16 +26,15 @@
 
     <q-card-section class="q-pa-none">
       <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
-        <!-- show all sentences in document -->
+        <!-- show selected sentences in document -->
         <div class="fill-height scrollable q-pa-md">
-          <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.checked)" :showNLP="true" />
+          <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)" :showNLP="true" />
         </div>
       </template>
       <template v-else>
         <div>
           <p>
-            You have not selected any sentences of this source for
-            interpretation. Please, consider going back to step 2!
+            No sentences selected. Select sentences in step 2.
           </p>
         </div>
       </template>

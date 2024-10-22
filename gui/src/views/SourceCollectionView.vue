@@ -3,7 +3,7 @@
   <div id="source-collection-view">
     <q-card flat bordered class="my-card q-ma-sm" style="width: 1000px">
       <!-- header -->
-      <q-item class="q-ma-sm">
+      <!--<q-item class="q-ma-sm">
         <q-item-section avatar>
           <q-avatar icon="mdi-bookmark-box-multiple-outline" rounded size="xl">
           </q-avatar>
@@ -13,21 +13,16 @@
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
-            <q-icon
-              name="mdi-information-outline"
-              class="cursor-pointer"
-            ></q-icon>
+            <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
-                In this view, you can select legal sources from the repository.
-                After selection, a legal source is reconstructed and you are
-                able to select parts of the sources for interpretation.
+                In this view, you can select legal sources either from the server or from your local file system.
               </div>
             </q-tooltip>
           </q-avatar>
         </q-item-section>
       </q-item>
-      <q-separator />
+      <q-separator />-->
       <!--  main content of the card-->
       <q-card-section>
         <SourceLoader />
@@ -37,44 +32,25 @@
         <div>
           <q-splitter v-model="splitterModel" class="q-mt-lg">
             <template v-slot:before>
-              <q-tabs
-                v-model="tab"
-                vertical
-                shrink
-                dense
-                class="text-grey"
-                active-color="primary"
-                indicator-color="primary"
-              >
-                <q-tab
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                  icon="mdi-book-outline"
-                  :label="filterNames(sourceDocument.title)"
-                />
+              <q-tabs v-model="tab" vertical shrink dense class="text-grey" active-color="primary"
+                indicator-color="primary">
+                <q-tab v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex"
+                  icon="mdi-book-outline" :label="abbreviateTitle(sourceDocument.title)" />
               </q-tabs>
             </template>
             <template v-slot:after>
-              <q-tab-panels
-                v-model="tab"
-                animated
-                swipeable
-                vertical
-                transition-prev="jump-up"
-                transition-next="jump-up"
-              >
-                <q-tab-panel
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                >
+              <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up"
+                transition-next="jump-up">
+                <q-tab-panel v-for="(sourceDocument, docIndex) in sourceDocuments" :key="docIndex" :name="docIndex">
                   <q-card flat square>
+                    <q-card-section>
+                      <q-btn color="primary" size="sm" class="q-mr-md"
+                      @click="sourceDocument.sentenceTree.selected = true">Select all</q-btn>
+                      <q-btn color="negative" size="sm"
+                      @click="sourceDocument.sentenceTree.selected = false">Deselect all</q-btn>
+                    </q-card-section>
                     <q-card-section class="q-pt-none expansion-items">
-                      <ListComponent
-                        :textPiece="sourceDocument.sentences"
-                        :docId="docIndex"
-                      />
+                      <ListComponent :sourceDocument="sourceDocument" />
                     </q-card-section>
                   </q-card>
                 </q-tab-panel>
@@ -85,18 +61,11 @@
       </div>
       <!--  action section  -->
       <q-card-actions class="q-pa-md" id="source-collection-view-actions">
-        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')"
-          >Back</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')">Back</q-btn>
         <q-space></q-space>
 
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeSelectSources"
-          :disable="!anyCheckedSentences"
-          >Continue</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="storeSelectSources"
+          :disable="!anyCheckedSentences">Continue</q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -119,15 +88,6 @@ export default {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
-    // at least a sentence must be selected per source...
-    // anyCheckedSentences() {
-    //   return this.sourceDocuments.length > 0
-    //     ? this.sourceDocuments
-    //         .map((d) => d.sentences.some((e) => e.checked))
-    //         .every((e) => e)
-    //     : false;
-    // },
-    //   no need for sentence selection per source
     anyCheckedSentences() {
       return this.sourceDocuments.length > 0;
     },
@@ -144,23 +104,10 @@ export default {
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },
-    filterNames: function (name) {
+    abbreviateTitle: function (name) {
       return name === "General Data Protection Regulation" ? "GDPR" : name;
-    },
-  },
-  watch: {
-    sourceDocuments() {
-      console.log(
-        "sourceDocuments",
-        this.sourceDocuments,
-        this.sourceDocuments
-          .map((d) => d.sentences)
-          .filter((d) => {
-            return d.some((e) => e.checked);
-          }),
-      );
-    },
-  },
+    }
+  }
 };
 </script>
 

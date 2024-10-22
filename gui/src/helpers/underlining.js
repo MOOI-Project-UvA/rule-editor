@@ -2,7 +2,6 @@
 import { hexColors, hexColorsLight } from "./config.js";
 import { max } from "d3-array"
 const lineThickness = 3
-const marginBottom = 20 //space between sentences
 const charHeight = 14
 const spaceBetweenCharsAndLines = 1
 const firstLineStartPosition = charHeight + spaceBetweenCharsAndLines
@@ -90,8 +89,7 @@ export function getStyleForLineSpacing(sentence) {
     const lowestYPos = firstLineStartPosition + (maxVerticalPosition * 2 + 1) * lineThickness
 
     return {
-        lineHeight: `${lowestYPos}px`,
-        marginBottom: `${marginBottom}px`
+        lineHeight: `${lowestYPos}px`
     }
 }
 
@@ -113,11 +111,8 @@ export function setVerticalPositionOfAnnotationLines(sourceDoc) {
     const annotations = snippetsWithAnnotation.map(snippet => snippet.annotations).flat()
         .filter((annotation, index, snippetAnnotations) => snippetAnnotations.findIndex(a => a.id == annotation.id) === index);
     annotations.forEach(annotation => {
-        console.log(annotation.id)
-        console.log(snippetsWithAnnotation.filter(snippet => snippet.annotations.some(a => a.id == annotation.id)))
         annotation.verticalPosition = max(snippetsWithAnnotation
             .filter(snippet => snippet.annotations.some(a => a.id == annotation.id))
             .map(snippet => snippet.annotations.findIndex(a => a.id == annotation.id)))
-        console.log("annotation", annotation.verticalPosition, annotation)
     })
 }

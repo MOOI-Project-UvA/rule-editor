@@ -32,7 +32,7 @@ const hexColors = {
   claim_duty: "#311b92",
 };
 
-//used for highlighting
+//used for highlighting and node colors in network
 const hexColorsLight = {
   fact: "#b3d9ff",
   agent: "#ffdd80",
@@ -41,6 +41,16 @@ const hexColorsLight = {
   duty: "#80e9ff",
   act: "#c0b3ff",
   claim_duty: "#c0b3ff",
+  list: "#dddddd",
+  booleanConstruct: "#dddddd"
 };
 
-export { icons, colors, hexColors, hexColorsLight };
+//used for sizing nodes in network
+const nodeSizes = {
+  fact: 5,
+  act: 10,
+  claim_duty: 10,
+  anonymous: 3
+}
+
+export { icons, colors, hexColors, hexColorsLight, nodeSizes };

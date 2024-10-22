@@ -50,6 +50,18 @@
         </q-btn>
       </template>
     </q-card-actions>
+    <div class="flex flex-row items-center">
+      <div class="frame-id">Frame id: {{ frame.id }}</div>
+      <div class="col">
+        <q-btn size="sm" round flat color="primary"
+          :icon="idIsCopiedToClipboard ? 'mdi-clipboard-check-outline' : 'mdi-clipboard-arrow-left-outline'"
+          @click="copyIdToClipboard">
+          <q-tooltip class="text-subtitle2">
+            {{ idIsCopiedToClipboard ? 'Copied' : 'Copy to clipboard' }}
+          </q-tooltip>
+        </q-btn>
+      </div>
+    </div>
   </q-card>
   <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
 </template>
@@ -66,7 +78,8 @@ export default {
   data: () => ({
     showSource: false,
     showComments: false,
-    frameIsBeingDeleted: false //true when user clicked delete button
+    frameIsBeingDeleted: false, //true when user clicked delete button
+    idIsCopiedToClipboard: false
   }),
   computed: {
     displayedSourceDocument() {
@@ -89,13 +102,14 @@ export default {
       this.$store.commit("removeFrame", this.frame)
       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
     },
-    toggleShowSource() {
-      this.$store.commit("setShowFrameSource", this.showSource)
-    },
     //scroll to source of frame, in source panel
     scrollToSource() {
       //take the first sentence to scroll to
       this.$store.state.sentenceToScrollTo = this.sentences[0]
+    },
+    copyIdToClipboard() {
+      navigator.clipboard.writeText(this.frame.id);
+      this.idIsCopiedToClipboard = true
     }
   },
   components: {

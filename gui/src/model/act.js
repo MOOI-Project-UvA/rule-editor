@@ -1,6 +1,5 @@
 import { v4 as uuid4 } from 'uuid'
 import { BooleanConstruct } from './booleanConstruct.js'
-import { Annotation } from './annotation.js'
 
 class Act {
     constructor() {
@@ -21,9 +20,8 @@ class Act {
         this._highlight = false
         this._comments = []
 
-        this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
-
-        this._generateLabelAutomatically = true //by default, label is generated automatically 
+        this._generateLabelAutomatically = true //by default, label is generated automatically
+        this.generateLabel()
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -177,6 +175,7 @@ class Act {
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        this._generateLabelAutomatically = false
     }
 
     //construct label [action] [object] [actor] [recipient]
@@ -187,6 +186,16 @@ class Act {
         const recipientLabel = this._recipient ? this._recipient.label : '<rec>'
 
         this._label = `${actionLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+    }
+
+    toString() {
+        let s = "Act: " + this.label + "\n"
+        s += ["action", "actor", "object", "recipient"].map(attribute =>
+            `${attribute}: ${this[attribute] ? this[attribute].label : "-"}`
+        ).join("\n") + "\n"
+        s += `precondition:${this._precondition ? "\n" + this._precondition.toString() : "-"}\n`
+        s += ["creates", "terminates"].map(attribute => `${attribute}:\n${this[attribute].length > 0 ? this[attribute].map(frame => frame.label).join("\n") : "\t-"}`).join("\n")
+        return s
     }
 }
 
