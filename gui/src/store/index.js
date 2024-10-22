@@ -29,17 +29,14 @@ const store = createStore({
       selectedSnippet: null, // selected snippet in the source text
       clickedPosition: null,
       availableSources: [], //list of sources that the user can choose from
-      taskInformation: {
+      task: {
         title: "",
         description: "",
-      }, // information about the task
+      },
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false //whether or not to show dependeny relations 'Before' between acts
     };
-  },
-  getters: {
-    getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
     //add new frame to list of frames being edited. does not permanently store
@@ -140,11 +137,6 @@ const store = createStore({
 
       //remove annotations that have this frame as their frame, in all source documents
       state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))
-    },
-    setTaskInformation(state, task) {
-      console.log("in index.js: ", task);
-      state.taskInformation.title = task.title;
-      state.taskInformation.description = task.description;
     },
   },
   actions: {

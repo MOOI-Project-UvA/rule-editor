@@ -9,11 +9,8 @@ export default {
     formIsInvalid() {
       return !this.description || !this.title;
     },
-    getDescription() {
-      return this.$store.getters.getTaskInformation.description;
-    },
-    getTitle() {
-      return this.$store.getters.getTaskInformation.title;
+    getTask() {
+      return this.$store.state.task;
     },
   },
   mounted() {
@@ -23,10 +20,8 @@ export default {
 
   methods: {
     storeTaskData() {
-      this.$store.commit("setTaskInformation", {
-        title: this.title,
-        description: this.description,
-      });
+      this.$store.state.task.title = this.title
+      this.$store.state.task.description = this.description
       // emit event to the parent component to update the store
       this.$emit("updateStepper");
     },
