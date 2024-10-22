@@ -1,21 +1,26 @@
 [
     {
+        "id": "http://choppr.app/documents/e5ac55cb-2195-4a26-b7b0-a9565440747b",
         "title": "Participatiewet",
         "fileName": "./sources/Participatiewet.json"
     },
     {
+        "id": "http://choppr.app/documents/1674740141704/document",
         "title": "General Data Protection Regulation",
         "fileName": "./sources/GDPR_trimmed.json"
     },
     {
+        "id": "http://choppr.app/documents/50bdb7d2-497a-4f45-a85a-30ec3c6f0dd7/document",
         "title": "Beleidsregel Individuele Inkomenstoeslag",
-        "fileName": "./sources/Beleidsregel_Individuele_Inkomenstoeslag_gemeente_Utrecht_v2.json"
+        "fileName": "./sources/Beleidsregel Individuele Inkomenstoeslag gemeente Utrecht v2.json"
     },
     {
+        "id": "http://choppr.app/documents/0e3e8a6b-8128-45ff-bbbc-01a75c1e8f4f/document",
         "title": "Verordening individuele inkomenstoeslag",
-        "fileName": "./sources/Verordening_individuele_inkomenstoeslag_gemeente_Utrecht_2019_v4.json"
+        "fileName": "./sources/Verordening individuele inkomenstoeslag gemeente Utrecht 2019 v4.json"
     },
     {
+        "id": "http://choppr.app/documents/1674741091539/document",
         "title": "Algemene wet bestuursrecht",
         "fileName": "./sources/Algemene_wet_bestuursrecht.json"
     }

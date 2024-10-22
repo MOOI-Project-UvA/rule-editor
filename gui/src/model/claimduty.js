@@ -12,8 +12,11 @@ class Claimduty {
         this._duty = null
         this._actor = null
         this._holder = null
+
         this._highlight = false
         this._comments = []
+
+        this._annotations = [] //typically one annotation (unless claimduty is described multiple times in the source)
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -30,7 +33,11 @@ class Claimduty {
     }
     set label(label) { this._label = label }
 
-    get claimduty() { return this._claimduty }
+    get claimduty() {
+        return this._claimduty //.length > 0
+        // ? this._claimduty
+        // : constructClaimdutyLabel(this)
+    }
     set claimduty(claimduty) { this._claimduty = claimduty }
 
     get activeField() { return this._activeField }
@@ -49,6 +56,15 @@ class Claimduty {
     //maybe use a super-class 'frame' and add them there
     get annotations() { return this._annotations }
 
+    addAnnotation(annotation) {
+        this._annotations = [...this._annotations, annotation]
+        annotation.frame = this
+    }
+    removeAnnotation(annotation) {
+        const index = this._annotations.indexOf(annotation)
+        this._annotations.splice(index, 1)
+    }
+
     //check if any of the roles has this frame, if so, remove it
     deleteReferencesToFrame(frame) {
         if (this._duty && this._duty.id == frame.id) {
@@ -61,6 +77,8 @@ class Claimduty {
             this._holder = null
         }
     }
+
+    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
     get sentences() {
         const sentences = this.annotations.map(a => a.snippets.map(s => s.sentence)).flat()

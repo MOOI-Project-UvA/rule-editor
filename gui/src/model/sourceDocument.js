@@ -1,37 +1,52 @@
 import { Sentence } from "./sentence.js"
 
 export class SourceDocument {
-    constructor(jsonLdObject) {
+    constructor(id, selectedSentenceIds) {
         //console.log("selectedSentenceIds", selectedSentenceIds)
-        const rootElement = jsonLdObject["@graph"].find((d) => d["@type"] == "src:Source")
-        this._iri = rootElement["@id"]
-        this._id = rootElement["@id"]
+        this._id = id
+        this._iri = id
         this._title = ""
-        this._sentenceTree = this.parseElementTree(rootElement, 0) //root is level 0
+        this._sentences = []
+        this._selectedSentenceIds = selectedSentenceIds
 
-        //all sentences are collapsed by default. expand the root to show sentences at the highest level
-        this._sentenceTree.collapsed = false
-        this._sentenceTree.visible = true
-        this._sentenceTree.selected = true //this recursively sets all sentences to be selected
-
-        //keep original jsonLd so it can be stored together with the interpretation
-        this._jsonLd = jsonLdObject
+        console.log("created source document", this)
     }
 
     get id() { return this._id }
     get iri() { return this._iri }
+    set title(title) { this._title = title }
     get title() { return this._title }
-    get sentenceTree() { return this._sentenceTree }
+    set sentences(sentences) { this._sentences = sentences }
+    get sentences() { return this._sentences }
 
-    //sentence tree as list
-    get sentences() { return this._sentenceTree.sentenceTreeAsList }
-
-    get jsonLd() { return this._jsonLd }
-
+    //add sentences and id from chopperDocument
+    fillSentencesFromChopperDocument(chopperDocument) {
+        console.log("fillSentencesFromChopperDocument")
+        //sentences are the leaf elements of the document.
+        //keep only those that are selected by the user, or if user
+        //did not select any sentences: keep all
+        //keep only those that have non-empty content
+        const selectedLeafElements = getLeafs(chopperDocument)
+            .filter(l => this._selectedSentenceIds == null
+                || this._selectedSentenceIds.length == 0
+                || this._selectedSentenceIds.includes(l.id))
+            .filter(l => l.content.length > 0)
+        //only create new sentence when not yet present
+        selectedLeafElements.forEach(element => {
+            let sentence = this._sentences.find(s => s.id == element.id)
+            if (!sentence) {
+                sentence = new Sentence(element.id, element.IRI, this)
+                this._sentences.push(sentence)
+            }
+            sentence.addTextFromChopperLeafElement(element)
+            //for backwards comp
+            sentence.iri = element.IRI
+        })
+    }
 
     getSnippetsForAnnotation(annotation) {
         //check all snippets to see if they contain given annotation
-        return this.sentences
+        return this._sentences
             .map(s => s.snippets)
             .flat()
             .filter(snippet =>
@@ -40,11 +55,12 @@ export class SourceDocument {
     }
 
     getAnnotationsForFrame(frame) {
-        const annotations = this.sentences
+        const annotations = this._sentences
             .map(s => s.snippets.map(snippet => snippet.annotations))
             .flat()
             .flat()
             .filter((annotation, index, array) => array.findIndex(a => a.id == annotation.id) === index)
+
         return annotations.filter(a => a.frame?.id == frame.id)
     }
 
@@ -63,49 +79,32 @@ export class SourceDocument {
 
     //return all sentences that have snippets with annotations for frame
     getSentencesForFrame(frame) {
-        return this.sentences.filter(sentence =>
+        return this._sentences.filter(sentence =>
             sentence.snippets.some(snippet => snippet.annotations.some(a => a.frame && a.frame.id == frame.id))
         )
     }
+}
 
-    //parse Choppr element into tree of sentences
-    parseElementTree(element, level) {
-        const sentence = new Sentence(element.id, this)
-        sentence.level = level
+function getLeafs(node) {
+    let leafs = []
+    if ('children' in node && node.children.length > 0) {
+        node.children.forEach(child => {
+            leafs = leafs.concat(getLeafs(child))
+        })
+    } else {
+        leafs = [node]
+    }
+    return leafs
+}
 
-        if (element["@type"] == "src:Source") {
-            sentence.parent = null
-            sentence.contentType = "root"
-            element.children.forEach(childElement => {
-                const childSentence = this.parseElementTree(childElement, level + 1)
-                sentence.addChild(childSentence)
-                childSentence.parent = sentence
-            })
-        } else if (element["@type"].includes("src:NonLeafElement")) {
-            //content for this element is in one if its children
-            let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
-            if (!headerChildElement) {
-                //console.log("element reffered by containsAsHeader attribute not found", element)
-                //take first child
-                headerChildElement = element.children[0]
-            }
-            sentence.content = headerChildElement.content
-            sentence.contentType = element.typelabel //e.g. 'Onderdeel'
-            //for backward compatibility with previous interpretations, use id of headerChildElement as sentence id
-            sentence.id = headerChildElement.id
-            //add children, except the one that is the header child element
-            element.children.forEach(childElement => {
-                if (childElement != headerChildElement) {
-                    const childSentence = this.parseElementTree(childElement, level + 1)
-                    sentence.addChild(childSentence)
-                    childSentence.parent = sentence
-                }
-            })
-        } else if (element["@type"].includes("src:LeafElement")) {
-            sentence.content = element.content
-            sentence.iri = element.IRI
-            sentence.contentType = "leaf"
-        }
-        return sentence
+//adds a parent attribute for each part of the document
+//so we can easily get the paragraph (etc) that a sentence is
+//part of
+function addParentReferencesToDocument(document) {
+    if ('children' in document) {
+        document.children.forEach(c => {
+            c.parent = document
+            addParentReferencesToDocument(c)
+        })
     }
 }

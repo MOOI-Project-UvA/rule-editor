@@ -1,18 +1,19 @@
-import { Task } from "../model/task.js"
 import { SourceDocument } from '../model/sourceDocument.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
 import { Claimduty } from '../model/claimduty.js'
+import { frameTypes } from '../model/frame.js'
+import { Sentence } from '../model/sentence.js'
 import { Annotation } from '../model/annotation.js'
 import { Snippet } from '../model/snippet.js'
 import { Comment } from '../model/comment.js'
-import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
 
-function convertInterpretationToJson(task, frames, sourceDocuments) {
-    const sourceDocsString = sourceDocuments.map(doc => ({
-        jsonLd: doc.jsonLd,
-        selectedSentencesIds: doc.sentences.filter(s => s.selected).map(s => s.id),
-        collapsedSentencesIds: doc.sentences.filter(s => s.collapsed).map(s => s.id)
+
+
+function convertInterpretationToJson(frames, sourceDocuments) {
+    const sourceDocsString = sourceDocuments.map(d => ({
+        id: d.id,
+        checkedSentenceIds: d.sentences.map(s => s.id)
     }))
     const framesFlat = frames.map((f) => f.toFlatObject())
     //add annotations per frame
@@ -29,35 +30,25 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
         frame.annotations = annotations
     })
     return {
-        id: task.id,
-        type: task.type,
-        description: task.description,
-        label: task.label,
         sourceDocs: sourceDocsString,
         frames: framesFlat
     }
 }
 
 //parse json to sourcedoc and frames
+//sourcedoc will be missing the actual sentence texts from the source, these
+//will be filled in later, as will the non-annotated snippets
+
 function parseJsonToInterpretation(jsonText) {
     const parsedInterpretation = JSON.parse(jsonText)
-
-    let task = new Task()
-    task.id = parsedInterpretation.id
-    task.label = parsedInterpretation.label
-    task.description = parsedInterpretation.description
-
     let sourceDocs = []
     let frames = []
-
-    //read sourceDocs from loaded interpretation
+    //create sourceDocs from loaded interpretation
     parsedInterpretation.sourceDocs.forEach(doc => {
-        const sourceDoc = new SourceDocument(doc.jsonLd)
-        //set collapse status
-        sourceDoc.sentences.forEach(sentence => {
-            sentence.selected = doc.selectedSentencesIds.includes(sentence.id)
-            sentence.collapsed = doc.collapsedSentencesIds.includes(sentence.id)
-        })
+        const sourceDoc = new SourceDocument(doc.id, doc.checkedSentenceIds)
+        // create empty sentences with one snippet
+        sourceDoc.sentences = doc.checkedSentenceIds.map(sId => new Sentence(sId, "", sourceDoc)) //IRI will be filled later
+        //text of these sentences will be loaded later from the source
         sourceDocs.push(sourceDoc)
     })
 
@@ -77,7 +68,7 @@ function parseJsonToInterpretation(jsonText) {
                 frame = new Claimduty()
                 break
         }
-        frame.id = d.id //overwrite generated id
+        frame.id = d.id
         frames.push(frame)
     })
 
@@ -98,32 +89,13 @@ function parseJsonToInterpretation(jsonText) {
             parsedAnnotation.snippets.forEach(parsedSnippet => {
                 //find sourceDoc for this snippet
                 const sourceDoc = sourceDocs.find(doc => doc.id == parsedSnippet.documentId)
-
                 //find sentence for this snippet
                 const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
                 //snippet possibly exists, added by another annotation
-                let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
+                let snippet = sentence.snippets.find(snippet => snippet.characterRange[0] == parsedSnippet.characterRange[0] && snippet.characterRange[1] == parsedSnippet.characterRange[1])
                 if (!snippet) {
-                    snippet = new Snippet(sentence, parsedSnippet.characterRange)
-                    //this new snippet overlaps the original snippet that contains the whole sentence,
-                    //created when the sentence was created
-                    const overlappedSnippetIndex = sentence.snippets.findIndex(s => snippet.characterRange[0] < s.characterRange[1] && snippet.characterRange[1] > s.characterRange[0])
-                    const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
-                    //create new snippets, replacing the overlapped snippet
-                    if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
-                        //create snippet left of new snippet
-                        sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
-                    }
-                    if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
-                        //create snippet left of new snippet
-                        sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
-                    }
-                    //remove original overlapped snippet
-                    sentence.snippets.splice(overlappedSnippetIndex, 1)
-                    //add new snippet
+                    snippet = new Snippet(parsedSnippet.text, sentence, parsedSnippet.characterRange)
                     sentence.snippets.push(snippet)
-                    //sort snippets according to character range start
-                    sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
                 }
                 snippet.annotations.push(annotation)
             })
@@ -137,18 +109,9 @@ function parseJsonToInterpretation(jsonText) {
         })
     })
 
-    console.log("frames loaded")
-
-    //update underlining of annotations in the source text. each annotation contains the
-    //vertical position of the underline
-    sourceDocs.forEach(sourceDoc => {
-        setVerticalPositionOfAnnotationLines(sourceDoc)
-    })
-
     return {
-        task: task,
         sourceDocs: sourceDocs,
-        frames: frames,
+        frames: frames
     }
 }
 

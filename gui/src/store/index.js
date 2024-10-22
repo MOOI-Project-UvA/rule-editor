@@ -10,7 +10,7 @@ import {
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
-import { convertToRDF } from "../services/ApiServices.js";
+import {convertToRDF} from "../services/ApiServices.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -20,6 +20,7 @@ const store = createStore({
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
       booleanConstructBeingEdited: null, //boolean-field being edited, so we can add clicked frame to it
+      showFrameSource: false, //show sources for currently edited frame
       sourceDocuments: [], // documents that are used in the current interpretation
       sentenceToScrollTo: null, // sentence that should be visible in source panel, because 'scroll to source' is clicked in frame editor
       displayedSourceDocument: null, //document that is currently showing in the source view
@@ -29,21 +30,25 @@ const store = createStore({
       selectedSnippet: null, // selected snippet in the source text
       clickedPosition: null,
       availableSources: [], //list of sources that the user can choose from
-      task: null, //{id, type, label, description}
-      sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
-      frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
-      showDependenciesBetweenActs: false //whether or not to show dependeny relations 'Before' between acts
+      taskInformation: {
+        title: "",
+        description: "",
+      }, // information about the task
+      sourceViewIsCollapsed: false //whether or not the panel showing the source is collapsed
     };
+  },
+  getters: {
+    getTaskInformation: (state) => state.taskInformation,
   },
   mutations: {
     //add new frame to list of frames being edited. does not permanently store
     //the frame to the frames list yet. storing permanently is done when the save
     //button in the frame editor is clicked.
-    addNewFrame(state, { frameTypeId, subTypeId, annotation, openInEditor, initialLabel }) {
+    addNewFrame(state, { frameTypeId, subTypeId, annotation, openInEditor }) {
       let frame;
       switch (frameTypeId) {
         case "fact":
-          frame = new Fact(initialLabel);
+          frame = new Fact();
           break;
         case "act":
           frame = new Act();
@@ -83,16 +88,39 @@ const store = createStore({
       const index = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
       state.framesOpenInEditor.splice(index, 1)
       //if there are any frames left open in the editor, set frameBeingEdited to
-      //the last of those. else set frameBeingEdited to null.s
-      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[state.framesOpenInEditor.length - 1] : null;
+      //the first of those. else set frameBeingEdited to null.s
+      state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
     },
+    // saveFrameBeingEdited(state) {
+    //   //if frameBeingEdited is new, add it to the list
+    //   //refresh the list to force rerendering of the view
+    //   if (!state.frames.some((f) => f.id == state.frameBeingEdited.id)) {
+    //     state.frames.push(state.frameBeingEdited);
+    //   }
+    //   state.frames = [...state.frames];
+    //   //if a booleanconstruct is being edited, add the new frame to it
+    //   // if (state.booleanConstructBeingEdited) {
+    //   //   state.booleanConstructBeingEdited.frame = frame;
+    //   //   state.booleanConstructBeingEdited = null; //deselect boolean construct
+    //   //   //if frame is being edited and is has an active field, add frame to that field
+    //   // } else if (state.frameBeingEdited && state.frameBeingEdited.activeField) {
+    //   //   state.frameBeingEdited.addFrame(frame);
+    //   // }
+    //   //remove the frame from the list of frames that are open in the editor
+    //   const index = state.framesOpenInEditor.indexOf(state.frameBeingEdited)
+    //   state.framesOpenInEditor.splice(index, 1)
+    //   //if there are any frames left open in the editor, set frameBeingEdited to
+    //   //the first of those
+    //   state.frameBeingEdited = state.framesOpenInEditor.length > 0 ? state.framesOpenInEditor[0] : null;
+
+    // },
     createNewFrameViaNlp(state, { frameType, annotation, subType, role }) {
       let frame = new Fact();
       if (annotation) {
-        annotation.frame = frame
+        frame.addAnnotation(annotation); //this also sets annotation.frame
       }
       frame.type = frameType;
-      //frame.label = frame.fact.substring(0, 20);
+      frame.label = frame.fact.substring(0, 20);
 
       subType === "Agent"
         ? frame.comments.push(`Recommended role by the NLP model: ${role}`)
@@ -103,6 +131,9 @@ const store = createStore({
       )[0];
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
+    },
+    setShowFrameSource(state, show) {
+      state.showFrameSource = show;
     },
     setAnnotationBeingEdited(state, annotation) {
       state.annotationBeingEdited = annotation;
@@ -121,6 +152,7 @@ const store = createStore({
           ? state.framesOpenInEditor[nrFramesOpen - 1]
           : null
         state.booleanConstructBeingEdited = null;
+        state.showFrameSource = null;
       }
       //remove frame from frames list
       const frameIndex = state.frames.findIndex(f => f.id == frame.id);
@@ -135,6 +167,11 @@ const store = createStore({
       //remove annotations that have this frame as their frame, in all source documents
       state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))
     },
+    setTaskInformation(state, task) {
+      console.log("in index.js: ", task);
+      state.taskInformation.title = task.title;
+      state.taskInformation.description = task.description;
+    },
   },
   actions: {
     loadInterpretationForDebugging(context) {
@@ -145,28 +182,42 @@ const store = createStore({
         })
       });
     },
-    //read sources that are available on server
     readAvailableSources(context) {
+      console.log("reading available sources");
       json(`./sources.json`).then((data) => {
         context.state.availableSources = data;
       });
     },
-    //reads source
-    addSource(context, sourceDescription) {
-      json(sourceDescription.fileName).then((jsonLdObject) => {
-        context.dispatch("createSourceDocFromJsonLD", jsonLdObject)
+    //reads source, so user can annotate and create frames
+    //source object contains filename where to read the source from
+    //checkedSentences is used when reading an existing interpretation: it contains
+    //the sentences that are selected by the user as relevant for the interpretation.
+    addSource(context, { sourceId, checkedSentenceIds }) {
+      const source = this.state.availableSources.find((s) => s.id == sourceId);
+      console.log("source", source)
+      console.log("reading", source.fileName)
+      json(source.fileName).then((chopperData) => {
+        console.log("chopperData", chopperData)
+        //get document from chopper data.
+        const document = chopperData["@graph"].find((d) => ('document' in d)).document;
+        console.log("document", document)
+        //TODO check if source doc already exists, from a loaded interpretation
+        let sourceDoc = context.state.sourceDocuments.find(d => d.id == document['@id'])
+        if (!sourceDoc) {
+          sourceDoc = new SourceDocument(document['@id'], checkedSentenceIds)
+          context.state.sourceDocuments = [
+            ...context.state.sourceDocuments,
+            sourceDoc
+          ];
+        }
+
+        sourceDoc.fillSentencesFromChopperDocument(document)
+        sourceDoc.title = source.title
+
+        //sort alphabetically on title
+        context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
+        context.state.sourceDocuments
       })
-    },
-    createSourceDocFromJsonLD(context, jsonLdObject) {
-      const sourceDoc = new SourceDocument(jsonLdObject)
-      //todo: check if sourceDoc is already in list
-      context.state.sourceDocuments = [
-        ...context.state.sourceDocuments,
-        sourceDoc
-      ];
-      //sort alphabetically on title
-      context.state.sourceDocuments.sort((d1, d2) => d1.title.localeCompare(d2.title))
-      context.state.sourceDocuments
     },
     createAct(context) {
       console.log("create act frame");
@@ -182,7 +233,6 @@ const store = createStore({
       //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
-          context.state.task,
           allFrames,
           context.state.sourceDocuments,
         ),
@@ -193,7 +243,7 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
-    async saveInterpretationAsTurtle(context) {
+    async saveInterpretationAsTurtle(context){
       //combine frames that are saved with frames open in editor
       //keep unique list of frames
       const allFrames = context.state.frames
@@ -203,7 +253,6 @@ const store = createStore({
       //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
-          context.state.task,
           allFrames,
           context.state.sourceDocuments,
         ),
@@ -221,24 +270,20 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText)
       console.log("loaded interpretation", interpretation)
-      context.state.task = interpretation.task
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames
-      //reset selection
-      context.state.frameBeingEdited = null
-      context.state.framesOpenInEditor = []
-      context.state.booleanConstructBeingEdited = null
+
       /**
        * at this point, the source docs created from the loaded interpretation
        * do not contain sentence text yet, and they miss snippets that are
        * not annotated. Read source files and add this missing information
       */
-      // JSON.parse(jsonText).sourceDocs.forEach((d) => {
-      //   context.dispatch("addSource", {
-      //     sourceId: d.id,
-      //     checkedSentenceIds: d.checkedSentenceIds,
-      //   });
-      // });
+      JSON.parse(jsonText).sourceDocs.forEach((d) => {
+        context.dispatch("addSource", {
+          sourceId: d.id,
+          checkedSentenceIds: d.checkedSentenceIds,
+        });
+      });
       //skip to step 3 to show the interpretation
       context.state.step = 3
     },
