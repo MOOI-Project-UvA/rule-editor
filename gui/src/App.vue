@@ -77,11 +77,7 @@ export default {
 
   mounted() {
 
-    //FOR DEBUGGING EDITOR GUI, SKIP FIRST STEPS
-    // this.$store.state.step = 3
-    // this.$store.dispatch("loadInterpretationForDebugging")
-    console.log("this.repo", this.repo, this.repo != null)
-    // if there is deployment information, show them
+    // if there is deployment information, show it
     if (this.repo != null) {
       const message = retrieveDeploymentInformation(this.repo, this.branch, this.hash)
       alertWidget("welcome", message);

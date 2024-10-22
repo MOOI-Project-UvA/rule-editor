@@ -29,10 +29,7 @@ const store = createStore({
       selectedSnippet: null, // selected snippet in the source text
       clickedPosition: null,
       availableSources: [], //list of sources that the user can choose from
-      task: {
-        title: "",
-        description: "",
-      },
+      task: null, //{id, type, label, description}
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false //whether or not to show dependeny relations 'Before' between acts
@@ -185,6 +182,7 @@ const store = createStore({
       //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
+          context.state.task,
           allFrames,
           context.state.sourceDocuments,
         ),

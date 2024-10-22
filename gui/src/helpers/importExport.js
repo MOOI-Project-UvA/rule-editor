@@ -7,9 +7,7 @@ import { Snippet } from '../model/snippet.js'
 import { Comment } from '../model/comment.js'
 import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
 
-
-
-function convertInterpretationToJson(frames, sourceDocuments) {
+function convertInterpretationToJson(task, frames, sourceDocuments) {
     const sourceDocsString = sourceDocuments.map(doc => ({
         jsonLd: doc.jsonLd,
         selectedSentencesIds: doc.sentences.filter(s => s.selected).map(s => s.id),
@@ -52,8 +50,6 @@ function parseJsonToInterpretation(jsonText) {
         })
         sourceDocs.push(sourceDoc)
     })
-    console.log("sourceDocs created")
-
 
     // create an empty frame for each frame in the loaded json
     // each frame gets its id from the json data
@@ -71,7 +67,7 @@ function parseJsonToInterpretation(jsonText) {
                 frame = new Claimduty()
                 break
         }
-        frame.id = d.id
+        frame.id = d.id //overwrite generated id
         frames.push(frame)
     })
 
@@ -140,8 +136,9 @@ function parseJsonToInterpretation(jsonText) {
     })
 
     return {
+        task: task,
         sourceDocs: sourceDocs,
-        frames: frames
+        frames: frames,
     }
 }
 

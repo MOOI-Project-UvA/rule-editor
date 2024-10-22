@@ -1,34 +1,3 @@
-<script>
-export default {
-  name: "TaskDefinitionView",
-  data: () => ({
-    description: null,
-    title: null,
-  }),
-  computed: {
-    formIsInvalid() {
-      return !this.description || !this.title;
-    },
-    getTask() {
-      return this.$store.state.task;
-    },
-  },
-  mounted() {
-    this.description = this.getDescription;
-    this.title = this.getTitle;
-  },
-
-  methods: {
-    storeTaskData() {
-      this.$store.state.task.title = this.title
-      this.$store.state.task.description = this.description
-      // emit event to the parent component to update the store
-      this.$emit("updateStepper");
-    },
-  },
-};
-</script>
-
 <template>
   <div id="task-definition-view">
     <q-card flat bordered style="width: 500px; max-width: 600px">
@@ -48,49 +17,31 @@ export default {
             ></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
-                Define a task and its description.
+                Define a task.
               </div>
             </q-tooltip>
           </q-avatar>
         </q-item-section>
       </q-item>
-      <!--      <q-item class="q-ma-sm">-->
-      <!--        <q-item-section avatar>-->
-      <!--          <q-avatar icon="mdi-head-dots-horizontal-outline" rounded size="xl">-->
-      <!--          </q-avatar>-->
-      <!--        </q-item-section>-->
-
-      <!--        <q-item-section>-->
-      <!--          <q-item-label>Define task</q-item-label>-->
-      <!--          <q-item-label caption-->
-      <!--            >At this this step, you can define a task and its-->
-      <!--            description</q-item-label-->
-      <!--          >-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
       <q-separator></q-separator>
       <q-card-section>
         <q-input
           filled
           v-model="title"
           label="Title"
-          hint="Define a title for the task"
           lazy-rules
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
           clearable
         />
-
         <q-input
           type="textarea"
           filled
           v-model="description"
           label="Description"
           lazy-rules
-          hint="Define a description for the task"
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
           clearable
         />
-        <div></div>
       </q-card-section>
       <q-separator></q-separator>
       <q-card-actions class="q-pa-md">
@@ -107,5 +58,42 @@ export default {
     </q-card>
   </div>
 </template>
+
+<script>
+import { Task } from "../model/task.js"
+export default {
+  name: "TaskDefinitionView",
+  data: () => ({
+    description: null,
+    title: null,
+  }),
+  computed: {
+    formIsInvalid() {
+      return !this.description || !this.title;
+    },
+    task() {
+      return this.$store.state.task;
+    },
+  },
+  mounted() {
+    console.log("task", this.task)
+    if (!this.task) {
+      this.$store.state.task = new Task()
+    } else {
+      this.description = this.task.description;
+      this.title = this.task.title;
+    }
+  },
+
+  methods: {
+    storeTaskData() {
+      this.$store.state.task.title = this.title
+      this.$store.state.task.description = this.description
+      // emit event to the parent component to update the store
+      this.$emit("updateStepper");
+    },
+  },
+};
+</script>
 
 <style scoped lang="css"></style>
