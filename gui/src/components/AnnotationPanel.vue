@@ -75,7 +75,8 @@ export default {
         frameTypeId: frameTypeId,
         subTypeId: null,
         annotation: this.annotation,
-        openInEditor: true
+        openInEditor: true,
+        initialLabel: this.snippetsForThisAnnotation.map(s => s.text).join("")
       });
       this.$store.commit("setAnnotationBeingEdited", null);
     },

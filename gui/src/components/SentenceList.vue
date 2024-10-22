@@ -72,7 +72,7 @@ export default {
           //showing the annotation panel
           if (
             this.frameBeingEdited &&
-            'activeField' in this.frameBeingEdited &&
+            'activeField' in this.frameBeingEdited && //frame should have roles
             this.frameBeingEdited.activeField
           ) {
             //if there is only one subtype allowed for this fact, assign that subtype to the frame
@@ -83,11 +83,13 @@ export default {
 
             //store reference to the currently being edited frame
             const relationFrame = this.$store.state.frameBeingEdited;
+            console.log("adding new fact with label", selection.toString())
             this.$store.commit("addNewFrame", {
               frameTypeId: 'fact',
               subTypeId: subTypeId,
               annotation: annotation,
-              openInEditor: true
+              openInEditor: true,
+              initialLabel: selection.toString()
             });
             //add the frame that has just being created to the proper role in the relation (act / claim-duty)
             relationFrame.addFrame(this.$store.state.frameBeingEdited);
