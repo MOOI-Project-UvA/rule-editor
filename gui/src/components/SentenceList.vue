@@ -32,7 +32,7 @@ import { Annotation } from "../model/annotation";
 
 export default {
   props: {
-    sentences: Array
+    sentences: Array //these sentences have been filtered according to their 'selected' property in SourceView
   },
   computed: {
     annotationBeingEdited() {

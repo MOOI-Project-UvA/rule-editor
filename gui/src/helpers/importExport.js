@@ -12,6 +12,7 @@ import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
 function convertInterpretationToJson(frames, sourceDocuments) {
     const sourceDocsString = sourceDocuments.map(doc => ({
         jsonLd: doc.jsonLd,
+        selectedSentencesIds: doc.sentences.filter(s => s.selected).map(s => s.id),
         collapsedSentencesIds: doc.sentences.filter(s => s.collapsed).map(s => s.id)
     }))
     const framesFlat = frames.map((f) => f.toFlatObject())
@@ -46,6 +47,7 @@ function parseJsonToInterpretation(jsonText) {
         const sourceDoc = new SourceDocument(doc.jsonLd)
         //set collapse status
         sourceDoc.sentences.forEach(sentence => {
+            sentence.selected = doc.selectedSentencesIds.includes(sentence.id)
             sentence.collapsed = doc.collapsedSentencesIds.includes(sentence.id)
         })
         sourceDocs.push(sourceDoc)

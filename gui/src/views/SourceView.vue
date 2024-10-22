@@ -26,7 +26,7 @@
 
     <q-card-section class="q-pa-none">
       <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
-        <!-- show all sentences in document -->
+        <!-- show selected sentences in document -->
         <div class="fill-height scrollable q-pa-md">
           <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)" :showNLP="true" />
         </div>
