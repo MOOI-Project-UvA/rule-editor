@@ -3,7 +3,6 @@ import { Snippet } from "./snippet.js";
 export class Sentence {
   constructor(id, sourceDocument) {
     this._id = id;
-    this._iri = null;
     this._sourceDocument = sourceDocument;
     this._loading = false;
     this._snippets = [];
@@ -11,11 +10,11 @@ export class Sentence {
     this._parent = null
     this._checked = true;
     this._children = []
-    this._contentType = ""
     this._level = null
     this._visible = false //show or hide sentence
     this._collapsed = true //collapse or expand this node to hide/show its children
     this._selected = false //selected by the user to be included in the interpretation
+    this._isHeader = false //corresponding element in source has a 'containsAsHeader' attribute
   }
 
   //set text and create snippet
@@ -34,36 +33,35 @@ export class Sentence {
     return this._id;
   }
 
-  get iri() {
-    return this._iri;
-  }
-  set iri(iri) {
-    this._iri = iri;
-  }
   get parent() { return this._parent }
+
   set parent(parent) {
     this._parent = parent
   }
+
   get snippets() {
     return this._snippets;
   }
+
   get text() {
     return this._text;
   }
+
   get sourceDocument() {
     return this._sourceDocument;
   }
+
   get checked() {
     return this._checked;
   }
+
   set checked(checked) {
     this._checked = checked;
   }
-  get children() { return this._children }
-  addChild(child) { this._children.push(child) }
 
-  set contentType(contentType) { this._contentType = contentType }
-  get contentType() { return this._contentType }
+  get children() { return this._children }
+
+  addChild(child) { this._children.push(child) }
 
   //return sentence tree as list, do not include empty sentences
   get sentenceTreeAsList() {
@@ -107,4 +105,7 @@ export class Sentence {
       child.visible = (!this._collapsed) && this._visible
     })
   }
+
+  get isHeader() { return this._isHeader }
+  set isHeader(isHeader) { this._isHeader = isHeader }
 }

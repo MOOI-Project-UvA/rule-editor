@@ -4,7 +4,6 @@ export class SourceDocument {
     constructor(jsonLdObject) {
         //console.log("selectedSentenceIds", selectedSentenceIds)
         const rootElement = jsonLdObject["@graph"].find((d) => d["@type"] == "src:Source")
-        this._iri = rootElement["@id"]
         this._id = rootElement["@id"]
         this._title = ""
         this._sentenceTree = this.parseElementTree(rootElement, 0) //root is level 0
@@ -19,7 +18,6 @@ export class SourceDocument {
     }
 
     get id() { return this._id }
-    get iri() { return this._iri }
     get title() { return this._title }
     get sentenceTree() { return this._sentenceTree }
 
@@ -75,23 +73,24 @@ export class SourceDocument {
 
         if (element["@type"] == "src:Source") {
             sentence.parent = null
-            sentence.contentType = "root"
             element.children.forEach(childElement => {
                 const childSentence = this.parseElementTree(childElement, level + 1)
                 sentence.addChild(childSentence)
                 childSentence.parent = sentence
             })
         } else if (element["@type"].includes("src:NonLeafElement")) {
-            //content for this element is in one if its children
-            let headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
-            if (!headerChildElement) {
-                //console.log("element reffered by containsAsHeader attribute not found", element)
+            console.log(element)
+            let headerChildElement = null
+            if ("containsAsHeader" in element) {
+                //replace this element by its header element
+                headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
+                sentence.isHeader = true
+            } else {
                 //take first child
                 headerChildElement = element.children[0]
+                sentence.isHeader = false
             }
             sentence.content = headerChildElement.content
-            sentence.contentType = element.typelabel //e.g. 'Onderdeel'
-            //for backward compatibility with previous interpretations, use id of headerChildElement as sentence id
             sentence.id = headerChildElement.id
             //add children, except the one that is the header child element
             element.children.forEach(childElement => {
@@ -103,8 +102,7 @@ export class SourceDocument {
             })
         } else if (element["@type"].includes("src:LeafElement")) {
             sentence.content = element.content
-            sentence.iri = element.IRI
-            sentence.contentType = "leaf"
+            sentence.id = element.id
         }
         return sentence
     }

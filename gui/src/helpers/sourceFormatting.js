@@ -34,8 +34,9 @@ const extraIdentationForLeafSentences = 24
 export function getStyleForSentenceFormat(sentence) {
     const level = sentence.level - 1 //root level is not displayed, set first level to 0
     const marginLeft = level * indentationPerLevel + (sentence.children.length == 0 ? extraIdentationForLeafSentences : 0)
-    const fontSize = level >= fontSizes.length || sentence.children.length == 0 ? defaultFontSize : fontSizes[level]
-    const fontWeight = level >= fontWeights.length || sentence.children.length == 0 ? defaultFontWeight : fontWeights[level]
+    //apply formatting if sentence is header, and within the highest levels
+    const fontSize = sentence.isHeader && level < fontSizes.length && sentence.children.length > 0 ? fontSizes[level] : defaultFontSize
+    const fontWeight = sentence.isHeader && level < fontWeights.length && sentence.children.length > 0 ? fontWeights[level] : defaultFontWeight
     return {
         marginLeft: `${marginLeft}pt`,
         fontSize: `${fontSize}pt`,
