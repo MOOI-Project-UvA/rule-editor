@@ -108,31 +108,3 @@ export class Sentence {
     })
   }
 }
-//add snippets not covered by annotations
-function findMissingSnippets(sentence) {
-  //sort existing snippets on range (start)
-  sentence.snippets.sort(
-    (s1, s2) => s1.characterRange[0] - s2.characterRange[0],
-  );
-  let missingSnippets = [];
-  let rangeStart = 0;
-  sentence.snippets.forEach((existingSnippet) => {
-    const rangeEnd = existingSnippet.characterRange[0]; //end of current snippet is start of next one
-    if (rangeStart < rangeEnd) {
-      const snippetText = sentence.text.substring(rangeStart, rangeEnd);
-      const snippet = new Snippet(sentence, [rangeStart, rangeEnd]);
-      missingSnippets.push(snippet);
-    }
-    rangeStart = existingSnippet.characterRange[1];
-  });
-  //add last snippet to the end
-  if (rangeStart < sentence.text.length) {
-    const snippetText = sentence.text.substring(
-      rangeStart,
-      sentence.text.length,
-    );
-    const snippet = new Snippet(sentence, [rangeStart, sentence.text.length]);
-    missingSnippets.push(snippet);
-  }
-  return missingSnippets;
-}
