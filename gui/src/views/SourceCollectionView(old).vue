@@ -1,7 +1,7 @@
 <template>
   <!-- This component contains the content of the source collection view -->
   <div id="source-collection-view">
-    <q-card flat bordered class="my-card q-ma-sm" style="width: 1000px">
+    <q-card flat bordered class="my-card q-ma-sm" style="width: 600px">
       <!-- header -->
       <q-item class="q-ma-sm">
         <q-item-section avatar>
@@ -10,6 +10,7 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>Collect sources</q-item-label>
+          <q-item-label caption>Step 2</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
@@ -21,7 +22,9 @@
               <div style="max-width: 300px">
                 In this view, you can select legal sources from the repository.
                 After selection, a legal source is reconstructed and you are
-                able to select parts of the sources for interpretation.
+                able to start the interpretation process by selected text
+                snippets and assigning one of the four supported labels: 1)
+                Agent, 2) Action, 3) Object, 4) Conditions.
               </div>
             </q-tooltip>
           </q-avatar>
@@ -34,53 +37,37 @@
       </q-card-section>
       <div id="source-collection-card-content">
         <!-- the retrieved legal text will be shown here -->
-        <div>
-          <q-splitter v-model="splitterModel" class="q-mt-lg">
-            <template v-slot:before>
-              <q-tabs
-                v-model="tab"
-                vertical
-                shrink
-                dense
-                class="text-grey"
-                active-color="primary"
-                indicator-color="primary"
+        <div v-for="(sourceDocument, docIndex) in sourceDocuments">
+          <q-card-section>
+            <q-list bordered class="rounded-borders q-pa-md">
+              <q-expansion-item
+                v-model="expandedSources[docIndex]"
+                expand-icon-toggle
+                switch-toggle-side
+                expand-separator
+                icon="mdi-book-search-outline"
+                :caption="sourceDocument.title"
+                default-opened
               >
-                <q-tab
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
-                  icon="mdi-book-outline"
-                  :label="filterNames(sourceDocument.title)"
-                />
-              </q-tabs>
-            </template>
-            <template v-slot:after>
-              <q-tab-panels
-                v-model="tab"
-                animated
-                swipeable
-                vertical
-                transition-prev="jump-up"
-                transition-next="jump-up"
-              >
-                <q-tab-panel
-                  v-for="(sourceDocument, docIndex) in sourceDocuments"
-                  :key="docIndex"
-                  :name="docIndex"
+                <q-card
+                  flat
+                  square
+                  class="q-ma-sm q-pa-sm expansion-items"
+                  :style="`max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px - (${
+                    docIndex + 1
+                  } * 120px));`"
                 >
-                  <q-card flat square>
-                    <q-card-section class="q-pt-none expansion-items">
-                      <ListComponent
-                        :textPiece="sourceDocument.sentences"
-                        :docId="docIndex"
-                      />
-                    </q-card-section>
-                  </q-card>
-                </q-tab-panel>
-              </q-tab-panels>
-            </template>
-          </q-splitter>
+                  <q-card-section class="q-pt-none">
+                    <!-- show recursively all text leafs in the document tree -->
+                    <ListComponent
+                      :textPiece="sourceDocument.sentences"
+                      :docId="docIndex"
+                    />
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            </q-list>
+          </q-card-section>
         </div>
       </div>
       <!--  action section  -->
@@ -112,24 +99,17 @@ export default {
   },
   data: () => ({
     expandedSources: [],
-    splitterModel: 20,
-    tab: 0,
   }),
   computed: {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
-    // at least a sentence must be selected per source...
-    // anyCheckedSentences() {
-    //   return this.sourceDocuments.length > 0
-    //     ? this.sourceDocuments
-    //         .map((d) => d.sentences.some((e) => e.checked))
-    //         .every((e) => e)
-    //     : false;
-    // },
-    //   no need for sentence selection per source
     anyCheckedSentences() {
-      return this.sourceDocuments.length > 0;
+      return this.sourceDocuments.length > 0
+        ? this.sourceDocuments
+            .map((d) => d.sentences.some((e) => e.checked))
+            .every((e) => e)
+        : false;
     },
   },
   methods: {
@@ -144,15 +124,11 @@ export default {
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },
-    filterNames: function (name) {
-      return name === "General Data Protection Regulation" ? "GDPR" : name;
-    },
   },
   watch: {
     sourceDocuments() {
       console.log(
         "sourceDocuments",
-        this.sourceDocuments,
         this.sourceDocuments
           .map((d) => d.sentences)
           .filter((d) => {
@@ -169,15 +145,15 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  /* height: calc(100vh - 13 6px); */
+  //height: calc(100vh - 13 6px);
   overflow: hidden;
 }
 
 #source-collection-card-content {
-  /* height: calc(100vh - 136px - 78px - 88px - 48px - 24px); */
-  height: calc(100vh - 136px - 78px - 88px - 48px - 20px);
-  overflow-y: hidden;
-  /* overflow: hidden; */
+  //height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  height: calc(100vh - 136px - 78px - 88px - 48px - 24px);
+  //overflow-y: auto;
+  overflow: hidden;
   z-index: 1 !important;
 }
 
@@ -191,9 +167,7 @@ export default {
 }
 
 .expansion-items {
-  /* max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px); */
-  max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 120px);
-  /* height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px); */
+  //max-height: calc(100vh - 136px - 78px - 88px - 48px - 24px - 72px);
   overflow-y: auto;
 }
 </style>

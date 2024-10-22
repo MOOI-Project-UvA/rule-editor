@@ -3,12 +3,13 @@ import { Annotation } from './annotation'
 import { BooleanConstruct } from './booleanConstruct.js'
 
 export class Fact {
-    constructor(initialLabel) {
+    constructor() {
         this._id = uuid4() //unique ID
-        this._label = initialLabel //label as visible in the chip
+        this._label = "" //label as visible in the chip
         this._fact = "" //longer description of the fact
         this._typeId = null //type id
         this._subTypeId = null //subtype id
+        this._annotations = [] //array of Annotation. Each annotation is an array of snippets
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
         this._isComplex = true
@@ -26,19 +27,33 @@ export class Fact {
     get isComplex() { return this._isComplex }
     set isComplex(isComplex) { this._isComplex = isComplex }
 
-    get label() { return this._label }
+    get label() {
+        return this._label
+    }
     set label(label) { this._label = label }
 
-    get fact() { return this._fact }
+    get fact() { return this._fact ? this._fact : this.sourceText }
     set fact(fact) { this._fact = fact }
 
     get subdivision() { return this._subdivision }
     set subdivision(subdivision) { this._subdivision = subdivision }
 
+    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
+
     get comments() { return this._comments }
     set comments(comments) { this._comments = comments }
 
     get annotations() { return this._annotations }
+    addAnnotation(annotation) {
+        this._annotations = [...this._annotations, annotation]
+        annotation.frame = this
+    }
+
+    removeAnnotation(annotation) {
+        const index = this._annotations.indexOf(annotation)
+        this._annotations.splice(index, 1)
+
+    }
 
     deleteReferencesToFrame(frame) {
         this._subdivision.removeFrame(frame)
@@ -71,6 +86,11 @@ export class Fact {
         this.fact = data.fact
         this.typeId = data.typeId
         this.subTypeId = data.subTypeId
+        data.annotations.forEach(a => {
+            let annotation = new Annotation()
+            annotation.fromFlatObject(a)
+            this.addAnnotation(annotation)
+        })
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)

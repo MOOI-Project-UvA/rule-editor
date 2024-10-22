@@ -2,14 +2,11 @@
   <div class="panel flex flex-row" :class="{ active: isBeingEdited, negated: booleanConstruct.isNegated }"
     @click="handleClick">
     <div class="col">
-      <!-- negation label -->
       <div v-if="booleanConstruct.isNegated" class="negation-label">NOT</div>
       <template v-if="booleanConstruct.frame">
         <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
         <div class="row-container">
-          <!-- selected chip -->
           <FrameChip :frame="booleanConstruct.frame" :disable="false" />
-          <!-- remove chip button -->
           <q-btn round size="xs" flat color="negative" icon="mdi-close" @click="removeFrame" />
         </div>
       </template>
@@ -19,11 +16,6 @@
 
         <!-- buttons for changing operator and adding another child -->
         <!-- show options for boolean operator -->
-        <!-- TODO:
-         Step 1: consider switching to alternative visual representations for deeply nested levels. A searchable select element or a q-btn with dropdown might be good alternatives
-         Step 2: set a min-width to the panel
-         Step 3: set an information dialog with a message
-         -->
         <q-btn-group class="q-ml-md q-my-xs" flat v-if="i !== booleanConstruct.children.length - 1">
           <q-btn v-for="option in booleanOptions" size="sm" padding="xs md" :color="booleanConstruct.operatorToJoinChildren == option.value
     ? 'primary'
@@ -47,7 +39,7 @@
         Select frame or create new frame from source
       </div>
     </div>
-    <div class="col-1 buttons-container">
+    <div class="col-1 row-container">
       <div>
         <q-btn size="sm" color="#d42d19" dense flat icon="mdi-minus-circle-outline" @click="toggleNegation" />
       </div>
@@ -170,18 +162,17 @@ export default {
 
 <style>
 .panel {
-  padding: 10px 4px;
+  /* border: 1px solid #333333; */
+  padding: 10px;
   border-radius: 5px;
-  margin-left: 2px;
+  margin-left: 15px;
   box-shadow: 0px 0px 4px #aaaaaa;
   background-color: #ffffff;
   border: solid 2px #ffffff;
 }
 
-
 .panel.active {
   border: solid 2px rgb(25, 118, 210);
-
 }
 
 .panel.negated {
@@ -215,10 +206,5 @@ export default {
 .row-container {
   display: flex;
   flex-direction: row;
-}
-
-.button-container {
-  display: flex;
-  flex-direction: column;
 }
 </style>

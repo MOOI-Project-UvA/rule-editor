@@ -1,39 +1,69 @@
 <template>
+  <!--
+        displays recursively the content fields ('sentences') in a document.
+        Allows the end-user to include a sentence into an interpretation by checking
+        the corresponding checkbox.
+    -->
+  <div v-for="(item, index) in textPiece" :key="index">
+    <q-item tag="label" v-ripple :id="`q-item-${item.id}`">
+      <q-item-section side top>
+        <q-checkbox
+          :name="item.id + index"
+          :id="`q-checkbox-${item.id}`"
+          v-model="item.checked"
+          size="sm"
+        />
+      </q-item-section>
 
-<div class="document">
-    <div class="q-mb-md row no-wrap items-baseline" v-for="sentence in sourceDocument.sentences.filter(s => s.visible)">
-      <div><q-checkbox v-model="sentence.selected" size="xs"></q-checkbox></div>
-      <div>
-        <q-btn v-if="sentence.children.filter(c => c.text.length > 0).length > 0" round size="sm"
-          :icon="sentence.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" flat text-color="primary"
-          @click="sentence.toggleCollapse()"></q-btn>
-      </div>
-
-      <div :style="getStyleForSentenceFormat(sentence)">
-        <span v-for="snippet in sentence.snippets">
-          {{ snippet.text }}
-        </span>
-      </div>
-    </div>
+      <q-item-section
+        class="text-piece text-chunk"
+        v-html="item.text"
+        ref="sentenceElement"
+      >
+      </q-item-section>
+    </q-item>
   </div>
 </template>
 
 <script>
-import { getStyleForSentenceFormat } from "../helpers/sourceFormatting.js"
 export default {
+  data: () => ({}),
   props: {
-    sourceDocument: Object
+    textPiece: Array,
+    docId: Number,
+  },
+  computed: {
+    // checkedChunks() {
+    //   return this.textPiece.filter((item) => item.checked);
+    // },
+  },
+  mounted() {
+    console.log("ListComponent:", this.textPiece);
   },
   methods: {
-    getStyleForSentenceFormat(sentence) {
-      return getStyleForSentenceFormat(sentence)
-    }
-  }
-}
+    // toggleBox: function (val, evt) {
+    //   console.log("toggling", val, this.checkedChunks);
+    //   console.log(
+    //     "toggling2: ",
+    //     this.textPiece.some((d) => d.checked),
+    //   );
+    //   // this.$emit("anyCheckedSentences", {
+    //   //   id: this.docId,
+    //   //   checkedSentences: this.textPiece.some((d) => d.checked),
+    //   // });
+    // },
+  },
+};
 </script>
 
-<style scoped>
-.document {
-  word-wrap: break-word;
+<style lang="css" scoped>
+.text-chunk {
+  margin: 5px 0px;
+  display: grid;
+  grid-template-columns: 10px auto;
+}
+
+.text-piece {
+  display: inline-block;
 }
 </style>
