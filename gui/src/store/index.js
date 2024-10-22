@@ -203,6 +203,7 @@ const store = createStore({
       //ones and open in the editor
       const jsonString = JSON.stringify(
         convertInterpretationToJson(
+          context.state.task,
           allFrames,
           context.state.sourceDocuments,
         ),
@@ -220,6 +221,7 @@ const store = createStore({
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText)
       console.log("loaded interpretation", interpretation)
+      context.state.task = interpretation.task
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames
       //reset selection

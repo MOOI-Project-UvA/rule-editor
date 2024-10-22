@@ -27,8 +27,8 @@
       <q-card-section>
         <q-input
           filled
-          v-model="title"
-          label="Title"
+          v-model="label"
+          label="Label"
           lazy-rules
           :rules="[(val) => (val && val.length > 0) || 'Please type something']"
           clearable
@@ -65,11 +65,11 @@ export default {
   name: "TaskDefinitionView",
   data: () => ({
     description: null,
-    title: null,
+    label: null,
   }),
   computed: {
     formIsInvalid() {
-      return !this.description || !this.title;
+      return !this.description || !this.label;
     },
     task() {
       return this.$store.state.task;
@@ -81,13 +81,13 @@ export default {
       this.$store.state.task = new Task()
     } else {
       this.description = this.task.description;
-      this.title = this.task.title;
+      this.label = this.task.label;
     }
   },
 
   methods: {
     storeTaskData() {
-      this.$store.state.task.title = this.title
+      this.$store.state.task.label = this.label
       this.$store.state.task.description = this.description
       // emit event to the parent component to update the store
       this.$emit("updateStepper");

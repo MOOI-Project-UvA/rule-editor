@@ -1,3 +1,4 @@
+import { Task } from "../model/task.js"
 import { SourceDocument } from '../model/sourceDocument.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
@@ -28,6 +29,10 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
         frame.annotations = annotations
     })
     return {
+        id: task.id,
+        type: task.type,
+        description: task.description,
+        label: task.label,
         sourceDocs: sourceDocsString,
         frames: framesFlat
     }
@@ -36,6 +41,11 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
 //parse json to sourcedoc and frames
 function parseJsonToInterpretation(jsonText) {
     const parsedInterpretation = JSON.parse(jsonText)
+
+    let task = new Task()
+    task.id = parsedInterpretation.id
+    task.label = parsedInterpretation.label
+    task.description = parsedInterpretation.description
 
     let sourceDocs = []
     let frames = []
