@@ -20,8 +20,6 @@ class Act {
         this._highlight = false
         this._comments = []
 
-        this._annotations = [] //typically one annotation (unless act is described multiple times in the source)
-
         this._generateLabelAutomatically = true //by default, label is generated automatically
         this.generateLabel()
     }

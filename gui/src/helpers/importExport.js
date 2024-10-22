@@ -1,3 +1,4 @@
+import { Task } from "../model/task.js"
 import { SourceDocument } from '../model/sourceDocument.js'
 import { Fact } from '../model/fact.js'
 import { Act } from "../model/act.js"
@@ -7,9 +8,7 @@ import { Snippet } from '../model/snippet.js'
 import { Comment } from '../model/comment.js'
 import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
 
-
-
-function convertInterpretationToJson(frames, sourceDocuments) {
+function convertInterpretationToJson(task, frames, sourceDocuments) {
     const sourceDocsString = sourceDocuments.map(doc => ({
         jsonLd: doc.jsonLd,
         selectedSentencesIds: doc.sentences.filter(s => s.selected).map(s => s.id),
@@ -30,6 +29,10 @@ function convertInterpretationToJson(frames, sourceDocuments) {
         frame.annotations = annotations
     })
     return {
+        id: task.id,
+        type: task.type,
+        description: task.description,
+        label: task.label,
         sourceDocs: sourceDocsString,
         frames: framesFlat
     }
@@ -38,6 +41,11 @@ function convertInterpretationToJson(frames, sourceDocuments) {
 //parse json to sourcedoc and frames
 function parseJsonToInterpretation(jsonText) {
     const parsedInterpretation = JSON.parse(jsonText)
+
+    let task = new Task()
+    task.id = parsedInterpretation.id
+    task.label = parsedInterpretation.label
+    task.description = parsedInterpretation.description
 
     let sourceDocs = []
     let frames = []
@@ -52,8 +60,6 @@ function parseJsonToInterpretation(jsonText) {
         })
         sourceDocs.push(sourceDoc)
     })
-    console.log("sourceDocs created")
-
 
     // create an empty frame for each frame in the loaded json
     // each frame gets its id from the json data
@@ -71,7 +77,7 @@ function parseJsonToInterpretation(jsonText) {
                 frame = new Claimduty()
                 break
         }
-        frame.id = d.id
+        frame.id = d.id //overwrite generated id
         frames.push(frame)
     })
 
@@ -140,8 +146,9 @@ function parseJsonToInterpretation(jsonText) {
     })
 
     return {
+        task: task,
         sourceDocs: sourceDocs,
-        frames: frames
+        frames: frames,
     }
 }
 
