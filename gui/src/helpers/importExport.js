@@ -22,7 +22,9 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
             const annotationsForFrame = doc.getAnnotationsForFrame(frame)
             annotationsForFrame.forEach(a => {
                 annotations.push({
-                    "snippets": doc.getSnippetsForAnnotation(a).map(s => s.toFlatObject())
+                    "snippets": doc.getSnippetsForAnnotation(a)
+                        .map(s => s.toFlatObject())
+                        .filter(s => s.characterRange[1] > s.characterRange[0])
                 })
             })
         })
@@ -96,36 +98,42 @@ function parseJsonToInterpretation(jsonText) {
             annotation.frame = frame
             //create snippet for each of the annotation's snippets
             parsedAnnotation.snippets.forEach(parsedSnippet => {
-                //find sourceDoc for this snippet
-                const sourceDoc = sourceDocs.find(doc => doc.id == parsedSnippet.documentId)
+                //ignore snippets of length 0
+                if (parsedSnippet.characterRange[1] > parsedSnippet.characterRange[0]) {
+                    //find sourceDoc for this snippet
+                    const sourceDoc = sourceDocs.find(doc => doc.id == parsedSnippet.documentId)
 
-                //find sentence for this snippet
-                const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
-                //snippet possibly exists, added by another annotation
-                let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
-                if (!snippet) {
-                    snippet = new Snippet(sentence, parsedSnippet.characterRange)
-                    //this new snippet overlaps the original snippet that contains the whole sentence,
-                    //created when the sentence was created
-                    const overlappedSnippetIndex = sentence.snippets.findIndex(s => snippet.characterRange[0] < s.characterRange[1] && snippet.characterRange[1] > s.characterRange[0])
-                    const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
-                    //create new snippets, replacing the overlapped snippet
-                    if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
-                        //create snippet left of new snippet
-                        sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
+                    //find sentence for this snippet
+                    const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
+                    //snippet possibly exists, added by another annotation
+                    let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
+                    if (!snippet) {
+                        snippet = new Snippet(sentence, parsedSnippet.characterRange)
+                        //this new snippet overlaps the original snippet that contains the whole sentence,
+                        //created when the sentence was created
+                        const overlappedSnippetIndex = sentence.snippets.findIndex(s =>
+                            snippet.characterRange[0] < s.characterRange[1] &&
+                            snippet.characterRange[1] > s.characterRange[0]
+                        )
+                        const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
+                        //create new snippets, replacing the overlapped snippet
+                        if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
+                            //create snippet left of new snippet
+                            sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
+                        }
+                        if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
+                            //create snippet left of new snippet
+                            sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
+                        }
+                        //remove original overlapped snippet
+                        sentence.snippets.splice(overlappedSnippetIndex, 1)
+                        //add new snippet
+                        sentence.snippets.push(snippet)
+                        //sort snippets according to character range start
+                        sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
                     }
-                    if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
-                        //create snippet left of new snippet
-                        sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
-                    }
-                    //remove original overlapped snippet
-                    sentence.snippets.splice(overlappedSnippetIndex, 1)
-                    //add new snippet
-                    sentence.snippets.push(snippet)
-                    //sort snippets according to character range start
-                    sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
+                    snippet.annotations.push(annotation)
                 }
-                snippet.annotations.push(annotation)
             })
         })
 
