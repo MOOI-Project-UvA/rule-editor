@@ -24,7 +24,6 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
                 annotations.push({
                     "snippets": doc.getSnippetsForAnnotation(a)
                         .map(s => s.toFlatObject())
-                        .filter(s => s.characterRange[1] > s.characterRange[0])
                 })
             })
         })
