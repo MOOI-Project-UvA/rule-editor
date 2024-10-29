@@ -168,7 +168,7 @@ function splitSnippet(snippet, charIndex, sentence) {
     console.log("splitSnippet", snippet, charIndex, sentence)
     //If charIndex == 0 or charIndex == snippet.text.length-1 then snippet is not split, return the
     //original snippet
-    if (charIndex == 0 || charIndex == snippet.text.length - 1) {
+    if (charIndex == 0 || charIndex == snippet.text.length) {
         return [snippet]
     } else {
         const leftSnippet = new Snippet(sentence, [snippet.characterRange[0], snippet.characterRange[0] + charIndex])
