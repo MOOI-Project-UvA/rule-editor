@@ -2,10 +2,10 @@ import { Sentence } from "./sentence.js"
 
 export class SourceDocument {
     constructor(jsonLdObject) {
-        //console.log("selectedSentenceIds", selectedSentenceIds)
+        this._id = jsonLdObject["@context"]["@base"]
         const rootElement = jsonLdObject["@graph"].find((d) => d["@type"] == "src:Source")
-        this._id = rootElement["@id"]
-        this._title = ""
+        this._title = rootElement.title
+
         this._sentenceTree = this.parseElementTree(rootElement, 0) //root is level 0
 
         //all sentences are collapsed by default. expand the root to show sentences at the highest level
