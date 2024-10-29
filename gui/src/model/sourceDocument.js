@@ -68,7 +68,7 @@ export class SourceDocument {
 
     //parse Choppr element into tree of sentences
     parseElementTree(element, level) {
-        const sentence = new Sentence(element.id, this)
+        const sentence = new Sentence(element.id, element.IRI, this)
         sentence.level = level
 
         if (element["@type"] == "src:Source") {
@@ -92,6 +92,7 @@ export class SourceDocument {
             }
             sentence.content = headerChildElement.content
             sentence.id = headerChildElement.id
+            sentence.iri = headerChildElement.IRI
             //add children, except the one that is the header child element
             element.children.forEach(childElement => {
                 if (childElement != headerChildElement) {
@@ -102,7 +103,6 @@ export class SourceDocument {
             })
         } else if (element["@type"].includes("src:LeafElement")) {
             sentence.content = element.content
-            sentence.id = element.id
         }
         return sentence
     }
