@@ -55,6 +55,39 @@ export async function convertToRDF(dataset) {
     throw new Error(
       "An error occurred while converting data to rdf: " + error.message,
     );
-    return error;
+  }
+}
+
+/*
+  Converts RDF text to json structure as used by the editor
+ */
+export async function convertRDFToJSON(rdfString) {
+  console.log("rdfString", rdfString)
+  try {
+    const response = await fetch("/api/unwrap/process_graph", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/turtle",
+        "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+      },
+      body: rdfString,
+    });
+
+    if (!response.ok) {
+      throw new Error("An error occurred while sending the data.");
+    }
+
+    const data = await response.text();
+    console.log("data", data)
+    return data;
+
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occured while converting data to rdf! Details:" + error.message,
+    );
+    throw new Error(
+      "An error occurred while converting data to rdf: " + error.message,
+    );
   }
 }

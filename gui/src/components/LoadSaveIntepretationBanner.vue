@@ -13,9 +13,16 @@ export default {
     saveInterpretationAsTurtle() {
       this.$store.dispatch("saveInterpretationAsTurtle");
     },
-    chooseFile() {
-      //document.getElementById("fileUpload").click()
-      this.$refs.fileUpload.click();
+    chooseFile(fileType) {
+      switch(fileType) {
+        case "json":
+        this.$refs.fileUpload.click();
+        break;
+        case "rdf":
+        this.$refs.fileUploadRDF.click();
+        break;
+
+      }
     },
     handleFileSelection(evt) {
       const reader = new FileReader();
@@ -24,6 +31,13 @@ export default {
       };
       reader.readAsText(evt.target.files[0]);
     },
+    handleFileSelectionRDF(evt) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        this.$store.dispatch("loadInterpretationFromRDF", evt.target.result);
+      };
+      reader.readAsText(evt.target.files[0]);
+    }
   },
 };
 </script>
@@ -37,10 +51,10 @@ export default {
             <q-item-label>Locally</q-item-label>
           </q-item>
           <q-separator></q-separator>
-          <q-item clickable v-close-popup dense @click="chooseFile">
+          <q-item clickable v-close-popup dense @click="chooseFile('json')">
             <q-item-section>JSON</q-item-section>
           </q-item>
-          <q-item disable clickable v-close-popup dense>
+          <q-item clickable v-close-popup dense @click="chooseFile('rdf')">
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -90,7 +104,8 @@ export default {
     </q-btn>
 
 
-    <input id="fileUpload" type="file" @change="handleFileSelection" hidden ref="fileUpload" />
+    <input type="file" @change="handleFileSelection" hidden ref="fileUpload" />
+    <input type="file" @change="handleFileSelectionRDF" hidden ref="fileUploadRDF" />
 
   </div>
 </template>
