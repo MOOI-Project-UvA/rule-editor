@@ -23,6 +23,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/wrapUp/, ""),
       },
+      "/api/unwrap": {
+        target: "https://unwrap-api-normativesystems.tnodatalab.nl",
+        secure: false,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/unwrap/, ""),
+      },
     },
   },
 });

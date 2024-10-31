@@ -10,7 +10,7 @@ import {
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
-import { convertToRDF } from "../services/ApiServices.js";
+import { convertToRDF, convertRDFToJSON } from "../services/ApiServices.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -208,19 +208,15 @@ const store = createStore({
           context.state.sourceDocuments,
         ),
       )
-      console.log("jsonString:", jsonString)
       const response = await convertToRDF(jsonString);
-      console.log("response from convertToRDF:", response);
       const blob = new Blob([response], {
         type: "text/turtle;charset=utf-8",
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.ttl`);
-
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText)
-      console.log("loaded interpretation", interpretation)
       context.state.task = interpretation.task
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames
@@ -228,20 +224,19 @@ const store = createStore({
       context.state.frameBeingEdited = null
       context.state.framesOpenInEditor = []
       context.state.booleanConstructBeingEdited = null
-      /**
-       * at this point, the source docs created from the loaded interpretation
-       * do not contain sentence text yet, and they miss snippets that are
-       * not annotated. Read source files and add this missing information
-      */
-      // JSON.parse(jsonText).sourceDocs.forEach((d) => {
-      //   context.dispatch("addSource", {
-      //     sourceId: d.id,
-      //     checkedSentenceIds: d.checkedSentenceIds,
-      //   });
-      // });
-      //skip to step 3 to show the interpretation
+      //show the interpretation view
       context.state.step = 3
     },
+    async loadInterpretationFromRDF(context, rdfText) {
+      const jsonString = await convertRDFToJSON(rdfText);
+      context.dispatch("loadInterpretation", jsonString)
+      // //reset selection
+      // context.state.frameBeingEdited = null
+      // context.state.framesOpenInEditor = []
+      // context.state.booleanConstructBeingEdited = null
+      // //show the interpretation view
+      // context.state.step = 3
+    }
   },
 });
 

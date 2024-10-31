@@ -62,8 +62,9 @@ export async function convertToRDF(dataset) {
   Converts RDF text to json structure as used by the editor
  */
 export async function convertRDFToJSON(rdfString) {
+  console.log("rdfString", rdfString)
   try {
-    const response = await fetch("/api/wrapUp/process_graph", {
+    const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
       headers: {
         "Content-Type": "text/turtle",
@@ -77,7 +78,9 @@ export async function convertRDFToJSON(rdfString) {
     }
 
     const data = await response.text();
+    console.log("data", data)
     return data;
+
   } catch (error) {
     alertWidget(
       "error",
