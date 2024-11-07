@@ -27,8 +27,8 @@
 
       <div class="q-pa-md">
         <RoleSelector :frame="frame" attribute="duty" label="Duty" :multipleFramesAllowed="false" />
-        <RoleSelector :frame="frame" attribute="actor" label="Actor" :multipleFramesAllowed="false" />
-        <RoleSelector :frame="frame" attribute="holder" label="Holder" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="claimant" label="Claimant" :multipleFramesAllowed="false" />
+        <RoleSelector :frame="frame" attribute="holder" label="Duty holder" :multipleFramesAllowed="false" />
       </div>
     </q-card-section>
     <q-card-actions align="right">
