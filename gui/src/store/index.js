@@ -69,10 +69,8 @@ const store = createStore({
       if (openInEditor) {
         this.commit("setFrameBeingEdited", frame)
       }
-      console.log("frame added", frame)
     },
     setFrameBeingEdited(state, frame) {
-      console.log("setFrameBeingEdited", frame)
       state.frameBeingEdited = frame;
       if (!(state.framesOpenInEditor.some(f => f.id == frame.id))) {
         state.framesOpenInEditor.push(frame)
@@ -104,9 +102,6 @@ const store = createStore({
       frame["id"] = uuid4();
       state.frames = [...state.frames, frame];
     },
-    setAnnotationBeingEdited(state, annotation) {
-      state.annotationBeingEdited = annotation;
-    },
     removeFrame(state, frame) {
       //check if frame in editing list
       const openFrameIndex = state.framesOpenInEditor.findIndex(f => f.id == frame.id)
@@ -135,6 +130,12 @@ const store = createStore({
       //remove annotations that have this frame as their frame, in all source documents
       state.sourceDocuments.forEach(doc => doc.deleteAnnotationsForFrame(frame))
     },
+    deleteAnnotation(state, annotation) {
+      //go through all snippets and remove annotation from them, if they contain the annotation
+      state.sourceDocuments.forEach(doc => {
+        doc.deleteAnnotation(annotation)
+      })
+    }
   },
   actions: {
     loadInterpretationForDebugging(context) {
@@ -169,7 +170,6 @@ const store = createStore({
       context.state.sourceDocuments
     },
     createAct(context) {
-      console.log("create act frame");
       context.state.frameBeingEdited = new Act();
     },
     saveInterpretationAsJson(context) {

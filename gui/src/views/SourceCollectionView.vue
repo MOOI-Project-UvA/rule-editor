@@ -45,9 +45,9 @@
                   <q-card flat square>
                     <q-card-section>
                       <q-btn color="primary" size="sm" class="q-mr-md"
-                      @click="sourceDocument.sentenceTree.selected = true">Select all</q-btn>
-                      <q-btn color="negative" size="sm"
-                      @click="sourceDocument.sentenceTree.selected = false">Deselect all</q-btn>
+                        @click="sourceDocument.sentenceTree.selected = true">Select all</q-btn>
+                      <q-btn color="negative" size="sm" @click="sourceDocument.sentenceTree.selected = false">Deselect
+                        all</q-btn>
                     </q-card-section>
                     <q-card-section class="q-pt-none expansion-items">
                       <ListComponent :sourceDocument="sourceDocument" />
@@ -94,13 +94,6 @@ export default {
   },
   methods: {
     storeSelectSources: function () {
-      console.log(
-        "storing selected sources!",
-        this.sourceDocuments,
-        this.expandedSources,
-        this.activeDocIndex,
-        // this.sourceDocuments[this.activeDocIndex].selectedSentences,
-      );
       // emit event to the parent component to update the stepper
       this.$emit("updateStepper");
     },

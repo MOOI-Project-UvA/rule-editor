@@ -78,22 +78,17 @@ export default {
         openInEditor: true,
         initialLabel: this.snippetsForThisAnnotation.map(s => s.text).join("")
       });
-      this.$store.commit("setAnnotationBeingEdited", null);
+      this.$store.state.annotationBeingEdited = null
     },
     cancelAnnotation() {
-      this.$store.commit("setAnnotationBeingEdited", null);
+      this.$store.commit("deleteAnnotation", this.annotation) // == annotationBeingEdited
+      this.$store.state.annotationBeingEdited = null
     },
     addingToExistingFrame() {
       this.$store.state.annotationToBeAddedToExistingFrame = this.annotation;
       this.$store.state.addingAnnotationToExistingFrame = true;
       this.$store.state.annotationBeingEdited = null;
     },
-    // removeAnnotation() {
-    //     //this is only called if annotation has a frame.
-    //     //remove the annotaiton from the frame, and from the store
-    //     this.annotation.frame.removeAnnotation(this.annotation)
-    //     this.$store.commit("setAnnotationBeingEdited", null)
-    // },
     determineCoordX() {
       return window.innerWidth - this.clickedPosition[0] > 440
         ? this.clickedPosition[0]
