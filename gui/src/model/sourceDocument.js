@@ -53,7 +53,7 @@ export class SourceDocument {
 
     //remove annotation from snippets
     deleteAnnotation(annotation) {
-        const snippets = this._sentences
+        const snippets = this.sentences
             .map(s => s.snippets)
             .flat()
         snippets.forEach(s => s.deleteAnnotation(annotation))
@@ -79,7 +79,6 @@ export class SourceDocument {
                 childSentence.parent = sentence
             })
         } else if (element["@type"].includes("src:NonLeafElement")) {
-            console.log(element)
             let headerChildElement = null
             if ("containsAsHeader" in element) {
                 //replace this element by its header element

@@ -11,10 +11,7 @@
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
-            <q-icon
-              name="mdi-information-outline"
-              class="cursor-pointer"
-            ></q-icon>
+            <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
               <div style="max-width: 300px">
                 Define a task.
@@ -25,34 +22,15 @@
       </q-item>
       <q-separator></q-separator>
       <q-card-section>
-        <q-input
-          filled
-          v-model="label"
-          label="Label"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-          clearable
-        />
-        <q-input
-          type="textarea"
-          filled
-          v-model="description"
-          label="Description"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-          clearable
-        />
+        <q-input filled v-model="label" label="Label" lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Please type something']" clearable />
+        <q-input type="textarea" filled v-model="description" label="Description" lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Please type something']" clearable />
       </q-card-section>
       <q-separator></q-separator>
       <q-card-actions class="q-pa-md">
         <q-space></q-space>
-        <q-btn
-          type="submit"
-          color="primary"
-          @click="storeTaskData"
-          :disable="formIsInvalid"
-          >Continue</q-btn
-        >
+        <q-btn type="submit" color="primary" @click="storeTaskData" :disable="formIsInvalid">Continue</q-btn>
         <!-- TODO: form validation and next step of process -->
       </q-card-actions>
     </q-card>
@@ -76,7 +54,6 @@ export default {
     },
   },
   mounted() {
-    console.log("task", this.task)
     if (!this.task) {
       this.$store.state.task = new Task()
     } else {
