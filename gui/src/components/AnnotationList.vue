@@ -2,9 +2,9 @@
     <!-- show panel if snippet is selected and contains annotations -->
     <div id="annotation-list" ref="annotationListPanel" v-if="selectedSnippet && selectedSnippet.annotations.length > 0"
         :style="{
-        left: coordX + 50 + 'px',
-        top: coordY - 150 + 'px',
-    }">
+            left: coordX + 50 + 'px',
+            top: coordY - 150 + 'px',
+        }">
         <q-card bordered>
             <template v-if="annotationBeingDeleted">
                 <q-card-section>
@@ -82,10 +82,8 @@ export default {
                 ? this.selectedSnippet.annotations
                 : []
         },
-        selectedSourceDocument() {
-            return this.selectedSnippet
-                ? this.selectedSnippet.sentence.sourceDocument
-                : null
+        displayedSourceDocument() {
+            return this.$store.state.displayedSourceDocument
         },
         clickedPosition() {
             return this.$store.state.clickedPosition
@@ -93,6 +91,9 @@ export default {
         framesOpenInEditor() {
             return this.$store.state.framesOpenInEditor
         },
+        sourceDocuments() {
+            return this.$store.state.sourceDocuments
+        }
 
     },
     methods: {
@@ -100,20 +101,28 @@ export default {
             this.$store.state.selectedSnippet = null
         },
         deleteAnnotation(annotation) {
-            //remove the annotaiton from the frame, and from the snippets
-            this.selectedSourceDocument.deleteAnnotation(annotation)
+            //remove the annotaiton from the frame, and from the snippets, possibly in multiple source documents
+            this.$store.commit("deleteAnnotation", annotation)
             if (this.selectedAnnotations.length == 0) {
                 this.$store.state.selectedSnippet = null
             }
             this.annotationBeingDeleted = null
             //redraw the annotation lines
-            setVerticalPositionOfAnnotationLines(this.selectedSourceDocument)
-        },
-        getSnippets(annotation) {
-            return this.selectedSourceDocument ? this.selectedSourceDocument.getSnippetsForAnnotation(annotation) : []
+            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
         },
         getAnnotationSource(annotation) {
-            return this.getSnippets(annotation).map(s => s.text).join("")
+            let annotationSource = ""
+            this.sourceDocuments.forEach((sourceDoc, i) => {
+                const annotationSourceInDoc = sourceDoc
+                    .getSnippetsForAnnotation(annotation)
+                    .map(s => s.text)
+                    .join("")
+                if (i > 0) {
+                    annotationSource += "\n" //separate source from different documents by newline
+                }
+                annotationSource += annotationSourceInDoc
+            })
+            return annotationSource
         },
         openFrameOfAnnotation(annotation) {
             //if annotation's frame is not yet in the list of frames being edited, add it
@@ -136,7 +145,6 @@ export default {
                 : this.clickedPosition[0] - 440;
         },
         determineCoordY(componentsHeight) {
-            console.log("clickedPosition:", this.clickedPosition)
             if (window.innerHeight - this.clickedPosition[1] < componentsHeight) {
                 return this.clickedPosition[1] - componentsHeight;
             } else {

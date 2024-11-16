@@ -40,5 +40,5 @@ export const frameTypes =
         'class': 'relation',
         'label': 'Claim-duty'
     }
-}
 
+}

@@ -1,8 +1,13 @@
 <template>
-  <div class="document" @mouseup="handleSelection">
-    <div class="q-mb-md row no-wrap items-center" :style="getStyleForLineSpacing(sentence)"
-      v-for="sentence in sentences" :ref="`sentence-${sentence.id}`">
+  <div class="document">
+    <div class="q-mb-md row no-wrap items-baseline" v-for="sentence in sentences.filter(s => s.visible)">
       <div>
+        <q-btn v-if="sentence.children.filter(c => c.text.length > 0).length > 0" round size="sm"
+          :icon="sentence.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" flat text-color="primary"
+          @click="sentence.toggleCollapse()"></q-btn>
+      </div>
+
+      <div :ref="`sentence-${sentence.id}`" @mouseup="handleSelection" :style="getStyleForSentence(sentence)">
         <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
@@ -22,11 +27,12 @@ import {
   getStyleForLineSpacing,
   setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
+import { getStyleForSentenceFormat } from "../helpers/sourceFormatting.js"
 import { Annotation } from "../model/annotation";
 
 export default {
   props: {
-    sentences: Array
+    sentences: Array //these sentences have been filtered according to their 'selected' property in SourceView
   },
   computed: {
     annotationBeingEdited() {
@@ -47,7 +53,12 @@ export default {
   },
   methods: {
     getStyleForUnderlining,
-    getStyleForLineSpacing,
+    getStyleForSentence(sentence) {
+      return {
+        ...getStyleForLineSpacing(sentence),
+        ...getStyleForSentenceFormat(sentence)
+      }
+    },
     handleSelection(event) {
       const selection = window.getSelection();
       if (selection.toString().length > 0) {
@@ -61,7 +72,7 @@ export default {
           //showing the annotation panel
           if (
             this.frameBeingEdited &&
-            'activeField' in this.frameBeingEdited &&
+            'activeField' in this.frameBeingEdited && //frame should have roles
             this.frameBeingEdited.activeField
           ) {
             //if there is only one subtype allowed for this fact, assign that subtype to the frame
@@ -72,11 +83,13 @@ export default {
 
             //store reference to the currently being edited frame
             const relationFrame = this.$store.state.frameBeingEdited;
+            console.log("adding new fact with label", selection.toString())
             this.$store.commit("addNewFrame", {
               frameTypeId: 'fact',
               subTypeId: subTypeId,
               annotation: annotation,
-              openInEditor: true
+              openInEditor: true,
+              initialLabel: selection.toString()
             });
             //add the frame that has just being created to the proper role in the relation (act / claim-duty)
             relationFrame.addFrame(this.$store.state.frameBeingEdited);
@@ -104,6 +117,8 @@ export default {
         annotation.nrSnippets = selectedSnippets.length
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+
+        selection.empty()
       } else {
         const clickedSentence = this.sentences.find(
           (s) => s.id == selection.anchorNode.parentNode.dataset.sentenceId,

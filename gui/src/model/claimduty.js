@@ -10,13 +10,10 @@ class Claimduty {
         this._claimduty = ""
         this._activeField = null
         this._duty = null
-        this._actor = null
+        this._claimant = null
         this._holder = null
-
         this._highlight = false
         this._comments = []
-
-        this._annotations = [] //typically one annotation (unless claimduty is described multiple times in the source)
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -33,11 +30,7 @@ class Claimduty {
     }
     set label(label) { this._label = label }
 
-    get claimduty() {
-        return this._claimduty //.length > 0
-        // ? this._claimduty
-        // : constructClaimdutyLabel(this)
-    }
+    get claimduty() { return this._claimduty }
     set claimduty(claimduty) { this._claimduty = claimduty }
 
     get activeField() { return this._activeField }
@@ -46,8 +39,8 @@ class Claimduty {
     get duty() { return this._duty }
     set duty(duty) { this._duty = duty }
 
-    get actor() { return this._actor }
-    set actor(actor) { this._actor = actor }
+    get claimant() { return this._claimant }
+    set claimant(claimant) { this._claimant = claimant }
 
     get holder() { return this._holder }
     set holder(holder) { this._holder = holder }
@@ -56,29 +49,18 @@ class Claimduty {
     //maybe use a super-class 'frame' and add them there
     get annotations() { return this._annotations }
 
-    addAnnotation(annotation) {
-        this._annotations = [...this._annotations, annotation]
-        annotation.frame = this
-    }
-    removeAnnotation(annotation) {
-        const index = this._annotations.indexOf(annotation)
-        this._annotations.splice(index, 1)
-    }
-
     //check if any of the roles has this frame, if so, remove it
     deleteReferencesToFrame(frame) {
         if (this._duty && this._duty.id == frame.id) {
             this._duty = null
         }
-        if (this._actor && this._actor.id == frame.id) {
-            this._actor = null
+        if (this._claimant && this._claimant.id == frame.id) {
+            this._claimant = null
         }
         if (this._holder && this._holder.id == frame.id) {
             this._holder = null
         }
     }
-
-    get sourceText() { return this.annotations.length > 0 ? this.annotations[0].sourceText : "" }
 
     get sentences() {
         const sentences = this.annotations.map(a => a.snippets.map(s => s.sentence)).flat()
@@ -96,7 +78,7 @@ class Claimduty {
         switch (this._activeField) {
             case 'duty':
                 return ['duty']
-            case 'actor':
+            case 'claimant':
                 return ['agent']
             case 'holder':
                 return ['agent']
@@ -114,8 +96,8 @@ class Claimduty {
             case 'duty':
                 this._duty = fact
                 break
-            case 'actor':
-                this._actor = fact
+            case 'claimant':
+                this._claimant = fact
                 break
             case 'holder':
                 this._holder = fact
@@ -125,7 +107,7 @@ class Claimduty {
 
     checkFrameExistance(claimduty, element) {
         const duty = claimduty._duty !== null && claimduty._duty._id === element._id ? true : false;
-        const actor = claimduty._actor !== null && claimduty._actor._id == element._id
+        const claimant = claimduty._claimant !== null && claimduty._claimant._id == element._id
             ? true
             : false;
         const holder = claimduty._holder !== null && claimduty._holder._id == element._id
@@ -134,7 +116,7 @@ class Claimduty {
 
         const exist = [
             duty,
-            actor,
+            claimant,
             holder
         ];
 
@@ -151,7 +133,7 @@ class Claimduty {
     get childrenIds() {
         const facts = [
             this._duty,
-            this._actor,
+            this._claimant,
             this._holder,
         ]
 
@@ -165,7 +147,8 @@ class Claimduty {
             label: this.label,
             claimduty: this.claimduty,
             dutyId: this.duty?.id,
-            actorId: this.actor?.id,
+            actorId: this.claimant?.id, // Deprecated, but left in for backwards compatibility
+            claimantId: this.claimant?.id,
             holderId: this.holder?.id,
             comments: this.comments.map(c => c.toFlatObject()),
         }
@@ -178,19 +161,19 @@ class Claimduty {
         this._subTypeId = null //claimduty has no subtype
         this._claimduty = frameData.claimduty
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
-        this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
+        this._claimant = frameData.claimantId ? allFrames.find(f => f.id == frameData.claimantId) : frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
     }
 }
 
-//construct label [action] [object] [actor] [recipient]
+//construct label [action] [object] [claimant] [recipient]
 function constructClaimdutyLabel(claimduty) {
     const dutyLabel = claimduty.duty ? claimduty.duty.label : '.'
-    const actorLabel = claimduty.actor ? claimduty.actor.label : '.'
+    const claimantLabel = claimduty.claimant ? claimduty.claimant.label : '.'
     const holderLabel = claimduty.holder ? claimduty.holder.label : '.'
 
-    return `${dutyLabel} ${actorLabel} ${holderLabel}`
+    return `${dutyLabel} ${claimantLabel} ${holderLabel}`
 }
 
 export {

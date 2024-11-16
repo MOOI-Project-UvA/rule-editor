@@ -1,3 +1,4 @@
 # Redirects from what the browser requests to what we serve
 /api/predict https://nlp-api-normativesystems.tnodatalab.nl/api/:splat 200
 /api/wrapUp/* https://wrap-up-api-normativesystems.tnodatalab.nl/:splat 200
+/api/unwrap/* https://unwrap-api-normativesystems.tnodatalab.nl/:splat 200

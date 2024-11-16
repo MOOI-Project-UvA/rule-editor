@@ -130,7 +130,7 @@ export function splitAndReturnSelectedSnippets(
     //else split the endsnippet
     if (startSnippet == endSnippet) {
         endSubSnippets = splitSnippet(
-            startSubSnippets[1],
+            startSubSnippets[startSubSnippets.length - 1],
             endOffset - startOffset,
             endSentence
         )
@@ -139,7 +139,7 @@ export function splitAndReturnSelectedSnippets(
     }
     //collect all snippets covered by the selection
     let selectionSnippets = []
-    const startSnippetIndexInSentence = startSentence.snippets.findIndex(s => s.id == startSubSnippets[1].id)
+    const startSnippetIndexInSentence = startSentence.snippets.findIndex(s => s.id == startSubSnippets[startSubSnippets.length - 1].id)
     const endSnippetIndexInSentence = endSentence.snippets.findIndex(s => s.id == endSubSnippets[0].id)
     if (startSentence.id == endSentence.id) {
         //same sentence
@@ -165,17 +165,23 @@ export function splitAndReturnSelectedSnippets(
 }
 
 function splitSnippet(snippet, charIndex, sentence) {
-    //TODO handle empty leftSnippet and/or rightSnippet, when charIndex == 0 or charIndex == snippet.text.length-1
-    const leftSnippet = new Snippet(snippet.text.substring(0, charIndex), sentence, [snippet.characterRange[0], snippet.characterRange[0] + charIndex])
-    const rightSnippet = new Snippet(snippet.text.substring(charIndex), sentence, [snippet.characterRange[0] + charIndex, snippet.characterRange[1]])
-    snippet.annotations.forEach(a => {
-        leftSnippet.addAnnotation(a)
-        rightSnippet.addAnnotation(a)
-    })
+    //If charIndex == 0 or charIndex == snippet.text.length-1 then snippet is not split, return the
+    //original snippet
+    if (charIndex == 0 || charIndex == snippet.text.length) {
+        return [snippet]
+    } else {
+        const leftSnippet = new Snippet(sentence, [snippet.characterRange[0], snippet.characterRange[0] + charIndex])
+        const rightSnippet = new Snippet(sentence, [snippet.characterRange[0] + charIndex, snippet.characterRange[1]])
+        snippet.annotations.forEach(a => {
+            leftSnippet.addAnnotation(a)
+            rightSnippet.addAnnotation(a)
+        })
 
-    //replace original snippet in sentence with the two new ones
-    const snippetIndexInSentence = sentence.snippets.findIndex(s => s.id == snippet.id)
-    sentence.snippets.splice(snippetIndexInSentence, 1, leftSnippet, rightSnippet)
+        //replace original snippet in sentence with the two new ones
+        const snippetIndexInSentence = sentence.snippets.findIndex(s => s.id == snippet.id)
+        sentence.snippets.splice(snippetIndexInSentence, 1, leftSnippet, rightSnippet)
 
-    return [leftSnippet, rightSnippet]
+        return [leftSnippet, rightSnippet]
+    }
+
 }
