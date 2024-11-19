@@ -85,11 +85,12 @@ export class SourceDocument {
                 headerChildElement = element.children.find(child => child.IRI == element.containsAsHeader)
                 sentence.isHeader = true
             } else {
-                //take first child
                 headerChildElement = element.children[0]
                 sentence.isHeader = false
             }
-            sentence.content = headerChildElement.content
+            sentence.content = "content" in headerChildElement
+                ? headerChildElement.content
+                : `${element.typeLabel ? element.typeLabel : ""} ${element.numbering}`
             sentence.id = headerChildElement.id
             sentence.iri = headerChildElement.IRI
             //add children, except the one that is the header child element
