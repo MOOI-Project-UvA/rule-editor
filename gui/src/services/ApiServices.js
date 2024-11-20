@@ -1,3 +1,4 @@
+import SuperAgent from 'superagent'
 import { alertWidget } from "../helpers/alertWidget.js";
 
 export async function fetchNlpPrediction(text) {
@@ -21,7 +22,6 @@ export async function fetchNlpPrediction(text) {
     throw new Error(
       "An error occurred during the prediction request: " + error.message,
     );
-    return error;
   }
 }
 
@@ -91,3 +91,32 @@ export async function convertRDFToJSON(rdfString) {
     );
   }
 }
+
+
+export async function getSourceList() {
+  const token = import.meta.env.VITE_TRIPLY_KEY
+
+  const reply = await SuperAgent.post('https://api.normativesystems.triply.cc/datasets/choppr/chopprdev/sparql')
+    .set('Accept', 'application/sparql-results+json')
+    .set('Authorization', 'Bearer ' + token)
+    .buffer(true)
+    .send({
+      query: `
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX src: <http://ontology.tno.nl/normengineering/source#>
+      SELECT  ?iri ?title ?date ?editor WHERE {
+        ?iri a src:Source .
+        ?iri src:hasTitle ?title .
+        ?iri src:editedBy ?editoriri .
+        ?event src:generates ?iri ;
+          src:ends ?date .
+        ?editoriri rdfs:label ?editor .
+      } ORDER BY DESC(?date)
+      `
+    })
+    .accept('json')
+
+  console.log("source list", reply.body)
+  return reply.body
+}
+

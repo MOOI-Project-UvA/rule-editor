@@ -83,6 +83,7 @@ export default {
       alertWidget("welcome", message);
     }
     this.$store.dispatch("readAvailableSources");
+    this.$store.dispatch("readAvailableSourcesInTripleStore");
     //hack to add load and save buttons next to the stepper buttons in the stepper header
     const stepperHeader = document.getElementsByClassName("q-stepper__header")[0]
     const loadSaveButtons = this.$refs.loadSaveButtons
