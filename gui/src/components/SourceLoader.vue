@@ -8,7 +8,14 @@
         </template>
       </q-select>
     </div>
-    <div class="col text-right">
+    <div class="col"><q-select v-model="selectedSource" use-input label="Add source from Triply" :options="availableSourcesInTripleStore"
+        behavior="menu" autocomplete="title" option-label="title" @update:model-value="handleSelectionTripleStore">
+        <template v-slot:before>
+          <q-icon name="mdi-book-outline" />
+        </template>
+      </q-select>
+      </div>
+    <div class="q-ml-lg text-right">
       <q-btn round size="sm" icon="mdi-file-upload-outline" color="white" text-color="primary" @click="chooseFile">
         <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
           <div>
@@ -30,6 +37,9 @@ export default {
     availableSources() {
       return this.$store.state.availableSources;
     },
+    availableSourcesInTripleStore() {
+      return this.$store.state.availableSourcesInTripleStore;
+    },
     //already loaded sources
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
@@ -42,6 +52,10 @@ export default {
   methods: {
     handleSelection() {
       this.$store.dispatch("addSource", this.selectedSource);
+      this.selectedSource = null;
+    },
+    handleSelectionTripleStore() {
+      this.$store.dispatch("addSourceFromTriply", this.selectedSource);
       this.selectedSource = null;
     },
     chooseFile() {

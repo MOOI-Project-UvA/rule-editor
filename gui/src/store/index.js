@@ -11,6 +11,7 @@ import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
 import { convertToRDF, convertRDFToJSON } from "../services/ApiServices.js";
+import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -28,7 +29,8 @@ const store = createStore({
       addingAnnotationToExistingFrame: false, //true if user is in the process of selecting a frame to add the annotationBeingEdited to
       selectedSnippet: null, // selected snippet in the source text
       clickedPosition: null,
-      availableSources: [], //list of sources that the user can choose from
+      availableSources: [], //list of sources available in repo
+      availableSourcesInTripleStore: [], //list of sources available in triple store
       task: null, //{id, type, label, description}
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
@@ -147,16 +149,25 @@ const store = createStore({
       });
     },
     //read sources that are available on server
+    //depricated as soon as these sources are available in triple store
     readAvailableSources(context) {
       json(`./sources.json`).then((data) => {
         context.state.availableSources = data;
       });
+    },
+    async readAvailableSourcesInTripleStore(context) {
+      context.state.availableSourcesInTripleStore = await getSourceList()
     },
     //reads source
     addSource(context, sourceDescription) {
       json(sourceDescription.fileName).then((jsonLdObject) => {
         context.dispatch("createSourceDocFromJsonLD", jsonLdObject)
       })
+    },
+    addSourceFromTriply(context, sourceDescription) {
+      console.log("sourceDescription", sourceDescription)
+      const sourceInRdfFormat = getSourceFromTriply(sourceDescription.iri)
+      console.log("sourceInRdfFormat", sourceInRdfFormat)
     },
     createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject)
