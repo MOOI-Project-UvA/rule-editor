@@ -35,6 +35,7 @@ function convertInterpretationToJson(task, frames, sourceDocuments) {
         description: task.description,
         label: task.label,
         sourceDocs: sourceDocsString,
+        interpretation: task.interpretation, //iri of interpretation
         frames: framesFlat
     }
 }
@@ -47,6 +48,11 @@ function parseJsonToInterpretation(jsonText) {
     task.id = parsedInterpretation.id
     task.label = parsedInterpretation.label
     task.description = parsedInterpretation.description
+    //for backward compatibility
+    if ("interpretation" in parsedInterpretation) {
+        task.interpretation = parsedInterpretation.interpretation //iri
+    }
+
 
     let sourceDocs = []
     let frames = []
