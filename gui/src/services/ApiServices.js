@@ -1,4 +1,5 @@
 import SuperAgent from 'superagent'
+//import App from '@triply/triplydb' //TODO: gives error, not compatible with vite
 import { alertWidget } from "../helpers/alertWidget.js";
 
 export async function fetchNlpPrediction(text) {
@@ -92,7 +93,6 @@ export async function convertRDFToJSON(rdfString) {
   }
 }
 
-
 export async function getSourceList() {
   const token = import.meta.env.VITE_TRIPLY_KEY
 
@@ -120,3 +120,16 @@ export async function getSourceList() {
   return reply.body
 }
 
+//retrieves source from Triply, specified by iri
+export async function getSourceFromTriply(iri) {
+
+  const token = import.meta.env.VITE_TRIPLY_KEY
+  //TODO finish the code below. gives error because of triply library
+  //const triply = App.get({ token: token })
+
+  // const user = await triply.getAccount('choppr')
+  // const dataset = await user.getDataset('chopprdev')
+  // const graph = await dataset.getGraph('http://choppr.app/decompositions/f4c735fd-d0fe-4187-a9db-65e0870e26de') // This is an example IRI, replace with the source you want to download
+  //await graph.toFile('source.ttl') // Next, convert this file to json with unwrap-api (not ready yet)
+
+}

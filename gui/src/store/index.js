@@ -11,7 +11,7 @@ import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
 import { convertToRDF, convertRDFToJSON } from "../services/ApiServices.js";
-import { getSourceList } from "../services/ApiServices";
+import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -163,6 +163,11 @@ const store = createStore({
       json(sourceDescription.fileName).then((jsonLdObject) => {
         context.dispatch("createSourceDocFromJsonLD", jsonLdObject)
       })
+    },
+    addSourceFromTriply(context, sourceDescription) {
+      console.log("sourceDescription", sourceDescription)
+      const sourceInRdfFormat = getSourceFromTriply(sourceDescription.iri)
+      console.log("sourceInRdfFormat", sourceInRdfFormat)
     },
     createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject)
