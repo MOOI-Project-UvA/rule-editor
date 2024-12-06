@@ -2,7 +2,7 @@
 import SuperAgent from "superagent";
 
 
-exports.handler = async function (event, context) {
+export const handler = async function (event, context) {
   const token = process.env.TRIPLY_KEY;
   const endpoint = process.env.TRIPLY_ENDPOINT
    const reply = await SuperAgent.post(endpoint)
