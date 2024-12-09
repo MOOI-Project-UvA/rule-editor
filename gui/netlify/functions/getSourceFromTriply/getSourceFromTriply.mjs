@@ -1,13 +1,16 @@
 import App from "@triply/triplydb";
-import {alertWidget} from "../../../src/helpers/alertWidget.js";
 
 export const handler = async function (event,context){
+    console.log("event: ", event.body)
+    console.log("context", context)
+    const iri = JSON.parse(event.body)
     const token = process.env.TRIPLY_KEY;
     const triply = App.get({ token: token });
     const user = await triply.getAccount("choppr");
     const dataset = await user.getDataset("chopprdev");
+    //TODO: add the iri selected by the user.
     const graph = await dataset.getGraph(
-     "http://choppr.app/decompositions/f4c735fd-d0fe-4187-a9db-65e0870e26de",
+     iri.iri,
     ); // This is an example IRI, replace with the source you want to download
    await graph.toFile("source.ttl"); // Next, convert this file to json with unwrap-api (not ready yet)
    console.log("graph:", graph);

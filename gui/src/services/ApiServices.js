@@ -1,5 +1,5 @@
-import SuperAgent from 'superagent'
-//import App from '@triply/triplydb' //TODO: gives error, not compatible with vite
+import SuperAgent from "superagent";
+// import { App } from "@triply/triplydb"; //TODO: gives error, not compatible with vite
 import { alertWidget } from "../helpers/alertWidget.js";
 
 export async function fetchNlpPrediction(text) {
@@ -63,7 +63,7 @@ export async function convertToRDF(dataset) {
   Converts RDF text to json structure as used by the editor
  */
 export async function convertRDFToJSON(rdfString) {
-  console.log("rdfString", rdfString)
+  console.log("rdfString", rdfString);
   try {
     const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
@@ -79,9 +79,8 @@ export async function convertRDFToJSON(rdfString) {
     }
 
     const data = await response.text();
-    console.log("data", data)
+    console.log("data", data);
     return data;
-
   } catch (error) {
     alertWidget(
       "error",
@@ -94,11 +93,13 @@ export async function convertRDFToJSON(rdfString) {
 }
 
 export async function getSourceList() {
-  const token = import.meta.env.VITE_TRIPLY_KEY
+  const token = import.meta.env.VITE_TRIPLY_KEY;
 
-  const reply = await SuperAgent.post('https://api.normativesystems.triply.cc/datasets/choppr/chopprdev/sparql')
-    .set('Accept', 'application/sparql-results+json')
-    .set('Authorization', 'Bearer ' + token)
+  const reply = await SuperAgent.post(
+    "https://api.normativesystems.triply.cc/datasets/choppr/chopprdev/sparql",
+  )
+    .set("Accept", "application/sparql-results+json")
+    .set("Authorization", "Bearer " + token)
     .buffer(true)
     .send({
       query: `
@@ -112,24 +113,27 @@ export async function getSourceList() {
           src:ends ?date .
         ?editoriri rdfs:label ?editor .
       } ORDER BY DESC(?date)
-      `
+      `,
     })
-    .accept('json')
+    .accept("json");
 
-  console.log("source list", reply.body)
-  return reply.body
+  console.log("source list", reply.body);
+  return reply.body;
 }
 
 //retrieves source from Triply, specified by iri
 export async function getSourceFromTriply(iri) {
+  const response = await fetch("/.netlify/functions/getSourceFromTriply", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ iri: iri }),
+  }).then((response) => response.json());
+  console.log("response:", response);
 
-  const token = import.meta.env.VITE_TRIPLY_KEY
-  //TODO finish the code below. gives error because of triply library
-  //const triply = App.get({ token: token })
-
-  // const user = await triply.getAccount('choppr')
-  // const dataset = await user.getDataset('chopprdev')
-  // const graph = await dataset.getGraph('http://choppr.app/decompositions/f4c735fd-d0fe-4187-a9db-65e0870e26de') // This is an example IRI, replace with the source you want to download
-  //await graph.toFile('source.ttl') // Next, convert this file to json with unwrap-api (not ready yet)
-
+  const jsonSource = await convertRDFToJSON(response.source);
+  console.log("jsonSource: ", jsonSource);
+  // TODO: The graph has to be converted to JSON via the unwrap-api. Does the API support a source?
+  return jsonSource;
 }
