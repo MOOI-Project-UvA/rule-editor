@@ -90,15 +90,14 @@ export async function convertRDFToJSON(rdfString) {
 }
 
 export async function getSourceList() {
-  const response = await fetch(
+  const sources = await fetch(
     "/.netlify/functions/getAvailableSourcesFromTriply",
     {
       headers: {
         "Content-Type": "application/json",
       },
     },
-  );
-  const sources = response.json();
+  ).then((response) => response.json());
   return sources.sources;
 }
 
