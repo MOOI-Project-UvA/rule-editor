@@ -51,8 +51,6 @@
           :disable="formIsInvalid"
           >Continue</q-btn
         >
-        <!-- TODO: form validation and next step of process -->
-        <q-btn @click="retrieveSources">Get sources</q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -89,13 +87,6 @@ export default {
       this.$store.state.task.description = this.description;
       // emit event to the parent component to update the store
       this.$emit("updateStepper");
-    },
-    async retrieveSources() {
-      const response = await fetch(
-        "/.netlify/functions/getAvailableSourcesFromTriply",
-      ).then((response) => response.json());
-      console.log("response:", response);
-      return response;
     },
   },
 };
