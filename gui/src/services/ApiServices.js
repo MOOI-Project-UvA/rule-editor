@@ -1,5 +1,4 @@
 import SuperAgent from "superagent";
-// import { App } from "@triply/triplydb"; //TODO: gives error, not compatible with vite
 import { alertWidget } from "../helpers/alertWidget.js";
 
 export async function fetchNlpPrediction(text) {
@@ -63,7 +62,6 @@ export async function convertToRDF(dataset) {
   Converts RDF text to json structure as used by the editor
  */
 export async function convertRDFToJSON(rdfString) {
-  console.log("rdfString", rdfString);
   try {
     const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
@@ -78,8 +76,7 @@ export async function convertRDFToJSON(rdfString) {
       throw new Error("An error occurred while sending the data.");
     }
 
-    const data = await response.text();
-    console.log("data", data);
+    const data = await response.json();
     return data;
   } catch (error) {
     alertWidget(
@@ -117,7 +114,6 @@ export async function getSourceList() {
     })
     .accept("json");
 
-  console.log("source list", reply.body);
   return reply.body;
 }
 
@@ -129,11 +125,11 @@ export async function getSourceFromTriply(iri) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ iri: iri }),
-  }).then((response) => response.json());
-  console.log("response:", response);
+  });
 
-  const jsonSource = await convertRDFToJSON(response.source);
-  console.log("jsonSource: ", jsonSource);
-  // TODO: The graph has to be converted to JSON via the unwrap-api. Does the API support a source?
+  // Retrieve the text content of the Turtle file
+  const ttlContent = await response.json();
+  // convert the graph to JSONLD via the unwrap-api
+  const jsonSource = await convertRDFToJSON(ttlContent.source);
   return jsonSource;
 }
