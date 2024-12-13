@@ -90,11 +90,9 @@ export async function convertRDFToJSON(rdfString) {
 }
 
 export async function getSourceList() {
-  const token = import.meta.env.VITE_TRIPLY_KEY;
+  const token = import.meta.env.TRIPLY_KEY;
 
-  const reply = await SuperAgent.post(
-    "https://api.normativesystems.triply.cc/datasets/choppr/chopprdev/sparql",
-  )
+  const reply = await SuperAgent.post(import.meta.env.TRIPLY_ENDPOINT)
     .set("Accept", "application/sparql-results+json")
     .set("Authorization", "Bearer " + token)
     .buffer(true)
