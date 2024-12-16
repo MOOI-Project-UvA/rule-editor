@@ -114,6 +114,7 @@ export default {
   },
   methods: {
     closeFrame() {
+      this.$store.state.booleanConstructBeingEdited = null
       this.$store.commit("removeFrameFromEditList", this.frame)
     },
     deleteFrame() {
