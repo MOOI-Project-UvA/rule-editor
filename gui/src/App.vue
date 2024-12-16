@@ -18,28 +18,72 @@
   */
   -->
 
-  <q-stepper id="stepper-id" v-model="this.$store.state.step" ref="stepper" color="primary" animated flat header-nav>
-    <q-step :name="1" title="Define a task" icon="mdi-head-dots-horizontal-outline" :done="this.$store.state.step > 1"
-      done-color="green" caption="Step 1" class="row justify-center content-center"
-      :header-nav="this.$store.state.step > 1">
+  <q-stepper
+    id="stepper-id"
+    v-model="this.$store.state.step"
+    ref="stepper"
+    color="primary"
+    animated
+    flat
+    header-nav
+  >
+    <q-step
+      :name="1"
+      title="Define a task"
+      icon="mdi-head-dots-horizontal-outline"
+      :done="this.$store.state.step > 1"
+      done-color="green"
+      caption="Step 1"
+      class="row justify-center content-center"
+      :header-nav="this.$store.state.step > 1"
+    >
       <TaskDefinitionView @update-stepper="updateStepperValue" />
     </q-step>
-    <q-step :name="2" title="Collect sources" icon="mdi-bookmark-box-multiple-outline"
-      class="row justify-center content-start" :done="this.$store.state.step > 2" done-color="green" caption="Step 2"
-      :header-nav="this.$store.state.step > 2">
-      <SourceCollectionView @update-stepper="updateStepperValue" @decrease-stepper="decreaseStepperValue" />
+    <q-step
+      :name="2"
+      title="Collect sources"
+      icon="mdi-bookmark-box-multiple-outline"
+      class="row justify-center content-start"
+      :done="this.$store.state.step > 2"
+      done-color="green"
+      caption="Step 2"
+      :header-nav="this.$store.state.step > 2"
+    >
+      <SourceCollectionView
+        @update-stepper="updateStepperValue"
+        @decrease-stepper="decreaseStepperValue"
+      />
     </q-step>
 
-    <q-step :name="3" title="Interpret sources" icon="mdi-thought-bubble-outline" :done="this.$store.state.step > 3"
-      done-color="green" caption="Step 3" :header-nav="this.$store.state.step > 3">
+    <q-step
+      :name="3"
+      title="Interpret sources"
+      icon="mdi-thought-bubble-outline"
+      :done="this.$store.state.step > 3"
+      done-color="green"
+      caption="Step 3"
+      :header-nav="this.$store.state.step > 3"
+    >
       <InterpretationView />
       <!-- <TestView/> -->
     </q-step>
-    <q-step :name="4" title="Validate interpretations" icon="mdi-timeline-check-outline"
-      :done="this.$store.state.step > 4" disable caption="Step 4">
+    <q-step
+      :name="4"
+      title="Validate interpretations"
+      icon="mdi-timeline-check-outline"
+      :done="this.$store.state.step > 4"
+      disable
+      caption="Step 4"
+    >
     </q-step>
-    <q-step :name="5" title="Perform task" icon="mdi-playlist-check" :done="this.$store.state.step > 5" disable
-      caption="Step 5">
+    <q-step
+      :name="5"
+      title="Perform task"
+      icon="mdi-playlist-check"
+      :done="this.$store.state.step > 5"
+      disable
+      caption="Step 5"
+    >
     </q-step>
     <!--  adding message slot, thus making the save/load interpretation tasks always accessible  -->
     <!-- <template v-slot:message>
@@ -51,7 +95,6 @@
   <div ref="loadSaveButtons">
     <load-save-interpretation-banner />
   </div>
-
 </template>
 
 <script>
@@ -76,18 +119,24 @@ export default {
   },
 
   mounted() {
-
     // if there is deployment information, show it
     if (this.repo != null) {
-      const message = retrieveDeploymentInformation(this.repo, this.branch, this.hash)
+      const message = retrieveDeploymentInformation(
+        this.repo,
+        this.branch,
+        this.hash,
+      );
       alertWidget("welcome", message);
     }
+    // list of action to be dispatched on mount
     this.$store.dispatch("readAvailableSources");
     this.$store.dispatch("readAvailableSourcesInTripleStore");
+    this.$store.dispatch("readAvailableTasksInTripleStore");
     //hack to add load and save buttons next to the stepper buttons in the stepper header
-    const stepperHeader = document.getElementsByClassName("q-stepper__header")[0]
-    const loadSaveButtons = this.$refs.loadSaveButtons
-    stepperHeader.appendChild(loadSaveButtons)
+    const stepperHeader =
+      document.getElementsByClassName("q-stepper__header")[0];
+    const loadSaveButtons = this.$refs.loadSaveButtons;
+    stepperHeader.appendChild(loadSaveButtons);
   },
   methods: {
     updateStepperValue() {
