@@ -22,8 +22,8 @@
         </div>
       </div>
 
-      <q-input v-model="frame.label" label="Label" input-style="font-size: 12pt; font-weight:bold" />
-      <q-input v-model="frame.claimduty" label="Claim-Duty" autogrow />
+      <q-input v-model="frame.shortName" label="Short name" input-style="font-size: 12pt; font-weight:bold" />
+      <q-input v-model="frame.fullName" label="Full name" autogrow />
 
       <div class="q-pa-md">
         <RoleSelector :frame="frame" attribute="duty" label="Duty" :multipleFramesAllowed="false" />

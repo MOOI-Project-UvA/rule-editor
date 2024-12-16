@@ -10,7 +10,7 @@
           <div class="text-white frame-label chip ellipsis" style="max-width: 200px;"
             :class="frame.typeId == 'fact' && frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]"
             @click="frameChipClicked(frame)">
-            {{ frame.label != "" ? frame.label : frame.typeId == 'fact' && frame.subTypeId ?
+            {{ frame.shortName != "" ? frame.shortName : frame.typeId == 'fact' && frame.subTypeId ?
       frameTypes.fact.subTypes[frame.subTypeId].label : frameTypes[frame.typeId].label }}
           </div>
         </div>

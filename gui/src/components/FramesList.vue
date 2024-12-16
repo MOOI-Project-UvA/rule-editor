@@ -55,7 +55,7 @@ export default {
         },
         filteredFrames() {
             return this.searchTerm.length >= this.minimumLengthSearchTerm
-                ? this.frames.filter(f => f.label.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                ? this.frames.filter(f => f.shortName.toLowerCase().includes(this.searchTerm.toLowerCase()))
                 : this.frames
         },
         frameBeingEdited() {

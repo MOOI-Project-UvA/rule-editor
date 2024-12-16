@@ -3,7 +3,7 @@
   <div>
     <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
       :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
-      {{ frame.label != "" ? frame.label : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
+      {{ frame.shortName != "" ? frame.shortName : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
         frameTypes[frame.typeId].label }}
     </div>
     <!-- <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
@@ -12,7 +12,7 @@
     </div> -->
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
-        {{ frame.label != "" ? frame.label : "- no label given yet -" }}
+        {{ frame.shortName != "" ? frame.shortName : "- no label given yet -" }}
       </div>
     </q-tooltip>
   </div>
