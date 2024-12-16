@@ -7,7 +7,7 @@
           @click="sentence.toggleCollapse()"></q-btn>
       </div>
 
-      <div :ref="`sentence-${sentence.id}`" @mouseup="handleSelection" :style="getStyleForSentence(sentence)">
+      <div :ref="`sentence-${sentence.iri}`" @mouseup="handleSelection" :style="getStyleForSentence(sentence)">
         <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
@@ -129,15 +129,24 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
+    },
+    //when user pressed 'scroll to source'
+    scrollToSentence() {
+      if (this.sentenceToScrollTo) {
+        const ref = this.$refs[`sentence-${this.sentenceToScrollTo.iri}`]
+        if (ref && ref.length > 0 && ref[0]) {
+          ref[0].scrollIntoView({ block: "center", behavior: 'smooth' });
+          this.$store.state.sentenceToScrollTo = null
+        }
+      }
     }
   },
   watch: {
     sentenceToScrollTo() {
-      if (this.sentenceToScrollTo) {
-        const element = this.$refs[`sentence-${this.sentenceToScrollTo.id}`][0];
-        element.scrollIntoView({ block: "center", behavior: 'smooth' });
-        this.$store.state.sentenceToScrollTo = null
-      }
+      this.scrollToSentence()
+    },
+    sentences() {
+      this.scrollToSentence()
     }
   },
 };
