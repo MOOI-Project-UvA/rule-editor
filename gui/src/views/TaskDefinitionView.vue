@@ -21,17 +21,18 @@
         </q-item-section>
       </q-item>
       <q-separator></q-separator>
-      <q-card-section>
-        <q-input filled v-model="label" label="Label" lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']" clearable />
-        <q-input type="textarea" filled v-model="description" label="Description" lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Please type something']" clearable />
+      <q-card-section v-if="task">
+        <q-input filled v-model="task.editor" label="Editor" lazy-rules
+        :rules="[(val) => (val && val.length > 0) || 'Give the editor of the task']" clearable />
+        <q-input filled v-model="task.label" label="Label" lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Give the task label']" clearable />
+        <q-input type="textarea" filled v-model="task.description" label="Description" lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Give description of the task']" clearable />
       </q-card-section>
       <q-separator></q-separator>
       <q-card-actions class="q-pa-md">
         <q-space></q-space>
-        <q-btn type="submit" color="primary" @click="storeTaskData" :disable="formIsInvalid">Continue</q-btn>
-        <!-- TODO: form validation and next step of process -->
+        <q-btn type="submit" color="primary" @click="this.$emit('updateStepper')" :disable="formIsInvalid">Continue</q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -41,13 +42,9 @@
 import { Task } from "../model/task.js"
 export default {
   name: "TaskDefinitionView",
-  data: () => ({
-    description: null,
-    label: null,
-  }),
   computed: {
     formIsInvalid() {
-      return !this.description || !this.label;
+      return this.task && (!this.task.editor || !this.task.label || !this.task.description);
     },
     task() {
       return this.$store.state.task;
@@ -56,20 +53,8 @@ export default {
   mounted() {
     if (!this.task) {
       this.$store.state.task = new Task()
-    } else {
-      this.description = this.task.description;
-      this.label = this.task.label;
     }
-  },
-
-  methods: {
-    storeTaskData() {
-      this.$store.state.task.label = this.label
-      this.$store.state.task.description = this.description
-      // emit event to the parent component to update the store
-      this.$emit("updateStepper");
-    },
-  },
+  }
 };
 </script>
 
