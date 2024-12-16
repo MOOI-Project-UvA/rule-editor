@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
+    <div class="text-white frame-label ellipsis chip" style="max-width: 400px;"
       :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
       {{ frame.shortName != "" ? frame.shortName : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
         frameTypes[frame.typeId].label }}
