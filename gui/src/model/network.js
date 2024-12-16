@@ -34,7 +34,6 @@ export class Network {
     }
 
     addTreeForAct(act) {
-        console.log("addTreeForAct", act)
         const { node: actNode } = this.getNode(act)
         //add nodes and links for roles with one frame
         const rolesWithOneFrame = ["action", "actor", "object", "recipient"]
@@ -77,7 +76,6 @@ export class Network {
     }
 
     addTreeForFact(fact) {
-        console.log("add tree for fact", fact)
         const { node: factNode, isNew: isNewNode } = this.getNode(fact)
         //if fact node already exists, we don't want to have another link to its subdivision
         if (isNewNode) {
