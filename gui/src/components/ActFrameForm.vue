@@ -29,7 +29,7 @@
               >
                 <q-tooltip anchor="bottom middle" class="text-subtitle2">
                   <span
-                    >Detect roles of an act frame. <br />This feature is still
+                    >Detect roles of an act frame.<br/>This feature is still
                     experimental, so use it with caution.</span
                   >
                 </q-tooltip>
@@ -52,21 +52,21 @@
                 floating
                 >{{ frame.comments.length }}</q-badge
               >
-              <q-tooltip class="text-subtitle2"> Comments </q-tooltip>
+              <q-tooltip class="text-subtitle2">Comments</q-tooltip>
             </q-btn>
           </div>
         </div>
       </div>
 
       <q-input
-        v-model="frame.label"
-        label="Label"
+        v-model="frame.shortName"
+        label="Short name"
         input-style="font-size: 12pt; font-weight:bold"
         @update:model-value="userChangedLabel"
         @blur="updateLabel"
         clearable
       />
-      <q-input v-model="frame.act" label="Act" autogrow />
+      <q-input v-model="frame.fullName" label="Full name" autogrow />
 
       <div class="q-pa-md">
         <RoleSelector
