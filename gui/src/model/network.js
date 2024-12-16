@@ -16,14 +16,14 @@ export class Network {
     //In addition we add links between acts, indicating that an act
     //has to finish before another can start.
     createNetwork(frames) {
+        console.log("createNetwork", frames)
         frames.forEach(frame => {
             switch (frame.typeId) {
                 case "act":
                     this.addTreeForAct(frame)
                     break;
-                case "fact":
+                default:
                     this.addTreeForFact(frame)
-                    break;
             }
         })
         //add dependency relations between acts: act1 - before - act2
@@ -39,7 +39,7 @@ export class Network {
         const rolesWithOneFrame = ["action", "actor", "object", "recipient"]
         rolesWithOneFrame.forEach(roleAttribute => {
             if (act[roleAttribute]) {
-                //if act has this role filled in, get corresponding nodeTree
+                //if act has this role filled in, get corresponding nodeTree.
                 //the fact for this role can be subdivided, so in general this
                 //is a node tree
                 const roleNode = this.addTreeForFact(act[roleAttribute])
@@ -91,7 +91,13 @@ export class Network {
         //if BC has a frame, create corresponding nodeTree, else create an anonymous node
         let bcRoot = null
         if (booleanConstruct.frame) {
-            bcRoot = this.addTreeForFact(booleanConstruct.frame)
+            switch (booleanConstruct.frame.typeId) {
+                case "act":
+                    bcRoot = this.addTreeForAct(booleanConstruct.frame)
+                    break;
+                default:
+                    bcRoot = this.addTreeForFact(booleanConstruct.frame)
+            }
         } else {
             //create nodes for children. If there are more than zero: create
             //anonymous node to connect them
@@ -162,7 +168,7 @@ export class Network {
         if (!node) {
             node = {
                 id: frame.id,
-                label: frame.label,
+                label: frame.shortName,
                 type: frame.typeId,
                 subType: frame.subTypeId,
                 sequenceIndex: null //index of act nodes in chain of dependency
