@@ -82,6 +82,9 @@ export default {
     idIsCopiedToClipboard: false
   }),
   computed: {
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments
+    },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument
     },
@@ -89,8 +92,8 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     sentences() {
-      return this.displayedSourceDocument.getSentencesForFrame(this.frame)
-    }
+      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
+    },
   },
   methods: {
     closeFrame() {
@@ -104,8 +107,11 @@ export default {
     },
     //scroll to source of frame, in source panel
     scrollToSource() {
-      //take the first sentence to scroll to
-      this.$store.state.sentenceToScrollTo = this.sentences[0]
+      const sentenceToScrollTo = this.sentences[0];
+      //show correct source
+      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
+      //scroll to sentence
+      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
