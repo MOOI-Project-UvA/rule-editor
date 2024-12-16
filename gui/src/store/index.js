@@ -10,7 +10,12 @@ import {
 import { json, text } from "d3-fetch";
 import { SourceDocument } from "../model/sourceDocument.js";
 import { v4 as uuid4 } from "uuid";
-import { convertToRDF, convertRDFToJSON } from "../services/ApiServices.js";
+import {
+  convertToRDF,
+  convertRDFToJSON,
+  getTasksFromTriply,
+  getTaskFromTriply,
+} from "../services/ApiServices.js";
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 // Create a new store instance.
 const store = createStore({
@@ -35,6 +40,7 @@ const store = createStore({
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
+      availableTasksInTripleStore: [], // list of tasks available at TriplyDB
     };
   },
   mutations: {
@@ -179,6 +185,18 @@ const store = createStore({
       const jsonLdObject = await getSourceFromTriply(sourceDescription.iri);
       context.dispatch("createSourceDocFromJsonLD", jsonLdObject);
     },
+    async addTaskFromTriply(context, taskIri) {
+      const taskInTurtle = await getTaskFromTriply(taskIri);
+      console.log("task JSONLd: ", taskInTurtle);
+      // convert the graph to JSONLD via the unwrap-api
+      const interpretation = await convertRDFToJSON(taskInTurtle.task);
+      console.log("taskInJson:", interpretation);
+
+      context.dispatch("loadInterpretation", JSON.stringify(interpretation));
+    },
+    async readAvailableTasksInTripleStore(context) {
+      context.state.availableTasksInTripleStore = await getTasksFromTriply();
+    },
     createSourceDocFromJsonLD(context, jsonLdObject) {
       console.log("JsonLDL:", jsonLdObject);
       const sourceDoc = new SourceDocument(jsonLdObject);
@@ -248,6 +266,7 @@ const store = createStore({
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
+      console.log("interpretation:", interpretation);
       context.state.task = interpretation.task;
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames;

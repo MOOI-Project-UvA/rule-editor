@@ -90,20 +90,17 @@ export async function convertRDFToJSON(rdfString) {
 }
 
 export async function getSourceList() {
-  const sources = await fetch(
-    "/.netlify/functions/getAvailableSourcesFromTriply",
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const sources = await fetch("/api/getSources", {
+    headers: {
+      "Content-Type": "application/json",
     },
-  ).then((response) => response.json());
+  }).then((response) => response.json());
   return sources.sources;
 }
 
 //retrieves source from Triply, specified by iri
 export async function getSourceFromTriply(iri) {
-  const response = await fetch("/.netlify/functions/getSourceFromTriply", {
+  const response = await fetch("/api/getSource", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -116,4 +113,27 @@ export async function getSourceFromTriply(iri) {
   // convert the graph to JSONLD via the unwrap-api
   const jsonSource = await convertRDFToJSON(ttlContent.source);
   return jsonSource;
+}
+
+export async function getTasksFromTriply() {
+  const tasks = await fetch("/api/getAvailableTasks").then((response) =>
+    response.json(),
+  );
+  console.log("tasks:", tasks);
+  return tasks.tasks;
+}
+
+export async function getTaskFromTriply(iri) {
+  console.log("iri:", iri);
+  const task = await fetch("/api/getTask", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ iri: iri }),
+  }).then((response) => response.json());
+
+  console.log("selected task: ", task);
+
+  return task;
 }
