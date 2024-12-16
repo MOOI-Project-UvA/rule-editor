@@ -51,10 +51,20 @@ export const handler = async function (event,context){
     if (ttlString){
         return {
             statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*', // Allow all origins
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            },
             body: JSON.stringify({message: "Source retreived!", source: ttlString})}
     }else {
         return {
             statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*', // Allow all origins
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            },
             body: JSON.stringify({message: "Issue with the turtle file!"})
         }
     }
