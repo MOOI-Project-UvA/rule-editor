@@ -51,6 +51,11 @@ export default defineConfig({
         secure: false,
         changeOrigin: true,
       },
+      "/api/saveTaskAtTriply": {
+        target: "/.netlify/functions/saveTask",
+        secure: false,
+        changeOrigin: true,
+      },
     },
   },
 });
