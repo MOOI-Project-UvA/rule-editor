@@ -15,8 +15,10 @@ import {
   convertRDFToJSON,
   getTasksFromTriply,
   getTaskFromTriply,
+  saveTaskAtTriply,
 } from "../services/ApiServices.js";
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
+import { alertWidget } from "../helpers/alertWidget.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -41,6 +43,7 @@ const store = createStore({
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
+      showTaskOverview: false,
     };
   },
   mutations: {
@@ -155,6 +158,9 @@ const store = createStore({
         doc.deleteAnnotation(annotation);
       });
     },
+    setTaskOverview(state, status) {
+      state.showTaskOverview = status;
+    },
   },
   actions: {
     loadInterpretationForDebugging(context) {
@@ -187,18 +193,14 @@ const store = createStore({
     },
     async addTaskFromTriply(context, taskIri) {
       const taskInTurtle = await getTaskFromTriply(taskIri);
-      console.log("task JSONLd: ", taskInTurtle);
       // convert the graph to JSONLD via the unwrap-api
-      const interpretation = await convertRDFToJSON(taskInTurtle.task);
-      console.log("taskInJson:", interpretation);
-
-      context.dispatch("loadInterpretation", JSON.stringify(interpretation));
+      const interpretation = await convertRDFToJSON(taskInTurtle.task, false);
+      context.dispatch("loadInterpretation", interpretation);
     },
     async readAvailableTasksInTripleStore(context) {
       context.state.availableTasksInTripleStore = await getTasksFromTriply();
     },
     createSourceDocFromJsonLD(context, jsonLdObject) {
-      console.log("JsonLDL:", jsonLdObject);
       const sourceDoc = new SourceDocument(jsonLdObject);
       //todo: check if sourceDoc is already in list
       context.state.sourceDocuments = [
@@ -210,7 +212,6 @@ const store = createStore({
         d1.title.localeCompare(d2.title),
       );
       context.state.sourceDocuments;
-      console.log("sourceDocuments:", context.state.sourceDocuments);
     },
     createAct(context) {
       context.state.frameBeingEdited = new Act();
@@ -266,7 +267,6 @@ const store = createStore({
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
-      console.log("interpretation:", interpretation);
       context.state.task = interpretation.task;
       context.state.sourceDocuments = interpretation.sourceDocs;
       context.state.frames = interpretation.frames;
@@ -278,16 +278,31 @@ const store = createStore({
       context.state.step = 3;
     },
     async loadInterpretationFromRDF(context, rdfText) {
-      const jsonString = await convertRDFToJSON(rdfText);
-      context.dispatch("createSourceDocFromJsonLD", JSON.parse(jsonString));
+      const jsonString = await convertRDFToJSON(rdfText, false);
+      context.dispatch("loadInterpretation", jsonString);
+    },
+    async saveInterpretationTriply(context) {
+      // first convert the interpretation to triples
+      //combine frames that are saved with frames open in editor
+      //keep unique list of frames
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id == frame.id) === index,
+        );
 
-      // context.dispatch("loadInterpretation", jsonString);
-      // //reset selection
-      // context.state.frameBeingEdited = null
-      // context.state.framesOpenInEditor = []
-      // context.state.booleanConstructBeingEdited = null
-      // //show the interpretation view
-      // context.state.step = 3
+      //ones and open in the editor
+      const jsonString = JSON.stringify(
+        convertInterpretationToJson(
+          context.state.task,
+          allFrames,
+          context.state.sourceDocuments,
+        ),
+      );
+      const taskInRDF = await convertToRDF(jsonString, false);
+      //execute remote function ...
+      await saveTaskAtTriply(taskInRDF);
     },
   },
 });

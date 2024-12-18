@@ -1,5 +1,6 @@
 import SuperAgent from "superagent";
 import { alertWidget } from "../helpers/alertWidget.js";
+import { reformatDate } from "../helpers/dateTimeFunctions.js";
 
 export async function fetchNlpPrediction(text) {
   try {
@@ -28,7 +29,7 @@ export async function fetchNlpPrediction(text) {
 /*
   Converts the JSON structure supported by the editor to RDF
  */
-export async function convertToRDF(dataset) {
+export async function convertToRDF(dataset, showWidget = true) {
   try {
     const response = await fetch("/api/wrapUp/process_and_save", {
       method: "POST",
@@ -44,14 +45,20 @@ export async function convertToRDF(dataset) {
     }
 
     const data = await response.text();
-    alertWidget("success", "Successful conversion to RDF!");
+    if (showWidget) {
+      alertWidget("success", "Successful conversion to RDF!");
+    }
 
     return data;
   } catch (error) {
-    alertWidget(
-      "error",
-      "An error occured while converting data to rdf! Details:" + error.message,
-    );
+    if (showWidget) {
+      alertWidget(
+        "error",
+        "An error occured while converting data to rdf! Details:" +
+          error.message,
+      );
+    }
+
     throw new Error(
       "An error occurred while converting data to rdf: " + error.message,
     );
@@ -61,7 +68,7 @@ export async function convertToRDF(dataset) {
 /*
   Converts RDF text to json structure as used by the editor
  */
-export async function convertRDFToJSON(rdfString) {
+export async function convertRDFToJSON(rdfString, string = false) {
   try {
     const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
@@ -76,8 +83,7 @@ export async function convertRDFToJSON(rdfString) {
       throw new Error("An error occurred while sending the data.");
     }
 
-    const data = await response.json();
-    return data;
+    return !string ? await response.text() : await response.json();
   } catch (error) {
     alertWidget(
       "error",
@@ -119,7 +125,7 @@ export async function getTasksFromTriply() {
   const tasks = await fetch("/api/getAvailableTasks").then((response) =>
     response.json(),
   );
-  console.log("tasks:", tasks);
+  tasks.tasks.forEach((r) => (r.date = reformatDate(r.date)));
   return tasks.tasks;
 }
 
@@ -132,8 +138,25 @@ export async function getTaskFromTriply(iri) {
     },
     body: JSON.stringify({ iri: iri }),
   }).then((response) => response.json());
-
-  console.log("selected task: ", task);
+  // chech how to avoid double conversion between json to stringify to json
 
   return task;
+}
+
+export async function saveTaskAtTriply(taskInRdf) {
+  const resp = await fetch("/api/saveTaskAtTriply", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ task: taskInRdf }),
+  }).then((t) => {
+    return { status: t.status, text: t.statusText };
+  });
+
+  if (resp.status === 200) {
+    alertWidget("success", "The task has been saved successfully!");
+  } else {
+    alertWidget("error", resp.text);
+  }
 }
