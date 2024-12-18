@@ -95,6 +95,9 @@
   <div ref="loadSaveButtons">
     <load-save-interpretation-banner />
   </div>
+  <div>
+    <task-retrieval />
+  </div>
 </template>
 
 <script>
@@ -104,6 +107,7 @@ import InterpretationView from "./views/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
 import { alertWidget } from "./helpers/alertWidget.js";
 import { retrieveDeploymentInformation } from "./helpers/utilities.js";
+import TaskRetrieval from "./components/TaskRetrieval.vue";
 export default {
   name: "app",
   data: () => ({
@@ -112,6 +116,7 @@ export default {
     branch: import.meta.env.VITE_BRANCH,
   }),
   components: {
+    TaskRetrieval,
     LoadSaveInterpretationBanner,
     InterpretationView,
     SourceCollectionView,
@@ -132,10 +137,7 @@ export default {
     this.$store.dispatch("readAvailableSources");
     this.$store.dispatch("readAvailableSourcesInTripleStore");
     this.$store.dispatch("readAvailableTasksInTripleStore");
-    this.$store.dispatch(
-      "addTaskFromTriply",
-      "http://ontology.tno.nl/normengineering/editor#task-b09583c0-863a-4307-bc3d-6af1800b10f5",
-    );
+
     //hack to add load and save buttons next to the stepper buttons in the stepper header
     const stepperHeader =
       document.getElementsByClassName("q-stepper__header")[0];
