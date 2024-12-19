@@ -68,7 +68,7 @@ export async function convertToRDF(dataset, showWidget = true) {
 /*
   Converts RDF text to json structure as used by the editor
  */
-export async function convertRDFToJSON(rdfString, string = false) {
+export async function convertRDFToJSON(rdfString, json = false) {
   try {
     const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
@@ -83,7 +83,7 @@ export async function convertRDFToJSON(rdfString, string = false) {
       throw new Error("An error occurred while sending the data.");
     }
 
-    return !string ? await response.text() : await response.json();
+    return !json ? await response.text() : await response.json();
   } catch (error) {
     alertWidget(
       "error",
@@ -117,7 +117,7 @@ export async function getSourceFromTriply(iri) {
   // Retrieve the text content of the Turtle file
   const ttlContent = await response.json();
   // convert the graph to JSONLD via the unwrap-api
-  const jsonSource = await convertRDFToJSON(ttlContent.source);
+  const jsonSource = await convertRDFToJSON(ttlContent.source, true);
   return jsonSource;
 }
 
