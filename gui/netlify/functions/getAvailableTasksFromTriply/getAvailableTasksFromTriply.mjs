@@ -27,11 +27,10 @@ export const handler = async function(event, context){
       })
       .accept('json')
 
+    console.log("tasks:", reply.body)
+
     return {
         statusCode: 200,
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify({ message: 'Tasks retrieved!', tasks: reply.body }),
     };
 

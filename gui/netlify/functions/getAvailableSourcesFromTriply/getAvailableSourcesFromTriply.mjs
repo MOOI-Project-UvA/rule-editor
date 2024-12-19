@@ -29,11 +29,6 @@ export const handler = async function (event, context) {
 
   return {
     statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*', // Allow all origins
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    },
     body: JSON.stringify({ message: 'Sources retrieved!', sources: reply.body }),
   };
 };
