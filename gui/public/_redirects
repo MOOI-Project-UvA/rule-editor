@@ -6,4 +6,4 @@
 /api/getSource /.netlify/functions/getSourceFromTriply/:splat 200
 /api/getAvailableTasks /.netlify/functions/getAvailableTasksFromTriply/:splat 200
 /api/getTask /.netlify/functions/getTaskFromTriply/:splat 200
-/api/saveTask /.netlify/functions/saveTask/:splat 200
+/api/saveTaskAtTriply /.netlify/functions/saveTask/:splat 200
