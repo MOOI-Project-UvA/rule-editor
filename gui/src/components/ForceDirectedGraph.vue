@@ -184,7 +184,8 @@ export default {
                 this.draggedNode.fx += e.movementX / this.currentZoomLevel;
                 this.draggedNode.fy += e.movementY / this.currentZoomLevel;
                 this.nodesInSimulation = [...this.nodesInSimulation]
-                this.linksInSimulation = [...this.linksInSimulation]    
+                this.linksInSimulation = [...this.linksInSimulation]   
+                this.restartSimulation() 
             }
         },
         handleMouseUp(e) {
