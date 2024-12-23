@@ -87,8 +87,8 @@ export default {
         },
         initSimulation() {
             //const fX = forceX(0).strength(0.1);
-            const fX = forceX((node) => { return 'preferredPosition' in node ? node.preferredPosition.x : 0 })
-                .strength((node) => { return 'preferredPosition' in node ? node.preferredPosition.strength : 0.1 })
+            const fX = forceX((node) => { return node.preferredPosition ? node.preferredPosition.x : 0 })
+                .strength((node) => { return node.preferredPosition ? node.preferredPosition.strength : 0.1 })
             const fY = forceY(0).strength(0.1);
             this.simulation = forceSimulation(this.nodesInSimulation)
                 .force("x", fX)

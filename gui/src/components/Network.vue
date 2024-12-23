@@ -64,11 +64,11 @@ export default {
             network.links.forEach(link => {
                 link.color = link.type == "dependency" ? hexColorsLight["act"] : "#999999"
             })
-            //add preferred positions for act nodes
-            const actNodes = network.nodes.filter(n => n.type == "act")
+            //add preferred positions for act nodes if they have a sequence index set
+            const actNodesWithSequenceIndex = network.nodes.filter(n => n.type == "act" && n.sequenceIndex)
             //get largest sequence index
-            const largestSequenceNumber = max(actNodes.map(n => n.sequenceIndex))
-            actNodes.forEach(actNode => {
+            const largestSequenceNumber = max(actNodesWithSequenceIndex.map(n => n.sequenceIndex))
+            actNodesWithSequenceIndex.forEach(actNode => {
                 actNode.preferredPosition = {
                     x: (actNode.sequenceIndex - largestSequenceNumber / 2) * this.horizontalDistanceBetweenActs,
                     strength: 0.3
