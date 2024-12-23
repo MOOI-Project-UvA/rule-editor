@@ -179,8 +179,10 @@ export default {
         },
         handleMouseMove(e) {
             if (this.draggedNode) {
-                this.draggedNode.x += e.movementX / this.currentZoomLevel;
-                this.draggedNode.y += e.movementY / this.currentZoomLevel;
+                this.draggedNode.fx = this.draggedNode.x
+                this.draggedNode.fy = this.draggedNode.y
+                this.draggedNode.fx += e.movementX / this.currentZoomLevel;
+                this.draggedNode.fy += e.movementY / this.currentZoomLevel;
                 this.nodesInSimulation = [...this.nodesInSimulation]
                 this.linksInSimulation = [...this.linksInSimulation]    
             }
