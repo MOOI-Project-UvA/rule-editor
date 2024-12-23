@@ -64,11 +64,11 @@ export default {
             network.links.forEach(link => {
                 link.color = link.type == "dependency" ? hexColorsLight["act"] : "#999999"
             })
-            //add preferred positions for act nodes
-            const actNodes = network.nodes.filter(n => n.type == "act")
+            //add preferred positions for act nodes if they have a sequence index set
+            const actNodesWithSequenceIndex = network.nodes.filter(n => n.type == "act" && n.sequenceIndex)
             //get largest sequence index
-            const largestSequenceNumber = max(actNodes.map(n => n.sequenceIndex))
-            actNodes.forEach(actNode => {
+            const largestSequenceNumber = max(actNodesWithSequenceIndex.map(n => n.sequenceIndex))
+            actNodesWithSequenceIndex.forEach(actNode => {
                 actNode.preferredPosition = {
                     x: (actNode.sequenceIndex - largestSequenceNumber / 2) * this.horizontalDistanceBetweenActs,
                     strength: 0.3
@@ -90,19 +90,6 @@ export default {
         }
     },
     methods: {
-        // toggleOpenFrame(node) {
-        //     //check if node's frame is already open in editor. If so, close it.
-        //     const index = this.framesOpenInEditor.findIndex(f => f.id == node.id)
-        //     const frame = this.frames.find(f => f.id == node.id)
-        //     if (index == -1) {
-        //         //not yet open in editor, add it
-        //         this.$store.state.frameBeingEdited = frame
-        //         this.$store.state.framesOpenInEditor.push(frame)
-        //     } else {
-        //         //node is already open; close it.
-        //         this.$store.commit("removeFrameFromEditList", frame)
-        //     }
-        // },
         toggleCollapse(node) {
             const relatedNodes = this.network.getDirectlyLinkedNodes(node)
             if (node.isCollapsed) {
