@@ -90,19 +90,6 @@ export default {
         }
     },
     methods: {
-        // toggleOpenFrame(node) {
-        //     //check if node's frame is already open in editor. If so, close it.
-        //     const index = this.framesOpenInEditor.findIndex(f => f.id == node.id)
-        //     const frame = this.frames.find(f => f.id == node.id)
-        //     if (index == -1) {
-        //         //not yet open in editor, add it
-        //         this.$store.state.frameBeingEdited = frame
-        //         this.$store.state.framesOpenInEditor.push(frame)
-        //     } else {
-        //         //node is already open; close it.
-        //         this.$store.commit("removeFrameFromEditList", frame)
-        //     }
-        // },
         toggleCollapse(node) {
             const relatedNodes = this.network.getDirectlyLinkedNodes(node)
             if (node.isCollapsed) {
