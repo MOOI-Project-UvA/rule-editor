@@ -1,6 +1,8 @@
 <template>
-    <div class="height-fill-available" ref="container">
-        <svg :width="width" :height="height" ref="svg">
+    <div class="height-fill-available" ref="container" @mousemove="handleMouseMove($event)"
+    @mouseup="handleMouseUp($event)">
+        <svg :width="width" :height="height" ref="svg" >
+        
             <defs>
                 <!-- A marker to be used as an arrowhead -->
                 <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6"
@@ -12,8 +14,10 @@
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="#999999" />
                 </marker>
             </defs>
-            <rect :width="width" :height="height" fill="#ffffff" />
-            <g ref="network">
+            <rect :width="width" :height="height" fill="#eeeeee"
+            
+            />
+            <g ref="network" >
                 <g :transform="`translate(${width / 2},${height / 2})`">
 
                     <g id="links">
@@ -24,8 +28,9 @@
                     <g id="nodes">
                         <circle v-for="node in nodesInSimulation" :cx="node.x" :cy="node.y" :r="node.radius"
                             :fill="node.color" :stroke="node.stroke" stroke-width="2"
-                            @click="$emit('node-clicked', node)" @mouseover="printNode(node)" />
+                            @mousedown="handleMouseDown($event, node)"/>
                     </g>
+                    
                     <g id="edge-labels">
                         <g v-for="link in linksInSimulation" :transform="getTransformForLinkLabel(link)">
                             <text dy="-2" text-anchor="middle" :fill="link.color" font-size="7">{{ link.label }}</text>
@@ -40,7 +45,7 @@
         </svg>
     </div>
 </template>
-
+<!-- @click="$emit('node-clicked', node)" @mouseover="printNode(node)" -->
 
 <script>
 import { forceSimulation, forceX, forceY, forceManyBody, forceLink } from "d3-force"
@@ -52,7 +57,10 @@ export default {
         nodesInSimulation: [],
         linksInSimulation: [],
         width: 800,
-        height: 600
+        height: 600,
+        draggedNode: null,
+        mouseDownPos: null, //to see if node is just clicked or also dragged
+        currentZoomLevel: 1
     }),
     props: {
         nodesAndLinks: Object
@@ -72,14 +80,15 @@ export default {
         initZoom() {
             select(this.$refs.svg).call(zoom().on("zoom",
                 (e) => {
+                    this.currentZoomLevel = e.transform.k;
                     select(this.$refs.network).attr("transform", e.transform)
                 }
             ))
         },
         initSimulation() {
             //const fX = forceX(0).strength(0.1);
-            const fX = forceX((node) => { return 'preferredPosition' in node ? node.preferredPosition.x : 0 })
-                .strength((node) => { return 'preferredPosition' in node ? node.preferredPosition.strength : 0.1 })
+            const fX = forceX((node) => { return node.preferredPosition ? node.preferredPosition.x : 0 })
+                .strength((node) => { return node.preferredPosition ? node.preferredPosition.strength : 0.1 })
             const fY = forceY(0).strength(0.1);
             this.simulation = forceSimulation(this.nodesInSimulation)
                 .force("x", fX)
@@ -162,16 +171,43 @@ export default {
             const rotationRad = Math.atan2(rightPoint.y - leftPoint.y, rightPoint.x - leftPoint.x)
             const rotationDegrees = 360 * rotationRad / (2 * Math.PI)
             return `translate(${(link.source.x + link.target.x) / 2},${(link.source.y + link.target.y) / 2}) rotate(${rotationDegrees})`
+        },
+        handleMouseDown(e, node) {
+            e.stopPropagation();
+            this.draggedNode = node;
+            this.mouseDownPos = [e.clientX, e.clientY]
+        },
+        handleMouseMove(e) {
+            if (this.draggedNode) {
+                this.draggedNode.fx = this.draggedNode.x
+                this.draggedNode.fy = this.draggedNode.y
+                this.draggedNode.fx += e.movementX / this.currentZoomLevel;
+                this.draggedNode.fy += e.movementY / this.currentZoomLevel;
+                this.nodesInSimulation = [...this.nodesInSimulation]
+                this.linksInSimulation = [...this.linksInSimulation]   
+                this.restartSimulation() 
+            }
+        },
+        handleMouseUp(e) {
+            //e.stopPropagation();
+            const dragHasHappened = this.mouseDownPos &&
+                Math.abs(e.clientX - this.mouseDownPos[0]) + Math.abs(e.clientY - this.mouseDownPos[1]) > 5;
+            console.log(dragHasHappened)
+            // if (!this.dragHasHappened) {
+            //     console.log("selection")
+            //     //     //toggle node selection
+            //     //     $selectedNode =
+            //     //         $selectedNode && $selectedNode.id == draggedNode.id
+            //     //             ? null
+            //     //             : draggedNode;
+            //     // }
+            // }
+            this.draggedNode = null
+            this.mouseDownPos = null;
         }
     },
     watch: {
         nodesAndLinks: function (newNetwork, oldNetwork) {
-            console.log("new nodesAndLinks")
-            //TODO: update only when number of nodes or links has changed.
-            //create function: updateLabels
-            //this prevents from updating when a label is edited
-            // const numberOfNodesOrLinksChanged =
-            //     newNetwork.nodes.length != oldNetwork.nodes.length || newNetwork.links.length != oldNetwork.links.length
             this.restartSimulation()
         }
     }

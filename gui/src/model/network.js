@@ -27,10 +27,11 @@ export class Network {
             }
         })
         //add dependency relations between acts: act1 - before - act2
-        this.addDependencyLinksBetweenActNodes()
+        //this.addDependencyLinksBetweenActNodes()
         //for each act, determine position in dependency-chain. this is used for positioning the acts
         //from left to right
-        this.setSequenceOfActnodes()
+        ///this.setSequenceOfActnodes()
+        console.log("nodes", this._nodes, "links", this._links)
     }
 
     addTreeForAct(act) {
@@ -171,7 +172,8 @@ export class Network {
                 label: frame.shortName,
                 type: frame.typeId,
                 subType: frame.subTypeId,
-                sequenceIndex: null //index of act nodes in chain of dependency
+                sequenceIndex: null, //index of act nodes in chain of dependency
+                preferredPosition: null
             }
             this._nodes.push(node)
             isNew = true
@@ -185,7 +187,8 @@ export class Network {
             label: label,
             type: "anonymous",
             subType: subType,
-            sequenceIndex: null
+            sequenceIndex: null,
+            preferredPosition: null
         }
         this._nodes.push(node)
         return node
