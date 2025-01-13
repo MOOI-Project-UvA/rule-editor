@@ -272,6 +272,9 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.json`);
     },
     async saveInterpretationAsTurtle(context) {
+      //set loading indication
+      const notification = alertWidget("loading", "saving...");
+
       //combine frames that are saved with frames open in editor
       //keep unique list of frames
       const allFrames = context.state.frames
@@ -289,12 +292,20 @@ const store = createStore({
           context.state.sourceDocuments,
         ),
       );
-      const response = await convertToRDF(jsonString);
+      const response = await convertToRDF(jsonString, false);
+
       const blob = new Blob([response], {
         type: "text/turtle;charset=utf-8",
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.ttl`);
+      if (response) {
+        notification();
+        alertWidget(
+          "success",
+          "The interpretation has been saved successfully!",
+        );
+      }
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
@@ -309,8 +320,17 @@ const store = createStore({
       context.state.step = 3;
     },
     async loadInterpretationFromRDF(context, rdfText) {
+      //set loading indication
+      const notification = alertWidget("loading", "loading task...");
       const jsonString = await convertRDFToJSON(rdfText, false);
       context.dispatch("loadInterpretation", jsonString);
+      if (jsonString) {
+        notification();
+        alertWidget(
+          "success",
+          "The interpretation has been loaded successfully!",
+        );
+      }
     },
     async saveInterpretationTriply(context) {
       // show loading indication
