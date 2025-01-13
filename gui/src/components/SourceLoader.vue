@@ -30,6 +30,20 @@
         <template v-slot:before>
           <q-icon name="mdi-book-outline" />
         </template>
+        <template v-slot:option="scope">
+          <q-item v-bind="scope.itemProps">
+            <q-item-section>
+              <q-item-label>Source: {{ scope.opt.title }}</q-item-label>
+              <q-item-label caption
+                >Editor: {{ scope.opt.editor }}
+              </q-item-label>
+              <q-item-label caption>
+                Date:
+                {{ reformatDate(scope.opt.date) }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
       </q-select>
     </div>
     <div class="q-ml-lg text-right">
@@ -57,6 +71,8 @@
 </template>
 
 <script>
+import { reformatDate } from "../helpers/dateTimeFunctions.js";
+
 export default {
   data: () => ({
     selectedSource: null,
@@ -78,6 +94,7 @@ export default {
     },
   },
   methods: {
+    reformatDate,
     handleSelection() {
       this.$store.dispatch("addSource", this.selectedSource);
       this.selectedSource = null;
