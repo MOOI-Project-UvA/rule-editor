@@ -299,13 +299,14 @@ const store = createStore({
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.ttl`);
-      if (response) {
-        notification();
-        alertWidget(
-          "success",
-          "The interpretation has been saved successfully!",
-        );
-      }
+      // dismiss notification
+      notification();
+      response
+        ? alertWidget("success", "The task has been saved successfully!")
+        : alertWidget(
+            "error",
+            "An error occurred while saving the task to rdf!",
+          );
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
@@ -324,13 +325,14 @@ const store = createStore({
       const notification = alertWidget("loading", "loading task...");
       const jsonString = await convertRDFToJSON(rdfText, false);
       context.dispatch("loadInterpretation", jsonString);
-      if (jsonString) {
-        notification();
-        alertWidget(
-          "success",
-          "The interpretation has been loaded successfully!",
-        );
-      }
+      //dismiss notification
+      notification();
+      jsonString
+        ? alertWidget("success", "The task has been loaded successfully!")
+        : alertWidget(
+            "error",
+            "An error occurred while loading the interpretation to rdf!",
+          );
     },
     async saveInterpretationTriply(context) {
       // show loading indication

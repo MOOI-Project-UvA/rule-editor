@@ -54,7 +54,7 @@ export async function convertToRDF(dataset, showWidget = true) {
     if (showWidget) {
       alertWidget(
         "error",
-        "An error occured while converting data to rdf! Details:" +
+        "An error occurred while converting data to rdf! Details:" +
           error.message,
       );
     }
