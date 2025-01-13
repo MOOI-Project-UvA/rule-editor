@@ -293,20 +293,22 @@ const store = createStore({
         ),
       );
       const response = await convertToRDF(jsonString, false);
-
+      // dismiss notification
+      notification();
+      response
+        ? alertWidget(
+            "success",
+            "The task has been converted to RDF successfully! You can now save it locally.",
+          )
+        : alertWidget(
+            "error",
+            "An error occurred while saving the task to rdf!",
+          );
       const blob = new Blob([response], {
         type: "text/turtle;charset=utf-8",
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.ttl`);
-      // dismiss notification
-      notification();
-      response
-        ? alertWidget("success", "The task has been saved successfully!")
-        : alertWidget(
-            "error",
-            "An error occurred while saving the task to rdf!",
-          );
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
