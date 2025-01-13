@@ -87,76 +87,180 @@ export async function convertRDFToJSON(rdfString, json = false) {
   } catch (error) {
     alertWidget(
       "error",
-      "An error occured while converting data to rdf! Details:" + error.message,
+      "An error occurred while converting data to rdf! Details:" +
+        error.message,
     );
-    throw new Error(
+    console.error(
       "An error occurred while converting data to rdf: " + error.message,
     );
   }
 }
 
+// retrieves the available sources stored at TriplyDB
 export async function getSourceList() {
-  const sources = await fetch("/api/getSources", {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((response) => response.json());
-  return sources.sources;
+  try {
+    const response = await fetch("/api/getSources", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      // Custom message for failed HTTP codes
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500)
+        throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${response.status}, ${response.statusText}`);
+    } else {
+      const sources = await response.json();
+      return sources.sources;
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the available sources from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the available sources from Triply. ",
+      error,
+    );
+  }
 }
 
 //retrieves source from Triply, specified by iri
 export async function getSourceFromTriply(iri) {
-  const response = await fetch("/api/getSource", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ iri: iri }),
-  });
+  try {
+    const response = await fetch("/api/getSource", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ iri: iri }),
+    });
 
-  // Retrieve the text content of the Turtle file
-  const ttlContent = await response.json();
-  // convert the graph to JSONLD via the unwrap-api
-  const jsonSource = await convertRDFToJSON(ttlContent.source, true);
-  return jsonSource;
+    if (!response.ok) {
+      // Custom message for failed HTTP codes
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500)
+        throw new Error("500, internal server error");
+      // For any other server error
+      throw new Error(`${response.status}, ${response.statusText}`);
+    } else {
+      // Retrieve the text content of the Turtle file
+      const ttlContent = await response.json();
+      // convert the graph to JSONLD via the unwrap-api
+      const jsonSource = await convertRDFToJSON(ttlContent.source, true);
+      return jsonSource;
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the source from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the source from Triply. ",
+      error,
+    );
+  }
 }
 
 export async function getTasksFromTriply() {
-  const tasks = await fetch("/api/getAvailableTasks").then((response) =>
-    response.json(),
-  );
-  tasks.tasks.forEach((r) => (r.date = reformatDate(r.date)));
-  return tasks.tasks;
+  try {
+    const tasks = await fetch("/api/getAvailableTasks");
+
+    if (!tasks.ok) {
+      // Custom message for failed HTTP codes
+      if (tasks.status === 404) throw new Error("404, Not found");
+      if (tasks.status === 500) throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${tasks.status}, ${tasks.statusText}`);
+    } else {
+      const data = await tasks.json();
+      data.tasks.forEach((r) => (r.date = reformatDate(r.date)));
+      return data.tasks;
+    }
+  } catch (error) {
+    // throw new Error(error);
+    //error handling
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the available tasks from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the available tasks from Triply. " +
+        error,
+    );
+  }
 }
 
 export async function getTaskFromTriply(iri) {
-  console.log("iri:", iri);
-  const task = await fetch("/api/getTask", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ iri: iri }),
-  }).then((response) => response.json());
-  // chech how to avoid double conversion between json to stringify to json
+  try {
+    const taskResp = await fetch("/api/getTask", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ iri: iri }),
+    });
 
-  return task;
+    if (!taskResp.ok) {
+      //error handling
+
+      // Custom message for failed HTTP codes
+      if (taskResp.status === 404) throw new Error("404, Not found");
+      if (taskResp.status === 500)
+        throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${taskResp.status}, ${taskResp.statusText}`);
+    } else {
+      // alertWidget("success", "The task has been loaded successfully!");
+      return taskResp.json();
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving the task from Triply. " + error,
+    );
+    console.error(error);
+  }
 }
 
 export async function saveTaskAtTriply(taskInRdf) {
-  const resp = await fetch("/api/saveTaskAtTriply", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ task: taskInRdf }),
-  }).then((t) => {
-    return { status: t.status, text: t.statusText };
-  });
+  try {
+    const resp = await fetch("/api/saveTaskAtTriply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ task: taskInRdf }),
+    });
 
-  if (resp.status === 200) {
-    alertWidget("success", "The task has been saved successfully!");
-  } else {
-    alertWidget("error", resp.text);
+    if (!resp.ok) {
+      // Custom message for failed HTTP codes
+      if (resp.status === 404) throw new Error("404, Not found");
+      if (resp.status === 500) throw new Error("500, internal server error");
+      // For any other server error
+      throw new Error(`${resp.status},${resp.statusText}`);
+    } else {
+      // successful request
+      const data = await resp.json();
+      alertWidget("success", "The task has been saved successfully!");
+      return { status: resp.status, message: data.message };
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to save the task at TriplyDB. " + error,
+    );
+    console.error(error);
+    return { message: error };
+    // throw new Error(error);
   }
 }

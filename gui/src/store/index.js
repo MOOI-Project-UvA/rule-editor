@@ -19,6 +19,7 @@ import {
 } from "../services/ApiServices.js";
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 import { alertWidget } from "../helpers/alertWidget.js";
+import { QSpinnerGears } from "quasar";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -180,6 +181,10 @@ const store = createStore({
     },
     async readAvailableSourcesInTripleStore(context) {
       context.state.availableSourcesInTripleStore = await getSourceList();
+      console.log(
+        "context.state.availableSourcesInTripleStore:",
+        context.state.availableSourcesInTripleStore,
+      );
     },
     //reads source
     addSource(context, sourceDescription) {
@@ -191,14 +196,40 @@ const store = createStore({
       const jsonLdObject = await getSourceFromTriply(sourceDescription.iri);
       context.dispatch("createSourceDocFromJsonLD", jsonLdObject);
     },
+    // load interpretation/task from Triply
     async addTaskFromTriply(context, taskIri) {
+      // show loading indication
+      const notification = alertWidget("loading", "Retrieving task...");
+
       const taskInTurtle = await getTaskFromTriply(taskIri);
       // convert the graph to JSONLD via the unwrap-api
       const interpretation = await convertRDFToJSON(taskInTurtle.task, false);
+      // show result
       context.dispatch("loadInterpretation", interpretation);
+      if (interpretation) {
+        //update notification widget
+        notification({
+          message: "The task has been loaded successfully!",
+          color: "teal",
+          icon: "mdi-check-circle-outline",
+          position: "top",
+          spinner: false,
+          timeout: 0,
+          actions: [
+            {
+              label: "Dismiss",
+              color: "white",
+            },
+          ],
+        });
+      }
     },
     async readAvailableTasksInTripleStore(context) {
       context.state.availableTasksInTripleStore = await getTasksFromTriply();
+      console.log(
+        "availableTasksInTripleStore",
+        context.state.availableTasksInTripleStore,
+      );
     },
     createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
@@ -282,6 +313,9 @@ const store = createStore({
       context.dispatch("loadInterpretation", jsonString);
     },
     async saveInterpretationTriply(context) {
+      // show loading indication
+      const notification = alertWidget("loading", "processing...");
+
       // first convert the interpretation to triples
       //combine frames that are saved with frames open in editor
       //keep unique list of frames
@@ -302,7 +336,14 @@ const store = createStore({
       );
       const taskInRDF = await convertToRDF(jsonString, false);
       //execute remote function ...
-      await saveTaskAtTriply(taskInRDF);
+      const resp = await saveTaskAtTriply(taskInRDF);
+      if (resp.status === 200) {
+        //update notification widget
+        notification();
+      } else {
+        //dismiss notification
+        notification();
+      }
     },
   },
 });
