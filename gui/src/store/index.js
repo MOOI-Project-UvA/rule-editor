@@ -20,6 +20,7 @@ import {
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 import { alertWidget } from "../helpers/alertWidget.js";
 import { QSpinnerGears } from "quasar";
+import { Task } from "../model/task.js";
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -349,16 +350,26 @@ const store = createStore({
           (frame, index, array) =>
             array.findIndex((f) => f.id == frame.id) === index,
         );
+      console.log("allFrames: ", allFrames);
+      const intInJson = convertInterpretationToJson(
+        context.state.task,
+        allFrames,
+        context.state.sourceDocuments,
+      );
+      console.log("intInJson:", intInJson.id, intInJson.interpretation);
+      const nTask = new Task();
+      console.log("nTask:", nTask.id, nTask.interpretation);
+      intInJson.id = nTask.id;
+      intInJson.interpretation = nTask.interpretation;
+      console.log("new intInJson:", intInJson.id, intInJson.interpretation);
 
       //ones and open in the editor
-      const jsonString = JSON.stringify(
-        convertInterpretationToJson(
-          context.state.task,
-          allFrames,
-          context.state.sourceDocuments,
-        ),
-      );
+      const jsonString = JSON.stringify(intInJson);
+
+      // console.log("jsonString:", jsonString);
       const taskInRDF = await convertToRDF(jsonString, false);
+      console.log("taskInRDF:", taskInRDF);
+
       //execute remote function ...
       const resp = await saveTaskAtTriply(taskInRDF);
       if (resp.status === 200) {
