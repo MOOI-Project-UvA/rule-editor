@@ -181,10 +181,10 @@ const store = createStore({
     },
     async readAvailableSourcesInTripleStore(context) {
       context.state.availableSourcesInTripleStore = await getSourceList();
-      console.log(
-        "context.state.availableSourcesInTripleStore:",
-        context.state.availableSourcesInTripleStore,
-      );
+      // console.log(
+      //   "context.state.availableSourcesInTripleStore:",
+      //   context.state.availableSourcesInTripleStore,
+      // );
     },
     //reads source
     addSource(context, sourceDescription) {
@@ -226,10 +226,10 @@ const store = createStore({
     },
     async readAvailableTasksInTripleStore(context) {
       context.state.availableTasksInTripleStore = await getTasksFromTriply();
-      console.log(
-        "availableTasksInTripleStore",
-        context.state.availableTasksInTripleStore,
-      );
+      // console.log(
+      //   "availableTasksInTripleStore",
+      //   context.state.availableTasksInTripleStore,
+      // );
     },
     createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
@@ -364,6 +364,8 @@ const store = createStore({
       if (resp.status === 200) {
         //update notification widget
         notification();
+        // retrieve the updated list of tasks
+        context.dispatch("readAvailableTasksInTripleStore");
       } else {
         //dismiss notification
         notification();
