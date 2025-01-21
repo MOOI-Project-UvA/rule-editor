@@ -40,7 +40,7 @@ const store = createStore({
       clickedPosition: null,
       availableSources: [], //list of sources available in repo
       availableSourcesInTripleStore: [], //list of sources available in triple store
-      task: null, //{id, type, label, description}
+      task: null,
       sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts

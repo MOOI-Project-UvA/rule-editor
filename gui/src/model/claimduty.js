@@ -6,7 +6,7 @@ class Claimduty {
         this._id = uuid4() //unique ID
         this._typeId = null
         this._subTypeId = null
-        this._label = ""
+        this._shortName = ""
         this._claimduty = ""
         this._activeField = null
         this._duty = null
@@ -21,17 +21,17 @@ class Claimduty {
     get typeId() { return this._typeId }
     set typeId(typeId) { this._typeId = typeId }
 
-    get label() {
-        return this._label// && this._label.length > 0
+    get shortName() {
+        return this._shortName// && this._label.length > 0
         // ? this._label
         // : this.claimduty.length > 25
         //     ? this.claimduty.substring(0, 25) + "..."
         //     : this.claimduty
     }
-    set label(label) { this._label = label }
+    set shortName(shortName) { this._shortName = shortName }
 
-    get claimduty() { return this._claimduty }
-    set claimduty(claimduty) { this._claimduty = claimduty }
+    get fullName() { return this._fullName }
+    set fullName(fullName) { this._fullName = fullName }
 
     get activeField() { return this._activeField }
     set activeField(activeField) { this._activeField = activeField }
@@ -144,8 +144,8 @@ class Claimduty {
         return {
             id: this.id,
             typeId: this.typeId,
-            label: this.label,
-            claimduty: this.claimduty,
+            label: this.shortName,
+            claimduty: this.fullName,
             dutyId: this.duty?.id,
             actorId: this.claimant?.id, // Deprecated, but left in for backwards compatibility
             claimantId: this.claimant?.id,
@@ -156,10 +156,10 @@ class Claimduty {
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
-        this._label = frameData.label
+        this._shortName = frameData.label
         this._typeId = frameData.typeId
-        this._subTypeId = null //claimduty has no subtype
-        this._claimduty = frameData.claimduty
+        this._subTypeId = null //fullName has no subtype
+        this._fullName = frameData.claimduty
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
         this._claimant = frameData.claimantId ? allFrames.find(f => f.id == frameData.claimantId) : frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
@@ -169,11 +169,11 @@ class Claimduty {
 
 //construct label [action] [object] [claimant] [recipient]
 function constructClaimdutyLabel(claimduty) {
-    const dutyLabel = claimduty.duty ? claimduty.duty.label : '.'
-    const claimantLabel = claimduty.claimant ? claimduty.claimant.label : '.'
-    const holderLabel = claimduty.holder ? claimduty.holder.label : '.'
+    const dutyShortName = claimduty.duty ? claimduty.duty.shortName : '.'
+    const claimantShortName = claimduty.claimant ? claimduty.claimant.shortName : '.'
+    const holderShortName = claimduty.holder ? claimduty.holder.shortName : '.'
 
-    return `${dutyLabel} ${claimantLabel} ${holderLabel}`
+    return `${dutyShortName} ${claimantShortName} ${holderShortName}`
 }
 
 export {

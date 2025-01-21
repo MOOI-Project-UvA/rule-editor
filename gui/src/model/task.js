@@ -10,6 +10,7 @@ export class Task {
         this._description = ""
         this._label = ""
         this._interpretation = `${interpretationIriPrefix}${uuid4()}`
+        this._editor = ""
     }
 
     get id() { return this._id }
@@ -25,4 +26,7 @@ export class Task {
 
     get description() { return this._description }
     set description(description) { this._description = description }
+
+    get editor() { return this._editor }
+    set editor(editor) { this._editor = editor }
 }

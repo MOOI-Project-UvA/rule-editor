@@ -1,18 +1,25 @@
 <template>
-
   <div>
-    <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
-      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
-      {{ frame.label != "" ? frame.label : frame.subTypeId ? frameTypes.fact.subTypes[frame.subTypeId].label :
-        frameTypes[frame.typeId].label }}
+    <div
+      class="text-white frame-label ellipsis chip"
+      style="max-width: 400px"
+      :class="
+        frame.subTypeId
+          ? 'bg-' + colors[frame.subTypeId]
+          : 'bg-' + colors[frame.typeId]
+      "
+    >
+      {{
+        frame.shortName != ""
+          ? frame.shortName
+          : frame.subTypeId
+          ? frameTypes.fact.subTypes[frame.subTypeId].label
+          : frameTypes[frame.typeId].label
+      }}
     </div>
-    <!-- <div class="text-white frame-label ellipsis chip" style="max-width: 200px;"
-      :class="frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]">
-      {{ frame.typeId }} |{{ frame.subTypeId }}|
-    </div> -->
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
-        {{ frame.label != "" ? frame.label : "- no label given yet -" }}
+        {{ frame.shortName != "" ? frame.shortName : "- no label given yet -" }}
       </div>
     </q-tooltip>
   </div>
@@ -26,7 +33,7 @@ export default {
     icons: icons,
     colors: colors,
     hover: false,
-    frameTypes: frameTypes
+    frameTypes: frameTypes,
   }),
   props: {
     frame: Object,
@@ -38,7 +45,7 @@ export default {
   emits: ["remove"],
   methods: {
     onRemove: function () {
-      console.log("on remove")
+      console.log("on remove");
       if (this.functionality === "chip-container") {
         this.deleteFact();
       } else {
@@ -55,9 +62,9 @@ export default {
      * Deletes a fact/Act from store
      */
     deleteFact() {
-      console.log("delete fact")
+      console.log("delete fact");
       this.$store.commit("removeFrame", this.frame);
-      this.$store.commit("setFrameBeingEdited", null)
+      this.$store.commit("setFrameBeingEdited", null);
     },
     onOver: function (frame) {
       //disabled for now since it looks very restless
@@ -65,8 +72,8 @@ export default {
     },
     onLeave: function (frame) {
       //this.$store.dispatch('unhighlightElements')
-    }
-  }
+    },
+  },
 };
 </script>
 
