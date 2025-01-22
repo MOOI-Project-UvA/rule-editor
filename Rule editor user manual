@@ -1,0 +1,123 @@
+## Introduction
+The Rule editor, or Norm editor is a tool for interpreting normative tasks.
+
+For using the Rule editor a task is set, the normative text (sources) that hold description of the task and the constraints for its execution are collected and imported into the editor.
+
+The editor allows for marking components (e.g. articles, sections or sentences) of the source to be relevant or irrelevant for the task.
+
+The relevant sources can be annotated. The current version of the Rule editor can only be used to make Flint interpretations. The design of the editor is such that any method or interpretation scheme can be used for making interpretation of normative text that results is (executable) norms or rules.
+
+The Rule editor uses normative text in JSON or RDF format according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in txt, xml or html format can be translated to this format by the Choppr tool, for more information, see the [Choppr user manual](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md) 
+
+The interpretation made using the Rule editor can also be stored as JSON or RDF files. For more information on the these formats, see the [Flint ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
+## Installation
+The Rule editor can be run in the browser by navigating to [rule-editor.dev](https://develop--norm-editor.netlify.app/). (There is also rule-editor.app, but this version is outdated and is currently not recommended for use).
+
+Alternatively, the newest version of the Rule-editor can be run locally by cloning the [Gitlab repository](https://gitlab.com/normativesystems/choppr/choppr-standalone) and opening index.html in a browser. This version might be less stable and not all features might be available (especially the connection to the triple store).
+## Interface overview
+
+The interface of Rule editor consists of five screens:
+1. Define a task
+2. Collect sources
+3. Interpret sources
+4. Validate interpretations (not yet in use)
+5. Perform task (not yet in use)
+
+### Define a task (step 1)
+In the current version one is required to start by defining a task and to edit three fields
+
+| Field       | Explanation                                                    | Example             |
+| ----------- | -------------------------------------------------------------- | ------------------- |
+| Editor      | Field to register the name of the person using the rule editor | Robert van Doesburg |
+| Label       | Label to refer to the task                                     |                     |
+| Description | Description of the task                                        |                     |
+
+If one of the fields **Editor**, **Label** or **Description** is empty it is impossible to continue (**click on button**) to the next screen.
+{In a future release it will be possible to navigate all screens without restrictions.}
+
+### Collect sources (step 2)
+In the screen for collecting sources there are three ways for adding sources to the editor:
+
+| Field                                | Explanation                                                | Example                            |
+| ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
+| Add source from server               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
+| Add source from Triply               | Field to add a source from the Triply linked data store    | Not yet available                  |
+| ![[Pasted image 20250121110444.png]] | A button that allows to add a source from local filesystem | mydrive/AI_Act.json                |
+
+Select the source or sources you consider relevant in relation to the task you are working on.
+
+Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**. 
+
+You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
+
+Click on the **continue** button to get to the interpretation screen, or on the **back** button. In this version of the software, the only way to navigate between screens is by using the **continue** button or the **back** button.
+
+The buttons for the steps at the top of the screen can only be used when you are in step 3 (interpret sources).
+### Interpret sources (step 3)
+The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
+#### Expanding source text
+You can use the **expand** and **collapse** icons to expand or collapse the text.
+#### Selecting text
+Select a text fragment. You can select anything from a single word to multiple lines.
+
+When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+#### Making frames
+
+##### Facts
+When you make your first interpretations, start by making some **facts**. 
+
+You create a **fact** by selecting a text fragment, click on the selected fragment and click on the **fact** button. In the right side of the screen a **fact frame** emerges.
+
+The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
+
+For **facts** that refer to a longer text fragment, a short name can be added. The fact consists of:
+- the *text fragment* from a *source*
+- the *full name*, that is basically the same as the a literal text from the fragment, adjustments can be made regarding to:
+	- the conjugation of the **action**,
+	- interpunction issues,
+	- making a readable sentence in case of the combination of multiple fragments from a single sentence, or even from multiple sentences,
+	- making implicit information explicit (add a comment to explicitly lay down the implication).
+- a *short name* for longer text fragments.
+
+An examples are given below.
+###### Fact types and roles
+You can classify **facts** as **agent**, **action**, **object**, or **duty**. (The classification *condition* will be added soon, until then **facts** that do not have a classification is used for *conditions*).
+
+Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
+
+**Agents** can have the role of **actor** or **recipient** in an **act frame**, or that of **claimant** or **duty holder** in **claim frames**.
+
+**Actions** are verbs used in **act frames**.
+
+**Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
+
+**Duties** refer to **acts** that must be executed in the future by (or on behalve of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
+
+###### An example: Article 4 and 5 GDPR
+Search for **agents** (persons that can have the role of *actor*, *recipient*, *claimant*, or *duty holder*, e.g. a *processor*, a *controller*, or *data subject* ), **actions** (e.g. *processing*, *collection*, *erasure*), **objects** (e.g. *personal data*, or *collected data*), **conditions** (e.g. *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);*)
+
+The *data subject*, *processor* and *controller* can be found in Article 4(1),(7) and (8).
+
+The action verbs that can be derived from *processing*, *collection*, *erasure* in Article 4(2) are: *process*, *collect* and *erase*.
+
+Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *collected personal data* (the result of *collecting personal data*).
+
+The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
+##### Acts
+One can create **acts** in two ways:
+1. by selecting one or more sentences and qualify those sentences as an **act** frame,
+2. by selecting **fact frames**, made as shown above, and give them a role in an **act** frame.
+
+For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) is is advised to select sentences.
+
+Selecting *actions*, *actors*, *objects* and *recipients* from random sentences, one can create nonsensical **acts**. **Acts** should be related to one or more specific sentences.
+##### Claims
+**Claims** contain a **duty**, a **claimant** and a **duty holder**. The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
+
+The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
+### Validate interpretations (step 4)
+Not yet available.
+### Perform task (step 5)
+Not yet available.
+## Feature requests and bug reports
+Would you like to report a bug or request a new feature? Please open an issue on in the [rule editor repository](https://gitlab.com/normativesystems/ui/interpretation-editor/-/issues) on GitLab.
