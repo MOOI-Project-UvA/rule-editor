@@ -13,7 +13,7 @@ export const handler = async function (event, context) {
       query: `
       PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       PREFIX src: <http://ontology.tno.nl/normengineering/source#>
-      SELECT  ?iri ?title ?date ?editor WHERE {
+      SELECT DISTINCT ?iri ?title ?date ?editor WHERE {
         ?iri a src:Source .
         ?iri src:hasTitle ?title .
         ?iri src:editedBy ?editoriri .
