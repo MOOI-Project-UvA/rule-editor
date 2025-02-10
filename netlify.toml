@@ -6,9 +6,20 @@ base = "/gui"
 command = "npm run build"
 commandOrigin = "heuristics"
 
+[[edge_functions]]
+path = "/.netlify/functions/*"
+function = "protect"
+
+[[edge_functions]]
+path = "/api/*"
+function = "protect"
+
 [functions]
 directory = "netlify/functions"
 node_bundler = "esbuild"
+
+
+
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.
   #[[redirects]]
