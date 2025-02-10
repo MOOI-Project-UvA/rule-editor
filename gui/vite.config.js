@@ -29,30 +29,32 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/unwrap/, ""),
       },
-      "/api/getSources": {
-        target: "/.netlify/functions/getAvailableSourcesFromTriply",
+      "/api/serverless/getSources": {
+        target:
+          "http://localhost:9999/.netlify/functions/getAvailableSourcesFromTriply",
         secure: false,
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/.netlify\/functions/, ""),
       },
-      "/api/getSource": {
-        target: "/.netlify/functions/getSourceFromTriply",
+      "/api/serverless/getSource": {
+        target: "http://localhost:9999/.netlify/functions/getSourceFromTriply",
         secure: false,
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/.netlify\/functions/, ""),
       },
-      "/api/getAvailableTasks": {
-        target: "/.netlify/functions/getAvailableTasksFromTriply",
+      "/api/serverless/getAvailableTasks": {
+        target:
+          "http://localhost:9999/.netlify/functions/getAvailableTasksFromTriply",
         secure: false,
         changeOrigin: true,
       },
-      "/api/getTask": {
-        target: "/.netlify/functions/getTaskFromTriply",
+      "/api/serverless/getTask": {
+        target: "http://localhost:9999/.netlify/functions/getTaskFromTriply",
         secure: false,
         changeOrigin: true,
       },
-      "/api/saveTaskAtTriply": {
-        target: "/.netlify/functions/saveTask",
+      "/api/serverless/saveTaskAtTriply": {
+        target: "http://localhost:9999/.netlify/functions/saveTask",
         secure: false,
         changeOrigin: true,
       },

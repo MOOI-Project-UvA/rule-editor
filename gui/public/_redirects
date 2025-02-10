@@ -2,8 +2,8 @@
 /api/predict https://nlp-api-normativesystems.tnodatalab.nl/api/:splat 200
 /api/wrapUp/* https://wrap-up-api-normativesystems.tnodatalab.nl/:splat 200
 /api/unwrap/* https://unwrap-api-normativesystems.tnodatalab.nl/:splat 200
-/api/getSources /.netlify/functions/getAvailableSourcesFromTriply/:splat 200
-/api/getSource /.netlify/functions/getSourceFromTriply/:splat 200
-/api/getAvailableTasks /.netlify/functions/getAvailableTasksFromTriply/:splat 200
-/api/getTask /.netlify/functions/getTaskFromTriply/:splat 200
-/api/saveTaskAtTriply /.netlify/functions/saveTask/:splat 200
+/api/serverless/getSources /.netlify/functions/getAvailableSourcesFromTriply/:splat 200
+/api/serverless/getSource /.netlify/functions/getSourceFromTriply/:splat 200
+/api/serverless/getAvailableTasks /.netlify/functions/getAvailableTasksFromTriply/:splat 200
+/api/serverless/getTask /.netlify/functions/getTaskFromTriply/:splat 200
+/api/serverless/saveTaskAtTriply /.netlify/functions/saveTask/:splat 200

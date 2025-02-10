@@ -99,15 +99,18 @@ export async function convertRDFToJSON(rdfString, json = false) {
 // retrieves the available sources stored at TriplyDB
 export async function getSourceList() {
   try {
-    const response = await fetch("/api/getSources", {
+    const response = await fetch("/api/serverless/getSources", {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
+      console.log("response:", response.status);
       // Custom message for failed HTTP codes
       if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 401) throw new Error("401, Unauthorized");
+
       if (response.status === 500)
         throw new Error("500, internal server error");
 
@@ -133,7 +136,7 @@ export async function getSourceList() {
 //retrieves source from Triply, specified by iri
 export async function getSourceFromTriply(iri) {
   try {
-    const response = await fetch("/api/getSource", {
+    const response = await fetch("/api/serverless/getSource", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +173,7 @@ export async function getSourceFromTriply(iri) {
 
 export async function getTasksFromTriply() {
   try {
-    const tasks = await fetch("/api/getAvailableTasks");
+    const tasks = await fetch("/api/serverless/getAvailableTasks");
 
     if (!tasks.ok) {
       // Custom message for failed HTTP codes
@@ -201,7 +204,7 @@ export async function getTasksFromTriply() {
 
 export async function getTaskFromTriply(iri) {
   try {
-    const taskResp = await fetch("/api/getTask", {
+    const taskResp = await fetch("/api/serverless/getTask", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -234,7 +237,7 @@ export async function getTaskFromTriply(iri) {
 
 export async function saveTaskAtTriply(taskInRdf) {
   try {
-    const resp = await fetch("/api/saveTaskAtTriply", {
+    const resp = await fetch("/api/serverless/saveTaskAtTriply", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
