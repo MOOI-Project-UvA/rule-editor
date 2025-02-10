@@ -11,7 +11,7 @@ path = "/.netlify/functions/*"
 function = "protect"
 
 [[edge_functions]]
-path = "/api/*"
+path = "/api/serverless/*"
 function = "protect"
 
 [functions]
