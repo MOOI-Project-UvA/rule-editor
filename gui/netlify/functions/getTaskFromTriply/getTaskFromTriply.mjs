@@ -1,6 +1,6 @@
 import App from '@triply/triplydb'
 import N3 from 'n3'
-3
+
 async function load_graph(dataset,iri) {
     const graph = await dataset.getGraph(iri)
     const store = await graph.toStore()
@@ -8,6 +8,18 @@ async function load_graph(dataset,iri) {
 }
 
 export const handler = async function(event, context){
+
+    // check api key
+    const apiKey = event.headers["x-edge-message"];
+    console.log("api key in getTaskFromTriply:", apiKey)
+    const secretKey = process.env.X_API_KEY;
+    if (!apiKey || apiKey !== secretKey) {
+        return {
+            statusCode: 401,
+            body: JSON.stringify({ error: "Unauthorized: Invalid key" }),
+        };
+    }
+
     const prefixes = {
         calc: 'http://ontology.tno.nl/normengineering/calculemus#',
         choppr: 'http://ontology.tno.nl/normengineering/choppr#',

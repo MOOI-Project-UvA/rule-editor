@@ -1,31 +1,24 @@
 // Docs on request and context https://docs.netlify.com/functions/build/#code-your-function-2
 import SuperAgent from "superagent";
 
-// const allowedDomains = 'http://localhost'
-// // const allowedDomains = 'http://localhost'process.env.ALLOWED_DOMAINS
-// console.log("allowedDomains:", allowedDomains);
-//
 // const rateLimit = {}; // In-memory store (resets on function restart)
 // const MAX_REQUESTS = 1; // Max requests allowed
 // const TIME_WINDOW = 60 * 1000; // 60 seconds (1 min)
 
 export const handler = async function (event, context) {
   console.log("sources: ", event.headers);
-  console.log("context", context);
 
-  // Retrieve the message from query parameters
-  // const message = event.queryStringParameters.message;
-  // console.log("message", message);
-
+  // check api key
+  const apiKey = event.headers["x-edge-message"];
   const secretKey = process.env.X_API_KEY;
-  console.log("secret:", secretKey);
+  console.log("api key in getAvailableSources:", apiKey);
 
-  // if (!apiKey || apiKey !== secretKey) {
-  //     return {
-  //         statusCode: 401,
-  //         body: JSON.stringify({ error: 'Unauthorized: Invalid key' }),
-  //     };
-  // }
+  if (!apiKey || apiKey !== secretKey) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: "Unauthorized: Invalid key" }),
+    };
+  }
 
   // // check origin of request
   // const referer = event.headers.referer || "";

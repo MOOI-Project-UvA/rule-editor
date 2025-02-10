@@ -3,6 +3,17 @@ import N3 from 'n3'
 
 export const handler = async function(event, context) {
 
+    // check api key
+    const apiKey = event.headers["x-edge-message"];
+    console.log("api key in saveTask:", apiKey)
+    const secretKey = process.env.X_API_KEY;
+    if (!apiKey || apiKey !== secretKey) {
+        return {
+            statusCode: 401,
+            body: JSON.stringify({ error: "Unauthorized: Invalid key" }),
+        };
+    }
+
     const token = process.env.TRIPLY_KEY
     const triply = App.get({token: token})
 
