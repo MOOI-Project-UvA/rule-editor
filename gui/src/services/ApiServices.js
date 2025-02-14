@@ -1,6 +1,6 @@
-import SuperAgent from 'superagent'
-//import App from '@triply/triplydb' //TODO: gives error, not compatible with vite
+import SuperAgent from "superagent";
 import { alertWidget } from "../helpers/alertWidget.js";
+import { reformatDate } from "../helpers/dateTimeFunctions.js";
 
 export async function fetchNlpPrediction(text) {
   try {
@@ -29,7 +29,7 @@ export async function fetchNlpPrediction(text) {
 /*
   Converts the JSON structure supported by the editor to RDF
  */
-export async function convertToRDF(dataset) {
+export async function convertToRDF(dataset, showWidget = true) {
   try {
     const response = await fetch("/api/wrapUp/process_and_save", {
       method: "POST",
@@ -45,14 +45,20 @@ export async function convertToRDF(dataset) {
     }
 
     const data = await response.text();
-    alertWidget("success", "Successful conversion to RDF!");
+    if (showWidget) {
+      alertWidget("success", "Successful conversion to RDF!");
+    }
 
     return data;
   } catch (error) {
-    alertWidget(
-      "error",
-      "An error occured while converting data to rdf! Details:" + error.message,
-    );
+    if (showWidget) {
+      alertWidget(
+        "error",
+        "An error occurred while converting data to rdf! Details:" +
+          error.message,
+      );
+    }
+
     throw new Error(
       "An error occurred while converting data to rdf: " + error.message,
     );
@@ -62,8 +68,7 @@ export async function convertToRDF(dataset) {
 /*
   Converts RDF text to json structure as used by the editor
  */
-export async function convertRDFToJSON(rdfString) {
-  console.log("rdfString", rdfString)
+export async function convertRDFToJSON(rdfString, json = false) {
   try {
     const response = await fetch("/api/unwrap/process_graph", {
       method: "POST",
@@ -78,58 +83,187 @@ export async function convertRDFToJSON(rdfString) {
       throw new Error("An error occurred while sending the data.");
     }
 
-    const data = await response.text();
-    console.log("data", data)
-    return data;
-
+    return !json ? await response.text() : await response.json();
   } catch (error) {
     alertWidget(
       "error",
-      "An error occured while converting data to rdf! Details:" + error.message,
+      "An error occurred while converting data to rdf! Details:" +
+        error.message,
     );
-    throw new Error(
+    console.error(
       "An error occurred while converting data to rdf: " + error.message,
     );
   }
 }
 
+// retrieves the available sources stored at TriplyDB
 export async function getSourceList() {
-  const token = import.meta.env.VITE_TRIPLY_KEY
+  try {
+    const response = await fetch("/api/serverless/getSources", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const reply = await SuperAgent.post('https://api.normativesystems.triply.cc/datasets/choppr/chopprdev/sparql')
-    .set('Accept', 'application/sparql-results+json')
-    .set('Authorization', 'Bearer ' + token)
-    .buffer(true)
-    .send({
-      query: `
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX src: <http://ontology.tno.nl/normengineering/source#>
-      SELECT  ?iri ?title ?date ?editor WHERE {
-        ?iri a src:Source .
-        ?iri src:hasTitle ?title .
-        ?iri src:editedBy ?editoriri .
-        ?event src:generates ?iri ;
-          src:ends ?date .
-        ?editoriri rdfs:label ?editor .
-      } ORDER BY DESC(?date)
-      `
-    })
-    .accept('json')
+    if (!response.ok) {
+      console.log("response:", response.status);
+      // Custom message for failed HTTP codes
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 401) throw new Error("401, Unauthorized");
 
-  console.log("source list", reply.body)
-  return reply.body
+      if (response.status === 500)
+        throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${response.status}, ${response.statusText}`);
+    } else {
+      const sources = await response.json();
+      return sources.sources;
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the available sources from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the available sources from Triply. ",
+      error,
+    );
+  }
 }
 
 //retrieves source from Triply, specified by iri
 export async function getSourceFromTriply(iri) {
+  try {
+    const response = await fetch("/api/serverless/getSource", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ iri: iri }),
+    });
 
-  const token = import.meta.env.VITE_TRIPLY_KEY
-  //TODO finish the code below. gives error because of triply library
-  //const triply = App.get({ token: token })
+    if (!response.ok) {
+      // Custom message for failed HTTP codes
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500)
+        throw new Error("500, internal server error");
+      // For any other server error
+      throw new Error(`${response.status}, ${response.statusText}`);
+    } else {
+      // Retrieve the text content of the Turtle file
+      const ttlContent = await response.json();
+      // convert the graph to JSONLD via the unwrap-api
+      const jsonSource = await convertRDFToJSON(ttlContent.source, true);
+      return jsonSource;
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the source from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the source from Triply. ",
+      error,
+    );
+  }
+}
 
-  // const user = await triply.getAccount('choppr')
-  // const dataset = await user.getDataset('chopprdev')
-  // const graph = await dataset.getGraph('http://choppr.app/decompositions/f4c735fd-d0fe-4187-a9db-65e0870e26de') // This is an example IRI, replace with the source you want to download
-  //await graph.toFile('source.ttl') // Next, convert this file to json with unwrap-api (not ready yet)
+export async function getTasksFromTriply() {
+  try {
+    const tasks = await fetch("/api/serverless/getAvailableTasks");
 
+    if (!tasks.ok) {
+      // Custom message for failed HTTP codes
+      if (tasks.status === 404) throw new Error("404, Not found");
+      if (tasks.status === 500) throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${tasks.status}, ${tasks.statusText}`);
+    } else {
+      const data = await tasks.json();
+      data.tasks.forEach((r) => (r.date = reformatDate(r.date)));
+      return data.tasks;
+    }
+  } catch (error) {
+    // throw new Error(error);
+    //error handling
+    alertWidget(
+      "error",
+      "An error occurred while trying to retrieve the available tasks from Triply. " +
+        error,
+    );
+    console.error(
+      "An error occurred while trying to retrieve the available tasks from Triply. " +
+        error,
+    );
+  }
+}
+
+export async function getTaskFromTriply(iri) {
+  try {
+    const taskResp = await fetch("/api/serverless/getTask", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ iri: iri }),
+    });
+
+    if (!taskResp.ok) {
+      //error handling
+
+      // Custom message for failed HTTP codes
+      if (taskResp.status === 404) throw new Error("404, Not found");
+      if (taskResp.status === 500)
+        throw new Error("500, internal server error");
+
+      // For any other server error
+      throw new Error(`${taskResp.status}, ${taskResp.statusText}`);
+    } else {
+      // alertWidget("success", "The task has been loaded successfully!");
+      return taskResp.json();
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving the task from Triply. " + error,
+    );
+    console.error(error);
+  }
+}
+
+export async function saveTaskAtTriply(taskInRdf) {
+  try {
+    const resp = await fetch("/api/serverless/saveTaskAtTriply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ task: taskInRdf }),
+    });
+
+    if (!resp.ok) {
+      // Custom message for failed HTTP codes
+      if (resp.status === 404) throw new Error("404, Not found");
+      if (resp.status === 500) throw new Error("500, internal server error");
+      // For any other server error
+      throw new Error(`${resp.status},${resp.statusText}`);
+    } else {
+      // successful request
+      const data = await resp.json();
+      alertWidget("success", "The task has been saved successfully!");
+      return { status: resp.status, message: data.message };
+    }
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to save the task at TriplyDB. " + error,
+    );
+    console.error(error);
+    return { message: error };
+    // throw new Error(error);
+  }
 }
