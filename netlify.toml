@@ -7,10 +7,6 @@ command = "npm run build"
 commandOrigin = "heuristics"
 
 [[edge_functions]]
-path = "/.netlify/functions/*"
-function = "protect"
-
-[[edge_functions]]
 path = "/api/serverless/*"
 function = "protect"
 
