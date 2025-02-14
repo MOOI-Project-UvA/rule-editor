@@ -13,9 +13,7 @@
           <q-avatar>
             <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
             <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-              <div style="max-width: 300px">
-                Define a task.
-              </div>
+              <div style="max-width: 300px">Define a task.</div>
             </q-tooltip>
           </q-avatar>
         </q-item-section>
@@ -39,7 +37,7 @@
 </template>
 
 <script>
-import { Task } from "../model/task.js"
+import { Task } from "../model/task.js";
 export default {
   name: "TaskDefinitionView",
   computed: {
