@@ -5,7 +5,6 @@ export const handler = async function(event, context){
 
     // check api key
     const apiKey = event.headers["x-edge-message"];
-    console.log("api key in getAvailableTasks:", apiKey)
     const secretKey = process.env.X_API_KEY;
     if (!apiKey || apiKey !== secretKey) {
         return {
@@ -14,7 +13,7 @@ export const handler = async function(event, context){
         };
     }
 
-    const token = process.env.TRIPLY_KEY
+    const token = process.env.TRIPLY_KEY_R
     const endpoint = process.env.TRIPLY_ENDPOINT
 
     const reply = await SuperAgent.post(endpoint)
@@ -38,8 +37,6 @@ export const handler = async function(event, context){
         `
       })
       .accept('json')
-
-    // console.log("tasks:", reply.body)
 
     return {
         statusCode: 200,

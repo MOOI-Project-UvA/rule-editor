@@ -6,7 +6,6 @@ export const handler = async function (event,context){
 
      // check api key
     const apiKey = event.headers["x-edge-message"];
-    console.log("api key in getSourceFromTriply:", apiKey)
     const secretKey = process.env.X_API_KEY;
     if (!apiKey || apiKey !== secretKey) {
         return {
@@ -15,10 +14,8 @@ export const handler = async function (event,context){
         };
     }
 
-    console.log("event.body:", event.body)
     const iri = JSON.parse(event.body)
-    console.log("iri:", iri)
-    const token = process.env.TRIPLY_KEY;
+    const token = process.env.TRIPLY_KEY_R;
 
     const prefixes = {
     calc: 'http://ontology.tno.nl/normengineering/calculemus#',

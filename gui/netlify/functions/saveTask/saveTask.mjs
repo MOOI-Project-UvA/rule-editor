@@ -5,7 +5,6 @@ export const handler = async function(event, context) {
 
     // check api key
     const apiKey = event.headers["x-edge-message"];
-    console.log("api key in saveTask:", apiKey)
     const secretKey = process.env.X_API_KEY;
     if (!apiKey || apiKey !== secretKey) {
         return {
@@ -14,7 +13,7 @@ export const handler = async function(event, context) {
         };
     }
 
-    const token = process.env.TRIPLY_KEY
+    const token = process.env.TRIPLY_KEY_W
     const triply = App.get({token: token})
 
     const user = await triply.getAccount('TNO')
@@ -43,7 +42,6 @@ export const handler = async function(event, context) {
     if (local_store.size > 0) {
         // Upload the remaining graphs to the triple store
         await dataset.importFromStore(local_store)
-        console.log("graph saved!")
         return {
             statusCode: 200,
             body: JSON.stringify({message: "Task saved!"})

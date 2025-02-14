@@ -10,8 +10,6 @@ async function load_graph(dataset,iri) {
 export const handler = async function(event, context){
 
     // check api key
-    const apiKey = event.headers["x-edge-message"];
-    console.log("api key in getTaskFromTriply:", apiKey)
     const secretKey = process.env.X_API_KEY;
     if (!apiKey || apiKey !== secretKey) {
         return {
@@ -34,11 +32,9 @@ export const handler = async function(event, context){
         src: 'http://ontology.tno.nl/normengineering/source#',
         xsd: 'http://www.w3.org/2001/XMLSchema#'
     }
-    const token = process.env.TRIPLY_KEY
+    const token = process.env.TRIPLY_KEY_R
     const triply = App.get({ token: token })
     const task_iri = JSON.parse(event.body)
-    console.log("iri:", task_iri)
-    // 'http://ontology.tno.nl/normengineering/editor#task-b09583c0-863a-4307-bc3d-6af1800b10f5' // This is an example IRI, replace with the task you want to download
 
     const user = await triply.getAccount('TNO')
     const dataset = await user.getDataset('editor')
