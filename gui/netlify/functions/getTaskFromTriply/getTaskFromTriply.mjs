@@ -10,6 +10,7 @@ async function load_graph(dataset,iri) {
 export const handler = async function(event, context){
 
     // check api key
+    const apiKey = event.headers["x-edge-message"];
     const secretKey = process.env.X_API_KEY;
     if (!apiKey || apiKey !== secretKey) {
         return {
