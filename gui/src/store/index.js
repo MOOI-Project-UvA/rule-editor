@@ -202,9 +202,9 @@ const store = createStore({
       // show loading indication
       const notification = alertWidget("loading", "Retrieving task...");
 
-      const taskInRdf = await getTaskFromTriply(taskIri);
+      const taskInTurtle = await getTaskFromTriply(taskIri);
       // convert the graph to JSONLD via the unwrap-api
-      const interpretation = await convertRDFToJSON(taskInRdf.task, false);
+      const interpretation = await convertRDFToJSON(taskInTurtle.task, false);
       // show result
       context.dispatch("loadInterpretation", interpretation);
       if (interpretation) {
