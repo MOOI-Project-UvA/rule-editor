@@ -1,5 +1,5 @@
 # Redirects from what the browser requests to what we serve
-/api/predict https://nlp-api-normativesystems.tnodatalab.nl/api/:splat 200
+/api/predict https://nlp-api-normativesystems.tnodatalab.nl/api/predict 200
 /api/wrapUp/* https://wrap-up-api-normativesystems.tnodatalab.nl/:splat 200
 /api/unwrap/* https://unwrap-api-normativesystems.tnodatalab.nl/:splat 200
 /api/serverless/getSources /.netlify/functions/getAvailableSourcesFromTriply/:splat 200
