@@ -272,7 +272,7 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 19);
       saveAs(blob, `${dateString}_interpretation.json`);
     },
-    async saveInterpretationAsTurtle(context) {
+    async saveInterpretationAsTrig(context) {
       //set loading indication
       const notification = alertWidget("loading", "saving...");
 
@@ -306,10 +306,10 @@ const store = createStore({
             "An error occurred while saving the task to rdf!",
           );
       const blob = new Blob([response], {
-        type: "text/turtle;charset=utf-8",
+        type: "application/trig;charset=utf-8",
       });
       const dateString = new Date().toISOString().substring(0, 10);
-      saveAs(blob, `${dateString}_interpretation.ttl`);
+      saveAs(blob, `${dateString}_interpretation.trig`);
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);

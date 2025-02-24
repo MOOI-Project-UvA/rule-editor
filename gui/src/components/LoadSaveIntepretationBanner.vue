@@ -10,8 +10,8 @@ export default {
     saveInterpretationAsJson() {
       this.$store.dispatch("saveInterpretationAsJson");
     },
-    saveInterpretationAsTurtle() {
-      this.$store.dispatch("saveInterpretationAsTurtle");
+    saveInterpretationAsTrig() {
+      this.$store.dispatch("saveInterpretationAsTrig");
     },
     saveInterpretationRemotely() {
       this.$store.dispatch("saveInterpretationTriply");
@@ -34,6 +34,7 @@ export default {
       reader.readAsText(evt.target.files[0]);
     },
     handleFileSelectionRDF(evt) {
+      console.log("rdf");
       const reader = new FileReader();
       reader.onload = (evt) => {
         this.$store.dispatch("loadInterpretationFromRDF", evt.target.result);
@@ -112,7 +113,7 @@ export default {
             clickable
             v-close-popup
             dense
-            @click="saveInterpretationAsTurtle"
+            @click="saveInterpretationAsTrig"
           >
             <q-item-section>RDF</q-item-section>
           </q-item>
@@ -140,6 +141,7 @@ export default {
     <input
       type="file"
       @change="handleFileSelectionRDF"
+      accept=".trig,application/trig"
       hidden
       ref="fileUploadRDF"
     />
