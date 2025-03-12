@@ -21,7 +21,6 @@ class Act {
         this._comments = []
 
         this._generateLabelAutomatically = true //by default, label is generated automatically
-        this.generateLabel()
     }
     get id() { return this._id }
     set id(id) { this._id = id }
