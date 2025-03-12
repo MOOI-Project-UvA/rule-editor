@@ -188,14 +188,35 @@ const store = createStore({
       // );
     },
     //reads source
-    addSource(context, sourceDescription) {
-      json(sourceDescription.fileName).then((jsonLdObject) => {
+    async addSource(context, sourceDescription) {
+      // retrieving sourcefile
+      await json(sourceDescription.fileName).then((jsonLdObject) => {
         context.dispatch("createSourceDocFromJsonLD", jsonLdObject);
       });
     },
     async addSourceFromTriply(context, sourceDescription) {
+      // showing notification dialog
+      const notification = alertWidget("loading", "retrieving source...");
+      // getting interpretation
       const jsonLdObject = await getSourceFromTriply(sourceDescription.iri);
-      context.dispatch("createSourceDocFromJsonLD", jsonLdObject);
+      await context.dispatch("createSourceDocFromJsonLD", jsonLdObject);
+      // updating the notification
+      if (jsonLdObject) {
+        notification({
+          message: "The source has been retrieved successfully!",
+          color: "teal",
+          icon: "mdi-check-circle-outline",
+          position: "top",
+          spinner: false,
+          timeout: 0,
+          actions: [
+            {
+              label: "Dismiss",
+              color: "white",
+            },
+          ],
+        });
+      }
     },
     // load interpretation/task from Triply
     async addTaskFromTriply(context, taskIri) {
@@ -232,8 +253,9 @@ const store = createStore({
       //   context.state.availableTasksInTripleStore,
       // );
     },
-    createSourceDocFromJsonLD(context, jsonLdObject) {
+    async createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
+      console.log("createSourceDocFromJSONLD:", sourceDoc);
       //todo: check if sourceDoc is already in list
       context.state.sourceDocuments = [
         ...context.state.sourceDocuments,
@@ -312,6 +334,7 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.trig`);
     },
     loadInterpretation(context, jsonText) {
+      console.log("jsonText:", jsonText);
       const interpretation = parseJsonToInterpretation(jsonText);
       context.state.task = interpretation.task;
       context.state.sourceDocuments = interpretation.sourceDocs;
