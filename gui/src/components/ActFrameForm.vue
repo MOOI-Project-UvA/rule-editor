@@ -239,13 +239,13 @@ export default {
       this.$store.state.sentenceToScrollTo = sentenceToScrollTo
     },
     userChangedLabel() {
-      //when clearing, label is null, set it to ''
-      if (this.frame.label == null) {
-        this.frame.label = "";
+      //when clearing, label is null, set it to "" instead
+      if (this.frame.shortName == null) {
+        this.frame.shortName = "";
       }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
-      this.frame.generateLabelAutomatically = this.frame.label.length === 0;
+      this.frame.generateLabelAutomatically = this.frame.shortName.length === 0;
     },
     updateLabel() {
       //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
