@@ -5,7 +5,6 @@ class Claimduty {
     constructor() {
         this._id = uuid4() //unique ID
         this._typeId = null
-        this._subTypeId = null
         this._shortName = ""
         this._claimduty = ""
         this._activeField = null
