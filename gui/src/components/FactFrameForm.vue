@@ -118,7 +118,7 @@ export default {
     },
     sentences() {
       return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
-    },
+    }
   },
   methods: {
     closeFrame() {

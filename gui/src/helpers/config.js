@@ -19,6 +19,7 @@ const colors = {
   duty: "info",
   act: "deep-purple-10",
   claim_duty: "deep-purple-10",
+  multiple: "lime-7"
 };
 
 //used for underlining

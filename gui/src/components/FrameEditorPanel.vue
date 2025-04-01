@@ -8,7 +8,7 @@
         <div class="edit-entry">
           <div :class="{ dot: frame == frameBeingEdited }" />
           <div class="text-white frame-label chip ellipsis" style="max-width: 200px;"
-            :class="frame.typeId == 'fact' && frame.subTypeId ? 'bg-' + colors[frame.subTypeId] : 'bg-' + colors[frame.typeId]"
+            :class="`bg-${getFrameColor(frame)}`"
             @click="frameChipClicked(frame)">
             {{ frame.shortName != "" ? frame.shortName : frame.typeId == 'fact' && frame.subTypeId ?
       frameTypes.fact.subTypes[frame.subTypeId].label : frameTypes[frame.typeId].label }}
@@ -89,6 +89,13 @@ export default {
         this.$store.state.frameBeingEdited = frame
       }
     },
+    getFrameColor(frame) {
+      return frame.typeId != "fact" || frame.subTypeIds.length == 0
+          ? colors[frame.typeId]
+          : frame.subTypeIds.length > 1
+            ? colors.multiple
+            : colors[frame.subTypeIds[0]]
+    }
   }
 };
 </script>
