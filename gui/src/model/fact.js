@@ -70,11 +70,14 @@ export class Fact {
         this.shortName = data.label
         this.fullName = data.fact
         this.typeId = data.typeId
-        this.subTypeIds = data.subTypeIds
+        //backwards compatible with reading facts that have single subtype:
+        this.subTypeIds = "subTypeIds" in data ? data.subTypeIds : data.subTypeId ? [data.subTypeId] : []
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
+
+
     }
 }
 
