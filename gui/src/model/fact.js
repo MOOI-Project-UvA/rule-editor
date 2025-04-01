@@ -5,8 +5,8 @@ import { BooleanConstruct } from './booleanConstruct.js'
 export class Fact {
     constructor(initialLabel) {
         this._id = uuid4() //unique ID
-        this._label = initialLabel //label as visible in the chip
-        this._fact = "" //longer description of the fact
+        this._shortName = initialLabel //label as visible in the chip
+        this._fullName = "" //longer description of the fact
         this._typeId = null //type id
         this._subTypeId = null //subtype id
         this._comments = [] //comments from interpretor about this fact
@@ -26,11 +26,11 @@ export class Fact {
     get isComplex() { return this._isComplex }
     set isComplex(isComplex) { this._isComplex = isComplex }
 
-    get label() { return this._label }
-    set label(label) { this._label = label }
+    get shortName() { return this._shortName }
+    set shortName(shortName) { this._shortName = shortName }
 
-    get fact() { return this._fact }
-    set fact(fact) { this._fact = fact }
+    get fullName() { return this._fullName }
+    set fullName(fullName) { this._fullName = fullName }
 
     get subdivision() { return this._subdivision }
     set subdivision(subdivision) { this._subdivision = subdivision }
@@ -55,8 +55,8 @@ export class Fact {
     toFlatObject() {
         return {
             id: this.id,
-            label: this.label,
-            fact: this.fact,
+            label: this.shortName,
+            fact: this.fullName,
             typeId: this.typeId,
             subTypeId: this.subTypeId,
             comments: this.comments.map(c => c.toFlatObject()),
@@ -67,8 +67,8 @@ export class Fact {
 
     //fiil frame with data
     fromFlatObject(data, allFrames) {
-        this.label = data.label
-        this.fact = data.fact
+        this.shortName = data.label
+        this.fullName = data.fact
         this.typeId = data.typeId
         this.subTypeId = data.subTypeId
         this.isComplex = data.isComplex

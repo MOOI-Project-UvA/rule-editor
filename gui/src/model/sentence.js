@@ -8,14 +8,14 @@ export class Sentence {
     this._loading = false;
     this._snippets = [];
     this._text = "";
-    this._parent = null
+    this._parent = null;
     this._checked = true;
-    this._children = []
-    this._level = null
-    this._visible = false //show or hide sentence
-    this._collapsed = true //collapse or expand this node to hide/show its children
-    this._selected = false //selected by the user to be included in the interpretation
-    this._isHeader = false //corresponding element in source has a 'containsAsHeader' attribute
+    this._children = [];
+    this._level = null;
+    this._visible = false; //show or hide sentence
+    this._collapsed = false; //collapse or expand this node to hide/show its children
+    this._selected = false; //selected by the user to be included in the interpretation
+    this._isHeader = false; //corresponding element in source has a 'containsAsHeader' attribute
   }
 
   //set text and create snippet
@@ -23,11 +23,11 @@ export class Sentence {
     this._text = content.trim();
     this._snippets = [
       new Snippet(this, [0, this._text.length]), //sentence, character range
-    ]
+    ];
   }
 
   set id(id) {
-    this._id = id
+    this._id = id;
   }
 
   get id() {
@@ -35,17 +35,19 @@ export class Sentence {
   }
 
   set iri(iri) {
-    this._iri = iri
+    this._iri = iri;
   }
 
   get iri() {
     return this._iri;
   }
 
-  get parent() { return this._parent }
+  get parent() {
+    return this._parent;
+  }
 
   set parent(parent) {
-    this._parent = parent
+    this._parent = parent;
   }
 
   get snippets() {
@@ -68,53 +70,74 @@ export class Sentence {
     this._checked = checked;
   }
 
-  get children() { return this._children }
+  get children() {
+    return this._children;
+  }
 
-  addChild(child) { this._children.push(child) }
+  addChild(child) {
+    this._children.push(child);
+  }
 
   //return sentence tree as list, do not include empty sentences
   get sentenceTreeAsList() {
-    let list = this._text.length == 0 ? [] : [this]
-    this._children.forEach(child => {
-      list = list.concat(child.sentenceTreeAsList)
-    })
-    return list
+    let list = this._text.length == 0 ? [] : [this];
+    this._children.forEach((child) => {
+      list = list.concat(child.sentenceTreeAsList);
+    });
+    return list;
   }
   //level in sentence hierarchy
-  set level(level) { this._level = level }
-  get level() { return this._level }
+  set level(level) {
+    this._level = level;
+  }
+  get level() {
+    return this._level;
+  }
 
   toggleCollapse() {
-    this.collapsed = !this.collapsed
+    this.collapsed = !this.collapsed;
   }
 
-  set collapsed(collapsed) { this._collapsed = collapsed; this.updateVisibilityOfChildren() }
-  get collapsed() { return this._collapsed }
+  set collapsed(collapsed) {
+    this._collapsed = collapsed;
+    this.updateVisibilityOfChildren();
+  }
+  get collapsed() {
+    return this._collapsed;
+  }
 
   set selected(selected) {
-    this._selected = selected
+    this._selected = selected;
     //propagate this down the tree. if this sentence is selected, set all its children to
     //selected as well, if this sentence is de-selected, set all its children to not-selected too
-    this._children.forEach(child => {
-      child.selected = selected
-    })
+    this._children.forEach((child) => {
+      child.selected = selected;
+    });
   }
-  get selected() { return this._selected }
+  get selected() {
+    return this._selected;
+  }
 
   set visible(visible) {
-    this._visible = visible
-    this.updateVisibilityOfChildren()
+    this._visible = visible;
+    this.updateVisibilityOfChildren();
   }
 
-  get visible() { return this._visible }
+  get visible() {
+    return this._visible;
+  }
 
   //visibility depends on the collapse status of the sentences
   updateVisibilityOfChildren() {
-    this._children.forEach(child => {
-      child.visible = (!this._collapsed) && this._visible
-    })
+    this._children.forEach((child) => {
+      child.visible = !this._collapsed && this._visible;
+    });
   }
 
-  get isHeader() { return this._isHeader }
-  set isHeader(isHeader) { this._isHeader = isHeader }
+  get isHeader() {
+    return this._isHeader;
+  }
+  set isHeader(isHeader) {
+    this._isHeader = isHeader;
+  }
 }

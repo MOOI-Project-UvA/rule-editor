@@ -29,6 +29,33 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/unwrap/, ""),
       },
+      "/api/serverless/getSources": {
+        target: "/.netlify/functions/getAvailableSourcesFromTriply",
+        secure: false,
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/.netlify\/functions/, ""),
+      },
+      "/api/serverless/getSource": {
+        target: "/.netlify/functions/getSourceFromTriply",
+        secure: false,
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/.netlify\/functions/, ""),
+      },
+      "/api/serverless/getAvailableTasks": {
+        target: "/.netlify/functions/getAvailableTasksFromTriply",
+        secure: false,
+        changeOrigin: true,
+      },
+      "/api/serverless/getTask": {
+        target: "/.netlify/functions/getTaskFromTriply",
+        secure: false,
+        changeOrigin: true,
+      },
+      "/api/serverless/saveTaskAtTriply": {
+        target: "/.netlify/functions/saveTask",
+        secure: false,
+        changeOrigin: true,
+      },
     },
   },
 });

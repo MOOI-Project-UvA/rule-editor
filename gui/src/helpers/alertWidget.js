@@ -1,4 +1,4 @@
-import { Notify } from "quasar";
+import { Notify, QSpinnerGears } from "quasar";
 
 export const alertWidget = (type, message) => {
   switch (type) {
@@ -8,6 +8,8 @@ export const alertWidget = (type, message) => {
         color: "negative",
         icon: "mdi-alert-circle-outline",
         position: "top",
+        group: false,
+        timeout: 0,
         actions: [
           {
             label: "Dismiss",
@@ -23,6 +25,7 @@ export const alertWidget = (type, message) => {
         color: "teal",
         icon: "mdi-check-circle-outline",
         position: "top",
+        group: false,
         actions: [
           {
             label: "Dismiss",
@@ -33,13 +36,14 @@ export const alertWidget = (type, message) => {
       break;
 
     case "welcome":
-      Notify.create({
+      return Notify.create({
         message: message,
         color: "blue-grey-8",
         icon: "mdi-human-greeting",
         position: "top",
         html: true,
         timeout: 0,
+        group: false,
         actions: [
           {
             label: "Dismiss",
@@ -47,6 +51,22 @@ export const alertWidget = (type, message) => {
           },
         ],
       });
-      break;
+
+    case "loading":
+      // in this case, we want to capture the notification and destroy it upon completion
+      return Notify.create({
+        spinner: QSpinnerGears,
+        message: message,
+        group: false,
+        position: "top",
+        timeout: 0,
+
+        actions: [
+          {
+            label: "Dismiss",
+            color: "white",
+          },
+        ],
+      });
   }
 };

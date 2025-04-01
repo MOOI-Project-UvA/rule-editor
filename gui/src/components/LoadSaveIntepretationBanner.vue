@@ -10,18 +10,20 @@ export default {
     saveInterpretationAsJson() {
       this.$store.dispatch("saveInterpretationAsJson");
     },
-    saveInterpretationAsTurtle() {
-      this.$store.dispatch("saveInterpretationAsTurtle");
+    saveInterpretationAsTrig() {
+      this.$store.dispatch("saveInterpretationAsTrig");
+    },
+    saveInterpretationRemotely() {
+      this.$store.dispatch("saveInterpretationTriply");
     },
     chooseFile(fileType) {
-      switch(fileType) {
+      switch (fileType) {
         case "json":
-        this.$refs.fileUpload.click();
-        break;
+          this.$refs.fileUpload.click();
+          break;
         case "rdf":
-        this.$refs.fileUploadRDF.click();
-        break;
-
+          this.$refs.fileUploadRDF.click();
+          break;
       }
     },
     handleFileSelection(evt) {
@@ -32,19 +34,29 @@ export default {
       reader.readAsText(evt.target.files[0]);
     },
     handleFileSelectionRDF(evt) {
+      console.log("rdf");
       const reader = new FileReader();
       reader.onload = (evt) => {
         this.$store.dispatch("loadInterpretationFromRDF", evt.target.result);
       };
       reader.readAsText(evt.target.files[0]);
-    }
+    },
+    loadRemoteInterpretation() {
+      this.$store.commit("setTaskOverview", true);
+    },
   },
 };
 </script>
 
 <template>
-  <div class="row q-gutter-sm q-ma-sm save-load-button-container ">
-    <q-btn round size="sm" icon="mdi-file-upload-outline" color="white" text-color="primary">
+  <div class="row q-gutter-sm q-ma-sm save-load-button-container">
+    <q-btn
+      round
+      size="sm"
+      icon="mdi-file-upload-outline"
+      color="white"
+      text-color="primary"
+    >
       <q-menu fit transition-show="jump-down" transition-hide="jump-up">
         <q-list>
           <q-item class="label" disable>
@@ -62,28 +74,47 @@ export default {
             <q-item-label>Remotely</q-item-label>
           </q-item>
           <q-separator></q-separator>
-          <q-item clickable v-close-popup dense disable>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="loadRemoteInterpretation"
+          >
             <q-item-section>Triply</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
       <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-        <div>
-          Load an interpretation
-        </div>
+        <div>Load an interpretation</div>
       </q-tooltip>
     </q-btn>
-    <q-btn round size="sm" icon="mdi-content-save" color="white" text-color="primary">
+    <q-btn
+      round
+      size="sm"
+      icon="mdi-content-save"
+      color="white"
+      text-color="primary"
+    >
       <q-menu fit transition-show="jump-down" transition-hide="jump-up">
         <q-list>
           <q-item class="label" disable>
             <q-item-label>Locally</q-item-label>
           </q-item>
           <q-separator></q-separator>
-          <q-item clickable v-close-popup dense @click="saveInterpretationAsJson">
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationAsJson"
+          >
             <q-item-section>JSON</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup dense @click="saveInterpretationAsTurtle">
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationAsTrig"
+          >
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -91,22 +122,29 @@ export default {
             <q-item-label>Remotely</q-item-label>
           </q-item>
           <q-separator></q-separator>
-          <q-item clickable v-close-popup dense disable>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationRemotely"
+          >
             <q-item-section>Triply</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
       <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-        <div>
-          Save the current interpretation
-        </div>
+        <div>Save the current interpretation</div>
       </q-tooltip>
     </q-btn>
 
-
     <input type="file" @change="handleFileSelection" hidden ref="fileUpload" />
-    <input type="file" @change="handleFileSelectionRDF" hidden ref="fileUploadRDF" />
-
+    <input
+      type="file"
+      @change="handleFileSelectionRDF"
+      accept=".trig,application/trig"
+      hidden
+      ref="fileUploadRDF"
+    />
   </div>
 </template>
 
