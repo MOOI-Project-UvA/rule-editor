@@ -4,7 +4,7 @@
             <b>{{ frameType.label }}</b>
             <div class="chips">
                 <div v-for="frame in filteredFrames.filter(
-            (f) => f.typeId == frameTypeId && f.subTypeIds.length == 0,
+            (f) => f.typeId == frameTypeId && (f.typeId != 'fact' || f.subTypeIds.length == 0),
         )" @click="onClick(frame)">
                     <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
             ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
