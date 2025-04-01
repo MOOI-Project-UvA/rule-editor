@@ -21,7 +21,7 @@ export class Fact {
     set typeId(typeId) { this._typeId = typeId }
 
     get subTypeIds() { return this._subTypeIds }
-    set subTypeIds(subTypeIds) { this._subTypeId = subTypeIds }
+    set subTypeIds(subTypeIds) { this._subTypeIds = subTypeIds }
 
     get isComplex() { return this._isComplex }
     set isComplex(isComplex) { this._isComplex = isComplex }
