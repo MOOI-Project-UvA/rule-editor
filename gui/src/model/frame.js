@@ -10,6 +10,14 @@ export class Frame {
 
 export const frameTypes =
 {
+    "act": {
+        'class': 'relation',
+        'label': 'Act'
+    },
+    "claim_duty": {
+        'class': 'relation',
+        'label': 'Claim-duty'
+    },
     "fact": {
         'class': 'fact',
         'label': 'Fact',
@@ -31,14 +39,5 @@ export const frameTypes =
                 'label': 'Duty'
             }
         }
-    },
-    "act": {
-        'class': 'relation',
-        'label': 'Act'
-    },
-    "claim_duty": {
-        'class': 'relation',
-        'label': 'Claim-duty'
     }
-
 }

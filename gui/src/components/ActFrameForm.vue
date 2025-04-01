@@ -29,7 +29,7 @@
               >
                 <q-tooltip anchor="bottom middle" class="text-subtitle2">
                   <span
-                    >Detect roles of an act frame. <br />This feature is still
+                    >Detect roles of an act frame.<br/>This feature is still
                     experimental, so use it with caution.</span
                   >
                 </q-tooltip>
@@ -52,21 +52,21 @@
                 floating
                 >{{ frame.comments.length }}</q-badge
               >
-              <q-tooltip class="text-subtitle2"> Comments </q-tooltip>
+              <q-tooltip class="text-subtitle2">Comments</q-tooltip>
             </q-btn>
           </div>
         </div>
       </div>
 
       <q-input
-        v-model="frame.label"
-        label="Label"
+        v-model="frame.shortName"
+        label="Short name"
         input-style="font-size: 12pt; font-weight:bold"
         @update:model-value="userChangedLabel"
         @blur="updateLabel"
         clearable
       />
-      <q-input v-model="frame.act" label="Act" autogrow />
+      <q-input v-model="frame.fullName" label="Full name" autogrow />
 
       <div class="q-pa-md">
         <RoleSelector
@@ -193,10 +193,12 @@ export default {
     idIsCopiedToClipboard: false,
   }),
   mounted() {
-    console.log("mounted");
     this.updateLabel();
   },
   computed: {
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments
+    },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
     },
@@ -204,7 +206,7 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     sentences() {
-      return this.displayedSourceDocument.getSentencesForFrame(this.frame);
+      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -220,6 +222,7 @@ export default {
   methods: {
     closeFrame() {
       this.frame.activeField = null;
+      this.$store.state.booleanConstructBeingEdited = null
       this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
@@ -229,17 +232,20 @@ export default {
     },
     //scroll to source of frame, in source panel
     scrollToSource() {
-      //take the first sentence to scroll to
-      this.$store.state.sentenceToScrollTo = this.sentences[0];
+      const sentenceToScrollTo = this.sentences[0];
+      //show correct source
+      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
+      //scroll to sentence
+      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
     },
     userChangedLabel() {
-      //when clearing, label is null, set it to ''
-      if (this.frame.label == null) {
-        this.frame.label = "";
+      //when clearing, label is null, set it to "" instead
+      if (this.frame.shortName == null) {
+        this.frame.shortName = "";
       }
       //stop generating label automatically when user types their own label
       //when user deletes label, set auto generating to true
-      this.frame.generateLabelAutomatically = this.frame.label.length === 0;
+      this.frame.generateLabelAutomatically = this.frame.shortName.length === 0;
     },
     updateLabel() {
       //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null

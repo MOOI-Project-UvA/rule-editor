@@ -6,8 +6,8 @@ class Act {
         this._id = uuid4() //unique ID
         this._typeId = null
         this._subTypeId = null
-        this._label = ""
-        this._act = ""
+        this._shortName = ""
+        this._fullName = ""
         this._activeField = null
         this._action = null
         this._actor = null
@@ -21,7 +21,6 @@ class Act {
         this._comments = []
 
         this._generateLabelAutomatically = true //by default, label is generated automatically
-        this.generateLabel()
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -29,21 +28,15 @@ class Act {
     get typeId() { return this._typeId }
     set typeId(typeId) { this._typeId = typeId }
 
-    get label() {
-        return this._label //&& this._label.length > 0
-        // ? this._label
-        // : this.act.length > 25
-        //     ? this.act.substring(0, 25) + "..."
-        //     : this.act
+    get shortName() {
+        return this._shortName
     }
-    set label(label) { this._label = label }
+    set shortName(shortName) { this._shortName = shortName }
 
-    get act() {
-        return this._act
-        // ? this._act
-        // : constructActLabel(this)
+    get fullName() {
+        return this._fullName
     }
-    set act(act) { this._act = act }
+    set fullName(fullName) { this._fullName = fullName }
 
     get activeField() { return this._activeField }
     set activeField(activeField) { this._activeField = activeField }
@@ -148,8 +141,8 @@ class Act {
         return {
             id: this.id,
             typeId: this.typeId, //type is an object {id, class, label}
-            label: this.label,
-            act: this.act,
+            label: this.shortName,
+            act: this.fullName,
             actionId: this.action?.id, //take frame id instead of frame object
             actorId: this.actor?.id,
             objectId: this.object?.id,
@@ -163,9 +156,9 @@ class Act {
 
     fromFlatObject(frameData, allFrames) {
         this._id = frameData.id
-        this._label = frameData.label
+        this._shortName = frameData.label
         this._typeId = frameData.typeId
-        this._act = frameData.act
+        this._fullName = frameData.act
         this._action = frameData.actionId ? allFrames.find(f => f.id == frameData.actionId) : null
         this._actor = frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._object = frameData.objectId ? allFrames.find(f => f.id == frameData.objectId) : null
@@ -180,23 +173,14 @@ class Act {
 
     //construct label [action] [object] [actor] [recipient]
     generateLabel() {
-        const actionLabel = this._action ? this._action.label : '<action>'
-        const objectLabel = this._object ? this._object.label : '<obj>'
-        const actorLabel = this._actor ? this._actor.label : '<actor>'
-        const recipientLabel = this._recipient ? this._recipient.label : '<rec>'
+        const actionShortName = this._action ? this._action.shortName : '<action>'
+        const objectShortName = this._object ? this._object.shortName : '<obj>'
+        const actorShortName = this._actor ? this._actor.shortName : '<actor>'
+        const recipientShortName = this._recipient ? this._recipient.shortName : '<rec>'
 
-        this._label = `${actionLabel} ${objectLabel} ${actorLabel} ${recipientLabel}`
+        this._shortName = `${actionShortName} ${objectShortName} ${actorShortName} ${recipientShortName}`
     }
 
-    toString() {
-        let s = "Act: " + this.label + "\n"
-        s += ["action", "actor", "object", "recipient"].map(attribute =>
-            `${attribute}: ${this[attribute] ? this[attribute].label : "-"}`
-        ).join("\n") + "\n"
-        s += `precondition:${this._precondition ? "\n" + this._precondition.toString() : "-"}\n`
-        s += ["creates", "terminates"].map(attribute => `${attribute}:\n${this[attribute].length > 0 ? this[attribute].map(frame => frame.label).join("\n") : "\t-"}`).join("\n")
-        return s
-    }
 }
 
 export {
