@@ -40,6 +40,7 @@ export default {
     options: null,
     selectedNode: null,
     notMargined: true,
+    expanded: [],
   }),
   computed: {
     frameBeingEdited() {
@@ -55,6 +56,9 @@ export default {
       const expression =
         this.selectedNode == this.booleanConstructBeingEditedId;
       return this.selectedNode ? expression : false;
+    },
+    parentNodeId() {
+      return this.booleanConstruct.id;
     },
   },
   watch: {
@@ -117,6 +121,8 @@ export default {
     subdivide(event, nodeData) {
       event.stopPropagation();
       nodeData.subdivide();
+      // set the top level of the construct to be expanded
+      this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
       // determine margin of parent
       !nodeData.parent && nodeData.children.length > 0
         ? (this.notMargined = false)
@@ -128,7 +134,7 @@ export default {
     },
     removeFrame(node) {
       node.beingEdited = false;
-      node.frame = null
+      node.frame = null;
       // node.removeFrame(node.frame)
     },
     // removing extra level of hierarchy from a node
@@ -190,6 +196,7 @@ export default {
       :nodes="[booleanConstruct]"
       node-key="id"
       v-model:selected="selectedNode"
+      v-model:expanded="expanded"
       selected-color="black"
       selectable="false"
       dense
@@ -197,13 +204,7 @@ export default {
     >
       <!-- header section per node -->
       <template v-slot:default-header="prop">
-        <div v-if="prop.node.children.length > 0">
-          <!--          <q-icon-->
-          <!--            :name="prop.node.icon || 'share'"-->
-          <!--            color="orange"-->
-          <!--            size="28px"-->
-          <!--            class="q-mr-sm"-->
-          <!--          />-->
+        <div v-if="prop.node.children.length > 0 || prop.node.frame">
           <div
             class="boolean-menu row items-center mt-2 no-wrap"
             v-on:click.stop
@@ -270,16 +271,17 @@ export default {
             negated: prop.node.isNegated,
           }"
           @click="handleClick($event, prop.node)"
-          v-if="prop.node.children.length == 0"
+          v-if="prop.node.children.length == 0 || prop.node.frame"
         >
           <div class="col">
-            <!-- negation label -->
-            <!-- <div v-if="prop.node.isNegated" class="negation-label">NOT</div>-->
             <template v-if="prop.node.frame">
               <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
               <div class="row-container">
                 <!-- selected chip -->
                 <FrameChip :frame="prop.node.frame" :disable="false" />
+                <div>
+                  <p>Test</p>
+                </div>
                 <!-- remove chip button -->
                 <q-btn
                   round
@@ -300,17 +302,6 @@ export default {
           </div>
           <!--  list of buttons on the right  -->
           <div class="col-1 buttons-container">
-            <!-- negation -->
-            <!--            <div>-->
-            <!--              <q-btn-->
-            <!--                size="sm"-->
-            <!--                color="#d42d19"-->
-            <!--                dense-->
-            <!--                flat-->
-            <!--                icon="mdi-minus-circle-outline"-->
-            <!--                @click="toggleNegation(prop.node.id)"-->
-            <!--              />-->
-            <!--            </div>-->
             <div>
               <q-btn
                 size="sm"
@@ -324,7 +315,6 @@ export default {
             <div v-if="prop.node.parent">
               <q-btn
                 class="button-label"
-
                 size="sm"
                 dense
                 flat
@@ -333,17 +323,7 @@ export default {
               />
             </div>
           </div>
-          <!--              <div v-if="prop.node.label">-->
-          <!--                <span class="text-weight-bold">This node has a story</span>:-->
-          <!--                {{ prop.node.label }}-->
-          <!--              </div>-->
-          <!--              <span v-else class="text-weight-light text-black"-->
-          <!--              <span v-else class="text-weight-light text-black"-->
-          <!--                >This is some default content.</span>-->
         </div>
-        <!--        <div v-else class="panel">-->
-        <!--          <p>additional options</p>-->
-        <!--        </div>-->
       </template>
     </q-tree>
   </div>
