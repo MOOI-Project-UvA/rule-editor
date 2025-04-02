@@ -29,7 +29,7 @@
               >
                 <q-tooltip anchor="bottom middle" class="text-subtitle2">
                   <span
-                    >Detect roles of an act frame.<br/>This feature is still
+                    >Detect roles of an act frame.<br />This feature is still
                     experimental, so use it with caution.</span
                   >
                 </q-tooltip>
@@ -159,7 +159,8 @@
   </q-card>
   <CommentsList
     :fact="frame"
-    :showComments="showComments"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
     @closed="showComments = false"
   />
 </template>
@@ -197,7 +198,7 @@ export default {
   },
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments
+      return this.$store.state.sourceDocuments;
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
@@ -206,7 +207,9 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     sentences() {
-      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
+      return this.sourceDocuments
+        .map((doc) => doc.getSentencesForFrame(this.frame))
+        .flat();
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -222,7 +225,7 @@ export default {
   methods: {
     closeFrame() {
       this.frame.activeField = null;
-      this.$store.state.booleanConstructBeingEdited = null
+      this.$store.state.booleanConstructBeingEdited = null;
       this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
@@ -234,9 +237,10 @@ export default {
     scrollToSource() {
       const sentenceToScrollTo = this.sentences[0];
       //show correct source
-      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
+      this.$store.state.displayedSourceDocument =
+        sentenceToScrollTo.sourceDocument;
       //scroll to sentence
-      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
+      this.$store.state.sentenceToScrollTo = sentenceToScrollTo;
     },
     userChangedLabel() {
       //when clearing, label is null, set it to "" instead
