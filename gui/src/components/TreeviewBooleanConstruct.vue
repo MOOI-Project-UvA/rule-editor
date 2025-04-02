@@ -218,12 +218,14 @@ export default {
             <div class="select-element">
               <q-select
                 dense
+                hide-selected
                 filled
                 use-input
-                hide-selected
                 fill-input
+                hint="Pick a function"
+                hide-hint
+                hide-bottom-space
                 input-debounce="0"
-                label="Pick a function"
                 :options="options"
                 style="width: 150px; margin: 5px 10px"
                 v-model="prop.node.operatorToJoinChildren"
@@ -237,7 +239,7 @@ export default {
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-italic text-grey">
-                      No options slot
+                      No relevant options.
                     </q-item-section>
                   </q-item>
                 </template>
