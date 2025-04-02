@@ -250,9 +250,13 @@ export default {
                 dense
                 outline
                 class="q-ml-sm add-child-btn"
+                label="Add child"
                 @click="addChild(prop.node)"
-                >Add child</q-btn
               >
+                <q-tooltip class="text-subtitle2">
+                  <div>Add another child at this level of the hierarchy.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
             <!-- subdivision button. Adds extra level of hierarchy-->
             <div>
@@ -262,7 +266,11 @@ export default {
                 flat
                 icon="mdi-format-list-bulleted-square"
                 @click="subdivide($event, prop.node)"
-              />
+              >
+                <q-tooltip class="text-subtitle2">
+                  <div>Add a new layer of complexity at this level.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
           </div>
         </div>
@@ -292,7 +300,11 @@ export default {
                   color="negative"
                   icon="mdi-close"
                   @click="removeFrame(prop.node)"
-                />
+                >
+                  <q-tooltip class="text-subtitle2">
+                    <div>Remove this frame.</div>
+                  </q-tooltip>
+                </q-btn>
               </div>
             </template>
             <div
@@ -312,7 +324,11 @@ export default {
                 flat
                 icon="mdi-format-list-bulleted-square"
                 @click="subdivide($event, prop.node)"
-              />
+              >
+                <q-tooltip class="text-subtitle2">
+                  <div>Add a new layer of complexity at this level.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
             <div v-if="prop.node.parent">
               <q-btn
@@ -322,7 +338,11 @@ export default {
                 flat
                 icon="mdi-close"
                 @click="deleteBooleanConstruct($event, prop.node)"
-              />
+              >
+                <q-tooltip class="text-subtitle2">
+                  <div>Remove this child.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
           </div>
         </div>
