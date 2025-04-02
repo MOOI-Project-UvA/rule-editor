@@ -154,7 +154,8 @@
   </q-card>
   <CommentsList
     :fact="frame"
-    :showComments="showComments"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
     @closed="showComments = false"
   />
 </template>
