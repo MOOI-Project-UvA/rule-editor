@@ -1,6 +1,7 @@
 <script>
 import FrameChip from "./FrameChip.vue";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
+import { alertWidget } from "../helpers/alertWidget.js";
 export default {
   name: "TreeviewBooleanConstruct",
   components: {
@@ -111,6 +112,19 @@ export default {
     // adds children to the selected node.
     addChild(nodeData) {
       console.log("adding child to booleanConstruct");
+      console.log("nodeData", nodeData);
+      if (!nodeData.children.every((c) => c.frame)) {
+        console.log(
+          "Please add frames to the previous children before creating a new one!",
+        );
+        alertWidget(
+          "error",
+          "Please fill in frames for the existing elements before adding new ones.",
+          4000,
+        );
+
+        return;
+      }
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
