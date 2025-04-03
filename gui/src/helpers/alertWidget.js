@@ -1,6 +1,6 @@
 import { Notify, QSpinnerGears } from "quasar";
 
-export const alertWidget = (type, message) => {
+export const alertWidget = (type, message, timer = 0) => {
   switch (type) {
     case "error":
       Notify.create({
@@ -9,7 +9,7 @@ export const alertWidget = (type, message) => {
         icon: "mdi-alert-circle-outline",
         position: "top",
         group: false,
-        timeout: 0,
+        timeout: timer,
         actions: [
           {
             label: "Dismiss",
