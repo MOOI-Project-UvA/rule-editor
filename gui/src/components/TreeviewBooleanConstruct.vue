@@ -144,10 +144,13 @@ export default {
     },
     // adds an extra level of hierarchy to the selected node
     subdivide(event, nodeData) {
+      console.log("nodeData to subdivide:", nodeData);
       event.stopPropagation();
       nodeData.subdivide();
       // set the top level of the construct to be expanded
       this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
+      // set the current node to expanded
+      this.$refs["tree-structure"].setExpanded(nodeData.id, true);
       // determine margin of parent
       !nodeData.parent && nodeData.children.length > 0
         ? (this.notMargined = false)
@@ -285,19 +288,19 @@ export default {
               </q-btn>
             </div>
             <!-- subdivision button. Adds extra level of hierarchy-->
-            <div>
-              <q-btn
-                size="sm"
-                dense
-                flat
-                icon="mdi-format-list-bulleted-square"
-                @click="subdivide($event, prop.node)"
-              >
-                <q-tooltip class="text-subtitle2">
-                  <div>Add a new layer of complexity at this level.</div>
-                </q-tooltip>
-              </q-btn>
-            </div>
+            <!--            <div>-->
+            <!--              <q-btn-->
+            <!--                size="sm"-->
+            <!--                dense-->
+            <!--                flat-->
+            <!--                icon="mdi-format-list-bulleted-square"-->
+            <!--                @click="subdivide($event, prop.node)"-->
+            <!--              >-->
+            <!--                <q-tooltip class="text-subtitle2">-->
+            <!--                  <div>Add a new layer of complexity at this level.</div>-->
+            <!--                </q-tooltip>-->
+            <!--              </q-btn>-->
+            <!--            </div>-->
           </div>
         </div>
       </template>
