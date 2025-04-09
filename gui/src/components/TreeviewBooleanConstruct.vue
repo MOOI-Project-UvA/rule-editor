@@ -123,6 +123,8 @@ export default {
     addChild(nodeData) {
       console.log("adding child to booleanConstruct");
       console.log("nodeData", nodeData);
+      // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
+      // previous ones
       if (!nodeData.children.every((c) => c.frame)) {
         console.log(
           "Please add frames to the previous children before creating a new one!",
@@ -138,7 +140,6 @@ export default {
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
-      console.log("newCHild: ", newChild);
       this.selectedNode = newChild.id;
     },
     // adds an extra level of hierarchy to the selected node
@@ -231,7 +232,7 @@ export default {
     >
       <!-- header section per node -->
       <template v-slot:default-header="prop">
-        <div v-if="prop.node.children.length > 0 || prop.node.frame">
+        <div v-if="prop.node.children.length > 0">
           <div
             class="boolean-menu row items-center mt-2 no-wrap"
             v-on:click.stop
@@ -275,10 +276,17 @@ export default {
                 outline
                 class="q-ml-sm add-child-btn"
                 label="Add child"
+                :disable="!prop.node.children.every((c) => c.frame)"
                 @click="addChild(prop.node)"
               >
                 <q-tooltip class="text-subtitle2">
-                  <div>Add another child at this level of the hierarchy.</div>
+                  <div v-if="prop.node.children.every((c) => c.frame)">
+                    Add another child at this level of the hierarchy.
+                  </div>
+                  <div v-else>
+                    Please fill in frames for the existing elements before
+                    adding new ones.
+                  </div>
                 </q-tooltip>
               </q-btn>
             </div>
@@ -362,10 +370,22 @@ export default {
                 dense
                 flat
                 icon="mdi-close"
+                :disable="
+                  !prop.node.parent.parent &&
+                  prop.node.parent.children.length === 1
+                "
                 @click="deleteBooleanConstruct($event, prop.node)"
               >
                 <q-tooltip class="text-subtitle2">
-                  <div>Remove this child.</div>
+                  <div
+                    v-if="
+                      !prop.node.parent.parent &&
+                      prop.node.parent.children.length === 1
+                    "
+                  >
+                    Can not remove the only child in the hierarchy.
+                  </div>
+                  <div v-else>Remove this child.</div>
                 </q-tooltip>
               </q-btn>
             </div>
