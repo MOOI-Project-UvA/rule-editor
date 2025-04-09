@@ -9,6 +9,10 @@ export default {
   },
   props: {
     booleanConstruct: Object,
+    origin: {
+      type: String,
+      default: "Fact",
+    },
   },
   data: () => ({
     booleanOptions: [
@@ -40,7 +44,7 @@ export default {
     selectModel: [],
     options: null,
     selectedNode: null,
-    notMargined: true,
+    notMargined: false,
     expanded: [],
   }),
   computed: {
@@ -85,7 +89,13 @@ export default {
     },
   },
   mounted() {
+    console.log("mounting Treeviewboolean:", this.booleanConstruct);
     this.options = Array.from(this.booleanOptions);
+    // add extra level of hierarchy if since a fact can not be without function
+    if (this.booleanConstruct.children.length === 0 && this.origin === "Fact") {
+      this.booleanConstruct.subdivide();
+      this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
+    }
   },
   methods: {
     getNodeByKey(key) {

@@ -64,6 +64,7 @@
       <div class="label">Subdivision</div>
       <TreeviewBooleanConstruct
         :boolean-construct="frame.subdivision"
+        origin="Fact"
       ></TreeviewBooleanConstruct>
     </q-card-section>
 
