@@ -40,8 +40,9 @@
     <q-card-section>
       <div class="label">Subdivision</div>
       <TreeviewBooleanConstruct
-          :boolean-construct="frame.subdivision"
-        ></TreeviewBooleanConstruct>
+        :boolean-construct="frame.subdivision"
+        origin="Fact"
+      ></TreeviewBooleanConstruct>
     </q-card-section>
 
     <q-card-actions align="right">
@@ -86,13 +87,13 @@
 </template>
 
 <script>
-import { icons, colors } from '../helpers/config.js'
-import CommentsList from './CommentsList.vue';
-import SentenceList from "./SentenceList.vue"
-import BooleanConstructPanel from './BooleanConstructPanel.vue'
-import { BooleanConstruct } from '../model/booleanConstruct.js';
+import { icons, colors } from "../helpers/config.js";
+import CommentsList from "./CommentsList.vue";
+import SentenceList from "./SentenceList.vue";
+import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+import { BooleanConstruct } from "../model/booleanConstruct.js";
 import { frameTypes } from "../model/frame";
-import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
 
 export default {
@@ -105,14 +106,14 @@ export default {
     showComments: false,
     frameTypes: frameTypes,
     frameIsBeingDeleted: false, //true when user clicked delete button
-    idIsCopiedToClipboard: false
+    idIsCopiedToClipboard: false,
   }),
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments
+      return this.$store.state.sourceDocuments;
     },
     displayedSourceDocument() {
-      return this.$store.state.displayedSourceDocument
+      return this.$store.state.displayedSourceDocument;
     },
     frame() {
       return this.$store.state.frameBeingEdited;
@@ -123,22 +124,22 @@ export default {
   },
   methods: {
     closeFrame() {
-      this.$store.state.booleanConstructBeingEdited = null
-      this.$store.commit("removeFrameFromEditList", this.frame)
+      this.$store.state.booleanConstructBeingEdited = null;
+      this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
-      this.frameIsBeingDeleted = null
-      this.$store.commit("removeFrame", this.frame)
-      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
+      this.frameIsBeingDeleted = null;
+      this.$store.commit("removeFrame", this.frame);
+      setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
     },
     toggleSubdivision() {
       if (this.subdivided) {
         if (!this.frame.booleanConstruct) {
-          this.frame.booleanConstruct = new BooleanConstruct()
-          this.frame.booleanConstruct.addEmptyChild()
+          this.frame.booleanConstruct = new BooleanConstruct();
+          this.frame.booleanConstruct.addEmptyChild();
         }
       } else {
-        this.frame.booleanConstruct = null
+        this.frame.booleanConstruct = null;
       }
     },
     setSubType(subTypeId) {
@@ -151,8 +152,8 @@ export default {
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
-      this.idIsCopiedToClipboard = true
-    }
+      this.idIsCopiedToClipboard = true;
+    },
   },
   components: {
     TreeviewBooleanConstruct,

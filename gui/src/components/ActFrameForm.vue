@@ -92,6 +92,7 @@
         <div class="label">Precondition</div>
         <TreeviewBooleanConstruct
           :boolean-construct="frame.precondition"
+          origin="Act"
         ></TreeviewBooleanConstruct>
 
         <div class="label">Postcondition</div>
