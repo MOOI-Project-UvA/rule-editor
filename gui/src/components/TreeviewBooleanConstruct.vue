@@ -126,7 +126,11 @@ export default {
       console.log("nodeData", nodeData);
       // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
       // previous ones
-      if (!nodeData.children.every((c) => c.frame)) {
+      if (
+        !nodeData.children.every((c) => c.frame) &&
+        !nodeData.children.every((c) => c.children.length > 0)
+      ) {
+        // if (!nodeData.children.every((c) => c.frame))
         console.log(
           "Please add frames to the previous children before creating a new one!",
         );
@@ -281,7 +285,10 @@ export default {
                 outline
                 class="q-ml-sm add-child-btn"
                 label="Add child"
-                :disable="!prop.node.children.every((c) => c.frame)"
+                :disable="
+                  !prop.node.children.every((c) => c.frame) &&
+                  !prop.node.children.every((c) => c.children.length > 0)
+                "
                 @click="addChild(prop.node)"
               >
                 <q-tooltip class="text-subtitle2">
