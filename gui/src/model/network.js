@@ -16,11 +16,13 @@ export class Network {
     //In addition we add links between acts, indicating that an act
     //has to finish before another can start.
     createNetwork(frames) {
-        console.log("createNetwork", frames)
         frames.forEach(frame => {
             switch (frame.typeId) {
                 case "act":
                     this.addTreeForAct(frame)
+                    break;
+                case "claim_duty":
+                    this.addTreeForClaimDuty(frame)
                     break;
                 default:
                     this.addTreeForFact(frame)
@@ -31,7 +33,6 @@ export class Network {
         //for each act, determine position in dependency-chain. this is used for positioning the acts
         //from left to right
         ///this.setSequenceOfActnodes()
-        console.log("nodes", this._nodes, "links", this._links)
     }
 
     addTreeForAct(act) {
@@ -76,6 +77,24 @@ export class Network {
         return actNode
     }
 
+    addTreeForClaimDuty(claimDuty) {
+        const { node: claimDutyNode } = this.getNode(claimDuty)
+        //add nodes and links for roles with one frame
+        const rolesWithOneFrame = ["duty", "claimant", "holder"]
+        rolesWithOneFrame.forEach(roleAttribute => {
+            if (claimDuty[roleAttribute]) {
+                //if claimDuty has this role filled in, get corresponding nodeTree.
+                //the fact for this role can be subdivided, so in general this
+                //is a node tree
+                const roleNode = this.addTreeForFact(claimDuty[roleAttribute])
+                if (roleNode) {
+                    this.addLink(claimDutyNode, roleNode, "role", roleAttribute)
+                }
+            }
+        })
+        return claimDutyNode
+    }
+
     addTreeForFact(fact) {
         const { node: factNode, isNew: isNewNode } = this.getNode(fact)
         //if fact node already exists, we don't want to have another link to its subdivision
@@ -94,6 +113,7 @@ export class Network {
         if (booleanConstruct.frame) {
             switch (booleanConstruct.frame.typeId) {
                 case "act":
+                    //can an act be part of a boolean construct?
                     bcRoot = this.addTreeForAct(booleanConstruct.frame)
                     break;
                 default:
