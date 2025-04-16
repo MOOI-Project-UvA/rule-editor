@@ -40,7 +40,7 @@ export function getStyleForUnderlining(snippet, activeFrame) {
         if (annotation.frame) {
             lineColor = annotation.frame.typeId != "fact" || annotation.frame.subTypeIds.length == 0
                 ? hexColors[annotation.frame.typeId]
-                : activeFrame.subTypeIds.length > 1
+                : annotation.frame.subTypeIds.length > 1
                     ? hexColors.multiple
                     : hexColors[annotation.frame.subTypeIds[0]]
         } else {
