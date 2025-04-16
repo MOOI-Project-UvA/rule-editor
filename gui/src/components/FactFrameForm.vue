@@ -7,10 +7,15 @@
         </div>
         <div class="col q-gutter-sm">
           <q-btn size="sm" round v-for="(subType, subTypeId) in frameTypes.fact.subTypes"
-            :color="frame.subTypeId == subTypeId ? colors[subTypeId] : 'grey-6'" :icon="icons[subTypeId]"
+            :color="frame.subTypeIds.includes(subTypeId) ? colors[subTypeId] : 'grey-6'" :icon="icons[subTypeId]"
             @click="setSubType(subTypeId)">
             <q-tooltip class="text-subtitle2">
-              Set subtype to {{ subType.label }}
+              <div v-if="frame.subTypeIds.includes(subTypeId)">
+                Remove subtype {{ subType.label }} from fact
+              </div>
+              <div v-else>
+                Add subtype {{ subType.label }} to fact
+              </div>
             </q-tooltip>
           </q-btn>
         </div>
@@ -113,7 +118,7 @@ export default {
     },
     sentences() {
       return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
-    },
+    }
   },
   methods: {
     closeFrame() {
@@ -136,7 +141,12 @@ export default {
       }
     },
     setSubType(subTypeId) {
-      this.frame.subTypeId = this.frame.subTypeId == subTypeId ? null : subTypeId
+      const index = this.frame.subTypeIds.indexOf(subTypeId)
+      if (index == -1) {
+        this.frame.subTypeIds.push(subTypeId)
+      } else {
+        this.frame.subTypeIds.splice(index, 1)
+      }
     },
     //scroll to source of frame, in source panel
     scrollToSource() {

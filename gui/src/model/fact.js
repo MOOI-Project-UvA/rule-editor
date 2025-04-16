@@ -8,7 +8,7 @@ export class Fact {
         this._shortName = initialLabel //label as visible in the chip
         this._fullName = "" //longer description of the fact
         this._typeId = null //type id
-        this._subTypeId = null //subtype id
+        this._subTypeIds = [] //subtype ids, a fact can have multiple subtypes
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
         this._isComplex = true
@@ -20,8 +20,8 @@ export class Fact {
     get typeId() { return this._typeId }
     set typeId(typeId) { this._typeId = typeId }
 
-    get subTypeId() { return this._subTypeId }
-    set subTypeId(subTypeId) { this._subTypeId = subTypeId }
+    get subTypeIds() { return this._subTypeIds }
+    set subTypeIds(subTypeIds) { this._subTypeIds = subTypeIds }
 
     get isComplex() { return this._isComplex }
     set isComplex(isComplex) { this._isComplex = isComplex }
@@ -58,7 +58,7 @@ export class Fact {
             label: this.shortName,
             fact: this.fullName,
             typeId: this.typeId,
-            subTypeId: this.subTypeId,
+            subTypeIds: this.subTypeIds,
             comments: this.comments.map(c => c.toFlatObject()),
             isComplex: this.isComplex,
             subdivision: this.subdivision.toFlatObject()
@@ -70,11 +70,14 @@ export class Fact {
         this.shortName = data.label
         this.fullName = data.fact
         this.typeId = data.typeId
-        this.subTypeId = data.subTypeId
+        //backwards compatible with reading facts that have single subtype:
+        this.subTypeIds = "subTypeIds" in data ? data.subTypeIds : data.subTypeId ? [data.subTypeId] : []
         this.isComplex = data.isComplex
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
+
+
     }
 }
 
