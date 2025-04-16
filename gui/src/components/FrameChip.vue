@@ -3,18 +3,10 @@
     <div
       class="text-white frame-label ellipsis chip"
       style="max-width: 400px"
-      :class="
-        frame.subTypeId
-          ? 'bg-' + colors[frame.subTypeId]
-          : 'bg-' + colors[frame.typeId]
-      "
+      :class="`bg-${frameColor}`"
     >
       {{
-        frame.shortName != ""
-          ? frame.shortName
-          : frame.subTypeId
-          ? frameTypes.fact.subTypes[frame.subTypeId].label
-          : frameTypes[frame.typeId].label
+        frame.shortName?.length > 0 ? frame.shortName : frame.typeId
       }}
     </div>
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
@@ -43,6 +35,15 @@ export default {
     },
   },
   emits: ["remove"],
+  computed: {
+    frameColor() {
+      return this.frame.typeId != "fact" || this.frame.subTypeIds.length == 0
+          ? colors[this.frame.typeId]
+          : this.frame.subTypeIds.length > 1
+            ? colors.multiple
+            : colors[this.frame.subTypeIds[0]]
+    }
+  },
   methods: {
     onRemove: function () {
       console.log("on remove");
