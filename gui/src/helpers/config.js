@@ -4,7 +4,7 @@ const icons = {
   object: "mdi-account-arrow-left-outline",
   action: "mdi-gesture-tap",
   duty: "mdi-exclamation",
-  other: "mdi-circle-small",
+  condition: "mdi-circle-small",
   act: "mdi-autorenew",
   claim_duty: "mdi-square",
   nlp: "mdi-text-recognition",
@@ -17,9 +17,10 @@ const colors = {
   object: "accent",
   action: "secondary",
   duty: "info",
+  condition: "positive",
+  multiple: "lime-7",
   act: "deep-purple-10",
-  claim_duty: "deep-purple-10",
-  multiple: "lime-7"
+  claim_duty: "deep-purple-10"
 };
 
 //used for underlining
@@ -29,8 +30,11 @@ const hexColors = {
   object: "#9C27B0",
   action: "#26A69A",
   duty: "#31CCEC",
+  condition: "#21BA45",
+  multiple: "#c0ca33",
   act: "#311b92",
   claim_duty: "#311b92",
+
 };
 
 //used for highlighting and node colors in network
@@ -40,6 +44,8 @@ const hexColorsLight = {
   object: "#f4b3ff",
   action: "#80fff3",
   duty: "#80e9ff",
+  condition: "#a8ffbd",
+  multiple: "#f9ffa1",
   act: "#c0b3ff",
   claim_duty: "#c0b3ff",
   list: "#dddddd",
