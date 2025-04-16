@@ -151,8 +151,6 @@ function parseJsonToInterpretation(jsonText) {
         })
     })
 
-    console.log("frames loaded")
-
     //update underlining of annotations in the source text. each annotation contains the
     //vertical position of the underline
     sourceDocs.forEach(sourceDoc => {
