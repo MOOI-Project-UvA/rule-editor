@@ -132,6 +132,7 @@ export default {
       this.$store.state.booleanConstructBeingEdited = newChild;
     },
     handleClick(event) {
+      console.log("handleClick")
       //prevent propagation to underlying panels
       event.stopPropagation();
       //if empty leaf node, select for adding frame
@@ -142,7 +143,7 @@ export default {
         this.$store.state.booleanConstructBeingEdited = this.isBeingEdited
           ? null
           : this.booleanConstruct;
-        //de-select any other properties of the active frame, if it is a relation
+        //de-select any other properties of the active frame, if it is a relation (act or claim-duty)
         if ('activeField' in this.frameBeingEdited) {
           this.frameBeingEdited.activeField = null
         }
