@@ -1,12 +1,12 @@
-import { Task } from "../model/task.js"
-import { SourceDocument } from '../model/sourceDocument.js'
-import { Fact } from '../model/fact.js'
-import { Act } from "../model/act.js"
-import { Claimduty } from '../model/claimduty.js'
-import { Annotation } from '../model/annotation.js'
-import { Snippet } from '../model/snippet.js'
-import { Comment } from '../model/comment.js'
-import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
+import { Task } from "../model/task.js";
+import { SourceDocument } from "../model/sourceDocument.js";
+import { Fact } from "../model/fact.js";
+import { Act } from "../model/act.js";
+import { Claimduty } from "../model/claimduty.js";
+import { Annotation } from "../model/annotation.js";
+import { Snippet } from "../model/snippet.js";
+import { Comment } from "../model/comment.js";
+import { setVerticalPositionOfAnnotationLines } from "./underlining.js";
 
 function convertInterpretationToJson(task, frames, sourceDocuments) {
     const sourceDocsString = sourceDocuments.map(doc => ({
@@ -54,9 +54,8 @@ function parseJsonToInterpretation(jsonText) {
         task.interpretation = parsedInterpretation.interpretation //iri
     }
 
-
-    let sourceDocs = []
-    let frames = []
+    let sourceDocs = [];
+    let frames = [];
 
     //read sourceDocs from loaded interpretation
     parsedInterpretation.sourceDocs.forEach(doc => {
@@ -150,6 +149,8 @@ function parseJsonToInterpretation(jsonText) {
             return comment
         })
     })
+
+    console.log("frames loaded")
 
     //update underlining of annotations in the source text. each annotation contains the
     //vertical position of the underline
