@@ -1,5 +1,4 @@
 import { v4 as uuid4 } from "uuid";
-import { Annotation } from "./annotation";
 import { BooleanConstruct } from "./booleanConstruct.js";
 
 export class Fact {
@@ -115,6 +114,13 @@ export class Fact {
     this.subTypeId = data.subTypeId;
     this.isComplex = data.isComplex;
     this.subdivision = new BooleanConstruct();
+    console.log(
+      "in fact.js===>",
+      "data.fact:",
+      data.label,
+      "data.subdivision:",
+      data.subdivision,
+    );
     this.subdivision.fromFlatObject(data.subdivision, allFrames);
     //annotations and comments are set in parseJsonToInterpretation in importExport.js
   }
