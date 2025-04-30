@@ -1,8 +1,7 @@
 <script>
 import FrameChip from "./FrameChip.vue";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
-import { alertWidget } from "../helpers/alertWidget.js";
-import { toRaw } from "vue";
+
 export default {
   name: "TreeviewBooleanConstruct",
   components: {
@@ -382,6 +381,7 @@ export default {
                 flat
                 icon="mdi-close"
                 :disable="
+                  origin === 'Fact' &&
                   !prop.node.parent.parent &&
                   prop.node.parent.children.length === 1
                 "
@@ -390,6 +390,7 @@ export default {
                 <q-tooltip class="text-subtitle2">
                   <div
                     v-if="
+                      origin === 'Fact' &&
                       !prop.node.parent.parent &&
                       prop.node.parent.children.length === 1
                     "
