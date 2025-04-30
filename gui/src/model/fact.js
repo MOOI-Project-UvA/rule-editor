@@ -1,80 +1,121 @@
-import { v4 as uuid4 } from 'uuid'
-import { Annotation } from './annotation'
-import { BooleanConstruct } from './booleanConstruct.js'
+import { v4 as uuid4 } from "uuid";
+import { Annotation } from "./annotation";
+import { BooleanConstruct } from "./booleanConstruct.js";
 
 export class Fact {
-    constructor(initialLabel) {
-        this._id = uuid4() //unique ID
-        this._shortName = initialLabel //label as visible in the chip
-        this._fullName = "" //longer description of the fact
-        this._typeId = null //type id
-        this._subTypeId = null //subtype id
-        this._comments = [] //comments from interpretor about this fact
-        this._subdivision = new BooleanConstruct()
-        this._isComplex = true
-    }
+  constructor(initialLabel) {
+    this._id = uuid4(); //unique ID
+    this._shortName = initialLabel; //label as visible in the chip
+    this._fullName = ""; //longer description of the fact
+    this._typeId = null; //type id
+    this._subTypeId = null; //subtype id
+    this._comments = []; //comments from interpretor about this fact
+    this._subdivision = new BooleanConstruct();
+    this._isComplex = true;
+  }
 
-    get id() { return this._id }
-    set id(id) { this._id = id }
+  /*
+    It adds an extra level of hierarchy, since a fact can not be without function. It should be used when a user
+    adds an extra level of hierarchy, since a fact can not be without function.
+   */
+  addSubdivision() {
+    this._subdivision.subdivide();
+  }
 
-    get typeId() { return this._typeId }
-    set typeId(typeId) { this._typeId = typeId }
+  get id() {
+    return this._id;
+  }
+  set id(id) {
+    this._id = id;
+  }
 
-    get subTypeId() { return this._subTypeId }
-    set subTypeId(subTypeId) { this._subTypeId = subTypeId }
+  get typeId() {
+    return this._typeId;
+  }
+  set typeId(typeId) {
+    this._typeId = typeId;
+  }
 
-    get isComplex() { return this._isComplex }
-    set isComplex(isComplex) { this._isComplex = isComplex }
+  get subTypeId() {
+    return this._subTypeId;
+  }
+  set subTypeId(subTypeId) {
+    this._subTypeId = subTypeId;
+  }
 
-    get shortName() { return this._shortName }
-    set shortName(shortName) { this._shortName = shortName }
+  get isComplex() {
+    return this._isComplex;
+  }
+  set isComplex(isComplex) {
+    this._isComplex = isComplex;
+  }
 
-    get fullName() { return this._fullName }
-    set fullName(fullName) { this._fullName = fullName }
+  get shortName() {
+    return this._shortName;
+  }
+  set shortName(shortName) {
+    this._shortName = shortName;
+  }
 
-    get subdivision() { return this._subdivision }
-    set subdivision(subdivision) { this._subdivision = subdivision }
+  get fullName() {
+    return this._fullName;
+  }
+  set fullName(fullName) {
+    this._fullName = fullName;
+  }
 
-    get comments() { return this._comments }
-    set comments(comments) { this._comments = comments }
+  get subdivision() {
+    return this._subdivision;
+  }
+  set subdivision(subdivision) {
+    this._subdivision = subdivision;
+  }
 
-    get annotations() { return this._annotations }
+  get comments() {
+    return this._comments;
+  }
+  set comments(comments) {
+    this._comments = comments;
+  }
 
-    deleteReferencesToFrame(frame) {
-        this._subdivision.removeFrame(frame)
-    }
+  get annotations() {
+    return this._annotations;
+  }
 
-    //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
-    getSentences(sourceDocs) {
-        const snippets = this._annotations.map(a => a.snippets).flat()
-        //group snippets according to document
-        const snippetsPerDoc = Object.groupBy(snippets, s => s.documentId)
-        console.log("snippetsPerDoc", snippetsPerDoc)
-        return []
-    }
-    toFlatObject() {
-        return {
-            id: this.id,
-            label: this.shortName,
-            fact: this.fullName,
-            typeId: this.typeId,
-            subTypeId: this.subTypeId,
-            comments: this.comments.map(c => c.toFlatObject()),
-            isComplex: this.isComplex,
-            subdivision: this.subdivision.toFlatObject()
-        }
-    }
+  deleteReferencesToFrame(frame) {
+    this._subdivision.removeFrame(frame);
+  }
 
-    //fiil frame with data
-    fromFlatObject(data, allFrames) {
-        this.shortName = data.label
-        this.fullName = data.fact
-        this.typeId = data.typeId
-        this.subTypeId = data.subTypeId
-        this.isComplex = data.isComplex
-        this.subdivision = new BooleanConstruct()
-        this.subdivision.fromFlatObject(data.subdivision, allFrames)
-        //annotations and comments are set in parseJsonToInterpretation in importExport.js
-    }
+  //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
+  getSentences(sourceDocs) {
+    const snippets = this._annotations.map((a) => a.snippets).flat();
+    //group snippets according to document
+    const snippetsPerDoc = Object.groupBy(snippets, (s) => s.documentId);
+    console.log("snippetsPerDoc", snippetsPerDoc);
+    return [];
+  }
+  toFlatObject() {
+    return {
+      id: this.id,
+      label: this.shortName,
+      fact: this.fullName,
+      typeId: this.typeId,
+      subTypeId: this.subTypeId,
+      comments: this.comments.map((c) => c.toFlatObject()),
+      isComplex: this.isComplex,
+      subdivision: this.subdivision.toFlatObject(),
+    };
+  }
+
+  //fiil frame with data
+  fromFlatObject(data, allFrames) {
+    this.shortName = data.label;
+    this.fullName = data.fact;
+    this.typeId = data.typeId;
+    this.subTypeId = data.subTypeId;
+    this.isComplex = data.isComplex;
+    this.subdivision = new BooleanConstruct();
+    this.subdivision.fromFlatObject(data.subdivision, allFrames);
+    //annotations and comments are set in parseJsonToInterpretation in importExport.js
+  }
 }
-
