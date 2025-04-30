@@ -88,6 +88,23 @@ export default {
       },
       once: true,
     },
+    parentNodeId(value) {
+      this.$nextTick(() => {
+        const treeRef = this.$refs["tree-structure"];
+        if (!treeRef || typeof treeRef.setExpanded !== "function") {
+          console.warn(
+            "Tree structure ref or setExpanded() not ready",
+            treeRef,
+          );
+          return;
+        }
+        if (!value) {
+          console.warn("Invalid value for node id", value);
+          return;
+        }
+        treeRef.setExpanded(value, true);
+      });
+    },
   },
   mounted() {
     console.log("mounting Treeviewboolean:", this.booleanConstruct);
