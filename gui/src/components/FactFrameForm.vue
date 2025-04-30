@@ -39,6 +39,7 @@
     </q-card-section>
     <q-card-section>
       <div class="label">Subdivision</div>
+      <draggable-tree-view></draggable-tree-view>
       <TreeviewBooleanConstruct
         :boolean-construct="frame.subdivision"
         origin="Fact"
@@ -95,6 +96,7 @@ import { BooleanConstruct } from "../model/booleanConstruct.js";
 import { frameTypes } from "../model/frame";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
+import DraggableTreeView from "./draggableTreeView.vue";
 
 export default {
   emits: ["closed"],
@@ -156,6 +158,7 @@ export default {
     },
   },
   components: {
+    DraggableTreeView,
     TreeviewBooleanConstruct,
     BooleanConstructPanel,
     CommentsList,

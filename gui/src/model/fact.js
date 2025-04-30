@@ -14,35 +14,43 @@ export class Fact {
         this._isComplex = true
     }
 
-    get id() { return this._id }
-    set id(id) { this._id = id }
+  /*
+    It adds an extra level of hierarchy, since a fact can not be without function. It should be used when a user
+    adds an extra level of hierarchy, since a fact can not be without function.
+   */
+  addSubdivision() {
+    this._subdivision.subdivide();
+  }
 
-    get typeId() { return this._typeId }
-    set typeId(typeId) { this._typeId = typeId }
+  get id() { return this._id; }
+  set id(id) { this._id = id; }
 
-    get subTypeIds() { return this._subTypeIds }
-    set subTypeIds(subTypeIds) { this._subTypeIds = subTypeIds }
+  get typeId() { return this._typeId; }
+  set typeId(typeId) { this._typeId = typeId; }
 
-    get isComplex() { return this._isComplex }
-    set isComplex(isComplex) { this._isComplex = isComplex }
+  get subTypeIds() { return this._subTypeIds }
+  set subTypeIds(subTypeIds) { this._subTypeIds = subTypeIds }
 
-    get shortName() { return this._shortName }
-    set shortName(shortName) { this._shortName = shortName }
+  get isComplex() { return this._isComplex }
+  set isComplex(isComplex) { this._isComplex = isComplex }
 
-    get fullName() { return this._fullName }
-    set fullName(fullName) { this._fullName = fullName }
+  get shortName() { return this._shortName }
+  set shortName(shortName) { this._shortName = shortName }
 
-    get subdivision() { return this._subdivision }
-    set subdivision(subdivision) { this._subdivision = subdivision }
+  get fullName() { return this._fullName }
+  set fullName(fullName) { this._fullName = fullName }
 
-    get comments() { return this._comments }
-    set comments(comments) { this._comments = comments }
+  get subdivision() { return this._subdivision }
+  set subdivision(subdivision) { this._subdivision = subdivision }
 
-    get annotations() { return this._annotations }
+  get comments() { return this._comments }
+  set comments(comments) { this._comments = comments }
 
-    deleteReferencesToFrame(frame) {
-        this._subdivision.removeFrame(frame)
-    }
+  get annotations() { return this._annotations }
+
+  deleteReferencesToFrame(frame) {
+      this._subdivision.removeFrame(frame)
+  }
 
     //based on sentenceId and documentId from each snippet, retrieve the sentence object from the source
     getSentences(sourceDocs) {

@@ -60,6 +60,7 @@ const store = createStore({
       switch (frameTypeId) {
         case "fact":
           frame = new Fact(initialLabel);
+          frame.addSubdivision();
           break;
         case "act":
           frame = new Act();
@@ -279,19 +280,21 @@ const store = createStore({
             array.findIndex((f) => f.id == frame.id) === index,
         );
 
-      //ones and open in the editor
-      const jsonString = JSON.stringify(
-        convertInterpretationToJson(
-          context.state.task,
-          allFrames,
-          context.state.sourceDocuments,
-        ),
-      );
-      const blob = new Blob([jsonString], {
-        type: "text/plain;charset=utf-8",
-      });
-      const dateString = new Date().toISOString().substring(0, 19);
-      saveAs(blob, `${dateString}_interpretation.json`);
+      console.log("allFrames:", allFrames);
+
+      // //ones and open in the editor
+      // const jsonString = JSON.stringify(
+      //   convertInterpretationToJson(
+      //     context.state.task,
+      //     allFrames,
+      //     context.state.sourceDocuments,
+      //   ),
+      // );
+      // const blob = new Blob([jsonString], {
+      //   type: "text/plain;charset=utf-8",
+      // });
+      // const dateString = new Date().toISOString().substring(0, 19);
+      // saveAs(blob, `${dateString}_interpretation.json`);
     },
     async saveInterpretationAsTrig(context) {
       //set loading indication

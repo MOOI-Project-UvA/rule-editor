@@ -2,6 +2,7 @@
 import FrameChip from "./FrameChip.vue";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
 import { alertWidget } from "../helpers/alertWidget.js";
+import { toRaw } from "vue";
 export default {
   name: "TreeviewBooleanConstruct",
   components: {
@@ -92,18 +93,22 @@ export default {
   mounted() {
     console.log("mounting Treeviewboolean:", this.booleanConstruct);
     this.options = Array.from(this.booleanOptions);
-    // add extra level of hierarchy if since a fact can not be without function
-    if (this.booleanConstruct.children.length === 0 && this.origin === "Fact") {
-      this.booleanConstruct.subdivide();
-      this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
-    }
+    // it expands the parent node of the hierarchy
+    this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
   },
   methods: {
     getNodeByKey(key) {
-      console.log(
-        "nodes.data in the tree:",
+      console.log("nodes.data in the tree:", [
         this.$refs["tree-structure"].getNodeByKey(key),
-      );
+      ]);
+      // console.log(
+      //   JSON.stringify(
+      //     toRaw(this.$refs["tree-structure"].getNodeByKey(key)),
+      //     this.getCircularReplacer(),
+      //     2,
+      //   ),
+      // );
+
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
     selectValue(val, node) {
@@ -120,28 +125,40 @@ export default {
         );
       });
     },
+    getCircularReplacer() {
+      const seen = new WeakSet();
+      return (key, value) => {
+        if (typeof value === "object" && value !== null) {
+          if (seen.has(value)) {
+            return "[Circular]";
+          }
+          seen.add(value);
+        }
+        return value;
+      };
+    },
     // adds children to the selected node.
     addChild(nodeData) {
       console.log("adding child to booleanConstruct");
       console.log("nodeData", nodeData);
       // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
       // previous ones
-      if (
-        !nodeData.children.every((c) => c.frame) &&
-        !nodeData.children.every((c) => c.children.length > 0)
-      ) {
-        // if (!nodeData.children.every((c) => c.frame))
-        console.log(
-          "Please add frames to the previous children before creating a new one!",
-        );
-        alertWidget(
-          "error",
-          "Please fill in frames for the existing elements before adding new ones.",
-          4000,
-        );
-
-        return;
-      }
+      // if (
+      //   !nodeData.children.every((c) => c.frame) &&
+      //   !nodeData.children.every((c) => c.children.length > 0)
+      // ) {
+      //   // if (!nodeData.children.every((c) => c.frame))
+      //   console.log(
+      //     "Please add frames to the previous children before creating a new one!",
+      //   );
+      //   alertWidget(
+      //     "error",
+      //     "Please fill in frames for the existing elements before adding new ones.",
+      //     4000,
+      //   );
+      //
+      //   return;
+      // }
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
@@ -285,20 +302,10 @@ export default {
                 outline
                 class="q-ml-sm add-child-btn"
                 label="Add child"
-                :disable="
-                  !prop.node.children.every((c) => c.frame) &&
-                  !prop.node.children.every((c) => c.children.length > 0)
-                "
                 @click="addChild(prop.node)"
               >
                 <q-tooltip class="text-subtitle2">
-                  <div v-if="prop.node.children.every((c) => c.frame)">
-                    Add another child at this level of the hierarchy.
-                  </div>
-                  <div v-else>
-                    Please fill in frames for the existing elements before
-                    adding new ones.
-                  </div>
+                  Add another child at this level of the hierarchy.
                 </q-tooltip>
               </q-btn>
             </div>
