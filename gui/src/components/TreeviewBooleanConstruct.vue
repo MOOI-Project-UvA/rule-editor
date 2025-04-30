@@ -98,17 +98,6 @@ export default {
   },
   methods: {
     getNodeByKey(key) {
-      console.log("nodes.data in the tree:", [
-        this.$refs["tree-structure"].getNodeByKey(key),
-      ]);
-      // console.log(
-      //   JSON.stringify(
-      //     toRaw(this.$refs["tree-structure"].getNodeByKey(key)),
-      //     this.getCircularReplacer(),
-      //     2,
-      //   ),
-      // );
-
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
     selectValue(val, node) {
@@ -125,22 +114,9 @@ export default {
         );
       });
     },
-    getCircularReplacer() {
-      const seen = new WeakSet();
-      return (key, value) => {
-        if (typeof value === "object" && value !== null) {
-          if (seen.has(value)) {
-            return "[Circular]";
-          }
-          seen.add(value);
-        }
-        return value;
-      };
-    },
     // adds children to the selected node.
     addChild(nodeData) {
-      console.log("adding child to booleanConstruct");
-      console.log("nodeData", nodeData);
+      console.log("adding child to booleanConstruct", "nodeData", nodeData);
       // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
       // previous ones
       // if (
