@@ -622,6 +622,11 @@ export default {
         default-expand-all
       >
         <template v-slot:default-header="prop">
+          <span v-if="dragOverId === prop.node.id" class="plus-icon">
+            <!-- Use plain plus icon or a Quasar icon: -->
+            <!-- + -->
+            <q-icon name="mdi-plus" color="primary" size="sm" />
+          </span>
           <div
             v-if="prop.node.children.length > 0"
             class="row items-center my-row"
@@ -635,6 +640,7 @@ export default {
             @dragover="dragOver($event, prop.node.id)"
           >
             {{ prop.node.id }}
+
             <div>
               <q-icon
                 name="mdi-drag"
@@ -775,10 +781,6 @@ export default {
   padding: 8px;
 }
 
-.mett-tree-item.container {
-  background: rgba(0, 136, 71, 0.1); /* #008847 in RGBA */
-}
-
 .my-row {
   background: #fff;
   border-radius: 4px;
@@ -797,8 +799,12 @@ export default {
 .drag-over {
   background: #e0f7fa !important;
 }
+
 .dragging {
-  opacity: 0.5;
+  opacity: 0.4;
+  //background: rgba(0, 136, 71, 0.1); /* #008847 in RGBA */
+  background: rgba(51, 63, 82, 0.1); /* #333f52 in RGBA */
+  border-radius: 4px;
 }
 .panel {
   margin-top: 8px;
