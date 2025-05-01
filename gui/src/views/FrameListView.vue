@@ -3,7 +3,6 @@
 
     <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="fit">
       <div class="height-content row q-pa-sm items-center q-gutter-md">
-        <div class="col-1 text-bold">Frames</div>
         <div class="col-auto">
           <div class="row q-gutter-xs items-center">
             <div>View as:</div>
@@ -13,9 +12,7 @@
             </div>
           </div>
         </div>
-        <div class="col-auto">
-          <NewFrameMenu />
-        </div>
+
         <div class="col">
           <q-input bottom-slots v-model="searchTerm" label="Filter frames on label" dense>
             <template v-slot:prepend>
@@ -50,9 +47,6 @@
       </div>
     </div>
 
-    <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
-      <FrameEditorPanel />
-    </div>
 
   </q-card>
 </template>

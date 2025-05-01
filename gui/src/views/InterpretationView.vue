@@ -13,7 +13,8 @@ import { markRaw } from 'vue' //to prevent components from becoming reactie
 export default {
   name: "InterpretationView",
   components: {
-    FramesView,
+    FrameListView,
+    FrameEditView,
     SourceView,
     AnnotationPanel,
     AnnotationList,
