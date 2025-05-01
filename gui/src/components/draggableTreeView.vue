@@ -623,7 +623,7 @@ export default {
       >
         <template v-slot:default-header="prop">
           <span v-if="dragOverId === prop.node.id" class="plus-icon">
-            <q-icon name="mdi-plus-circle" color="primary" size="sm" />
+            <q-icon name="mdi-plus-circle-outline" color="primary" size="sm" />
           </span>
           <div
             v-if="prop.node.children.length > 0"
