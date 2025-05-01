@@ -62,7 +62,7 @@
     </q-card-section>
     <q-card-section v-if="frame.isComplex">
       <div class="label">Subdivision</div>
-      <!--      <draggable-tree-view></draggable-tree-view>-->
+      <draggable-tree-view></draggable-tree-view>
       <TreeviewBooleanConstruct
         :boolean-construct="frame.subdivision"
         origin="Fact"

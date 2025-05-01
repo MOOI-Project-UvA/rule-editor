@@ -289,7 +289,7 @@ export default {
                 outline
                 class="q-ml-sm add-child-btn"
                 label="Add child"
-                @click="addChild(prop.node)"
+                @click.stop="addChild(prop.node)"
               >
                 <q-tooltip class="text-subtitle2">
                   Add another child at this level of the hierarchy.
