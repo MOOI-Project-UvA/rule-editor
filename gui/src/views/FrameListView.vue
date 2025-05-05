@@ -1,5 +1,5 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm">
+  <q-card flat bordered>
 
     <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="fit">
       <div class="height-content row q-pa-sm items-center q-gutter-md">
