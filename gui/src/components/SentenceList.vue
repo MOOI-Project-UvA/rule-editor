@@ -1,6 +1,6 @@
 <template>
   <div class="document">
-    <div class="q-mb-md row no-wrap items-baseline" v-for="sentence in sentences.filter(s => s.visible)">
+    <div class="q-mb-sm row no-wrap items-baseline" v-for="sentence in sentences.filter(s => s.visible)">
       <div>
         <q-btn v-if="sentence.children.filter(c => c.text.length > 0).length > 0" round size="sm"
           :icon="sentence.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" flat text-color="primary"
