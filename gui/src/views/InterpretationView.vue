@@ -60,9 +60,14 @@ export default {
       <template v-if="panel.expanded">
         <component :is="panel.component" />
       </template>
-
     </div>
   </div>
+  <!-- panel that appears when a new annotation is made by selecting source text -->
+  <AnnotationPanel />
+  <!-- panel that appears when existing annotation(s) have been clicked in the source text -->
+  <AnnotationList />
+  <!-- panel that appears when user is adding an annotation to a frame -->
+  <AddingAnnotationToFramePanel />
 </template>
 
 <style scoped lang="css">
