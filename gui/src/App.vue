@@ -17,110 +17,33 @@
     limitations under the License.
   */
   -->
+  <NavigationBar v-model:activeView="activeView"/>
 
-  <q-stepper
-    id="stepper-id"
-    v-model="this.$store.state.step"
-    ref="stepper"
-    color="primary"
-    animated
-    flat
-    header-nav
-  >
-    <q-step
-      :name="1"
-      title="Define a task"
-      icon="mdi-head-dots-horizontal-outline"
-      :done="this.$store.state.step > 1"
-      done-color="green"
-      caption="Step 1"
-      class="row justify-center content-center"
-      :header-nav="this.$store.state.step > 1"
-    >
-      <TaskDefinitionView @update-stepper="updateStepperValue" />
-    </q-step>
-    <q-step
-      :name="2"
-      title="Collect sources"
-      icon="mdi-bookmark-box-multiple-outline"
-      class="row justify-center content-start"
-      :done="this.$store.state.step > 2"
-      done-color="green"
-      caption="Step 2"
-      :header-nav="this.$store.state.step > 2"
-    >
-      <SourceCollectionView
-        @update-stepper="updateStepperValue"
-        @decrease-stepper="decreaseStepperValue"
-      />
-    </q-step>
-
-    <q-step
-      :name="3"
-      title="Interpret sources"
-      icon="mdi-thought-bubble-outline"
-      :done="this.$store.state.step > 3"
-      done-color="green"
-      caption="Step 3"
-      :header-nav="this.$store.state.step > 3"
-    >
-      <InterpretationView />
-      <!-- <TestView/> -->
-    </q-step>
-    <q-step
-      :name="4"
-      title="Validate interpretations"
-      icon="mdi-timeline-check-outline"
-      :done="this.$store.state.step > 4"
-      disable
-      caption="Step 4"
-    >
-    </q-step>
-    <q-step
-      :name="5"
-      title="Perform task"
-      icon="mdi-playlist-check"
-      :done="this.$store.state.step > 5"
-      disable
-      caption="Step 5"
-    >
-    </q-step>
-    <!--  adding message slot, thus making the save/load interpretation tasks always accessible  -->
-    <!-- <template v-slot:message>
-      <q-banner class="bg-blue-grey-8 text-white q-px-lg" style="padding-top: 1px; padding-bottom: 1px">
-        <load-save-interpretation-banner></load-save-interpretation-banner>
-      </q-banner>
-    </template> -->
-  </q-stepper>
-  <div ref="loadSaveButtons">
-    <load-save-interpretation-banner />
+  <div class="q-pa-md">
+    <component v-if="activeView" :is="activeView.component" />
   </div>
+  
   <div>
-    <task-retrieval />
+    <TaskRetrieval />
   </div>
 </template>
 
 <script>
-import TaskDefinitionView from "./views/TaskDefinitionView.vue";
-import SourceCollectionView from "./views/SourceCollectionView.vue";
-import InterpretationView from "./views/InterpretationView.vue";
-import LoadSaveInterpretationBanner from "./components/LoadSaveIntepretationBanner.vue";
 import { alertWidget } from "./helpers/alertWidget.js";
 import { retrieveDeploymentInformation } from "./helpers/utilities.js";
 import TaskRetrieval from "./components/TaskRetrieval.vue";
+import NavigationBar from "./components/NavigationBar.vue";
 export default {
   name: "app",
   data: () => ({
     hash: import.meta.env.VITE_VERSION,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
+    activeView: null
   }),
   components: {
+    NavigationBar,
     TaskRetrieval,
-    LoadSaveInterpretationBanner,
-    InterpretationView,
-    SourceCollectionView,
-    TaskDefinitionView,
   },
 
   mounted() {
@@ -137,30 +60,7 @@ export default {
     this.$store.dispatch("readAvailableSources");
     this.$store.dispatch("readAvailableSourcesInTripleStore");
     this.$store.dispatch("readAvailableTasksInTripleStore");
-
-    //hack to add load and save buttons next to the stepper buttons in the stepper header
-    const stepperHeader =
-      document.getElementsByClassName("q-stepper__header")[0];
-    const loadSaveButtons = this.$refs.loadSaveButtons;
-    stepperHeader.appendChild(loadSaveButtons);
-  },
-  methods: {
-    updateStepperValue() {
-      this.$refs.stepper.next();
-    },
-    decreaseStepperValue() {
-      this.$refs.stepper.previous();
-    },
   },
 };
 </script>
 
-<style>
-.anchorTags {
-  color: #ffffff;
-}
-
-.anchorTags:hover {
-  font-weight: bold;
-}
-</style>
