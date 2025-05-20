@@ -7,7 +7,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label>Define a task</q-item-label>
+          <q-item-label>Set task</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
@@ -56,4 +56,11 @@ export default {
 };
 </script>
 
-<style scoped lang="css"></style>
+<style scoped lang="css">
+#task-definition-view {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow: hidden;
+}
+</style>
