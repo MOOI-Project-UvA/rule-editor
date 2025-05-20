@@ -60,13 +60,13 @@
         </div>
       </div>
       <!--  action section  -->
-      <q-card-actions class="q-pa-md" id="source-collection-view-actions">
+      <!-- <q-card-actions class="q-pa-md" id="source-collection-view-actions">
         <q-btn type="submit" color="primary" @click="$emit('decreaseStepper')">Back</q-btn>
         <q-space></q-space>
 
         <q-btn type="submit" color="primary" @click="storeSelectSources"
           :disable="!anyCheckedSentences">Continue</q-btn>
-      </q-card-actions>
+      </q-card-actions>-->
     </q-card>
   </div>
 </template>
