@@ -28,10 +28,10 @@
           :rules="[(val) => (val && val.length > 0) || 'Give description of the task']" clearable />
       </q-card-section>
       <q-separator></q-separator>
-      <q-card-actions class="q-pa-md">
+      <!-- <q-card-actions class="q-pa-md">
         <q-space></q-space>
         <q-btn type="submit" color="primary" @click="this.$emit('updateStepper')" :disable="formIsInvalid">Continue</q-btn>
-      </q-card-actions>
+      </q-card-actions> -->
     </q-card>
   </div>
 </template>
