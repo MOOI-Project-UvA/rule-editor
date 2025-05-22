@@ -4,7 +4,16 @@
 sources of norms in FLINT in a user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
 The app is deployed on [Netlify](https://www.netlify.com/) and uses Netlify functions (serverless functions, including Edge Functions) to extend back-end capabilities.
 
-**Try it out:** A public version of the Norm Editor is hosted at https://norm-editor.netlify.app/ .
+**Try it out**
+
+There are two public versions of the Norm Editor available:
+
+- Stable version: 
+  The most stable release hosted at https://norm-editor.netlify.app/.
+- Latest (preview) version:
+  Includes the newest features and experimental changes (not fully tested or stable) hosted at https://develop--norm-editor.netlify.app/.
+
+Feel free to explore both!
 
 --- 
 
