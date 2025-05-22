@@ -255,7 +255,6 @@ export default {
       }
     },
     async sendDataToNlp(sentence) {
-      console.log("sentence: ", sentence);
       sentence.loading = true;
       const response = await fetchNlpPrediction(sentence.text);
       //filter out entries with no role
