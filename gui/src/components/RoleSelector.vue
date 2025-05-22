@@ -1,10 +1,10 @@
 <template>
     <!-- component that allows for assigning a frame to a role -->
     <div class="field-container">
-        <div>
+        <div class="row items-center">
             <q-btn class="button" round :color="active ? 'primary' : 'grey-6'" size="xs" icon="mdi-pencil"
                 @click="toggleRoleSelection" />
-            <span>{{ label }}</span>
+            <div>{{ label }}</div>
 
         </div>
 
@@ -73,7 +73,7 @@ export default {
 .field-container {
     margin: 3px 0px;
     display: grid;
-    grid-template-columns: 100px auto;
+    grid-template-columns: 130px auto;
 }
 
 .button-label {
