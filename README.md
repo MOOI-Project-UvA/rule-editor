@@ -15,7 +15,6 @@ There are two public versions of the Norm Editor available:
 
 Feel free to explore both!
 
---- 
 
 ## Table of Contents
 
@@ -28,9 +27,8 @@ Feel free to explore both!
 7. [Development](#development)
 8. [Environment Variables](#environment-variables)
 9. [Contributing](#contributing)
-10.[License](#license)
+10. [License](#license)
 
----
 
 ## Project Description
 
@@ -42,8 +40,6 @@ The Editor uses normative text in JSON or RDF format, according to the [Source o
 
 Interpretations made using the Norm Editor can be stored as JSON or RDF files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
 
----
-
 ## Features
 
 - Modern interface using [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
@@ -52,15 +48,14 @@ Interpretations made using the Norm Editor can be stored as JSON or RDF files lo
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
 - Customizable UI.
 - Store, share, and use interpretations locally in JSON or RDF formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
-- Automated recommendations for interpretations using FlintFiller (experimental feature, Dutch language only)
-
----
+[- Automated recommendations for interpretations using FlintFiller (experimental feature, Dutch language only)
+](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags)
 
 ## User Manual
 
 ### Interface overview
 
-The interface of Rule editor consists of five screens:
+The interface of the Norm Editor consists of five main views:
 1. Define a task
 2. Collect sources
 3. Interpret sources
@@ -68,27 +63,27 @@ The interface of Rule editor consists of five screens:
 5. Perform task (not yet in use)
 
 ### Define a task (step 1)
-In the current version one is required to start by defining a task and to edit three fields
+In the current version one, it is recommended to start by defining a task and to edit three fields
 
-| Field       | Explanation                                                    | Example             |
-| ----------- | -------------------------------------------------------------- | ------------------- |
-| Editor      | Field to register the name of the person using the rule editor | Robert van Doesburg |
-| Label       | Label to refer to the task                                     |                     |
-| Description | Description of the task                                        |                     |
+| Field       | Explanation                                                    | Example          |
+| ----------- |----------------------------------------------------------------|------------------|
+| Editor      | Field to register the name of the person using the norm editor | John Doe         |
+| Label       | Label to refer to the task                                     | Test Task        |
+| Description | Description of the task                                        | Test Description |
 
-If one of the fields **Editor**, **Label** or **Description** is empty it is impossible to continue (**click on button**) to the next screen.
-{In a future release it will be possible to navigate all screens without restrictions.}
+The fields are obligatory in the production version. **Click on the continue button** to go to the next view.
+In a future release it will be possible to navigate across all views without restrictions.
 
 ### Collect sources (step 2)
-In the screen for collecting sources there are three ways for adding sources to the editor:
+There are three ways for adding sources to the editor:
 
 | Field                                | Explanation                                                | Example                            |
 | ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
 | Add source from server               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
 | Add source from Triply               | Field to add a source from the Triply linked data store    | Not yet available                  |
-| ![[Pasted image 20250121110444.png]] | A button that allows to add a source from local filesystem | mydrive/AI_Act.json                |
+| ![[Pasted image 20250121110444.png]] | A button that allows to add a source from local filesystem | AI_Act.json                |
 
-Select the source or sources you consider relevant in relation to the task you are working on.
+Select the source or the sources you consider relevant in relation to the task you are working on.
 
 Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**. 
 
@@ -97,20 +92,24 @@ You can always get back to this screen to add additional sources, or remove redu
 Click on the **continue** button to get to the interpretation screen, or on the **back** button. In this version of the software, the only way to navigate between screens is by using the **continue** button or the **back** button.
 
 The buttons for the steps at the top of the screen can only be used when you are in step 3 (interpret sources).
+
 ### Interpret sources (step 3)
 The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
+
 #### Expanding source text
 You can use the **expand** and **collapse** icons to expand or collapse the text.
+
 #### Selecting text
 Select a text fragment. You can select anything from a single word to multiple lines.
 
 When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+
 #### Making frames
 
 ##### Facts
 When you make your first interpretations, start by making some **facts**. 
 
-You create a **fact** by selecting a text fragment, click on the selected fragment and click on the **fact** button. In the right side of the screen a **fact frame** emerges.
+You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** emerges.
 
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
@@ -123,7 +122,8 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 	- making implicit information explicit (add a comment to explicitly lay down the implication).
 - a *short name* for longer text fragments.
 
-An examples are given below.
+Examples are given below.
+
 ###### Fact types and roles
 You can classify **facts** as **agent**, **action**, **object**, or **duty**. (The classification *condition* will be added soon, until then **facts** that do not have a classification is used for *conditions*).
 
@@ -147,6 +147,7 @@ The action verbs that can be derived from *processing*, *collection*, *erasure* 
 Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *collected personal data* (the result of *collecting personal data*).
 
 The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
+
 ##### Acts
 One can create **acts** in two ways:
 1. by selecting one or more sentences and qualify those sentences as an **act** frame,
@@ -154,20 +155,17 @@ One can create **acts** in two ways:
 
 For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) is is advised to select sentences.
 
-Selecting *actions*, *actors*, *objects* and *recipients* from random sentences, one can create nonsensical **acts**. **Acts** should be related to one or more specific sentences.
+One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should be related to one or more specific sentences.
+
 ##### Claims
 **Claims** contain a **duty**, a **claimant** and a **duty holder**. The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
 
 The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
+
 ### Validate interpretations (step 4)
 Not yet available.
 ### Perform task (step 5)
 Not yet available.
-## Feature requests and bug reports
-Would you like to report a bug or request a new feature? Please open an issue on in the [rule editor repository](https://gitlab.com/normativesystems/ui/interpretation-editor/-/issues) on GitLab.
-
-
----
 
 ## Data Model
 
@@ -236,9 +234,6 @@ The link between snippets and annotation is stored in the snippets, see above. A
     - _verticalPosition_ The vertical position of the coloured line that marks this annotation in the source text
 
 
-
----
-
 ## Project Structure
 
     .
@@ -273,7 +268,6 @@ The link between snippets and annotation is stored in the snippets, see above. A
     ├── LICENSE                     # Project license
     └── README.md                   # Project documentation
 
----
 
 ## Getting started 
 
@@ -364,7 +358,7 @@ netlify dev
 
 You can then make HTTP requests to <code>/.netlify/functions/[function-name]</code>.
 
-For adding new functions, simply create a new <code>.js</code> in <code>functions/</code>.
+For adding new functions, simply create a new folder in the `/functions` folder and add an `.mjs` to it.
 
 You can find more information in the [Netlify Functions docs](https://docs.netlify.com/functions/overview/).
 
