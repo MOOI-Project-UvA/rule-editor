@@ -95,6 +95,9 @@ export default {
       return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
     },
   },
+  mounted() {
+    this.updateLabel();
+  },
   methods: {
     closeFrame() {
       this.frame.activeField = null
@@ -116,7 +119,34 @@ export default {
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
       this.idIsCopiedToClipboard = true
-    }
+    },
+    userChangedLabel() {
+      //when clearing, label is null, set it to "" instead
+      if (this.frame.shortName == null) {
+        this.frame.shortName = "";
+      }
+      //stop generating label automatically when user types their own label
+      //when user deletes label, set auto generating to true
+      this.frame.generateLabelAutomatically = this.frame.shortName.length === 0;
+    },
+    updateLabel() {
+      //somehow, updateLabel is triggered from 'watch' when panel is closed and frame is null
+      //therefore: check for frame equals null
+      if (this.frame && this.frame.generateLabelAutomatically) {
+        this.frame.generateLabel();
+      }
+    },
+  },
+  watch: {
+    "frame.duty"() {
+      this.updateLabel();
+    },
+    "frame.claimant"() {
+      this.updateLabel();
+    },
+    "frame.holder"() {
+      this.updateLabel();
+    },
   },
   components: {
     RoleSelector,
