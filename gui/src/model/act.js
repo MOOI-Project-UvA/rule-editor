@@ -177,6 +177,7 @@ class Act {
         const recipientShortName = this._recipient ? this._recipient.shortName : '<rec>'
 
         this._shortName = `${actionShortName} ${objectShortName} ${actorShortName} ${recipientShortName}`
+        this._fullName = `${actionShortName} ${objectShortName} ${actorShortName} ${recipientShortName}`
     }
 
 }

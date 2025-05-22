@@ -6,7 +6,7 @@ export class Fact {
     constructor(initialLabel) {
         this._id = uuid4() //unique ID
         this._shortName = initialLabel //label as visible in the chip
-        this._fullName = "" //longer description of the fact
+        this._fullName = initialLabel //longer description of the fact
         this._typeId = null //type id
         this._subTypeIds = [] //subtype ids, a fact can have multiple subtypes
         this._comments = [] //comments from interpretor about this fact
