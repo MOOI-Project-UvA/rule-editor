@@ -344,7 +344,6 @@ Want to deploy immediately to Netlify? Click this button
 
 Clicking this button will create a new repo for you that looks exactly like this one, and sets that repo up immediately for deployment on Netlify.
 
----
 
 ## Development
 
@@ -368,7 +367,6 @@ Edge functions live in <code>/.netlify/edge-fuctions/</code>. See [Netlify Edge 
 
 Routing for Edge functions is configured in <code>netlify.toml</code>.
 
----
 
 ## Environment variables
 
@@ -376,18 +374,16 @@ The application requires several environment variables to function properly, esp
 Add these variables to your Netlify dashboard or a local .env file as appropriate.
 
 
-| Variable        | Explanation                                                                                                                                                        |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                               |
-| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                 |
-| TRIPLY_ENDPOINT | Base URL of the TriplyDB instance/API  (Requires the creation of an account on the TRIPLY website)                                                                 |
-| X_API_KEY       | Generated API key for authentication purposes. Used by the Edge function to redirect to the correct TRIPLY_DB serverless functions. Create your own.               |
-| ALLOWED_DOMAINS | The domain from which the Edge function should expect the request.                                                                                                 |
-| VITE_X_API_KEY  | API key required for fetching NLP predictions, and converting your interpretation in RDF and JSON to save them locally. Please contact us to generate one for you. |
+| Variable        | Explanation                                                                                                                                                              |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                     |
+| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                       |
+| TRIPLY_ENDPOINT | Base URL of the TriplyDB instance/API  (Requires the creation of an account on the TRIPLY website)                                                                       |
+| X_API_KEY       | Generated API key for authentication purposes. Used by the Edge function to redirect to the correct TRIPLY_DB serverless functions. Create your own.                     |
+| ALLOWED_DOMAINS | The domain from which the Edge function should expect the requests. If you run a local development server, you can set the value to `http://localhost:[designated_port]` |
+| VITE_X_API_KEY  | API key required for fetching NLP predictions, and converting your interpretation in RDF and JSON to save them locally. Please contact us to generate one for you.       |
 
 Create an `.env` file in the `gui` folder and define the environment variable there. 
-
----
 
 ## Contributing
 
@@ -414,9 +410,8 @@ git commit -am 'Add some feature'
 ```bash
 git push origin my-feature-or-bugfix
 ```
-8. Open a Merge Request (GitLab guide)
+8. Open a Merge Request ([GitLab guide](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/))
 
----
 
 ## License
 
