@@ -16,7 +16,6 @@ class Act {
         this._creates = []
         this._terminates = []
 
-        this._highlight = false
         this._comments = []
 
         this._generateLabelAutomatically = true //by default, label is generated automatically
