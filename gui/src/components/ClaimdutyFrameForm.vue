@@ -3,14 +3,6 @@
     <q-card-section>
       <div class="row items-center">
         <div class="col-2">CLAIM-DUTY</div>
-        <div class="col">
-          <template v-if="sentences?.length == 0">
-            <div class="text-italic">No source added yet</div>
-          </template>
-          <template v-else>
-            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
-          </template>
-        </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
             @click="showComments = !showComments">
@@ -107,14 +99,6 @@ export default {
       this.frameIsBeingDeleted = null
       this.$store.commit("removeFrame", this.frame)
       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
-    },
-    //scroll to source of frame, in source panel
-    scrollToSource() {
-      const sentenceToScrollTo = this.sentences[0];
-      //show correct source
-      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
-      //scroll to sentence
-      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);

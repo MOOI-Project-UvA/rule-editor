@@ -8,18 +8,6 @@
           {{ doc.title }}
         </q-btn>
       </div>
-
-      <!-- <div class="col-1">
-        <q-avatar class="float-right" size="lg">
-          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
-          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">
-              In this view, you are able to start the interpretation process by
-              selecting text snippets and assigning a frame type.
-            </div>
-          </q-tooltip>
-        </q-avatar>
-      </div> -->
     </div>
     <q-separator />
 
@@ -42,7 +30,7 @@
 </template>
 
 <script>
-import SentenceList from "../components/SentenceList.vue";
+import SentenceList from "../../components/SentenceList.vue";
 export default {
   components: {
     SentenceList,
