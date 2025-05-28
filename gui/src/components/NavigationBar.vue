@@ -19,7 +19,7 @@
 <script>
 import TaskDefinitionView from "../views/TaskDefinitionView.vue";
 import SourceCollectionView from "../views/SourceCollectionView.vue";
-import InterpretationView from "../views/InterpretationView.vue";
+import InterpretationView from "../views/interpretation/InterpretationView.vue";
 import LoadSaveInterpretationBanner from "./LoadSaveIntepretationBanner.vue"
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
