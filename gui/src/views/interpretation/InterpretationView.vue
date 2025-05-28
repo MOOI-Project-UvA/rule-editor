@@ -1,12 +1,13 @@
 <script>
 //icons from https://pictogrammers.com/library/mdi/
 import SourceView from "./SourceView.vue";
+import SourceOfSelectedFrameView from "./SourceOfSelectedFrameView.vue"
 import FrameListView from "./FrameListView.vue";
 import FrameEditView from "./FrameEditView.vue"
 
-import AnnotationPanel from "../components/AnnotationPanel.vue";
-import AnnotationList from "../components/AnnotationList.vue"
-import AddingAnnotationToFramePanel from "../components/AddingAnnotationToFramePanel.vue"
+import AnnotationPanel from "../../components/AnnotationPanel.vue";
+import AnnotationList from "../../components/AnnotationList.vue"
+import AddingAnnotationToFramePanel from "../../components/AddingAnnotationToFramePanel.vue"
 
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
@@ -16,10 +17,12 @@ export default {
     FrameListView,
     FrameEditView,
     SourceView,
+    SourceOfSelectedFrameView,
     AnnotationPanel,
     AnnotationList,
     AddingAnnotationToFramePanel,
   },
+  //icons from https://pictogrammers.com/library/mdi/
   data: () => ({
     panels: [
       {
@@ -27,6 +30,12 @@ export default {
         component: markRaw(SourceView),
         expanded: true,
         icon: 'mdi-file-document-outline'
+      },
+      {
+        label: "Source of selected frame",
+        component: markRaw(SourceOfSelectedFrameView),
+        expanded: false,
+        icon: 'mdi-file-document-edit-outline'
       },
       {
         label: "Frames",
