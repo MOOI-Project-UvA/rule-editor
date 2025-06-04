@@ -58,4 +58,12 @@ export default {
     text-decoration: underline;
     font-weight: bold;
 }
+
+.scrollable {
+  overflow-y: auto;
+}
+
+.fill-height {
+  height: calc(100vh - 250px);
+}
 </style>
