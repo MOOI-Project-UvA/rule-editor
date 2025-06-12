@@ -1,12 +1,12 @@
-# Norm editor
+# Rule editor
 
-**The Norm Editor** is an application built using web-based technologies that allows users to create interpretations of 
+**The Rule Editor** is an application built using web-based technologies that allows users to create interpretations of 
 sources of norms in FLINT in a user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
 The app is deployed on [Netlify](https://www.netlify.com/) and uses Netlify functions (serverless functions, including Edge Functions) to extend back-end capabilities.
 
 **Try it out**
 
-There are two public versions of the Norm Editor available:
+There are two public versions of the Rule Editor available:
 
 - Stable version: 
   The most stable release hosted at https://norm-editor.netlify.app/.
@@ -32,13 +32,13 @@ Feel free to explore both!
 
 ## Project Description
 
-The Norm Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated.
+The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated.
 
 The current version of the Editor can only be used to create FLINT interpretations. The editor is designed so that any method or interpretation scheme can be used for interpreting normative text that results in (executable) norms or rules. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Norm Editor can be stored as JSON or RDF files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
+Interpretations made using the Rule Editor can be stored as JSON or RDF files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
 
 ## Features
 
@@ -55,7 +55,7 @@ Interpretations made using the Norm Editor can be stored as JSON or RDF files lo
 
 ### Interface overview
 
-The interface of the Norm Editor consists of five main views:
+The interface of the Rule Editor consists of five main views:
 1. Define a task
 2. Collect sources
 3. Interpret sources
@@ -67,7 +67,7 @@ In the current version one, it is recommended to start by defining a task and to
 
 | Field       | Explanation                                                    | Example          |
 | ----------- |----------------------------------------------------------------|------------------|
-| Editor      | Field to register the name of the person using the norm editor | John Doe         |
+| Editor      | Field to register the name of the person using the rule editor | John Doe         |
 | Label       | Label to refer to the task                                     | Test Task        |
 | Description | Description of the task                                        | Test Description |
 
