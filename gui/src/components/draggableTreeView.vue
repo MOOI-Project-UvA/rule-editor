@@ -445,6 +445,11 @@ export default {
       toResult: null,
       draggingId: null,
       dragOverId: null,
+      toggleOptions: [
+        { label: "Swap order", value: "swapping" },
+        { label: "Move child", value: "nesting" },
+      ],
+      mode: "two",
     };
   },
   watch: {
@@ -543,6 +548,58 @@ export default {
         }
       }
     },
+    swapNodes(fromKey, toKey) {
+      if (fromKey === toKey) return;
+
+      const fromResult = this.getNodeByLabel(this.subdivision, fromKey, -1);
+      const toResult = this.getNodeByLabel(this.subdivision, toKey, -1);
+
+      if (!fromResult || !toResult) return;
+
+      const fromParent = fromResult.parent;
+      const toParent = toResult.parent;
+
+      // Helper to find index in parent's children or subdivision root
+      const findIndex = (parent, node) => {
+        if (!parent) return this.subdivision.indexOf(node);
+        return parent.children.indexOf(node);
+      };
+
+      const fromIndex = findIndex(fromParent, fromResult.node);
+      const toIndex = findIndex(toParent, toResult.node);
+
+      if (fromParent === toParent) {
+        // Same parent: swap positions in children array
+        if (fromParent) {
+          const children = fromParent.children;
+          children.splice(fromIndex, 1, toResult.node);
+          children.splice(toIndex, 1, fromResult.node);
+        } else {
+          // Top-level subdivision array
+          this.subdivision.splice(fromIndex, 1, toResult.node);
+          this.subdivision.splice(toIndex, 1, fromResult.node);
+        }
+      } else {
+        // Different parents: remove nodes from their parents and insert into the other's children
+        if (fromParent) fromParent.children.splice(fromIndex, 1);
+        else this.subdivision.splice(fromIndex, 1);
+
+        if (toParent) toParent.children.splice(toIndex, 1);
+        else this.subdivision.splice(toIndex, 1);
+
+        if (fromParent) {
+          fromParent.children.splice(fromIndex, 0, toResult.node);
+        } else {
+          this.subdivision.splice(fromIndex, 0, toResult.node);
+        }
+
+        if (toParent) {
+          toParent.children.splice(toIndex, 0, fromResult.node);
+        } else {
+          this.subdivision.splice(toIndex, 0, fromResult.node);
+        }
+      }
+    },
     dragStart(event, key) {
       console.log("drag key:", key);
       this.draggingId = key;
@@ -583,19 +640,60 @@ export default {
       if (target) target.classList.remove("container");
       if (nodeKey) {
         console.log("nodeKey:", nodeKey);
-        this.moveNode(nodeKey, key);
 
         // this.$refs.tree.setExpanded(this.toResult.node.id, true);
-        console.log(`Move ${nodeKey} to ${key}`);
-        console.log("toResult:", this.toResult);
-        const nodeInfo = this.getNodeByKey(this.toResult.id);
-        nodeInfo.frame = null;
-        console.log("nodeInfo:", nodeInfo);
+        // console.log(`Move ${nodeKey} to ${key}`);
+        // console.log("toResult:", this.toResult);
+        // const nodeInfo = this.getNodeByKey(this.toResult.id);
+        // nodeInfo.frame = null;
+        // console.log("nodeInfo:", nodeInfo);
+
+        if (this.mode === "swapping") {
+          // Swap nodes
+          this.swapNodes(nodeKey, key);
+          console.log(`Swapped nodes ${nodeKey} and ${key}`);
+        } else {
+          // move nodes as child
+          this.moveNode(nodeKey, key);
+          console.log(`Moved node ${nodeKey} to ${key}`);
+        }
 
         this.draggingId = null;
         this.dragOverId = null;
       }
     },
+    // drop(event, key) {
+    //   event.preventDefault();
+    //   console.log("drop key:", key);
+    //   const target = event.target;
+    //   let nodeKey = "";
+    //   if (event.dataTransfer) nodeKey = event.dataTransfer.getData("node");
+    //   if (target) target.classList.remove("container");
+    //   if (nodeKey) {
+    //     console.log("nodeKey:", nodeKey);
+    //     this.moveNode(nodeKey, key);
+    //
+    //     // this.$refs.tree.setExpanded(this.toResult.node.id, true);
+    //     console.log(`Move ${nodeKey} to ${key}`);
+    //     console.log("toResult:", this.toResult);
+    //     const nodeInfo = this.getNodeByKey(this.toResult.id);
+    //     nodeInfo.frame = null;
+    //     console.log("nodeInfo:", nodeInfo);
+    //
+    //     if (this.mode === "one") {
+    //       // Swap nodes if Shift key is pressed
+    //       this.swapNodes(nodeKey, key);
+    //       console.log(`Swapped nodes ${nodeKey} and ${key}`);
+    //     } else {
+    //       // Default behavior: move node as child
+    //       this.moveNode(nodeKey, key);
+    //       console.log(`Moved node ${nodeKey} to ${key}`);
+    //     }
+    //
+    //     this.draggingId = null;
+    //     this.dragOverId = null;
+    //   }
+    // },
     dragOver(event, id) {
       event.preventDefault();
       const target = event.target;
@@ -615,6 +713,17 @@ export default {
 <template>
   <div id="draggable-tree">
     <div class="q-pa-md q-gutter-sm">
+      {{ mode }}
+      <label for="mode-selector"
+        >Mode:
+        <q-btn-toggle
+          v-model="mode"
+          :options="toggleOptions"
+          name="mode-selector"
+          rounded
+          size="sm"
+        ></q-btn-toggle>
+      </label>
       <q-tree
         ref="tree-structure"
         :nodes="subdivision"
@@ -622,8 +731,21 @@ export default {
         default-expand-all
       >
         <template v-slot:default-header="prop">
-          <span v-if="dragOverId === prop.node.id" class="plus-icon">
+          <span
+            v-if="dragOverId === prop.node.id && mode == 'nesting'"
+            class="plus-icon"
+          >
             <q-icon name="mdi-plus-circle-outline" color="primary" size="sm" />
+          </span>
+          <span
+            v-if="dragOverId === prop.node.id && mode == 'swapping'"
+            class="plus-icon"
+          >
+            <q-icon
+              name="mdi-swap-vertical-circle-outline"
+              color="primary"
+              size="sm"
+            />
           </span>
           <div
             v-if="prop.node.children.length > 0"
