@@ -162,9 +162,9 @@ One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects*
 
 The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
 
-### Validate interpretations (step 4)
+### Make interpretations executable (step 4)
 Not yet available.
-### Perform task (step 5)
+### Execute task (step 5)
 Not yet available.
 
 ## Data Model
