@@ -125,7 +125,7 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 Examples are given below.
 
 ###### Fact types and roles
-You can classify **facts** as **agent**, **action**, **object**, or **duty**. (The classification *condition* will be added soon, until then **facts** that do not have a classification is used for *conditions*).
+You can classify **facts** as **agent**, **action**, **object**, or **duty**.
 
 Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
 
