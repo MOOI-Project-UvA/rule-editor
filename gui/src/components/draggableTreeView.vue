@@ -449,7 +449,7 @@ export default {
         { label: "Swap order", value: "swapping" },
         { label: "Move child", value: "nesting" },
       ],
-      mode: "two",
+      mode: "nesting",
     };
   },
   watch: {
@@ -713,17 +713,19 @@ export default {
 <template>
   <div id="draggable-tree">
     <div class="q-pa-md q-gutter-sm">
-      {{ mode }}
-      <label for="mode-selector"
-        >Mode:
-        <q-btn-toggle
-          v-model="mode"
-          :options="toggleOptions"
-          name="mode-selector"
-          rounded
-          size="sm"
-        ></q-btn-toggle>
-      </label>
+      <div class="flex flex-start items-baseline">
+        <div id="label">Mode:</div>
+        <div id="ui-element" class="q-ml-sm">
+          <q-btn-toggle
+            v-model="mode"
+            :options="toggleOptions"
+            name="mode-selector"
+            size="sm"
+            rounded
+          ></q-btn-toggle>
+        </div>
+      </div>
+
       <q-tree
         ref="tree-structure"
         :nodes="subdivision"
