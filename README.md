@@ -56,13 +56,13 @@ Interpretations made using the Rule Editor can be stored as JSON or RDF files lo
 ### Interface overview
 
 The interface of the Rule Editor consists of five main views:
-1. Define a task
+1. Set task
 2. Collect sources
 3. Interpret sources
-4. Validate interpretations (not yet in use)
-5. Perform task (not yet in use)
+4. Make interpretations executable (not yet in use)
+5. Execute task (not yet in use)
 
-### Define a task (step 1)
+### Set task (step 1)
 In the current version one, it is recommended to start by defining a task and to edit three fields
 
 | Field       | Explanation                                                    | Example          |
