@@ -1,10 +1,8 @@
 # Norm editor
 
-**The Norm Editor** is an application built using web-based technologies that allows users to create interpretations of 
-sources of norms in FLINT in a user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
-The app is deployed on [Netlify](https://www.netlify.com/) and uses Netlify functions (serverless functions, including Edge Functions) to extend back-end capabilities.
+Create explicit interpretations of laws and other texts &mdash; export as Linked Data.
 
-**Try it out**
+## Quick start
 
 There are two public versions of the Norm Editor available:
 
@@ -32,27 +30,31 @@ Feel free to explore both!
 
 ## Project Description
 
-The Norm Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated.
+The Norm Editor is a web application for interpreting normative texts. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
-The current version of the Editor can only be used to create FLINT interpretations. The editor is designed so that any method or interpretation scheme can be used for interpreting normative text that results in (executable) norms or rules. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
+The current version of the Editor enables users to express interpretations in FLINT. The editor is designed to be easily extendable for other interpretation schemes. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
+<!-- TODO What is meant by RDF format? Can I put .ttl files into it? -->
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Norm Editor can be stored as JSON or RDF files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
+Interpretations made using the Norm Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
 
 ## Features
 
+<!-- TODO Is this supposed to be mostly technical? Or recapping the above section? Mb technical features/choices?? Or even just remove it? -->
+<!--TODO Modern in what sense? -->
 - Modern interface using [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
 - Serverless back-end with [Netlify Functions](https://docs.netlify.com/functions/overview/) (API endpoints).
 - [Netlify Edge Functions](https://docs.netlify.com/edge-functions/overview/)(Edge middleware) for middleware-like behaviour.
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
+<!-- TODO customizable in what sense? -->
 - Customizable UI.
 - Store, share, and use interpretations locally in JSON or RDF formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
-[- Automated recommendations for interpretations using FlintFiller (experimental feature, Dutch language only)
-](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags)
+- [Automated recommendations for interpretations using FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags) (experimental feature, Dutch language only)
 
 ## User Manual
 
+<!-- HINT: maybe just choose a version and write for that. Then update when you get around to it. Saves editing troubles later ... -->
 ### Interface overview
 
 The interface of the Norm Editor consists of five main views:
@@ -74,12 +76,13 @@ In the current version one, it is recommended to start by defining a task and to
 The fields are obligatory in the production version. **Click on the continue button** to go to the next view.
 In a future release it will be possible to navigate across all views without restrictions.
 
+<!-- TODO Triply sources are available, right?? -->
 ### Collect sources (step 2)
 There are three ways for adding sources to the editor:
 
 | Field                                | Explanation                                                | Example                            |
 | ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
-| Add source from server               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
+| Add source from server               | Field to add a source from the Norm Editor server          | General Data Protection Regulation |
 | Add source from Triply               | Field to add a source from the Triply linked data store    | Not yet available                  |
 | ![[Pasted image 20250121110444.png]] | A button that allows to add a source from local filesystem | AI_Act.json                |
 
@@ -109,8 +112,9 @@ When you click on the selected lines, you can create **frames** of the type **ac
 ##### Facts
 When you make your first interpretations, start by making some **facts**. 
 
-You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** emerges.
+You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** appears.
 
+<!-- The text fragment itself is stored 'behind the scenes', right? Might be good to reassure the reader here. -->
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
 For **facts** that refer to a longer text fragment, a short name can be added. The fact consists of:
@@ -122,6 +126,7 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 	- making implicit information explicit (add a comment to explicitly lay down the implication).
 - a *short name* for longer text fragments.
 
+<!-- TODO can we move them up? Instead of talking about abstract grammatical tenses.. :) -->
 Examples are given below.
 
 ###### Fact types and roles
@@ -129,13 +134,16 @@ You can classify **facts** as **agent**, **action**, **object**, or **duty**. (T
 
 Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
 
+<!-- TODO I would recommend to stick to the functions of the editor, without getting into semantics here. So: marking a fact as agent restricts where it can be used in the editor.
+
+But e.g. the statements about what a duty means, or how it relates to acts, are semantic claims that are independent from what the editor does. So I would suggest to remove that here (and leave its discussion for a different documentation). -->
 **Agents** can have the role of **actor** or **recipient** in an **act frame**, or that of **claimant** or **duty holder** in **claim frames**.
 
 **Actions** are verbs used in **act frames**.
 
 **Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
 
-**Duties** refer to **acts** that must be executed in the future by (or on behalve of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
+**Duties** refer to **acts** that must be executed in the future by (or on behalf of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
 
 ###### An example: Article 4 and 5 GDPR
 Search for **agents** (persons that can have the role of *actor*, *recipient*, *claimant*, or *duty holder*, e.g. a *processor*, a *controller*, or *data subject* ), **actions** (e.g. *processing*, *collection*, *erasure*), **objects** (e.g. *personal data*, or *collected data*), **conditions** (e.g. *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);*)
@@ -149,12 +157,14 @@ Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *
 The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
 
 ##### Acts
+<!-- Is this about editor functionality? -->
 One can create **acts** in two ways:
 1. by selecting one or more sentences and qualify those sentences as an **act** frame,
 2. by selecting **fact frames**, made as shown above, and give them a role in an **act** frame.
 
 For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) is is advised to select sentences.
 
+<!-- Suggest to delete. -->
 One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should be related to one or more specific sentences.
 
 ##### Claims
