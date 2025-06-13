@@ -1,10 +1,10 @@
-# Norm editor
+# Rule editor
 
 Create explicit interpretations of laws and other texts &mdash; export as Linked Data.
 
 ## Quick start
 
-There are two public versions of the Norm Editor available:
+There are two public versions of the Rule Editor available:
 
 - Stable version: 
   The most stable release hosted at https://norm-editor.netlify.app/.
@@ -30,14 +30,14 @@ Feel free to explore both!
 
 ## Project Description
 
-The Norm Editor is a web application for interpreting normative texts. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
+The Rule Editor is a web application for interpreting normative texts. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
 The current version of the Editor enables users to express interpretations in FLINT. The editor is designed to be easily extendable for other interpretation schemes. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
 <!-- TODO What is meant by RDF format? Can I put .ttl files into it? -->
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Norm Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
+Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely at a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
 
 ## Features
 
@@ -57,19 +57,19 @@ Interpretations made using the Norm Editor can be stored as JSON or TriG files l
 <!-- HINT: maybe just choose a version and write for that. Then update when you get around to it. Saves editing troubles later ... -->
 ### Interface overview
 
-The interface of the Norm Editor consists of five main views:
-1. Define a task
+The interface of the Rule Editor consists of five main views:
+1. Set task
 2. Collect sources
 3. Interpret sources
-4. Validate interpretations (not yet in use)
-5. Perform task (not yet in use)
+4. Make interpretations executable (not yet in use)
+5. Execute task (not yet in use)
 
-### Define a task (step 1)
+### Set task (step 1)
 In the current version one, it is recommended to start by defining a task and to edit three fields
 
 | Field       | Explanation                                                    | Example          |
 | ----------- |----------------------------------------------------------------|------------------|
-| Editor      | Field to register the name of the person using the norm editor | John Doe         |
+| Editor      | Field to register the name of the person using the rule editor | John Doe         |
 | Label       | Label to refer to the task                                     | Test Task        |
 | Description | Description of the task                                        | Test Description |
 
@@ -130,7 +130,7 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 Examples are given below.
 
 ###### Fact types and roles
-You can classify **facts** as **agent**, **action**, **object**, or **duty**. (The classification *condition* will be added soon, until then **facts** that do not have a classification is used for *conditions*).
+You can classify **facts** as **agent**, **action**, **object**, or **duty**.
 
 Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
 
@@ -172,9 +172,9 @@ One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects*
 
 The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
 
-### Validate interpretations (step 4)
+### Make interpretations executable (step 4)
 Not yet available.
-### Perform task (step 5)
+### Execute task (step 5)
 Not yet available.
 
 ## Data Model
