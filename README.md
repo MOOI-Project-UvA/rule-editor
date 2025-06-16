@@ -34,27 +34,22 @@ The Rule Editor is a web application for interpreting normative texts. To use th
 
 The current version of the Editor enables users to express interpretations in FLINT. The editor is designed to be easily extendable for other interpretation schemes. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
-<!-- TODO What is meant by RDF format? Can I put .ttl files into it? -->
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
 Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely at a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
 
 ## Features
 
-<!-- TODO Is this supposed to be mostly technical? Or recapping the above section? Mb technical features/choices?? Or even just remove it? -->
-<!--TODO Modern in what sense? -->
 - Modern interface using [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
 - Serverless back-end with [Netlify Functions](https://docs.netlify.com/functions/overview/) (API endpoints).
 - [Netlify Edge Functions](https://docs.netlify.com/edge-functions/overview/)(Edge middleware) for middleware-like behaviour.
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
-<!-- TODO customizable in what sense? -->
 - Customizable UI.
 - Store, share, and use interpretations locally in JSON or RDF formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
 - [Automated recommendations for interpretations using FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags) (experimental feature, Dutch language only)
 
 ## User Manual
 
-<!-- HINT: maybe just choose a version and write for that. Then update when you get around to it. Saves editing troubles later ... -->
 ### Interface overview
 
 The interface of the Rule Editor consists of five main views:
@@ -76,7 +71,6 @@ In the current version one, it is recommended to start by defining a task and to
 The fields are obligatory in the production version. **Click on the continue button** to go to the next view.
 In a future release it will be possible to navigate across all views without restrictions.
 
-<!-- TODO Triply sources are available, right?? -->
 ### Collect sources (step 2)
 There are three ways for adding sources to the editor:
 
@@ -114,7 +108,6 @@ When you make your first interpretations, start by making some **facts**.
 
 You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** appears.
 
-<!-- The text fragment itself is stored 'behind the scenes', right? Might be good to reassure the reader here. -->
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
 For **facts** that refer to a longer text fragment, a short name can be added. The fact consists of:
@@ -126,7 +119,6 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 	- making implicit information explicit (add a comment to explicitly lay down the implication).
 - a *short name* for longer text fragments.
 
-<!-- TODO can we move them up? Instead of talking about abstract grammatical tenses.. :) -->
 Examples are given below.
 
 ###### Fact types and roles
@@ -134,9 +126,6 @@ You can classify **facts** as **agent**, **action**, **object**, or **duty**.
 
 Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
 
-<!-- TODO I would recommend to stick to the functions of the editor, without getting into semantics here. So: marking a fact as agent restricts where it can be used in the editor.
-
-But e.g. the statements about what a duty means, or how it relates to acts, are semantic claims that are independent from what the editor does. So I would suggest to remove that here (and leave its discussion for a different documentation). -->
 **Agents** can have the role of **actor** or **recipient** in an **act frame**, or that of **claimant** or **duty holder** in **claim frames**.
 
 **Actions** are verbs used in **act frames**.
@@ -157,14 +146,12 @@ Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *
 The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
 
 ##### Acts
-<!-- Is this about editor functionality? -->
 One can create **acts** in two ways:
 1. by selecting one or more sentences and qualify those sentences as an **act** frame,
 2. by selecting **fact frames**, made as shown above, and give them a role in an **act** frame.
 
-For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) is is advised to select sentences.
+For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) it is advised to select sentences.
 
-<!-- Suggest to delete. -->
 One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should be related to one or more specific sentences.
 
 ##### Claims
@@ -205,11 +192,10 @@ The definitions of the classes used in the tool can be found in the folder `mode
     In addition, an act has auxiliary attributes, not part of the data model:
     - _activeField_ The role of the act that is currently selected by the user
     - _generateLabelAutomatically_ If true, labels (_shortName_ and _fullName_) are generated automatically for the act
-- `claimduty` A frame of type _claim-duty_. In addition to the attributes inheried from `frame` it has attributes for the reles of a claim-duty frame:
+- `claimduty` A frame of type _claim-duty_. In addition to the attributes inherited from `frame` it has attributes for the roles of a claim-duty frame:
     - _duty_ An object of type `fact` representing the duty of a claim-duty
     - _claimant_ An object of type `fact` representing the claimant of a claim-duty
     - _holder_ An object of type `fact` representing the holder of a claim-duty
-
     In addition, a claim-duty has auxiliary attributes, not part of the data model:
     - _activeField_ The role of the claim-duty that is currently selected by the user
     - _generateLabelAutomatically_ If true, labels (_shortName_ and _fullName_) are generated automatically for the claim-duty
@@ -217,7 +203,7 @@ The definitions of the classes used in the tool can be found in the folder `mode
 - `booleanConstruct` This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are _frames_ and all other nodes are _booleanConstructs_. It has the following attributes:
     - _frame_ This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
     - _children_ If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
-    - _operatorToJoinChildren_ The function with which to join the childeren, e.g. a boolean operator.
+    - _operatorToJoinChildren_ The function with which to join the children, e.g. a boolean operator.
     - _isNegated_ If a frame is specified, this attribute tells whether or not the frame should be negated (i.e. the unary boolean function NOT is applied)
 
 - `sourceDocument` This class holds a source document, e.g. the content of a law like the _Participatiewet_. Its constructor reads a jsonLD object and parses it into a nested structure of sentence objects. The leafs of this structure are individual sentences. The nodes higher in the hierarchy represent paragraphs, chapters, etc. It has these attributes:
@@ -233,7 +219,7 @@ The definitions of the classes used in the tool can be found in the folder `mode
 - `snippet` An atomic piece of text. The text is specified as a character range in a sentence. The snippet refers to all annotations that it is part of. Its attributes are:
     - _id_ A unique identifier
     - _sentence_ The sentence object the snippet is part of
-    - _characterRange_ The start and end index of the character range within the sentence
+    - _characterRange_ The start and end index of the character range within the sentence. A snippet that starts from the beginning of the sentence has start index zero
     - _annotations_ The annotations that the snippet is part of
 
 - `annotation` This object links snippets to a frame. The snippets form the annotation of the frame. Its attributes are:
@@ -244,8 +230,8 @@ The link between snippets and annotation is stored in the snippets, see above. A
     - _verticalPosition_ The vertical position of the coloured line that marks this annotation in the source text
 
 
-## Project Structure
 
+## Project Structure
     .
     ├── interpretations/            # List of example interpretations
     ├── gui/                        # UI code    
@@ -257,7 +243,7 @@ The link between snippets and annotation is stored in the snippets, see above. A
     │    │     ├── assets/
     │    │     ├── components/      # The components performing functionalities are here used by the views in the views/ 
     │    │     ├── helpers/         # Reusable functions and utilities that are used by components 
-    │    │     ├── model/           # The data model on which the application is based on
+    │    │     ├── model/           # The data model that the application is based on
     │    │     ├── services/        # the calls to the endpoints are defined here 
     │    │     ├── store/           # The centralized store for the components 
     │    │     ├── views/           # The main views of the UI are defined here 
@@ -386,8 +372,8 @@ Add these variables to your Netlify dashboard or a local .env file as appropriat
 
 | Variable        | Explanation                                                                                                                                                              |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                     |
-| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                       |
+| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                     |
+| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                       |
 | TRIPLY_ENDPOINT | Base URL of the TriplyDB instance/API  (Requires the creation of an account on the TRIPLY website)                                                                       |
 | X_API_KEY       | Generated API key for authentication purposes. Used by the Edge function to redirect to the correct TRIPLY_DB serverless functions. Create your own.                     |
 | ALLOWED_DOMAINS | The domain from which the Edge function should expect the requests. If you run a local development server, you can set the value to `http://localhost:[designated_port]` |
