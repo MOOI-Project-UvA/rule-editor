@@ -171,7 +171,7 @@ Not yet available.
 
 The tool uses an internal data structure that differs slightly from the JSON and RDF format in which the interpretations are stored.
 
-The definitions of the classes used in the tool can be found in the folder `model`. The main classes are:
+The definitions of the classes used in the tool can be found in the folder `gui/src/model`. The main classes are:
 
 - `frame` This is a class representing a frame. It is the superclass of `act`, `fact`, and `claim_duty`. Each frame has the following attributes:
     - _id_ A unique id, generated when a frame is instantiated.
