@@ -9,9 +9,9 @@ The app is deployed on [Netlify](https://www.netlify.com/) and uses Netlify func
 There are two public versions of the Rule Editor available:
 
 - Stable version: 
-  The most stable release hosted at https://norm-editor.netlify.app/.
+  The most stable release hosted at https://rule-editor.netlify.app/.
 - Latest (preview) version:
-  Includes the newest features and experimental changes (not fully tested or stable) hosted at https://develop--norm-editor.netlify.app/.
+  Includes the newest features and experimental changes (not fully tested or stable) hosted at https://develop--rule-editor.netlify.app/.
 
 Feel free to explore both!
 
@@ -65,23 +65,23 @@ The interface of the Rule Editor consists of five main views:
 ### Set task (step 1)
 In the current version one, it is recommended to start by defining a task and to edit three fields
 
-| Field       | Explanation                                                    | Example          |
-| ----------- |----------------------------------------------------------------|------------------|
-| Editor      | Field to register the name of the person using the rule editor | John Doe         |
-| Label       | Label to refer to the task                                     | Test Task        |
-| Description | Description of the task                                        | Test Description |
+| Field       | Explanation                                                    | Example                  |
+| ----------- |----------------------------------------------------------------|--------------------------|
+| Editor      | Field to register the name of the person using the rule editor | John Doe                 |
+| Label       | Label to refer to the task                                     | National Budget Cycle    |
+| Description | Description of the task                                        | What is needed to arrive at an approved national budget? |
 
 The fields are obligatory in the production version. **Click on the continue button** to go to the next view.
-In a future release it will be possible to navigate across all views without restrictions.
+In the preview version it is possible to navigate across all views without restrictions.
 
 ### Collect sources (step 2)
 There are three ways for adding sources to the editor:
 
 | Field                                | Explanation                                                | Example                            |
 | ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
-| Add source from server               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
-| Add source from Triply               | Field to add a source from the Triply linked data store    | Not yet available                  |
-| ![[Pasted image 20250121110444.png]] | A button that allows to add a source from local filesystem | AI_Act.json                |
+| Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
+| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store    | Not yet available                  |
+| Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem | AI_Act.json                |
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
