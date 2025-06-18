@@ -62,6 +62,8 @@ The interface of the Rule Editor consists of five main views:
 4. Make interpretations executable (not yet in use)
 5. Execute task (not yet in use)
 
+Navigate between views using the tabs at the top of the page.
+
 ### Set task (step 1)
 In the current version one, it is recommended to start by defining a task and to edit three fields
 
@@ -80,7 +82,7 @@ There are three ways for adding sources to the editor:
 | Field                                | Explanation                                                | Example                            |
 | ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
 | Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
-| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store    | Not yet available                  |
+| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store    | General Data Protection Act              |
 | Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem | AI_Act.json                |
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
@@ -89,35 +91,61 @@ Use the checkboxes to select or deselect text fragments. There are also buttons 
 
 You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
 
-Click on the **continue** button to get to the interpretation screen, or on the **back** button. In this version of the software, the only way to navigate between screens is by using the **continue** button or the **back** button.
+Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
-The buttons for the steps at the top of the screen can only be used when you are in step 3 (interpret sources).
+In the production version, you can click on the **continue** button to get to the interpretation screen, or on the **back** button. In preview version of the software, the only way to navigate between screens is by using the tabs at the top of the page.
 
 ### Interpret sources (step 3)
-The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
 
-#### Expanding source text
-You can use the **expand** and **collapse** icons to expand or collapse the text.
+#### Preview version
 
-#### Selecting text
-Select a text fragment. You can select anything from a single word to multiple lines.
+The interpretation screen consists of four main panes:
+- **Source pane:** Contains the selected sources.
+- **Source of selected frame:** Indicates the source of the selected frame.
+- **Frames:** Lists the created frames by type.
+- **Edit:** Where you can create and modify FLINT frames.
 
-When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+Each pane is collapsible, allowing you to allocate more space to the pane you are focussing on.
 
-#### Making frames
+**Source pane**
+
+**Expanding source text**
+You can use the **expand** and **collapse** icons to show or hide the text.
+
+**Selecting text**
+Select a text fragment (from a single word to multiple lines). When your selection is complete, a modal dialog appears, allowing you to:
+- Create a frame (**act**, **claim**, or **fact**), or
+- Link the selected text fragment to an existing frame.
+
+You can also click on selected lines to **delete** the selection or **open** the frame in the **Edit** pane for further analysis.
+
+**Source of selected frame**
+
+This pane provides an overview of the linked text fragments (per source) for the currently selected frame.
+
+**Frames**
+
+The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top. Alternatively, you can switch to a network visualization, which shows how different frames are related.
+Switch between **List** and **Network** views using the provided radio buttons.
+
+**Edit** 
+
+Here you can create, edit, and delete frames. Supported frame types are **act**, **claim**, and **fact**.
 
 ##### Facts
-When you make your first interpretations, start by making some **facts**. 
+When starting your intepretation, begin by creating some **facts**. 
 
 You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** emerges.
 
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
-For **facts** that refer to a longer text fragment, a short name can be added. The fact consists of:
+For **facts** with a longer text fragments, add a short name. 
+
+A fact consists of:
 - the *text fragment* from a *source*
-- the *full name*, that is basically the same as the a literal text from the fragment, adjustments can be made regarding to:
+- the *full name*, that is the same as the a literal text from the fragment, adjustments can be made regarding to:
 	- the conjugation of the **action**,
-	- interpunction issues,
+	- punctuation issues,
 	- making a readable sentence in case of the combination of multiple fragments from a single sentence, or even from multiple sentences,
 	- making implicit information explicit (add a comment to explicitly lay down the implication).
 - a *short name* for longer text fragments.
@@ -125,17 +153,17 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 Examples are given below.
 
 ###### Fact types and roles
-You can classify **facts** as **agent**, **action**, **object**, or **duty**.
+You can classify **facts** as one of the following: 
+- **Agent**
+- **Action**
+- **Object**
+- **Duty**
 
-Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
-
-**Agents** can have the role of **actor** or **recipient** in an **act frame**, or that of **claimant** or **duty holder** in **claim frames**.
-
-**Actions** are verbs used in **act frames**.
-
-**Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
-
-**Duties** refer to **acts** that must be executed in the future by (or on behalve of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
+Which role a **fact** takes depends on how it is used in **act frames** or **claim frames**:
+- **Agents**: can be **actors** or **recipients** in **act frames**, or **claimants/duty holders** in **claim frames**.
+- **Actions** are verbs used in **act frames**.
+- **Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
+- **Duties** refers to **acts** that must be executed by (or on behalf of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
 
 ###### An example: Article 4 and 5 GDPR
 Search for **agents** (persons that can have the role of *actor*, *recipient*, *claimant*, or *duty holder*, e.g. a *processor*, a *controller*, or *data subject* ), **actions** (e.g. *processing*, *collection*, *erasure*), **objects** (e.g. *personal data*, or *collected data*), **conditions** (e.g. *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);*)
@@ -149,18 +177,42 @@ Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *
 The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
 
 ##### Acts
-One can create **acts** in two ways:
-1. by selecting one or more sentences and qualify those sentences as an **act** frame,
-2. by selecting **fact frames**, made as shown above, and give them a role in an **act** frame.
+Create **acts** in two ways:
+1. Select sentences and mark them as an **act** frame,
+2. Select pre-existing **fact frames** and assign them a role in an **act** frame.
 
-For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) is is advised to select sentences.
+To create core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action), it is advised to select whole sentences.
 
-One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should be related to one or more specific sentences.
+One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should relate to specific sentences.
 
 ##### Claims
-**Claims** contain a **duty**, a **claimant** and a **duty holder**. The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
+A **claim** contains:
+-  a **duty**
+-  a **claimant** 
+- a **duty holder**.
 
-The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
+The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
+
+A **duty** should be linked to:
+- One or more **acts** that can create the **duty**
+- One or more **acts** that terminate the **duty**
+
+
+#### Production version
+
+The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
+
+#### Expanding source text
+You can use the **expand** and **collapse** icons to expand or collapse the text.
+
+#### Selecting text
+Select a text fragment. You can select anything from a single word to multiple lines.
+
+When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+
+#### Making frames
+
+The process of making frames is the same as in the preview version.
 
 ### Make interpretations executable (step 4)
 Not yet available.
