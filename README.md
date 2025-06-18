@@ -18,19 +18,19 @@ Feel free to explore both!
 
 ## Table of Contents
 
-1. [Project Description](#project-description)
+1. [Application Overview](#application-overview)
 2. [Features](#features)
 3. [User Manual](#user-manual)
 4. [Data Model](#data-model)
 5. [Getting Started](#getting-started)
-6. [Project Structure](#project-structure)
+6. [Codebase Structure](#codebase-structure)
 7. [Development](#development)
 8. [Environment Variables](#environment-variables)
 9. [Contributing](#contributing)
 10. [License](#license)
 
 
-## Project Description
+## Application Overview
 
 The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated.
 
@@ -234,7 +234,7 @@ The link between snippets and annotation is stored in the snippets, see above. A
     - _verticalPosition_ The vertical position of the coloured line that marks this annotation in the source text
 
 
-## Project Structure
+## Codebase Structure
 
     .
     ├── interpretations/            # List of example interpretations
