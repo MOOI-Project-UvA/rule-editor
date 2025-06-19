@@ -32,7 +32,7 @@
       <q-input v-model="frame.shortName" label="Short name" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.fullName" label="Full name" autogrow />
     </q-card-section>
-    <q-card-section v-if="frame.isComplex">
+    <q-card-section>
       <div class="label">Subdivision</div>
       <TreeviewBooleanConstruct
           :boolean-construct="frame.subdivision"
