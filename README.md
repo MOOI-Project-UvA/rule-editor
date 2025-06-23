@@ -260,7 +260,7 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     - **_frame_**: This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
     - **_children_**: If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
     - **_operatorToJoinChildren_**: The function with which to join the childeren, e.g. a boolean operator.
-    - **_isNegated_**: If a frame is specified, this attribute tells whether or not the frame should be negated (i.e. the unary boolean function NOT is applied)
+    - **_isNegated_ _(deprecated)_**: If a frame is specified, this attribute tells whether or not the frame should be negated (i.e. the unary boolean function NOT is applied). [DEPRECATED] This property will be removed in future versions. Use **operatorToJoinChildren** instead.
 
 - [`sourceDocument`](./gui/src/model/sourceDocument.js): This class holds a source document, e.g. the content of a law like the _Participatiewet_. Its constructor reads a jsonLD object and parses it into a nested structure of sentence objects. The leafs of this structure are individual sentences. The nodes higher in the hierarchy represent paragraphs, chapters, etc. It has these attributes:
     - **_title_**: The title of the source document
