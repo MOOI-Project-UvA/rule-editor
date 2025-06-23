@@ -230,11 +230,11 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     - **_typeId_**: The name of the frame's type (one of 'fact','act','claim_duty')
     - **_shortName_**: A short label as displayed in the frame list.
     - **_fullName_**: The full name of the frame, displayed when hovering the frame in the frame list.
-    - **_annotations_**: A list of [`annotation`](./gui/src/model/annotation.js) objects. See below for a detailed explanation of an annotation.
-    - **_comments_**: A list of [`comment`](./gui/src/model/comment.js) objects. These are remarks and considerations that the user can store as notes attached to the frame when creating the interpretation.
+    - **_annotations_**: A list of `annotation` objects. See below for a detailed explanation of an annotation.
+    - **_comments_**: A list of `comment` objects. These are remarks and considerations that the user can store as notes attached to the frame when creating the interpretation.
 - [`fact`](./gui/src/model/fact.js): A frame of type _fact_. In addition to the attributes inherited from [`frame`](./gui/src/model/frame.js) it has:
     - **_subTypeIds_**: A possibly empty list of subtype id's. A fact can have zero, one, or more subtypes. Valid subtype id's are: 'agent', 'action', 'object', 'duty', 'condition'.
-    - **_subDivision_**: An object of type [`booleanConstruct`](./gui/src/model/booleanConstruct.js) representing a subdivision of a fact. A fact can consist of other facts, but not necessarily. This attribute speficies how a fact is subdivided. See below for an explanation of a booleanConstruct.
+    - **_subDivision_**: An object of type `booleanConstruct` representing a subdivision of a fact. A fact can consist of other facts, but not necessarily. This attribute speficies how a fact is subdivided. See below for an explanation of a booleanConstruct.
 - [`act`](./gui/src/model/act.js): A frame of type _act_. In addition to the attributes inherited from `frame` it has attributes for the roles of an act frame:
     - **_action_**: An object of type `fact` representing the action of an act
     - **_actor_**: An object of type `fact` representing the actor of an act
@@ -271,11 +271,11 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     - **_snippets_**: A list of `snippet` objects that comprises this sentence
     - **_children_**: If this sentence is a section or other higher-level element in the document: a list of `sentence` objects that together form this section
     
-- [`snippet`](./gui/src/model/snippet.js): An atomic piece of text. The text is specified as a character range in a sentence. The snippet refers to all annotations that it is part of. Its attributes are:
+- [`snippet`](./gui/src/model/snippet.js): An atomic piece of text. The text is specified as a character range within a sentence. The snippet refers to all annotations of which it is a part. Its attributes are:
     - **_id_**: A unique identifier
     - **_sentence_**: The sentence object the snippet is part of
-    - **_characterRange_**: The start and end index of the character range within the sentence
-    - **_annotations_**: The annotations that the snippet is part of
+    - **_characterRange_**: The start and end indices of the character range within the sentence
+    - **_annotations_**: The annotations associated with this snippet
 
 - [`annotation`](./gui/src/model/annotation.js): This object links snippets to a frame. The snippets form the annotation of the frame. Its attributes are:
     - **_id_**: A unique identifier
