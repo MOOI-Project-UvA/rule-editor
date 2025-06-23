@@ -47,7 +47,7 @@ Interpretations made using the Rule Editor can be stored as JSON or TriG files l
 - [Netlify Edge Functions](https://docs.netlify.com/edge-functions/overview/)(Edge middleware) for middleware-like behaviour.
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
 - Customizable UI.
-- Store, share, and use interpretations locally in JSON or RDF formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
+- Store, share, and use interpretations locally in JSON or TriG formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
 [- Automated recommendations for interpretations using FlintFiller (experimental feature, Dutch language only)
 ](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags)
 
