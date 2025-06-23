@@ -409,7 +409,7 @@ netlify dev
 
 You can then make HTTP requests to <code>/.netlify/functions/[function-name]</code>.
 
-For adding new functions, simply create a new folder in the `/functions` folder and add an `.mjs` to it.
+For adding new functions, simply create a new folder in the `/functions` folder and add an `.mjs` or `.js` file to it.
 
 You can find more information in the [Netlify Functions docs](https://docs.netlify.com/functions/overview/).
 
