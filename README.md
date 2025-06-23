@@ -38,7 +38,7 @@ The current version of the Editor can only be used to create FLINT interpretatio
 
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Rule Editor can be stored as JSON or RDF files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
+Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
 
 ## Features
 
@@ -77,7 +77,7 @@ The fields are obligatory in the production version. **Click on the continue but
 In the preview version it is possible to navigate across all views without restrictions.
 
 ### Collect sources (step 2)
-There are three ways for adding sources to the editor:
+There are three ways of adding sources to the editor:
 
 | Field                                | Explanation                                                | Example                            |
 | ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
@@ -244,7 +244,7 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     - **_creates_**: A list of zero or more `fact` objects created by an act
     - **_terminates_**: A list of zero or more `fact` objects terminated by an act
 
-    In addition, an act has auxiliary attributes, not part of the data model:
+    In addition, an act has auxiliary attributes, not part of the external data model:
     - **_activeField_**: The role of the act that is currently selected by the user
     - **_generateLabelAutomatically_**: If true, labels (_shortName_ and _fullName_) are generated automatically for the act
 - [`claimduty`](./gui/src/model/claimduty.js): A frame of type _claim-duty_. In addition to the attributes inheried from `frame` it has attributes for the reles of a claim-duty frame:
@@ -256,7 +256,7 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     - **_activeField_**: The role of the claim-duty that is currently selected by the user
     - **_generateLabelAutomatically_**: If true, labels (_shortName_ and _fullName_) are generated automatically for the claim-duty
 
-- [`booleanConstruct`](./gui/src/model/booleanConstruct.js): This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are _frames_ and all other nodes are _booleanConstructs_. It has the following attributes:
+- [`booleanConstruct`](./gui/src/model/booleanConstruct.js): This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are `facts` and all other nodes are _booleanConstructs_. It has the following attributes:
     - **_frame_**: This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
     - **_children_**: If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
     - **_operatorToJoinChildren_**: The function with which to join the childeren, e.g. a boolean operator.
