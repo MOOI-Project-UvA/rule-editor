@@ -20,14 +20,15 @@ Feel free to explore both!
 
 1. [Application Overview](#application-overview)
 2. [Features](#features)
-3. [User Manual](#user-manual)
-4. [Data Model](#data-model)
-5. [Getting Started](#getting-started)
-6. [Codebase Structure](#codebase-structure)
-7. [Development](#development)
-8. [Environment Variables](#environment-variables)
-9. [Contributing](#contributing)
-10. [License](#license)
+3. [Architecture](#architecture)
+4. [User Manual](#user-manual)
+5. [Data Model](#data-model)
+6. [Getting Started](#getting-started)
+7. [Codebase Structure](#codebase-structure)
+8. [Development](#development)
+9. [Environment Variables](#environment-variables)
+10. [Contributing](#contributing)
+11. [License](#license)
 
 
 ## Application Overview
@@ -48,6 +49,25 @@ Interpretations made using the Rule Editor can be stored as JSON or TriG files l
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
 - Store, share, and use interpretations locally in JSON or TriG formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
 - [Automated recommendations for interpretations using FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags) (experimental feature, Dutch language only)
+
+## Architecture
+
+The Rule editor interacts with three external components:
+1. [The Wrap Up API](https://gitlab.com/normativesystems/Architecture/wrap_up_api)
+2. [The Unwrap API](https://gitlab.com/normativesystems/Architecture/unwrap_api)
+3. [The NLP API](https://gitlab.com/normativesystems/Architecture/nlp_api)
+
+### The Wrap_UP 
+
+The Wrap Up API acts as an interface for receiving data from the Rule Editor (in JSON format; see the [Data Model](#data-model) section for details). It serializes this data into RDF (Resource Description Framework) using the FLINT ontology and stores it in Triply, a triplestore system.
+
+### The Unwrap API
+
+The Unwrap API serves a crucial function in the information architecture, facilitating the transformation of RDF (Resource Description Framework) data into the data model that the Rule Editor understands (in JSON format; see the [Data Model](#data-model) section). The RDF data, structured according to the FLINT framework's expressivity, is converted to a JSON format suitable for use within the Rule Editor. This transformation is essential for maintaining the fluidity and usability of data across different modules of the system.
+
+### The NLP API
+
+The NLP API facilitates communication and data exchange between the Rule Editor and the Machine Learning (ML) model which has been trained to identify actors, recipients, actions, and objects in normative Dutch texts (more information about it can be found at: https://gitlab.com/normativesystems/flintfillers).
 
 ## User Manual
 
@@ -310,6 +330,7 @@ The link between snippets and annotation is stored in the snippets, see above. A
 ### Dependencies
 - To connect to TriplyDB an access token with TRIPLY is needed. You can register [here](https://triplydb.com/) and become more familiar with their environment [here](https://docs.triply.cc/triply-db-getting-started/uploading-data/).
 - To use the Netlify CLI an access token to authenticate with Netlify is needed. You can obtain this token using the Netlify UI. See the [docs](https://docs.netlify.com/cli/get-started/#authentication).
+- The Editor interacts with the [Wrap Up](https://gitlab.com/normativesystems/Architecture/wrap_up_api), [Unwrap](https://gitlab.com/normativesystems/Architecture/unwrap_api) and [NLP](https://gitlab.com/normativesystems/Architecture/nlp_api) APIs. If you would like to connect the Editor to these services, you can run them locally by following the instruction in the corresponding repositories.
 
 To run the editor locally for development purposes. You can do the following:
 
