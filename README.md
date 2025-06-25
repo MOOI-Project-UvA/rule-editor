@@ -1,10 +1,8 @@
 # Rule editor
 
-**The Rule Editor** is an application built using web-based technologies that allows users to create interpretations of 
-sources of norms in FLINT in a user-friendly and interactive way. The tool was built using [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/).
-The app is deployed on [Netlify](https://www.netlify.com/) and uses Netlify functions (serverless functions, including Edge Functions) to extend back-end capabilities.
+Create explicit interpretations of laws and other texts &mdash; export as Linked Data.
 
-**Try it out**
+## Quick start
 
 There are two public versions of the Rule Editor available:
 
@@ -283,6 +281,7 @@ The link between snippets and annotation is stored in the snippets, see above. A
 
 ## Codebase Structure
 
+## Project Structure
     .
     ├── interpretations/            # List of example interpretations
     ├── gui/                        # UI code    
