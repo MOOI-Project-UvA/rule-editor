@@ -32,23 +32,22 @@ Feel free to explore both!
 
 ## Application Overview
 
-The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated.
+The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
-The current version of the Editor can only be used to create FLINT interpretations. The editor is designed so that any method or interpretation scheme can be used for interpreting normative text that results in (executable) norms or rules. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
+The current version of the Editor enables users to express interpretations in FLINT. The Editor is designed to be easily extendable for other interpretation schemes. It allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). For more information on the supported formats, see the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology).
+Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
 
 ## Features
 
-- Modern interface using [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
+- User interface built using modern technologies, specifically [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
 - Serverless back-end with [Netlify Functions](https://docs.netlify.com/functions/overview/) (API endpoints).
 - [Netlify Edge Functions](https://docs.netlify.com/edge-functions/overview/)(Edge middleware) for middleware-like behaviour.
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
 - Store, share, and use interpretations locally in JSON or TriG formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
-[- Automated recommendations for interpretations using FlintFiller (experimental feature, Dutch language only)
-](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags)
+- [Automated recommendations for interpretations using FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags) (experimental feature, Dutch language only)
 
 ## User Manual
 
@@ -68,7 +67,7 @@ In the current version one, it is recommended to start by defining a task and to
 
 | Field       | Explanation                                                    | Example                  |
 | ----------- |----------------------------------------------------------------|--------------------------|
-| Editor      | Field to register the name of the person using the rule editor | John Doe                 |
+| Editor      | Field to register the name of the person using the Rule editor | John Doe                 |
 | Label       | Label to refer to the task                                     | National Budget Cycle    |
 | Description | Description of the task                                        | What is needed to arrive at an approved national budget? |
 
@@ -78,11 +77,11 @@ In the preview version it is possible to navigate across all views without restr
 ### Collect sources (step 2)
 There are three ways of adding sources to the editor:
 
-| Field                                | Explanation                                                | Example                            |
-| ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
-| Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
-| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store    | General Data Protection Act              |
-| Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem | AI_Act.json                |
+| Field                                | Explanation                                                                                                                             | Example                            |
+| ------------------------------------ |-----------------------------------------------------------------------------------------------------------------------------------------| ---------------------------------- |
+| Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server                                                                                       | General Data Protection Regulation |
+| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store                                                                                 | General Data Protection Act              |
+| Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem (in JSON-LD). Examples of source can be found [here](./gui/public/sources/). | AI_Act.json                |
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
@@ -134,7 +133,7 @@ Here you can create, edit, and delete frames. Supported frame types are **act**,
 ##### Facts
 When starting your intepretation, begin by creating some **facts**. 
 
-You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** emerges.
+You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** appears.
 
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
@@ -181,8 +180,6 @@ Create **acts** in two ways:
 2. Select pre-existing **fact frames** and assign them a role in an **act** frame.
 
 To create core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action), it is advised to select whole sentences.
-
-One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should relate to specific sentences.
 
 ##### Claims
 A **claim** contains:
@@ -246,7 +243,7 @@ The definitions of the classes used in the tool can be found in the folder `gui/
     In addition, an act has auxiliary attributes, not part of the external data model:
     - **_activeField_**: The role of the act that is currently selected by the user
     - **_generateLabelAutomatically_**: If true, labels (_shortName_ and _fullName_) are generated automatically for the act
-- [`claimduty`](./gui/src/model/claimduty.js): A frame of type _claim-duty_. In addition to the attributes inheried from `frame` it has attributes for the reles of a claim-duty frame:
+- [`claimduty`](./gui/src/model/claimduty.js): A frame of type _claim-duty_. In addition to the attributes inherited from `frame` it has attributes for the roles of a claim-duty frame:
     - **_duty_**: An object of type `fact` representing the duty of a claim-duty
     - **_claimant_**: An object of type `fact` representing the claimant of a claim-duty
     - **_holder_**: An object of type `fact` representing the holder of a claim-duty
@@ -258,8 +255,8 @@ The definitions of the classes used in the tool can be found in the folder `gui/
 - [`booleanConstruct`](./gui/src/model/booleanConstruct.js): This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are `facts` and all other nodes are _booleanConstructs_. It has the following attributes:
     - **_frame_**: This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
     - **_children_**: If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
-    - **_operatorToJoinChildren_**: The function with which to join the childeren, e.g. a boolean operator.
-    - **_isNegated_ _(deprecated)_**: If a frame is specified, this attribute tells whether or not the frame should be negated (i.e. the unary boolean function NOT is applied). [DEPRECATED] This property will be removed in future versions. Use **operatorToJoinChildren** instead.
+    - **_operatorToJoinChildren_**: The function with which to join the children, e.g. a boolean operator.
+    - **_isNegated_ _(deprecated)_**: If a frame is specified, this attribute tells whether the frame should be negated (i.e. the unary boolean function NOT is applied). [DEPRECATED] This property will be removed in future versions. Use **operatorToJoinChildren** instead.
 
 - [`sourceDocument`](./gui/src/model/sourceDocument.js): This class holds a source document, e.g. the content of a law like the _Participatiewet_. Its constructor reads a jsonLD object and parses it into a nested structure of sentence objects. The leafs of this structure are individual sentences. The nodes higher in the hierarchy represent paragraphs, chapters, etc. It has these attributes:
     - **_title_**: The title of the source document
@@ -273,7 +270,7 @@ The definitions of the classes used in the tool can be found in the folder `gui/
 - [`snippet`](./gui/src/model/snippet.js): An atomic piece of text. The text is specified as a character range within a sentence. The snippet refers to all annotations of which it is a part. Its attributes are:
     - **_id_**: A unique identifier
     - **_sentence_**: The sentence object the snippet is part of
-    - **_characterRange_**: The start and end indices of the character range within the sentence
+    - **_characterRange_**: The start and end indices of the character range within the sentence. A snippet that starts from the beginning of the sentence has start index zero
     - **_annotations_**: The annotations associated with this snippet
 
 - [`annotation`](./gui/src/model/annotation.js): This object links snippets to a frame. The snippets form the annotation of the frame. Its attributes are:
@@ -297,7 +294,7 @@ The link between snippets and annotation is stored in the snippets, see above. A
     │    │     ├── assets/
     │    │     ├── components/      # The components performing functionalities are here used by the views in the views/ 
     │    │     ├── helpers/         # Reusable functions and utilities that are used by components 
-    │    │     ├── model/           # The data model on which the application is based on
+    │    │     ├── model/           # The data model that the application is based on
     │    │     ├── services/        # the calls to the endpoints are defined here 
     │    │     ├── store/           # The centralized store for the components 
     │    │     ├── views/           # The main views of the UI are defined here 
@@ -426,8 +423,8 @@ Add these variables to your Netlify dashboard or a local .env file as appropriat
 
 | Variable        | Explanation                                                                                                                                                              |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                     |
-| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue on for you)                                       |
+| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                    |
+| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                      |
 | TRIPLY_ENDPOINT | Base URL of the TriplyDB instance/API  (Requires the creation of an account on the TRIPLY website)                                                                       |
 | X_API_KEY       | Generated API key for authentication purposes. Used by the Edge function to redirect to the correct TRIPLY_DB serverless functions. Create your own.                     |
 | ALLOWED_DOMAINS | The domain from which the Edge function should expect the requests. If you run a local development server, you can set the value to `http://localhost:[designated_port]` |
