@@ -71,8 +71,7 @@ In the current version one, it is recommended to start by defining a task and to
 | Label       | Label to refer to the task                                     | National Budget Cycle    |
 | Description | Description of the task                                        | What is needed to arrive at an approved national budget? |
 
-The fields are obligatory in the production version. **Click on the continue button** to go to the next view.
-In the preview version it is possible to navigate across all views without restrictions.
+It is possible to navigate across all views without restrictions.
 
 ### Collect sources (step 2)
 There are three ways of adding sources to the editor:
@@ -91,11 +90,9 @@ You can always get back to this screen to add additional sources, or remove redu
 
 Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
-In the production version, you can click on the **continue** button to get to the interpretation screen, or on the **back** button. In preview version of the software, the only way to navigate between screens is by using the tabs at the top of the page.
+The only way to navigate between screens is by using the tabs at the top of the page.
 
 ### Interpret sources (step 3)
-
-#### Preview version
 
 The interpretation screen consists of four main panes:
 - **Source pane:** Contains the selected sources.
@@ -193,25 +190,9 @@ A **duty** should be linked to:
 - One or more **acts** that can create the **duty**
 - One or more **acts** that terminate the **duty**
 
-
-#### Production version
-
-The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
-
-#### Expanding source text
-You can use the **expand** and **collapse** icons to expand or collapse the text.
-
-#### Selecting text
-Select a text fragment. You can select anything from a single word to multiple lines.
-
-When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
-
-#### Making frames
-
-The process of making frames is the same as in the preview version.
-
 ### Make interpretations executable (step 4)
 Not yet available.
+
 ### Execute task (step 5)
 Not yet available.
 
