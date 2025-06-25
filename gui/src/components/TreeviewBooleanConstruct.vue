@@ -52,9 +52,7 @@ export default {
       return this.$store.state.booleanConstructBeingEdited?.id;
     },
     isBeingEdited() {
-      const expression =
-        this.selectedNode == this.booleanConstructBeingEditedId;
-      return this.selectedNode ? expression : false;
+      return this.selectedNode && this.selectedNode == this.booleanConstructBeingEditedId
     },
   },
   watch: {
@@ -71,9 +69,13 @@ export default {
     booleanConstructBeingEdited: {
       handler(n, o) {
         console.log("n,o", n, o);
+        if (!this.booleanConstructBeingEdited) {
+          this.selectedNode = null;
+        }
         if (o?.frame) {
           o.beingEdited = false;
           this.selectedNode = null;
+          
         }
       },
       once: true,
@@ -167,10 +169,14 @@ export default {
 
       //if empty leaf node, select for adding frame
       if (!node.frame && node.children.length == 0) {
-        //   // this.$store.state.booleanConstructBeingEdited =  node;
+        //   // this.$store.state.booleanConstructBeingEdited =  this.booleanConstruct;
         this.selectedNode = node.id;
         //
         //   //de-select any other properties of the active frame, if it is a relation
+        
+      }
+      if ('activeField' in this.frameBeingEdited) {
+          this.frameBeingEdited.activeField = null
       }
     },
   },

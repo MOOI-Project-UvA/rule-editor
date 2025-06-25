@@ -3,16 +3,6 @@
     <q-card-section>
       <div class="row items-center">
         <div class="col-2">ACT</div>
-        <div class="col">
-          <template v-if="sentences?.length == 0">
-            <div class="text-italic">No source added yet</div>
-          </template>
-          <template v-else>
-            <q-btn size="sm" flat @click="scrollToSource"
-              >Scroll to source</q-btn
-            >
-          </template>
-        </div>
         <div class="col-2">
           <div class="row items-center float-right">
             <template v-if="sentences?.length > 0">
@@ -230,14 +220,6 @@ export default {
       this.$store.commit("removeFrame", this.frame);
       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
     },
-    //scroll to source of frame, in source panel
-    scrollToSource() {
-      const sentenceToScrollTo = this.sentences[0];
-      //show correct source
-      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
-      //scroll to sentence
-      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
-    },
     userChangedLabel() {
       //when clearing, label is null, set it to "" instead
       if (this.frame.shortName == null) {
@@ -255,7 +237,6 @@ export default {
       }
     },
     async sendDataToNlp(sentence) {
-      console.log("sentence: ", sentence);
       sentence.loading = true;
       const response = await fetchNlpPrediction(sentence.text);
       //filter out entries with no role

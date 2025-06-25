@@ -1,7 +1,6 @@
 <template>
-  <q-card flat bordered class="q-ma-sm">
+  <q-card flat bordered>
     <div class="row items-center q-pa-sm">
-      <div class="col-1 text-bold">Sources</div>
       <div class="col">
         <q-btn class="q-mx-sm" v-for="doc in sourceDocuments" size="md" flat
           :color="doc.id == displayedSourceDocument?.id ? 'primary' : 'grey-5'" icon="mdi-book-search"
@@ -9,25 +8,13 @@
           {{ doc.title }}
         </q-btn>
       </div>
-
-      <div class="col-1">
-        <q-avatar class="float-right" size="lg">
-          <q-icon name="mdi-information-outline" class="cursor-pointer"></q-icon>
-          <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
-            <div style="max-width: 300px">
-              In this view, you are able to start the interpretation process by
-              selecting text snippets and assigning a frame type.
-            </div>
-          </q-tooltip>
-        </q-avatar>
-      </div>
     </div>
     <q-separator />
 
-    <q-card-section class="q-pa-none">
+    <q-card-section>
       <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
         <!-- show selected sentences in document -->
-        <div class="fill-height scrollable q-pa-md">
+        <div class="fill-height scrollable">
           <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)" :showNLP="true" />
         </div>
       </template>
@@ -43,7 +30,7 @@
 </template>
 
 <script>
-import SentenceList from "../components/SentenceList.vue";
+import SentenceList from "../../components/SentenceList.vue";
 export default {
   components: {
     SentenceList,

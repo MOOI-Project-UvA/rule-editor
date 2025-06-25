@@ -16,9 +16,11 @@ export function getStyleForUnderlining(snippet, activeFrame) {
     let backgroundStyle = "linear-gradient(180deg"
 
     if (highlight) {
-        const highlightColor = activeFrame.subTypeId
-            ? hexColorsLight[activeFrame.subTypeId]
-            : hexColorsLight[activeFrame.typeId]
+        const highlightColor = activeFrame.typeId != "fact" || activeFrame.subTypeIds.length == 0
+            ? hexColorsLight[activeFrame.typeId]
+            : activeFrame.subTypeIds.length > 1
+                ? hexColorsLight.multiple
+                : hexColorsLight[activeFrame.subTypeIds[0]]
         backgroundStyle +=
             `, ${highlightColor} 0px`
             + `, ${highlightColor} ${charHeight}px`
@@ -36,9 +38,11 @@ export function getStyleForUnderlining(snippet, activeFrame) {
     snippet.annotations.forEach((annotation) => {
         let lineColor
         if (annotation.frame) {
-            lineColor = annotation.frame.subTypeId
-                ? hexColors[annotation.frame.subTypeId]
-                : hexColors[annotation.frame.typeId]
+            lineColor = annotation.frame.typeId != "fact" || annotation.frame.subTypeIds.length == 0
+                ? hexColors[annotation.frame.typeId]
+                : annotation.frame.subTypeIds.length > 1
+                    ? hexColors.multiple
+                    : hexColors[annotation.frame.subTypeIds[0]]
         } else {
             lineColor = grey
         }

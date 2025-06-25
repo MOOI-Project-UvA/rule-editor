@@ -1,20 +1,13 @@
 <template>
   <div>
     <div
-      class="text-white frame-label ellipsis chip"
+      class="text-white frame-label ellipsis non-selectable"
       style="max-width: 400px"
-      :class="
-        frame.subTypeId
-          ? 'bg-' + colors[frame.subTypeId]
-          : 'bg-' + colors[frame.typeId]
-      "
+      :class="disabled ? 'bg-grey no-pointer-events cursor-not-allowed' : `bg-${frameColor} cursor-pointer`"
+      @click="$emit('frameclicked')"
     >
       {{
-        frame.shortName != ""
-          ? frame.shortName
-          : frame.subTypeId
-          ? frameTypes.fact.subTypes[frame.subTypeId].label
-          : frameTypes[frame.typeId].label
+        frame.shortName?.length > 0 ? frame.shortName : frame.typeId
       }}
     </div>
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
@@ -32,56 +25,41 @@ export default {
   data: () => ({
     icons: icons,
     colors: colors,
-    hover: false,
     frameTypes: frameTypes,
   }),
   props: {
-    frame: Object,
-    disable: {
-      default: false,
-      type: Boolean,
-    },
+    frame: Object
   },
-  emits: ["remove"],
-  methods: {
-    onRemove: function () {
-      console.log("on remove");
-      if (this.functionality === "chip-container") {
-        this.deleteFact();
-      } else {
-        this.$emit("remove");
-      }
-
-      // here there should be a function deleting the
-      // first: the 1)agent, 2)object, 3)action, 4) other
-      //   then: the above elements from parts of complex facts or acts,
-      //   and an act or a complex fact.
-      // frames: remove element from complex frames explicitly probably ... and set it to null...
+  emits: ["frameclicked"],
+  computed: {
+    frameBeingEdited() {
+      return this.$store.state.frameBeingEdited
     },
-    /*
-     * Deletes a fact/Act from store
-     */
-    deleteFact() {
-      console.log("delete fact");
-      this.$store.commit("removeFrame", this.frame);
-      this.$store.commit("setFrameBeingEdited", null);
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited
     },
-    onOver: function (frame) {
-      //disabled for now since it looks very restless
-      //this.$store.dispatch('highlightElements', fact)
+    frameColor() {
+      return this.frame.typeId != "fact" || this.frame.subTypeIds.length == 0
+          ? colors[this.frame.typeId] 
+          : this.frame.subTypeIds.length > 1
+            ? colors.multiple
+            : colors[this.frame.subTypeIds[0]]
     },
-    onLeave: function (frame) {
-      //this.$store.dispatch('unhighlightElements')
-    },
-  },
+    //prevent non-fact frames from being selected as a role of an Act or ClaimDuty
+    //or as part of a boolean construct
+    //prevent a frame from being part of itselfs
+    disabled() {
+      return this.frameBeingEdited != null &&
+      ((['act', 'claim-duty'].includes(this.frameBeingEdited.typeId) &&
+            this.frameBeingEdited.activeField != null) || (this.booleanConstructBeingEdited != null))
+            && (this.frame.typeId != 'fact' || this.frame.id == this.frameBeingEdited.id)
+    }
+  }
 };
 </script>
 
 <style lang="css" scoped>
-.chip {
-  user-select: none;
-  cursor: pointer;
-}
+
 
 .frame-label {
   border-radius: 4px;

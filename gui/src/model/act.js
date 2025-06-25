@@ -5,7 +5,6 @@ class Act {
     constructor() {
         this._id = uuid4() //unique ID
         this._typeId = null
-        this._subTypeId = null
         this._shortName = ""
         this._fullName = ""
         this._activeField = null
@@ -17,7 +16,6 @@ class Act {
         this._creates = []
         this._terminates = []
 
-        this._highlight = false
         this._comments = []
 
         this._generateLabelAutomatically = true //by default, label is generated automatically
@@ -179,6 +177,7 @@ class Act {
         const recipientShortName = this._recipient ? this._recipient.shortName : '<rec>'
 
         this._shortName = `${actionShortName} ${objectShortName} ${actorShortName} ${recipientShortName}`
+        this._fullName = `${actionShortName} ${objectShortName} ${actorShortName} ${recipientShortName}`
     }
 
 }

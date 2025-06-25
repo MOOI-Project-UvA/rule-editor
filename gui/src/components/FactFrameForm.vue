@@ -7,10 +7,15 @@
         </div>
         <div class="col q-gutter-sm">
           <q-btn size="sm" round v-for="(subType, subTypeId) in frameTypes.fact.subTypes"
-            :color="frame.subTypeId == subTypeId ? colors[subTypeId] : 'grey-6'" :icon="icons[subTypeId]"
+            :color="frame.subTypeIds.includes(subTypeId) ? colors[subTypeId] : 'grey-6'" :icon="icons[subTypeId]"
             @click="setSubType(subTypeId)">
             <q-tooltip class="text-subtitle2">
-              Set subtype to {{ subType.label }}
+              <div v-if="frame.subTypeIds.includes(subTypeId)">
+                Remove subtype {{ subType.label }} from fact
+              </div>
+              <div v-else>
+                Add subtype {{ subType.label }} to fact
+              </div>
             </q-tooltip>
           </q-btn>
         </div>
@@ -35,7 +40,7 @@
       <q-input v-model="frame.shortName" label="Short name" input-style="font-size: 12pt; font-weight:bold" />
       <q-input v-model="frame.fullName" label="Full name" autogrow />
     </q-card-section>
-    <q-card-section v-if="frame.isComplex">
+    <q-card-section>
       <div class="label">Subdivision</div>
       <TreeviewBooleanConstruct
           :boolean-construct="frame.subdivision"
@@ -75,8 +80,12 @@
     </div>
   </q-card>
 
-
-  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
+  <CommentsList
+    :fact="frame"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
+    @closed="showComments = false"
+  />
 </template>
 
 <script>
@@ -113,7 +122,7 @@ export default {
     },
     sentences() {
       return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
-    },
+    }
   },
   methods: {
     closeFrame() {
@@ -136,23 +145,25 @@ export default {
       }
     },
     setSubType(subTypeId) {
-      this.frame.subTypeId = this.frame.subTypeId == subTypeId ? null : subTypeId
-    },
-    //scroll to source of frame, in source panel
-    scrollToSource() {
-      const sentenceToScrollTo = this.sentences[0];
-      //show correct source
-      this.$store.state.displayedSourceDocument = sentenceToScrollTo.sourceDocument
-      //scroll to sentence
-      this.$store.state.sentenceToScrollTo = sentenceToScrollTo
+      const index = this.frame.subTypeIds.indexOf(subTypeId)
+      if (index == -1) {
+        this.frame.subTypeIds.push(subTypeId)
+      } else {
+        this.frame.subTypeIds.splice(index, 1)
+      }
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
       this.idIsCopiedToClipboard = true
     }
   },
-  components: {TreeviewBooleanConstruct, BooleanConstructPanel, CommentsList, SentenceList }
-}
+  components: {
+    TreeviewBooleanConstruct,
+    BooleanConstructPanel,
+    CommentsList,
+    SentenceList,
+  },
+};
 </script>
 
 <style>
