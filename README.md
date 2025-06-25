@@ -16,36 +16,35 @@ Feel free to explore both!
 
 ## Table of Contents
 
-1. [Project Description](#project-description)
+1. [Application Overview](#application-overview)
 2. [Features](#features)
 3. [User Manual](#user-manual)
 4. [Data Model](#data-model)
 5. [Getting Started](#getting-started)
-6. [Project Structure](#project-structure)
+6. [Codebase Structure](#codebase-structure)
 7. [Development](#development)
 8. [Environment Variables](#environment-variables)
 9. [Contributing](#contributing)
 10. [License](#license)
 
 
-## Project Description
+## Application Overview
 
-The Rule Editor is a web application for interpreting normative texts. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
+The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
-The current version of the Editor enables users to express interpretations in FLINT. The editor is designed to be easily extendable for other interpretation schemes. The Editor allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
+The current version of the Editor enables users to express interpretations in FLINT. The Editor is designed to be easily extendable for other interpretation schemes. It allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
 The Editor uses normative text in JSON or RDF format, according to the [Source of Norms Ontology](https://gitlab.com/normativesystems/knowledge-modeling/source-ontology). Text documents in .txt, .xml, or .html format can be translated into this format by [the Choppr tool](https://gitlab.com/normativesystems/choppr/choppr-standalone/-/blob/main/FAQ.md).
 
-Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely at a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
+Interpretations made using the Rule Editor can be stored as JSON or TriG files locally on your computer or remotely to a [linked database/triple store](https://triplydb.com/). When choosing a Linked Data output, interpretation data conforms to the [FLINT ontology](https://gitlab.com/normativesystems/knowledge-modeling/flint-ontology). Linked Data on interpretations, sources, and the related task is bundled in the output according to the [Calculemus ontology](https://gitlab.com/normativesystems/knowledge-modeling/calculemus-ontology).
 
 ## Features
 
-- Modern interface using [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
+- User interface built using modern technologies, specifically [Vue.js](https://vuejs.org/) (front-end framework) & [Quasar](https://quasar.dev/) (UI Components & Toolkit).
 - Serverless back-end with [Netlify Functions](https://docs.netlify.com/functions/overview/) (API endpoints).
 - [Netlify Edge Functions](https://docs.netlify.com/edge-functions/overview/)(Edge middleware) for middleware-like behaviour.
 - Easy deployment and continuous integration with [Netlify](https://www.netlify.com/) (Hosting & CI/CD).
-- Customizable UI.
-- Store, share, and use interpretations locally in JSON or RDF formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
+- Store, share, and use interpretations locally in JSON or TriG formats, and publish as linked data knowledge graphs to the [TriplyDB platform](https://triplydb.com/).
 - [Automated recommendations for interpretations using FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl/-/tree/v3.1.0?ref_type=tags) (experimental feature, Dutch language only)
 
 ## User Manual
@@ -59,12 +58,14 @@ The interface of the Rule Editor consists of five main views:
 4. Make interpretations executable (not yet in use)
 5. Execute task (not yet in use)
 
+Navigate between views using the tabs at the top of the page.
+
 ### Set task (step 1)
 In the current version one, it is recommended to start by defining a task and to edit three fields
 
 | Field       | Explanation                                                    | Example                  |
 | ----------- |----------------------------------------------------------------|--------------------------|
-| Editor      | Field to register the name of the person using the rule editor | John Doe                 |
+| Editor      | Field to register the name of the person using the Rule editor | John Doe                 |
 | Label       | Label to refer to the task                                     | National Budget Cycle    |
 | Description | Description of the task                                        | What is needed to arrive at an approved national budget? |
 
@@ -72,13 +73,13 @@ The fields are obligatory in the production version. **Click on the continue but
 In the preview version it is possible to navigate across all views without restrictions.
 
 ### Collect sources (step 2)
-There are three ways for adding sources to the editor:
+There are three ways of adding sources to the editor:
 
-| Field                                | Explanation                                                | Example                            |
-| ------------------------------------ | ---------------------------------------------------------- | ---------------------------------- |
-| Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server          | General Data Protection Regulation |
-| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store    | Not yet available                  |
-| Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem | AI_Act.json                |
+| Field                                | Explanation                                                                                                                             | Example                            |
+| ------------------------------------ |-----------------------------------------------------------------------------------------------------------------------------------------| ---------------------------------- |
+| Dropdown menu labelled "Add source from server"               | Field to add a source from the Rule editor server                                                                                       | General Data Protection Regulation |
+| Dropdown menu labelled "Add source from Triply"               | Field to add a source from the Triply linked data store                                                                                 | General Data Protection Act              |
+| Button labelled "Upload source from local filesystem" | A button that allows to add a source from local filesystem (in JSON-LD). Examples of source can be found [here](./gui/public/sources/). | AI_Act.json                |
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
@@ -86,35 +87,61 @@ Use the checkboxes to select or deselect text fragments. There are also buttons 
 
 You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
 
-Click on the **continue** button to get to the interpretation screen, or on the **back** button. In this version of the software, the only way to navigate between screens is by using the **continue** button or the **back** button.
+Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
-The buttons for the steps at the top of the screen can only be used when you are in step 3 (interpret sources).
+In the production version, you can click on the **continue** button to get to the interpretation screen, or on the **back** button. In preview version of the software, the only way to navigate between screens is by using the tabs at the top of the page.
 
 ### Interpret sources (step 3)
-The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
 
-#### Expanding source text
-You can use the **expand** and **collapse** icons to expand or collapse the text.
+#### Preview version
 
-#### Selecting text
-Select a text fragment. You can select anything from a single word to multiple lines.
+The interpretation screen consists of four main panes:
+- **Source pane:** Contains the selected sources.
+- **Source of selected frame:** Indicates the source of the selected frame.
+- **Frames:** Lists the created frames by type.
+- **Edit:** Where you can create and modify FLINT frames.
 
-When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+Each pane is collapsible, allowing you to allocate more space to the pane you are focussing on.
 
-#### Making frames
+**Source pane**
+
+**Expanding source text**
+You can use the **expand** and **collapse** icons to show or hide the text.
+
+**Selecting text**
+Select a text fragment (from a single word to multiple lines). When your selection is complete, a modal dialog appears, allowing you to:
+- Create a frame (**act**, **claim**, or **fact**), or
+- Link the selected text fragment to an existing frame.
+
+You can also click on selected lines to **delete** the selection or **open** the frame in the **Edit** pane for further analysis.
+
+**Source of selected frame**
+
+This pane provides an overview of the linked text fragments (per source) for the currently selected frame.
+
+**Frames**
+
+The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top. Alternatively, you can switch to a network visualization, which shows how different frames are related.
+Switch between **List** and **Network** views using the provided radio buttons.
+
+**Edit** 
+
+Here you can create, edit, and delete frames. Supported frame types are **act**, **claim**, and **fact**.
 
 ##### Facts
-When you make your first interpretations, start by making some **facts**. 
+When starting your intepretation, begin by creating some **facts**. 
 
 You create a **fact** by selecting a text fragment. Click on the selected fragment and click on the **fact** button. On the right-hand side of the view a **fact frame** appears.
 
 The selected text appears in the fields **short name** and **full name**. If necessary one can make changes in the text, e.g. change the conjugation of an action from the *present perfect* to the *present simple tense*.
 
-For **facts** that refer to a longer text fragment, a short name can be added. The fact consists of:
+For **facts** with a longer text fragments, add a short name. 
+
+A fact consists of:
 - the *text fragment* from a *source*
-- the *full name*, that is basically the same as the a literal text from the fragment, adjustments can be made regarding to:
+- the *full name*, that is the same as the a literal text from the fragment, adjustments can be made regarding to:
 	- the conjugation of the **action**,
-	- interpunction issues,
+	- punctuation issues,
 	- making a readable sentence in case of the combination of multiple fragments from a single sentence, or even from multiple sentences,
 	- making implicit information explicit (add a comment to explicitly lay down the implication).
 - a *short name* for longer text fragments.
@@ -122,17 +149,17 @@ For **facts** that refer to a longer text fragment, a short name can be added. T
 Examples are given below.
 
 ###### Fact types and roles
-You can classify **facts** as **agent**, **action**, **object**, or **duty**.
+You can classify **facts** as one of the following: 
+- **Agent**
+- **Action**
+- **Object**
+- **Duty**
 
-Whether a **fact** can be classified as an **agent**, **action**, **object**, or **duty** depends on the role it has in **act frames** or **claim frames**.
-
-**Agents** can have the role of **actor** or **recipient** in an **act frame**, or that of **claimant** or **duty holder** in **claim frames**.
-
-**Actions** are verbs used in **act frames**.
-
-**Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
-
-**Duties** refer to **acts** that must be executed in the future by (or on behalf of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
+Which role a **fact** takes depends on how it is used in **act frames** or **claim frames**:
+- **Agents**: can be **actors** or **recipients** in **act frames**, or **claimants/duty holders** in **claim frames**.
+- **Actions** are verbs used in **act frames**.
+- **Objects** are the things an **action** refers to, or the thing created or terminated as the result of a *valid act*.
+- **Duties** refers to **acts** that must be executed by (or on behalf of) a **duty holder** for a **claimant**. In other words every **duty** is created by an **act** and can be terminated by another **act**.
 
 ###### An example: Article 4 and 5 GDPR
 Search for **agents** (persons that can have the role of *actor*, *recipient*, *claimant*, or *duty holder*, e.g. a *processor*, a *controller*, or *data subject* ), **actions** (e.g. *processing*, *collection*, *erasure*), **objects** (e.g. *personal data*, or *collected data*), **conditions** (e.g. *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);*)
@@ -146,18 +173,40 @@ Article 5 is about the processing of *personal data*, Article 5(1)(b) is about *
 The condition that *1. Personal data shall be: (a) processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’);* can, e.g., be transformed to the **long name** *personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject (‘lawfulness, fairness and transparency’)*. The **short name** could be, e.g., *personal data shall be processed lawfully, fairly and in a transparent manner*.
 
 ##### Acts
-One can create **acts** in two ways:
-1. by selecting one or more sentences and qualify those sentences as an **act** frame,
-2. by selecting **fact frames**, made as shown above, and give them a role in an **act** frame.
+Create **acts** in two ways:
+1. Select sentences and mark them as an **act** frame,
+2. Select pre-existing **fact frames** and assign them a role in an **act** frame.
 
-For making core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action) it is advised to select sentences.
-
-One can create nonsensical **acts**, by selecting *actions*, *actors*, *objects* and *recipients* from random sentences. **Acts** should be related to one or more specific sentences.
+To create core-acts (the combination of an *action*, the *actor* performing the action, the *object* that is acted upon and the *recipient* of the result of the action), it is advised to select whole sentences.
 
 ##### Claims
-**Claims** contain a **duty**, a **claimant** and a **duty holder**. The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
+A **claim** contains:
+-  a **duty**
+-  a **claimant** 
+- a **duty holder**.
 
-The **duty** should be related to one or more **acts** that can create the **duty** and one or more **acts** that terminate the **duty**.
+The **claimant** holds a claim that the **duty holder** fulfills the **duty**.
+
+A **duty** should be linked to:
+- One or more **acts** that can create the **duty**
+- One or more **acts** that terminate the **duty**
+
+
+#### Production version
+
+The interpretation screen consists of a column on the left that contains the selected sources, and a screen for making FLINT frames on the right.
+
+#### Expanding source text
+You can use the **expand** and **collapse** icons to expand or collapse the text.
+
+#### Selecting text
+Select a text fragment. You can select anything from a single word to multiple lines.
+
+When you click on the selected lines, you can create **frames** of the type **act**, **claim**, or **fact**.
+
+#### Making frames
+
+The process of making frames is the same as in the preview version.
 
 ### Make interpretations executable (step 4)
 Not yet available.
@@ -170,66 +219,67 @@ The tool uses an internal data structure that differs slightly from the JSON and
 
 The definitions of the classes used in the tool can be found in the folder `gui/src/model`. The main classes are:
 
-- `frame` This is a class representing a frame. It is the superclass of `act`, `fact`, and `claim_duty`. Each frame has the following attributes:
-    - _id_ A unique id, generated when a frame is instantiated.
-    - _typeId_ The name of the frame's type (one of 'fact','act','claim_duty')
-    - _shortName_ A short label as displayed in the frame list.
-    - _fullName_ The full name of the frame, displayed when hovering the frame in the frame list.
-    - _annotations_ A list of `annotation` objects. See below for a detailed explanation of an annotation.
-    - _comments_ A list of `comment` objects. These are remarks and considerations that the user can store as notes attached to the frame when creating the interpretation.
-- `fact` A frame of type _fact_. In addition to the attributes inherited from `frame` it has:
-    - _subTypeIds_ A possibly empty list of subtype id's. A fact can have zero, one, or more subtypes. Valid subtype id's are: 'agent', 'action', 'object', 'duty', 'condition'.
-    - _subDivision_ An object of type `booleanConstruct` representing a subdivision of a fact. A fact can consist of other facts, but not necessarily. This attribute speficies how a fact is subdivided. See below for an explanation of a booleanConstruct.
-- `act` A frame of type _act_. In addition to the attributes inherited from `frame` it has attributes for the roles of an act frame:
-    - _action_ An object of type `fact` representing the action of an act
-    - _actor_ An object of type `fact` representing the actor of an act
-    - _object_ An object of type `fact` representing the object of an act
-    - _precondition_ A `booleanConstruct` representing a fact or a combination of facts that form the precondition of an act 
-    - _recipient_ An object of type `fact` representing the recipient of an act
-    - _creates_ A list of zero or more `fact` objects created by an act
-    - _terminates_ A list of zero or more `fact` objects terminated by an act
+- [`frame`](./gui/src/model/frame.js): This is a class representing a frame. It is the superclass of [`act`](./gui/src/model/act.js), [`fact`](./gui/src/model/fact.js), and [`claim_duty`](./gui/src/model/claimduty.js). Each frame has the following attributes:
+    - **_id_**: A unique id, generated when a frame is instantiated.
+    - **_typeId_**: The name of the frame's type (one of 'fact','act','claim_duty')
+    - **_shortName_**: A short label as displayed in the frame list.
+    - **_fullName_**: The full name of the frame, displayed when hovering the frame in the frame list.
+    - **_annotations_**: A list of `annotation` objects. See below for a detailed explanation of an annotation.
+    - **_comments_**: A list of `comment` objects. These are remarks and considerations that the user can store as notes attached to the frame when creating the interpretation.
+- [`fact`](./gui/src/model/fact.js): A frame of type _fact_. In addition to the attributes inherited from [`frame`](./gui/src/model/frame.js) it has:
+    - **_subTypeIds_**: A possibly empty list of subtype id's. A fact can have zero, one, or more subtypes. Valid subtype id's are: 'agent', 'action', 'object', 'duty', 'condition'.
+    - **_subDivision_**: An object of type `booleanConstruct` representing a subdivision of a fact. A fact can consist of other facts, but not necessarily. This attribute speficies how a fact is subdivided. See below for an explanation of a booleanConstruct.
+- [`act`](./gui/src/model/act.js): A frame of type _act_. In addition to the attributes inherited from `frame` it has attributes for the roles of an act frame:
+    - **_action_**: An object of type `fact` representing the action of an act
+    - **_actor_**: An object of type `fact` representing the actor of an act
+    - **_object_**: An object of type `fact` representing the object of an act
+    - **_precondition_**: A `booleanConstruct` representing a fact or a combination of facts that form the precondition of an act 
+    - **_recipient_**: An object of type `fact` representing the recipient of an act
+    - **_creates_**: A list of zero or more `fact` objects created by an act
+    - **_terminates_**: A list of zero or more `fact` objects terminated by an act
 
-    In addition, an act has auxiliary attributes, not part of the data model:
-    - _activeField_ The role of the act that is currently selected by the user
-    - _generateLabelAutomatically_ If true, labels (_shortName_ and _fullName_) are generated automatically for the act
-- `claimduty` A frame of type _claim-duty_. In addition to the attributes inherited from `frame` it has attributes for the roles of a claim-duty frame:
-    - _duty_ An object of type `fact` representing the duty of a claim-duty
-    - _claimant_ An object of type `fact` representing the claimant of a claim-duty
-    - _holder_ An object of type `fact` representing the holder of a claim-duty
-    In addition, a claim-duty has auxiliary attributes, not part of the data model:
-    - _activeField_ The role of the claim-duty that is currently selected by the user
-    - _generateLabelAutomatically_ If true, labels (_shortName_ and _fullName_) are generated automatically for the claim-duty
+    In addition, an act has auxiliary attributes, not part of the external data model:
+    - **_activeField_**: The role of the act that is currently selected by the user
+    - **_generateLabelAutomatically_**: If true, labels (_shortName_ and _fullName_) are generated automatically for the act
+- [`claimduty`](./gui/src/model/claimduty.js): A frame of type _claim-duty_. In addition to the attributes inherited from `frame` it has attributes for the roles of a claim-duty frame:
+    - **_duty_**: An object of type `fact` representing the duty of a claim-duty
+    - **_claimant_**: An object of type `fact` representing the claimant of a claim-duty
+    - **_holder_**: An object of type `fact` representing the holder of a claim-duty
 
-- `booleanConstruct` This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are _frames_ and all other nodes are _booleanConstructs_. It has the following attributes:
-    - _frame_ This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
-    - _children_ If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
-    - _operatorToJoinChildren_ The function with which to join the children, e.g. a boolean operator.
-    - _isNegated_ If a frame is specified, this attribute tells whether or not the frame should be negated (i.e. the unary boolean function NOT is applied)
+    In addition, a `claim-duty` has auxiliary attributes, not part of the data model:
+    - **_activeField_**: The role of the claim-duty that is currently selected by the user
+    - **_generateLabelAutomatically_**: If true, labels (_shortName_ and _fullName_) are generated automatically for the claim-duty
 
-- `sourceDocument` This class holds a source document, e.g. the content of a law like the _Participatiewet_. Its constructor reads a jsonLD object and parses it into a nested structure of sentence objects. The leafs of this structure are individual sentences. The nodes higher in the hierarchy represent paragraphs, chapters, etc. It has these attributes:
-    - _title_ The title of the source document
-    - _sentenceTree_ A nested structure of `sentence` objects
+- [`booleanConstruct`](./gui/src/model/booleanConstruct.js): This class is used to specify a combination of frames. Frames are combined using functions, e.g. boolean operators like OR and AND. A `booleanConstruct` can be nested: it can combine other boolean constructs as in: `booleanConstruct_1` AND `booleanConstruct_2`. A `booleanConstruct` is a tree, where the leafs are `facts` and all other nodes are _booleanConstructs_. It has the following attributes:
+    - **_frame_**: This attributes holds a frame in case the booleanConstruct is a leaf, i.e. it is a single frame, not a combination of frames.
+    - **_children_**: If the booleanConstruct is not a leaf (i.e. _frame_ is not null), this attribute is a list of booleanConstruct objects.
+    - **_operatorToJoinChildren_**: The function with which to join the children, e.g. a boolean operator.
+    - **_isNegated_ _(deprecated)_**: If a frame is specified, this attribute tells whether the frame should be negated (i.e. the unary boolean function NOT is applied). [DEPRECATED] This property will be removed in future versions. Use **operatorToJoinChildren** instead.
 
-- `sentence` The text of a sentence, or a heading (i.e. label of a heading, paragraph, section). The text of a sentence (or heading) is divided in snippets (see below) so that an annotation of a frame can contain _part_ of a sentence, and not necessarily complete sentences. Its most important attributes are:
-    - _sourceDocument_ The `sourceDocument` this sentence is part of
-    - _snippets_ A list of `snippet` objects that comprises this sentence
-    - _children_ If this sentence is a section or other higher-level element in the document: a list of `sentence` objects that together form this section
+- [`sourceDocument`](./gui/src/model/sourceDocument.js): This class holds a source document, e.g. the content of a law like the _Participatiewet_. Its constructor reads a jsonLD object and parses it into a nested structure of sentence objects. The leafs of this structure are individual sentences. The nodes higher in the hierarchy represent paragraphs, chapters, etc. It has these attributes:
+    - **_title_**: The title of the source document
+    - **_sentenceTree_**: A nested structure of `sentence` objects
+
+- [`sentence`](./gui/src/model/sentence.js): The text of a sentence, or a heading (i.e. label of a heading, paragraph, section). The text of a sentence (or heading) is divided in snippets (see below) so that an annotation of a frame can contain _part_ of a sentence, and not necessarily complete sentences. Its most important attributes are:
+    - **_sourceDocument_**: The `sourceDocument` this sentence is part of
+    - **_snippets_**: A list of `snippet` objects that comprises this sentence
+    - **_children_**: If this sentence is a section or other higher-level element in the document: a list of `sentence` objects that together form this section
     
+- [`snippet`](./gui/src/model/snippet.js): An atomic piece of text. The text is specified as a character range within a sentence. The snippet refers to all annotations of which it is a part. Its attributes are:
+    - **_id_**: A unique identifier
+    - **_sentence_**: The sentence object the snippet is part of
+    - **_characterRange_**: The start and end indices of the character range within the sentence. A snippet that starts from the beginning of the sentence has start index zero
+    - **_annotations_**: The annotations associated with this snippet
 
-- `snippet` An atomic piece of text. The text is specified as a character range in a sentence. The snippet refers to all annotations that it is part of. Its attributes are:
-    - _id_ A unique identifier
-    - _sentence_ The sentence object the snippet is part of
-    - _characterRange_ The start and end index of the character range within the sentence. A snippet that starts from the beginning of the sentence has start index zero
-    - _annotations_ The annotations that the snippet is part of
-
-- `annotation` This object links snippets to a frame. The snippets form the annotation of the frame. Its attributes are:
-    - _id_ A unique identifier
-    - _frame_ The `frame` object that this is the annotation of
+- [`annotation`](./gui/src/model/annotation.js): This object links snippets to a frame. The snippets form the annotation of the frame. Its attributes are:
+    - **_id_**: A unique identifier
+    - **_frame_**: The `frame` object that this is the annotation of
 The link between snippets and annotation is stored in the snippets, see above. Auxiliary attributes used for drawing coloured lines under the source text are:
-    - _nrSnippets_ Number of snippets of this annotation
-    - _verticalPosition_ The vertical position of the coloured line that marks this annotation in the source text
+    - **_nrSnippets_**: Number of snippets of this annotation
+    - **_verticalPosition_**: The vertical position of the coloured line that marks this annotation in the source text
 
 
+## Codebase Structure
 
 ## Project Structure
     .
@@ -353,7 +403,7 @@ netlify dev
 
 You can then make HTTP requests to <code>/.netlify/functions/[function-name]</code>.
 
-For adding new functions, simply create a new folder in the `/functions` folder and add an `.mjs` to it.
+For adding new functions, simply create a new folder in the `/functions` folder and add an `.mjs` or `.js` file to it.
 
 You can find more information in the [Netlify Functions docs](https://docs.netlify.com/functions/overview/).
 
@@ -372,8 +422,8 @@ Add these variables to your Netlify dashboard or a local .env file as appropriat
 
 | Variable        | Explanation                                                                                                                                                              |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                     |
-| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                       |
+| TRIPLY_KEY_R    | API key required for reading from TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                    |
+| TRIPLY_KEY_W    | API key required for writing to TriplyDB (Requires the creation of an account on the TRIPLY website and they can issue one for you)                                      |
 | TRIPLY_ENDPOINT | Base URL of the TriplyDB instance/API  (Requires the creation of an account on the TRIPLY website)                                                                       |
 | X_API_KEY       | Generated API key for authentication purposes. Used by the Edge function to redirect to the correct TRIPLY_DB serverless functions. Create your own.                     |
 | ALLOWED_DOMAINS | The domain from which the Edge function should expect the requests. If you run a local development server, you can set the value to `http://localhost:[designated_port]` |
