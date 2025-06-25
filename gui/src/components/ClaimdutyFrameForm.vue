@@ -55,7 +55,12 @@
       </div>
     </div>
   </q-card>
-  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
+  <CommentsList
+    :fact="frame"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
+    @closed="showComments = false"
+  />
 </template>
 
 <script>

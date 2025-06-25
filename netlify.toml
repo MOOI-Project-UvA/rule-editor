@@ -14,6 +14,13 @@ function = "protect"
 directory = "netlify/functions"
 node_bundler = "esbuild"
 
+[dev]
+command = "npm run dev"
+targetPort = 5173
+port = 8888
+autolaunch = true
+framework = "vite"
+
 
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.

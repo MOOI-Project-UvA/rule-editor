@@ -19,6 +19,14 @@
             </q-tooltip>
           </q-btn>
         </div>
+        <div class="col">
+          <template v-if="sentences?.length == 0">
+            <div class="text-italic">No source added yet</div>
+          </template>
+          <template v-else>
+            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
+          </template>
+        </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
             @click="showComments = !showComments">
@@ -72,8 +80,12 @@
     </div>
   </q-card>
 
-
-  <CommentsList :fact="frame" :showComments="showComments" @closed="showComments = false" />
+  <CommentsList
+    :fact="frame"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
+    @closed="showComments = false"
+  />
 </template>
 
 <script>
@@ -145,8 +157,13 @@ export default {
       this.idIsCopiedToClipboard = true
     }
   },
-  components: {TreeviewBooleanConstruct, BooleanConstructPanel, CommentsList, SentenceList }
-}
+  components: {
+    TreeviewBooleanConstruct,
+    BooleanConstructPanel,
+    CommentsList,
+    SentenceList,
+  },
+};
 </script>
 
 <style>
