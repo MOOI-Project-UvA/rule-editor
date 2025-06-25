@@ -105,9 +105,11 @@ Each pane is collapsible, allowing you to allocate more space to the pane you ar
 **Source pane**
 
 **Expanding source text**
+
 You can use the **expand** and **collapse** icons to show or hide the text.
 
 **Selecting text**
+
 Select a text fragment (from a single word to multiple lines). When your selection is complete, a modal dialog appears, allowing you to:
 - Create a frame (**act**, **claim**, or **fact**), or
 - Link the selected text fragment to an existing frame.
