@@ -1,9 +1,8 @@
 <template>
-  <q-card flat bordered class="my-card q-ma-sm">
+  <q-card flat bordered>
 
-    <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="fit">
+    <div class="q-pa-sm">
       <div class="height-content row q-pa-sm items-center q-gutter-md">
-        <div class="col-1 text-bold">Frames</div>
         <div class="col-auto">
           <div class="row q-gutter-xs items-center">
             <div>View as:</div>
@@ -13,9 +12,7 @@
             </div>
           </div>
         </div>
-        <div class="col-auto">
-          <NewFrameMenu />
-        </div>
+
         <div class="col">
           <q-input bottom-slots v-model="searchTerm" label="Filter frames on label" dense>
             <template v-slot:prepend>
@@ -39,30 +36,30 @@
         </div>
       </div>
 
-      <div :class="{ 'height-fill-available': !sourceViewIsCollapsed }" class="fit q-pa-sm">
+
         <template v-if="view == 'list'">
-          <FramesList :searchTerm="searchTerm" />
+          <div class="fill-height scrollable">
+            <FramesList :searchTerm="searchTerm" />
+          </div>
+          
         </template>
         <template v-else>
           <Network />
         </template>
 
-      </div>
+
     </div>
 
-    <div v-if="frameBeingEdited" :class="{ 'height-content': !sourceViewIsCollapsed }" class="frame-editor-panel">
-      <FrameEditorPanel />
-    </div>
 
   </q-card>
 </template>
 
 <script>
-import NewFrameMenu from "../components/NewFrameMenu.vue";
-import FramesList from "../components/FramesList.vue";
-import Network from "../components/Network.vue"
-import FrameEditorPanel from "../components/FrameEditorPanel.vue";
-import { icons, colors } from "../helpers/config";
+import NewFrameMenu from "../../components/NewFrameMenu.vue";
+import FramesList from "../../components/FramesList.vue";
+import Network from "../../components/Network.vue"
+import FrameEditorPanel from "../../components/FrameEditorPanel.vue";
+import { icons, colors } from "../../helpers/config";
 
 export default {
   data: () => ({
@@ -137,19 +134,12 @@ export default {
   /* Take only the needed height */
 }
 
-.height-fill-available {
-  flex: 1;
-  /* Fill available height */
-  overflow-y: auto;
-  /* Enable vertical scrolling */
+.fill-height {
+  height: calc(100vh - 255px);
 }
 
-.scrollable-content {
-  /* Optional styles for scrollable content */
-  height: 100%;
-  /* Ensure full height of container */
-  padding: 10px;
-  /* Adjust as needed */
+.scrollable {
+  overflow-y: auto;
 }
 
 .frame-editor-panel {

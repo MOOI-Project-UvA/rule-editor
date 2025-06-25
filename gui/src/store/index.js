@@ -255,7 +255,6 @@ const store = createStore({
     },
     async createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
-      console.log("createSourceDocFromJSONLD:", sourceDoc);
       //todo: check if sourceDoc is already in list
       context.state.sourceDocuments = [
         ...context.state.sourceDocuments,
@@ -320,13 +319,13 @@ const store = createStore({
       notification();
       response
         ? alertWidget(
-            "success",
-            "The task has been converted to RDF successfully! You can now save it locally.",
-          )
+          "success",
+          "The task has been converted to RDF successfully! You can now save it locally.",
+        )
         : alertWidget(
-            "error",
-            "An error occurred while saving the task to rdf!",
-          );
+          "error",
+          "An error occurred while saving the task to rdf!",
+        );
       const blob = new Blob([response], {
         type: "application/trig;charset=utf-8",
       });
@@ -334,7 +333,6 @@ const store = createStore({
       saveAs(blob, `${dateString}_interpretation.trig`);
     },
     loadInterpretation(context, jsonText) {
-      console.log("jsonText:", jsonText);
       const interpretation = parseJsonToInterpretation(jsonText);
       context.state.task = interpretation.task;
       context.state.sourceDocuments = interpretation.sourceDocs;
@@ -356,9 +354,9 @@ const store = createStore({
       jsonString
         ? alertWidget("success", "The task has been loaded successfully!")
         : alertWidget(
-            "error",
-            "An error occurred while loading the interpretation to rdf!",
-          );
+          "error",
+          "An error occurred while loading the interpretation to rdf!",
+        );
     },
     async saveInterpretationTriply(context) {
       // show loading indication

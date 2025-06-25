@@ -7,7 +7,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label>Define a task</q-item-label>
+          <q-item-label>Set task</q-item-label>
         </q-item-section>
         <q-item-section avatar>
           <q-avatar>
@@ -28,10 +28,10 @@
           :rules="[(val) => (val && val.length > 0) || 'Give description of the task']" clearable />
       </q-card-section>
       <q-separator></q-separator>
-      <q-card-actions class="q-pa-md">
+      <!-- <q-card-actions class="q-pa-md">
         <q-space></q-space>
         <q-btn type="submit" color="primary" @click="this.$emit('updateStepper')" :disable="formIsInvalid">Continue</q-btn>
-      </q-card-actions>
+      </q-card-actions> -->
     </q-card>
   </div>
 </template>
@@ -56,4 +56,11 @@ export default {
 };
 </script>
 
-<style scoped lang="css"></style>
+<style scoped lang="css">
+#task-definition-view {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow: hidden;
+}
+</style>

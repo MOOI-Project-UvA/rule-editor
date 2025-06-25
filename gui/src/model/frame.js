@@ -37,6 +37,10 @@ export const frameTypes =
             "duty": {
                 'class': 'fact',
                 'label': 'Duty'
+            },
+            "condition": {
+                'class': 'fact',
+                'label': 'Condition'
             }
         }
     }

@@ -4,11 +4,9 @@
             <b>{{ frameType.label }}</b>
             <div class="chips">
                 <div v-for="frame in filteredFrames.filter(
-            (f) => f.typeId == frameTypeId && !f.subTypeId,
-        )" @click="onClick(frame)">
-                    <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
-            frameBeingEdited.activeField != null" />
+            (f) => f.typeId == frameTypeId && (f.typeId != 'fact' || f.subTypeIds.length == 0),
+        )">
+                    <FrameChip :frame="frame"  @frameclicked="onClick(frame)"/>
                 </div>
             </div>
             <div v-if="'subTypes' in frameType">
@@ -19,12 +17,9 @@
                         <div v-for="frame in filteredFrames.filter(
             (f) =>
                 f.typeId == frameTypeId &&
-                f.subTypeId == subTypeId,
-        )" @click="onClick(frame)">
-                            <FrameChip :frame="frame" :disable="frameBeingEdited != null &&
-            ['act', 'claim-duty'].includes(frameBeingEdited.typeId) &&
-            frameBeingEdited.activeField != null &&
-            !frameBeingEdited.allowedSubTypesForActiveField.includes(subTypeId)" />
+                f.subTypeIds.includes(subTypeId),
+        )">
+                            <FrameChip :frame="frame" @frameclicked="onClick(frame)"/>
                         </div>
                     </div>
                 </div>
@@ -76,6 +71,7 @@ export default {
     },
     methods: {
         onClick(frame) {
+            console.log("clicked frame", frame)
             if (
                 this.addingAnnotationToExistingFrame
             ) {

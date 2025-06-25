@@ -5,7 +5,6 @@ class Claimduty {
     constructor() {
         this._id = uuid4() //unique ID
         this._typeId = null
-        this._subTypeId = null
         this._shortName = ""
         this._claimduty = ""
         this._activeField = null
@@ -14,6 +13,7 @@ class Claimduty {
         this._holder = null
         this._highlight = false
         this._comments = []
+        this._generateLabelAutomatically = true //by default, label is generated automatically
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -90,6 +90,9 @@ class Claimduty {
     get comments() { return this._comments }
     set comments(comments) { this._comments = comments }
 
+    get generateLabelAutomatically() { return this._generateLabelAutomatically }
+    set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
         switch (this._activeField) {
@@ -164,16 +167,18 @@ class Claimduty {
         this._claimant = frameData.claimantId ? allFrames.find(f => f.id == frameData.claimantId) : frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        this._generateLabelAutomatically = false
     }
-}
 
-//construct label [action] [object] [claimant] [recipient]
-function constructClaimdutyLabel(claimduty) {
-    const dutyShortName = claimduty.duty ? claimduty.duty.shortName : '.'
-    const claimantShortName = claimduty.claimant ? claimduty.claimant.shortName : '.'
-    const holderShortName = claimduty.holder ? claimduty.holder.shortName : '.'
+    //construct label [action] [object] [actor] [recipient]
+    generateLabel() {
+        const dutyShortName = this._duty ? this._duty.shortName : '<duty>'
+        const claimantShortName = this._claimant ? this._claimant.shortName : '<claimant>'
+        const holderShortName = this._holder ? this._holder.shortName : '<holder>'
 
-    return `${dutyShortName} ${claimantShortName} ${holderShortName}`
+        this._shortName = `${dutyShortName} ${claimantShortName} ${holderShortName}`
+        this._fullName = `${dutyShortName} ${claimantShortName} ${holderShortName}`
+    }
 }
 
 export {
