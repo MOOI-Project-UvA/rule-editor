@@ -10,7 +10,7 @@
 
         <div class="chips">
             <div class="chip" v-for="frameInRole in frames">
-                <FrameChip :frame="frameInRole" @click="chipClicked(frameInRole)" />
+                <FrameChip :frame="frameInRole"/>
                 <q-btn round size="xs" flat color="negative" icon="mdi-close"
                     @click="removeFrameFromRole(frameInRole)" />
             </div>
@@ -57,9 +57,6 @@ export default {
             } else {
                 this.frame[this.attribute] = null
             }
-        },
-        chipClicked(frame) {
-            this.$store.commit("setFrameBeingEdited", frame)
         }
     }
 }

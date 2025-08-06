@@ -6,8 +6,15 @@
           :icon="sentence.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" flat text-color="primary"
           @click="sentence.toggleCollapse()"></q-btn>
       </div>
-
-      <div :ref="`sentence-${sentence.iri}`" @mouseup="handleSelection" :style="getStyleForSentence(sentence)">
+      <div v-if="showSentenceButtons">
+        <q-btn
+          round size="xs"
+          flat
+          icon="mdi-chevron-left"
+          text-color="primary"
+          @click="$emit('sentenceButtonClicked', sentence)"/>
+      </div>
+      <div :ref="`sentence-${sentence.iri}`" @mouseup="handleSelection" :style="indent ? getStyleForSentence(sentence) : ''">
         <span :style="getStyleForUnderlining(snippet, frameBeingEdited)" v-for="snippet in sentence.snippets"
           :data-snippet-id="snippet.id" :data-sentence-id="sentence.id">
           {{ snippet.text }}
@@ -32,8 +39,11 @@ import { Annotation } from "../model/annotation";
 
 export default {
   props: {
-    sentences: Array //these sentences have been filtered according to their 'selected' property in SourceView
+    sentences: Array, //these sentences have been filtered according to their 'selected' property in SourceView
+    indent: Boolean, //if true, indentation is applied depending on position in hierarchical structure of the source
+    showSentenceButtons: Boolean //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
   },
+  emits: ['sentenceButtonClicked'],
   computed: {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;

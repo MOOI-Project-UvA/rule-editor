@@ -285,7 +285,7 @@ export default {
               <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
               <div class="row-container">
                 <!-- selected chip -->
-                <FrameChip :frame="prop.node.frame" :disable="false" />
+                <FrameChip :frame="prop.node.frame" />
                 <!-- remove chip button -->
                 <q-btn
                   round

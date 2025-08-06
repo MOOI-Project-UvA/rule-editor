@@ -2,11 +2,12 @@
     <div class="fill-height scrollable q-pa-sm">
         <div v-for="sourceDoc in sourceDocuments">
             <div class="text-primary text-bold">{{ sourceDoc.title }}</div>
-            <div v-for="sentence in sourceDoc.getSentencesForFrame(frameBeingEdited)" @click="scrollToSource(sentence)">
-                <span v-for="snippet in sentence.snippets" :class="{ highlighted: snippetIdsInFrameSource.includes(snippet.id) }">
-                    {{ snippet.text }}
-                </span>
-            </div>
+            <SentenceList
+                :sentences="sourceDoc.getSentencesForFrame(frameBeingEdited)"
+                :indent="false"
+                :showSentenceButtons="true"
+                @sentenceButtonClicked="scrollToSource"
+            />
         </div>
     </div>
 </template>
@@ -43,6 +44,7 @@ export default {
             //scroll to sentence
             this.$store.state.sentenceToScrollTo = sentence
         },
+
     },
     watch: {
         frameBeingEdited() {
