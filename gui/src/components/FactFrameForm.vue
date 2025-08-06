@@ -23,9 +23,6 @@
           <template v-if="sentences?.length == 0">
             <div class="text-italic">No source added yet</div>
           </template>
-          <template v-else>
-            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
-          </template>
         </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"

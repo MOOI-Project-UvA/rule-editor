@@ -36,13 +36,14 @@
                                 </div>
                             </q-tooltip>
                         </div>
-                        <q-btn color="negative" flat @click="annotationBeingDeleted = annotation">Delete</q-btn>
-                        <template v-if="annotation.frame">
+                        
+                        <template v-if="annotation.frame && (!frameBeingEdited || frameBeingEdited.id != annotation.frame.id)">
                             <q-btn flat @click="openFrameOfAnnotation(annotation)">Open frame</q-btn>
                         </template>
-                        <template v-else>
+                        <template v-if="!annotation.frame">
                             <q-btn flat @click="addAnnotationToExistingFrame(annotation)">Add to frame</q-btn>
                         </template>
+                        <q-btn color="negative" flat @click="annotationBeingDeleted = annotation">Delete</q-btn>
                     </div>
                 </q-card-section>
                 <q-card-actions>
@@ -93,6 +94,9 @@ export default {
         },
         sourceDocuments() {
             return this.$store.state.sourceDocuments
+        },
+        frameBeingEdited() {
+            return this.$store.state.frameBeingEdited
         }
 
     },

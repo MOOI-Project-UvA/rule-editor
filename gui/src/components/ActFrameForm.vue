@@ -3,8 +3,8 @@
     <q-card-section>
       <div class="row items-center">
         <div class="col-2">ACT</div>
-        <div class="col-2">
-          <div class="row items-center float-right">
+        <div class="col">
+          <div class="row items-center">
             <template v-if="sentences?.length > 0">
               <q-btn
                 size="sm"
@@ -28,23 +28,28 @@
                 </template>
               </q-btn>
             </template>
-            <q-btn
-              size="sm"
-              round
-              flat
-              color="primary"
-              icon="mdi-comment-text-outline"
-              @click="showComments = !showComments"
-            >
-              <q-badge
-                v-if="frame.comments.length > 0"
-                color="primary"
-                floating
-                >{{ frame.comments.length }}</q-badge
-              >
-              <q-tooltip class="text-subtitle2">Comments</q-tooltip>
-            </q-btn>
+            <template v-else>
+              <div class="text-italic">No source added yet</div>
+            </template>
           </div>
+        </div>
+        <div class="col-1">
+          <q-btn
+            size="sm"
+            round
+            flat
+            color="primary"
+            icon="mdi-comment-text-outline"
+            @click="showComments = !showComments"
+          >
+            <q-badge
+              v-if="frame.comments.length > 0"
+              color="primary"
+              floating
+              >{{ frame.comments.length }}</q-badge
+            >
+            <q-tooltip class="text-subtitle2">Comments</q-tooltip>
+          </q-btn>
         </div>
       </div>
 
