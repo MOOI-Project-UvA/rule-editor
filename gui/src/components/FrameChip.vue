@@ -12,7 +12,7 @@
     </div>
     <q-tooltip class="bg-blue-1 text-grey-10 text-body2">
       <div style="max-width: 300px">
-        {{ frame.shortName != "" ? frame.shortName : "- no label given yet -" }}
+        {{ frame.fullName != "" ? frame.fullName : "- no full name given yet -" }}
       </div>
     </q-tooltip>
   </div>
