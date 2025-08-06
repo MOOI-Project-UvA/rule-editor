@@ -4,7 +4,7 @@
       class="text-white frame-label ellipsis non-selectable"
       style="max-width: 400px"
       :class="disabled ? 'bg-grey no-pointer-events cursor-not-allowed' : `bg-${frameColor} cursor-pointer`"
-      @click="$emit('frameclicked')"
+      @click="handleClick"
     >
       {{
         frame.shortName?.length > 0 ? frame.shortName : frame.typeId
@@ -30,13 +30,21 @@ export default {
   props: {
     frame: Object
   },
-  emits: ["frameclicked"],
   computed: {
     frameBeingEdited() {
       return this.$store.state.frameBeingEdited
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited
+    },
+    annotationToBeAddedToExistingFrame() {
+        return this.$store.state.annotationToBeAddedToExistingFrame
+    },
+    addingAnnotationToExistingFrame() {
+        return this.$store.state.addingAnnotationToExistingFrame
+    },
+    framesOpenInEditor() {
+        return this.$store.state.framesOpenInEditor
     },
     frameColor() {
       return this.frame.typeId != "fact" || this.frame.subTypeIds.length == 0
@@ -54,6 +62,36 @@ export default {
             this.frameBeingEdited.activeField != null) || (this.booleanConstructBeingEdited != null))
             && (this.frame.typeId != 'fact' || this.frame.id == this.frameBeingEdited.id)
     }
+  },
+  methods: {
+    handleClick() {
+        if (
+            this.addingAnnotationToExistingFrame
+        ) {
+            //add annotation to this frame
+            this.$store.state.annotationToBeAddedToExistingFrame.frame = this.frame
+            this.$store.state.addingAnnotationToExistingFrame = false;
+            this.$store.state.annotationToBeAddedToExistingFrame = null;
+        } else if (
+            this.frameBeingEdited &&
+            'activeField' in this.frameBeingEdited &&
+            this.frameBeingEdited.activeField
+        ) {
+            //add frame to field in frame being edited
+            this.frameBeingEdited.addFrame(this.frame);
+            this.frameBeingEdited.activeField = null
+        } else if (this.booleanConstructBeingEdited) {
+            this.booleanConstructBeingEdited.frame = this.frame;
+            this.$store.state.booleanConstructBeingEdited = null;
+        } else {
+            //open this frame in edit panel
+            this.$store.state.frameBeingEdited = this.frame
+            //if the frame is not yet in the list of edited frames, add it
+            if (!(this.framesOpenInEditor.some(f => f.id == this.frame.id))) {
+                this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, this.frame]
+            }
+        }
+    },
   }
 };
 </script>
