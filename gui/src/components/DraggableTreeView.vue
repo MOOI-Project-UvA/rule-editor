@@ -2,7 +2,7 @@
 import FrameChip from "./FrameChip.vue";
 
 export default {
-  name: "draggableTreeView",
+  name: "DraggableTreeView",
   components: { FrameChip },
   data() {
     return {
@@ -41,26 +41,26 @@ export default {
       ],
       subdivision: [
         {
-          id: "4e0c5c02-a219-4a3a-bd58-62ebd35eb646",
+          id: "parent1",
           frame: null,
           isNegated: false,
           children: [
             {
-              id: "8dfaa238-9123-4bb0-ad10-b51c3b893222",
+              id: "parent2",
               frame: null,
               isNegated: false,
               children: [
                 {
-                  id: "5d7d777c-dff9-49ba-87e2-2945ba32afd5",
+                  id: "subdivision-parent2-1",
                   frame: {
-                    id: "4992d5fb-bd42-4c0b-b32f-7fa590da721d",
+                    id: "fact2",
                     shortName: "fact2",
                     fullName: "",
                     typeId: "fact",
                     subTypeId: null,
                     comments: [],
                     subdivision: {
-                      id: "6627dd91-cb0d-452f-b7b0-4a91c57cc967",
+                      id: "subdivision-fact2-1",
                       frame: null,
                       isNegated: false,
                       children: [
@@ -71,7 +71,7 @@ export default {
                           children: [],
                           operatorToJoinChildren: null,
                           parent: {
-                            id: "6627dd91-cb0d-452f-b7b0-4a91c57cc967",
+                            id: "subdivision-fact2",
                             frame: null,
                             isNegated: false,
                             children: [
@@ -98,14 +98,14 @@ export default {
                   children: [],
                   operatorToJoinChildren: null,
                   parent: {
-                    id: "8dfaa238-9123-4bb0-ad10-b51c3b893222",
+                    id: "parent2",
                     frame: null,
                     isNegated: false,
                     children: [
                       {
-                        id: "5d7d777c-dff9-49ba-87e2-2945ba32afd5",
+                        id: "subdivision-parent2-1",
                         frame: {
-                          id: "4992d5fb-bd42-4c0b-b32f-7fa590da721d",
+                          id: "fact2",
                           shortName: "fact2",
                           fullName: "",
                           typeId: "fact",
@@ -121,16 +121,16 @@ export default {
                         beingEdited: true,
                       },
                       {
-                        id: "82e63ba9-1935-46b0-aa63-862f33e82795",
+                        id: "subdivision-parent2-2",
                         frame: {
-                          id: "7fb159a0-542c-45e2-bb0a-d01f598f543c",
+                          id: "fact3",
                           shortName: "fact3",
                           fullName: "",
                           typeId: "fact",
                           subTypeId: null,
                           comments: [],
                           subdivision: {
-                            id: "75f52322-9578-40c6-8eda-38600ce3daeb",
+                            id: "subdivision-fact3",
                             frame: null,
                             isNegated: false,
                             children: [
@@ -158,27 +158,27 @@ export default {
                     ],
                     operatorToJoinChildren: "and",
                     parent: {
-                      id: "4e0c5c02-a219-4a3a-bd58-62ebd35eb646",
+                      id: "parent1",
                       frame: null,
                       isNegated: false,
                       children: [
                         "[Circular]",
                         {
-                          id: "5ba8e097-0728-4a9f-9b81-f365e56a0678",
+                          id: "parent3",
                           frame: null,
                           isNegated: false,
                           children: [
                             {
-                              id: "be354525-7d54-45d1-96fa-cc570a82cea3",
+                              id: "subdivision-parent3",
                               frame: {
-                                id: "05195279-3150-47b0-a97e-224ee081286c",
+                                id: "fact5",
                                 shortName: "fact5",
                                 fullName: "",
                                 typeId: "fact",
                                 subTypeId: null,
                                 comments: [],
                                 subdivision: {
-                                  id: "24284867-f0f3-413b-9211-f27af5b3638e",
+                                  id: "subdivision-fact5",
                                   frame: null,
                                   isNegated: false,
                                   children: [
@@ -203,16 +203,16 @@ export default {
                               beingEdited: false,
                             },
                             {
-                              id: "db2b259a-08fa-42d0-9933-e79bd503c204",
+                              id: "subdivision-parent3-2",
                               frame: {
-                                id: "d27cf66c-00c5-4dee-a421-7b85c9d64376",
+                                id: "fact6",
                                 shortName: "fact6",
                                 fullName: "",
                                 typeId: "fact",
                                 subTypeId: null,
                                 comments: [],
                                 subdivision: {
-                                  id: "976c7bd5-ba07-4d4e-993f-ac1a10eb29b3",
+                                  id: "subdivision-fact6",
                                   frame: null,
                                   isNegated: false,
                                   children: [
@@ -242,21 +242,21 @@ export default {
                           beingEdited: false,
                         },
                         {
-                          id: "21255d77-e2a7-4edd-9be0-93ce3d1538e6",
+                          id: "parent4",
                           frame: {
-                            id: "eeaf2c0c-1300-4576-b74c-e07573b6c5b7",
+                            id: "fact7",
                             shortName: "fact7",
                             fullName: "",
                             typeId: "fact",
                             subTypeId: null,
                             comments: [],
                             subdivision: {
-                              id: "ce76397e-e3a0-45b1-b155-6de750736edb",
+                              id: "subdivision-fact7",
                               frame: null,
                               isNegated: false,
                               children: [
                                 {
-                                  id: "dcf21fd0-c585-421c-8759-f87a89a0a65f",
+                                  id: "subdivision-fact7-7",
                                   frame: null,
                                   isNegated: false,
                                   children: [],
@@ -285,16 +285,16 @@ export default {
                   beingEdited: true,
                 },
                 {
-                  id: "82e63ba9-1935-46b0-aa63-862f33e82795",
+                  id: "subdivision-parent2-2",
                   frame: {
-                    id: "7fb159a0-542c-45e2-bb0a-d01f598f543c",
+                    id: "fact3",
                     shortName: "fact3",
                     fullName: "",
                     typeId: "fact",
                     subTypeId: null,
                     comments: [],
                     subdivision: {
-                      id: "75f52322-9578-40c6-8eda-38600ce3daeb",
+                      id: "subdivision-fact3",
                       frame: null,
                       isNegated: false,
                       children: [
@@ -325,21 +325,21 @@ export default {
               beingEdited: false,
             },
             {
-              id: "5ba8e097-0728-4a9f-9b81-f365e56a0678",
+              id: "parent3",
               frame: null,
               isNegated: false,
               children: [
                 {
-                  id: "be354525-7d54-45d1-96fa-cc570a82cea3",
+                  id: "subdivision-parent3",
                   frame: {
-                    id: "05195279-3150-47b0-a97e-224ee081286c",
+                    id: "fact5",
                     shortName: "fact5",
                     fullName: "",
                     typeId: "fact",
                     subTypeId: null,
                     comments: [],
                     subdivision: {
-                      id: "24284867-f0f3-413b-9211-f27af5b3638e",
+                      id: "subdivision-fact5",
                       frame: null,
                       isNegated: false,
                       children: [
@@ -364,16 +364,16 @@ export default {
                   beingEdited: false,
                 },
                 {
-                  id: "db2b259a-08fa-42d0-9933-e79bd503c204",
+                  id: "subdivision-parent3-2",
                   frame: {
-                    id: "d27cf66c-00c5-4dee-a421-7b85c9d64376",
+                    id: "fact6",
                     shortName: "fact6",
                     fullName: "",
                     typeId: "fact",
                     subTypeId: null,
                     comments: [],
                     subdivision: {
-                      id: "976c7bd5-ba07-4d4e-993f-ac1a10eb29b3",
+                      id: "subdivision-fact6",
                       frame: null,
                       isNegated: false,
                       children: [
@@ -403,21 +403,21 @@ export default {
               beingEdited: false,
             },
             {
-              id: "21255d77-e2a7-4edd-9be0-93ce3d1538e6",
+              id: "parent4",
               frame: {
-                id: "eeaf2c0c-1300-4576-b74c-e07573b6c5b7",
+                id: "fact7",
                 shortName: "fact7",
                 fullName: "",
                 typeId: "fact",
                 subTypeId: null,
                 comments: [],
                 subdivision: {
-                  id: "ce76397e-e3a0-45b1-b155-6de750736edb",
+                  id: "subdivision-fact7",
                   frame: null,
                   isNegated: false,
                   children: [
                     {
-                      id: "dcf21fd0-c585-421c-8759-f87a89a0a65f",
+                      id: "subdivision-fact7-7",
                       frame: null,
                       isNegated: false,
                       children: [],
@@ -508,6 +508,7 @@ export default {
       return null;
     },
     moveNode(from, to) {
+      console.log("moving nodes!");
       if (from === to) return;
 
       const fromResult = this.getNodeByLabel(this.subdivision, from, -1);
@@ -549,6 +550,7 @@ export default {
       }
     },
     swapNodes(fromKey, toKey) {
+      console.log("swapping nodes!");
       if (fromKey === toKey) return;
 
       const fromResult = this.getNodeByLabel(this.subdivision, fromKey, -1);
@@ -601,6 +603,7 @@ export default {
       }
     },
     dragStart(event, key) {
+      console.log("drag started...");
       console.log("drag key:", key);
       this.draggingId = key;
       if (event.target) {
@@ -623,6 +626,7 @@ export default {
         event.dataTransfer.setData("node", key);
     },
     dragStop(event) {
+      console.log("drag stop...");
       if (event.target) {
         const target = event.target;
         const parent = this.getNodeParent(target);
@@ -695,16 +699,31 @@ export default {
     //   }
     // },
     dragOver(event, id) {
+      console.log("dragging...");
       event.preventDefault();
       const target = event.target;
       if (target) target.classList.add("container");
       if (id !== this.dragOverId) this.dragOverId = id;
     },
     dragLeave(event, id) {
+      console.log("drag event is over!");
       event.preventDefault();
       const target = event.target;
       if (target) target.classList.remove("container");
       if (this.dragOverId === id) this.dragOverId = null;
+    },
+    subdivide(event, nodeData) {
+      console.log("nodeData to subdivide:", nodeData);
+      event.stopPropagation();
+      nodeData.subdivide();
+      // set the top level of the construct to be expanded
+      // this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
+      // // set the current node to expanded
+      // this.$refs["tree-structure"].setExpanded(nodeData.id, true);
+      // // determine margin of parent
+      // !nodeData.parent && nodeData.children.length > 0
+      //   ? (this.notMargined = false)
+      //   : null;
     },
   },
 };
