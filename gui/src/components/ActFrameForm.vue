@@ -194,7 +194,7 @@ export default {
   },
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments
+      return this.$store.state.sourceDocuments;
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
@@ -203,7 +203,9 @@ export default {
       return this.$store.state.frameBeingEdited;
     },
     sentences() {
-      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
+      return this.sourceDocuments
+        .map((doc) => doc.getSentencesForFrame(this.frame))
+        .flat();
     },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;

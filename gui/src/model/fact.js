@@ -1,6 +1,6 @@
-import { v4 as uuid4 } from "uuid";
-import { Annotation } from "./annotation";
-import { BooleanConstruct } from "./booleanConstruct.js";
+import { v4 as uuid4 } from 'uuid'
+import { Annotation } from './annotation'
+import { BooleanConstruct } from './booleanConstruct.js'
 
 export class Fact {
     constructor(initialLabel) {

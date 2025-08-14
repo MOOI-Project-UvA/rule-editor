@@ -1,7 +1,6 @@
 <script>
 import FrameChip from "./FrameChip.vue";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
-
 export default {
   name: "TreeviewBooleanConstruct",
   components: {
@@ -114,6 +113,10 @@ export default {
   },
   methods: {
     getNodeByKey(key) {
+      console.log(
+        "nodes.data in the tree:",
+        this.$refs["tree-structure"].getNodeByKey(key),
+      );
       return this.$refs["tree-structure"].getNodeByKey(key);
     },
     selectValue(val, node) {
@@ -154,6 +157,7 @@ export default {
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
+      console.log("newCHild: ", newChild);
       this.selectedNode = newChild.id;
     },
     // adds an extra level of hierarchy to the selected node
@@ -402,7 +406,17 @@ export default {
               </q-btn>
             </div>
           </div>
+          <!--              <div v-if="prop.node.label">-->
+          <!--                <span class="text-weight-bold">This node has a story</span>:-->
+          <!--                {{ prop.node.label }}-->
+          <!--              </div>-->
+          <!--              <span v-else class="text-weight-light text-black"-->
+          <!--              <span v-else class="text-weight-light text-black"-->
+          <!--                >This is some default content.</span>-->
         </div>
+        <!--        <div v-else class="panel">-->
+        <!--          <p>additional options</p>-->
+        <!--        </div>-->
       </template>
     </q-tree>
   </div>

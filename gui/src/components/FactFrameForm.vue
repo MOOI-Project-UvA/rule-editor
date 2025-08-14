@@ -94,7 +94,7 @@ import SentenceList from "./SentenceList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
 import { frameTypes } from "../model/frame";
-import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
 import DraggableTreeView from "./draggableTreeView.vue";
 
@@ -112,10 +112,10 @@ export default {
   }),
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments;
+      return this.$store.state.sourceDocuments
     },
     displayedSourceDocument() {
-      return this.$store.state.displayedSourceDocument;
+      return this.$store.state.displayedSourceDocument
     },
     frame() {
       return this.$store.state.frameBeingEdited;
