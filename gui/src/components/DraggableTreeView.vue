@@ -1,447 +1,76 @@
 <script>
 import FrameChip from "./FrameChip.vue";
+import { Fact } from "../model/fact.js";
+import { BooleanConstruct } from "../model/booleanConstruct.js";
 
 export default {
   name: "DraggableTreeView",
   components: { FrameChip },
   data() {
+    // Create Fact instances
+    const fact2 = new Fact("fact2");
+    const fact3 = new Fact("fact3");
+    const fact5 = new Fact("fact5");
+    const fact6 = new Fact("fact6");
+    const fact7 = new Fact("fact7");
+
+    // Optionally, add subdivisions or children to facts here
+    // For example, fact2.addSubdivision();
+
+    // Build the subdivision tree using BooleanConstructs and Facts
+    // Each BooleanConstruct can have children BooleanConstructs or a frame (Fact)
+
+    // Helper function to create a BooleanConstruct node with a frame
+    function createNodeWithFact(fact) {
+      const bc = new BooleanConstruct();
+      bc.frame = fact;
+      return bc;
+    }
+
+    // Example structure:
+    // parent1 (BooleanConstruct)
+    //  ├─ parent2 (BooleanConstruct)
+    //  │    ├─ subdivision-parent2-1 (BooleanConstruct with fact2)
+    //  │    └─ subdivision-parent2-2 (BooleanConstruct with fact3)
+    //  ├─ parent3 (BooleanConstruct with children fact5 and fact6)
+    //  └─ parent4 (BooleanConstruct with fact7)
+
+    // Create BooleanConstruct nodes for parents
+    const parent1 = new BooleanConstruct();
+    parent1.operatorToJoinChildren = "and";
+
+    const parent2 = new BooleanConstruct();
+    parent2.operatorToJoinChildren = "and";
+
+    const parent3 = new BooleanConstruct();
+    parent3.operatorToJoinChildren = "and";
+
+    const parent4 = createNodeWithFact(fact7);
+
+    // Create subdivision-parent2-1 and subdivision-parent2-2 nodes
+    const subdivisionParent2_1 = createNodeWithFact(fact2);
+    const subdivisionParent2_2 = createNodeWithFact(fact3);
+
+    // Build parent2 children
+    parent2.addChild(subdivisionParent2_1);
+    parent2.addChild(subdivisionParent2_2);
+
+    // Create children for parent3
+    const subdivisionParent3_1 = createNodeWithFact(fact5);
+    const subdivisionParent3_2 = createNodeWithFact(fact6);
+
+    parent3.addChild(subdivisionParent3_1);
+    parent3.addChild(subdivisionParent3_2);
+
+    // Build parent1 children
+    parent1.addChild(parent2);
+    parent1.addChild(parent3);
+    parent1.addChild(parent4);
+
+    // Set parents properly (already done in addChild)
+
     return {
-      simple: [
-        {
-          id: "Satisfied customers (with avatar)",
-          avatar: "https://cdn.quasar.dev/img/boy-avatar.png",
-          children: [
-            {
-              id: "Good food (with icon)",
-              icon: "restaurant_menu",
-              children: [{ id: "Quality ingredients" }, { id: "Good recipe" }],
-            },
-            {
-              id: "Good service (disabled node with icon)",
-              icon: "room_service",
-              children: [
-                { id: "Prompt attention", disabled: true },
-                { id: "Professional waiter" },
-              ],
-            },
-            {
-              id: "Pleasant surroundings (with icon)",
-              icon: "photo",
-              children: [
-                {
-                  id: "Happy atmosphere (with image)",
-                  img: "https://cdn.quasar.dev/img/logo_calendar_128px.png",
-                },
-                { id: "Good table presentation" },
-                { id: "Pleasing decor" },
-              ],
-            },
-          ],
-        },
-      ],
-      subdivision: [
-        {
-          id: "parent1",
-          frame: null,
-          isNegated: false,
-          children: [
-            {
-              id: "parent2",
-              frame: null,
-              isNegated: false,
-              children: [
-                {
-                  id: "subdivision-parent2-1",
-                  frame: {
-                    id: "fact2",
-                    shortName: "fact2",
-                    fullName: "",
-                    typeId: "fact",
-                    subTypeId: null,
-                    comments: [],
-                    subdivision: {
-                      id: "subdivision-fact2-1",
-                      frame: null,
-                      isNegated: false,
-                      children: [
-                        {
-                          id: "c2c962bc-a6c3-46d5-826d-08eb05c84489",
-                          frame: null,
-                          isNegated: false,
-                          children: [],
-                          operatorToJoinChildren: null,
-                          parent: {
-                            id: "subdivision-fact2",
-                            frame: null,
-                            isNegated: false,
-                            children: [
-                              {
-                                id: "c2c962bc-a6c3-46d5-826d-08eb05c84489",
-                                frame: null,
-                                isNegated: false,
-                                children: [],
-                                operatorToJoinChildren: null,
-                                parent: "[Circular]",
-                              },
-                            ],
-                            operatorToJoinChildren: "and",
-                            parent: null,
-                          },
-                        },
-                      ],
-                      operatorToJoinChildren: "and",
-                      parent: null,
-                    },
-                    isComplex: true,
-                  },
-                  isNegated: false,
-                  children: [],
-                  operatorToJoinChildren: null,
-                  parent: {
-                    id: "parent2",
-                    frame: null,
-                    isNegated: false,
-                    children: [
-                      {
-                        id: "subdivision-parent2-1",
-                        frame: {
-                          id: "fact2",
-                          shortName: "fact2",
-                          fullName: "",
-                          typeId: "fact",
-                          subTypeId: null,
-                          comments: [],
-                          subdivision: "[Circular]",
-                          isComplex: true,
-                        },
-                        isNegated: false,
-                        children: [],
-                        operatorToJoinChildren: null,
-                        parent: "[Circular]",
-                        beingEdited: true,
-                      },
-                      {
-                        id: "subdivision-parent2-2",
-                        frame: {
-                          id: "fact3",
-                          shortName: "fact3",
-                          fullName: "",
-                          typeId: "fact",
-                          subTypeId: null,
-                          comments: [],
-                          subdivision: {
-                            id: "subdivision-fact3",
-                            frame: null,
-                            isNegated: false,
-                            children: [
-                              {
-                                id: "21b39a45-68ec-448d-bf61-e853c3286a60",
-                                frame: null,
-                                isNegated: false,
-                                children: [],
-                                operatorToJoinChildren: null,
-                                parent: "[Circular]",
-                                beingEdited: false,
-                              },
-                            ],
-                            operatorToJoinChildren: "and",
-                            parent: null,
-                          },
-                          isComplex: true,
-                        },
-                        isNegated: false,
-                        children: [],
-                        operatorToJoinChildren: null,
-                        parent: "[Circular]",
-                        beingEdited: false,
-                      },
-                    ],
-                    operatorToJoinChildren: "and",
-                    parent: {
-                      id: "parent1",
-                      frame: null,
-                      isNegated: false,
-                      children: [
-                        "[Circular]",
-                        {
-                          id: "parent3",
-                          frame: null,
-                          isNegated: false,
-                          children: [
-                            {
-                              id: "subdivision-parent3",
-                              frame: {
-                                id: "fact5",
-                                shortName: "fact5",
-                                fullName: "",
-                                typeId: "fact",
-                                subTypeId: null,
-                                comments: [],
-                                subdivision: {
-                                  id: "subdivision-fact5",
-                                  frame: null,
-                                  isNegated: false,
-                                  children: [
-                                    {
-                                      id: "0d8160b4-864a-4f55-92d1-4c1c7c0bf97a",
-                                      frame: null,
-                                      isNegated: false,
-                                      children: [],
-                                      operatorToJoinChildren: null,
-                                      parent: "[Circular]",
-                                    },
-                                  ],
-                                  operatorToJoinChildren: "and",
-                                  parent: null,
-                                },
-                                isComplex: true,
-                              },
-                              isNegated: false,
-                              children: [],
-                              operatorToJoinChildren: null,
-                              parent: "[Circular]",
-                              beingEdited: false,
-                            },
-                            {
-                              id: "subdivision-parent3-2",
-                              frame: {
-                                id: "fact6",
-                                shortName: "fact6",
-                                fullName: "",
-                                typeId: "fact",
-                                subTypeId: null,
-                                comments: [],
-                                subdivision: {
-                                  id: "subdivision-fact6",
-                                  frame: null,
-                                  isNegated: false,
-                                  children: [
-                                    {
-                                      id: "e71a601e-afa7-4f23-87f3-51afc13e9b30",
-                                      frame: null,
-                                      isNegated: false,
-                                      children: [],
-                                      operatorToJoinChildren: null,
-                                      parent: "[Circular]",
-                                    },
-                                  ],
-                                  operatorToJoinChildren: "and",
-                                  parent: null,
-                                },
-                                isComplex: true,
-                              },
-                              isNegated: false,
-                              children: [],
-                              operatorToJoinChildren: null,
-                              parent: "[Circular]",
-                              beingEdited: false,
-                            },
-                          ],
-                          operatorToJoinChildren: "and",
-                          parent: "[Circular]",
-                          beingEdited: false,
-                        },
-                        {
-                          id: "parent4",
-                          frame: {
-                            id: "fact7",
-                            shortName: "fact7",
-                            fullName: "",
-                            typeId: "fact",
-                            subTypeId: null,
-                            comments: [],
-                            subdivision: {
-                              id: "subdivision-fact7",
-                              frame: null,
-                              isNegated: false,
-                              children: [
-                                {
-                                  id: "subdivision-fact7-7",
-                                  frame: null,
-                                  isNegated: false,
-                                  children: [],
-                                  operatorToJoinChildren: null,
-                                  parent: "[Circular]",
-                                },
-                              ],
-                              operatorToJoinChildren: "and",
-                              parent: null,
-                            },
-                            isComplex: true,
-                          },
-                          isNegated: false,
-                          children: [],
-                          operatorToJoinChildren: null,
-                          parent: "[Circular]",
-                          beingEdited: false,
-                        },
-                      ],
-                      operatorToJoinChildren: "and",
-                      parent: null,
-                      beingEdited: true,
-                    },
-                    beingEdited: false,
-                  },
-                  beingEdited: true,
-                },
-                {
-                  id: "subdivision-parent2-2",
-                  frame: {
-                    id: "fact3",
-                    shortName: "fact3",
-                    fullName: "",
-                    typeId: "fact",
-                    subTypeId: null,
-                    comments: [],
-                    subdivision: {
-                      id: "subdivision-fact3",
-                      frame: null,
-                      isNegated: false,
-                      children: [
-                        {
-                          id: "21b39a45-68ec-448d-bf61-e853c3286a60",
-                          frame: null,
-                          isNegated: false,
-                          children: [],
-                          operatorToJoinChildren: null,
-                          parent: "[Circular]",
-                          beingEdited: false,
-                        },
-                      ],
-                      operatorToJoinChildren: "and",
-                      parent: null,
-                    },
-                    isComplex: true,
-                  },
-                  isNegated: false,
-                  children: [],
-                  operatorToJoinChildren: null,
-                  parent: "[Circular]",
-                  beingEdited: false,
-                },
-              ],
-              operatorToJoinChildren: "and",
-              parent: "[Circular]",
-              beingEdited: false,
-            },
-            {
-              id: "parent3",
-              frame: null,
-              isNegated: false,
-              children: [
-                {
-                  id: "subdivision-parent3",
-                  frame: {
-                    id: "fact5",
-                    shortName: "fact5",
-                    fullName: "",
-                    typeId: "fact",
-                    subTypeId: null,
-                    comments: [],
-                    subdivision: {
-                      id: "subdivision-fact5",
-                      frame: null,
-                      isNegated: false,
-                      children: [
-                        {
-                          id: "0d8160b4-864a-4f55-92d1-4c1c7c0bf97a",
-                          frame: null,
-                          isNegated: false,
-                          children: [],
-                          operatorToJoinChildren: null,
-                          parent: "[Circular]",
-                        },
-                      ],
-                      operatorToJoinChildren: "and",
-                      parent: null,
-                    },
-                    isComplex: true,
-                  },
-                  isNegated: false,
-                  children: [],
-                  operatorToJoinChildren: null,
-                  parent: "[Circular]",
-                  beingEdited: false,
-                },
-                {
-                  id: "subdivision-parent3-2",
-                  frame: {
-                    id: "fact6",
-                    shortName: "fact6",
-                    fullName: "",
-                    typeId: "fact",
-                    subTypeId: null,
-                    comments: [],
-                    subdivision: {
-                      id: "subdivision-fact6",
-                      frame: null,
-                      isNegated: false,
-                      children: [
-                        {
-                          id: "e71a601e-afa7-4f23-87f3-51afc13e9b30",
-                          frame: null,
-                          isNegated: false,
-                          children: [],
-                          operatorToJoinChildren: null,
-                          parent: "[Circular]",
-                        },
-                      ],
-                      operatorToJoinChildren: "and",
-                      parent: null,
-                    },
-                    isComplex: true,
-                  },
-                  isNegated: false,
-                  children: [],
-                  operatorToJoinChildren: null,
-                  parent: "[Circular]",
-                  beingEdited: false,
-                },
-              ],
-              operatorToJoinChildren: "and",
-              parent: "[Circular]",
-              beingEdited: false,
-            },
-            {
-              id: "parent4",
-              frame: {
-                id: "fact7",
-                shortName: "fact7",
-                fullName: "",
-                typeId: "fact",
-                subTypeId: null,
-                comments: [],
-                subdivision: {
-                  id: "subdivision-fact7",
-                  frame: null,
-                  isNegated: false,
-                  children: [
-                    {
-                      id: "subdivision-fact7-7",
-                      frame: null,
-                      isNegated: false,
-                      children: [],
-                      operatorToJoinChildren: null,
-                      parent: "[Circular]",
-                    },
-                  ],
-                  operatorToJoinChildren: "and",
-                  parent: null,
-                },
-                isComplex: true,
-              },
-              isNegated: false,
-              children: [],
-              operatorToJoinChildren: null,
-              parent: "[Circular]",
-              beingEdited: false,
-            },
-          ],
-          operatorToJoinChildren: "and",
-          parent: null,
-          beingEdited: true,
-        },
-      ],
+      subdivision: [parent1],
       toResult: null,
       draggingId: null,
       dragOverId: null,
@@ -511,39 +140,57 @@ export default {
       console.log("moving nodes!");
       if (from === to) return;
 
+      console.log("from id:", from);
+      console.log("to id:", to);
+
       const fromResult = this.getNodeByLabel(this.subdivision, from, -1);
       const toResult =
         to === "root" ? null : this.getNodeByLabel(this.subdivision, to, -1);
 
       if (fromResult) {
-        // Return if trying to move a parent node into a child of that same parent
+        console.log("fromResult:", fromResult.node);
+
+        // Return if trying to move a parent node into its own descendants
         if (
           toResult &&
           this.getNodeByLabel(fromResult.node, toResult.node.id, -1)
-        )
+        ) {
+          console.log(
+            "trying to move a parent node into a child of the same parent!",
+          );
           return;
+        }
 
+        // Remove the source node from its current parent's children array or from the root subdivision array
         if (fromResult.parent && fromResult.parent.children) {
+          console.log("fromResult.parent && fromResult.parent.children");
           fromResult.parent.children.splice(fromResult.index, 1);
         } else {
           this.subdivision.splice(fromResult.index, 1);
         }
 
+        // insert the source node as a child of the target node
         if (toResult && toResult.node) {
-          if (toResult.node.children) {
-            console.log("if", toResult.node.children);
+          console.log("toResult: ", toResult.node);
+          // If the target node already has a children array, the source node is inserted at the beginning.
+          if (toResult.node.children.length > 0 && toResult.node.frame) {
+            console.log("it has children", toResult.node.children);
             console.log("fromResult:", fromResult);
             toResult.node.children.splice(0, 0, fromResult.node);
             console.log("if-after", toResult.node.children);
           }
-          // else Vue.set(toResult.node, "children", [fromResult.node]);
+          // // If not, a new children array is created with the source node as its first child.
           else {
-            console.log("else");
-            toResult.node["children"] = [fromResult.node];
+            console.log("create a new subdivision:");
+            // fromResult.node.subdivide()
+            toResult.node.subdivide();
+            toResult.node.children.push(fromResult.node);
           }
-          console.log("toResult.node:", toResult.node);
+          // console.log("toResult.node:", toResult.node);
+          // Update toResult to the target node to reflect the change
           this.toResult = toResult.node;
           // this.$refs.tree.setExpanded(toResult.node.id, true);
+          // If the target is "root", the source node is appended to the top-level subdivision array.
         } else if (to === "root") {
           this.subdivision.splice(this.subdivision.length, 0, fromResult.node);
         }
@@ -716,6 +363,8 @@ export default {
       console.log("nodeData to subdivide:", nodeData);
       event.stopPropagation();
       nodeData.subdivide();
+      console.log("after subdivision: ", nodeData);
+
       // set the top level of the construct to be expanded
       // this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
       // // set the current node to expanded
@@ -725,6 +374,9 @@ export default {
       //   ? (this.notMargined = false)
       //   : null;
     },
+  },
+  mounted() {
+    console.log("mounting Draggale:", this.subdivision);
   },
 };
 </script>
