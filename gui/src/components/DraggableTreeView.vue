@@ -179,7 +179,7 @@ export default {
             toResult.node.children.splice(0, 0, fromResult.node);
             console.log("if-after", toResult.node.children);
           }
-          // // If not, a new children array is created with the source node as its first child.
+          // If not, the targeted node is subdivided and the dragged node is added as a child.
           else {
             console.log("create a new subdivision:");
             // fromResult.node.subdivide()
