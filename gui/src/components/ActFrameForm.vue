@@ -90,15 +90,15 @@
         />
 
         <div class="label">Precondition</div>
-        <TreeviewBooleanConstruct
-          :boolean-construct="frame.precondition"
-          origin="Act"
-        ></TreeviewBooleanConstruct>
+        <!--        <TreeviewBooleanConstruct-->
+        <!--          :boolean-construct="frame.precondition"-->
+        <!--          origin="Act"-->
+        <!--        ></TreeviewBooleanConstruct>-->
         <!-- draggable treeview        -->
-        <DraggableTreeView
+        <draggable-tree-view
           :boolean-construct="frame.precondition"
           origin="Act"
-        ></DraggableTreeView>
+        ></draggable-tree-view>
 
         <div class="label">Postcondition</div>
         <RoleSelector

@@ -68,10 +68,10 @@
         :boolean-construct="frame.subdivision"
         origin="Fact"
       ></draggable-tree-view>
-      <TreeviewBooleanConstruct
-        :boolean-construct="frame.subdivision"
-        origin="Fact"
-      ></TreeviewBooleanConstruct>
+      <!--      <TreeviewBooleanConstruct-->
+      <!--        :boolean-construct="frame.subdivision"-->
+      <!--        origin="Fact"-->
+      <!--      ></TreeviewBooleanConstruct>-->
     </q-card-section>
 
     <q-card-actions align="right">
