@@ -57,7 +57,10 @@ export default {
       return this.$store.state.booleanConstructBeingEdited?.id;
     },
     isBeingEdited() {
-      return this.selectedNode && this.selectedNode == this.booleanConstructBeingEditedId
+      return (
+        this.selectedNode &&
+        this.selectedNode == this.booleanConstructBeingEditedId
+      );
     },
     parentNodeId() {
       return this.booleanConstruct.id;
@@ -202,9 +205,10 @@ export default {
     },
     //  while clicking the body of each node in the treeview
     handleClick(event, node) {
-      console.log("node", node, node.beingEdited, this.selectedNode);
       //prevent propagation to underlying panels
       event.stopPropagation();
+      console.log("node", node, node.beingEdited, this.selectedNode);
+
       //
       if (this.selectedNode == node.id && !node.frame) {
         console.log("selected!");
@@ -223,10 +227,9 @@ export default {
         this.selectedNode = node.id;
         //
         //   //de-select any other properties of the active frame, if it is a relation
-
       }
-      if ('activeField' in this.frameBeingEdited) {
-          this.frameBeingEdited.activeField = null
+      if ("activeField" in this.frameBeingEdited) {
+        this.frameBeingEdited.activeField = null;
       }
     },
   },

@@ -1,90 +1,146 @@
 <script>
 import FrameChip from "./FrameChip.vue";
-import { Fact } from "../model/fact.js";
 import { BooleanConstruct } from "../model/booleanConstruct.js";
 
 export default {
   name: "DraggableTreeView",
   components: { FrameChip },
-  data() {
-    // Create Fact instances
-    const fact2 = new Fact("fact2");
-    const fact3 = new Fact("fact3");
-    const fact5 = new Fact("fact5");
-    const fact6 = new Fact("fact6");
-    const fact7 = new Fact("fact7");
-
-    // Optionally, add subdivisions or children to facts here
-    // For example, fact2.addSubdivision();
-
-    // Build the subdivision tree using BooleanConstructs and Facts
-    // Each BooleanConstruct can have children BooleanConstructs or a frame (Fact)
-
-    // Helper function to create a BooleanConstruct node with a frame
-    function createNodeWithFact(fact) {
-      const bc = new BooleanConstruct();
-      bc.frame = fact;
-      return bc;
-    }
-
-    // Example structure:
-    // parent1 (BooleanConstruct)
-    //  ├─ parent2 (BooleanConstruct)
-    //  │    ├─ subdivision-parent2-1 (BooleanConstruct with fact2)
-    //  │    └─ subdivision-parent2-2 (BooleanConstruct with fact3)
-    //  ├─ parent3 (BooleanConstruct with children fact5 and fact6)
-    //  └─ parent4 (BooleanConstruct with fact7)
-
-    // Create BooleanConstruct nodes for parents
-    const parent1 = new BooleanConstruct();
-    parent1.operatorToJoinChildren = "and";
-
-    const parent2 = new BooleanConstruct();
-    parent2.operatorToJoinChildren = "and";
-
-    const parent3 = new BooleanConstruct();
-    parent3.operatorToJoinChildren = "and";
-
-    const parent4 = createNodeWithFact(fact7);
-
-    // Create subdivision-parent2-1 and subdivision-parent2-2 nodes
-    const subdivisionParent2_1 = createNodeWithFact(fact2);
-    const subdivisionParent2_2 = createNodeWithFact(fact3);
-
-    // Build parent2 children
-    parent2.addChild(subdivisionParent2_1);
-    parent2.addChild(subdivisionParent2_2);
-
-    // Create children for parent3
-    const subdivisionParent3_1 = createNodeWithFact(fact5);
-    const subdivisionParent3_2 = createNodeWithFact(fact6);
-
-    parent3.addChild(subdivisionParent3_1);
-    parent3.addChild(subdivisionParent3_2);
-
-    // Build parent1 children
-    parent1.addChild(parent2);
-    parent1.addChild(parent3);
-    parent1.addChild(parent4);
-
-    // Set parents properly (already done in addChild)
-
-    return {
-      subdivision: [parent1],
-      toResult: null,
-      draggingId: null,
-      dragOverId: null,
-      toggleOptions: [
-        { label: "Swap order", value: "swapping" },
-        { label: "Move child", value: "nesting" },
-      ],
-      mode: "nesting",
-    };
+  props: {
+    booleanConstruct: Object,
+    origin: {
+      type: String,
+      default: "Fact",
+    },
+  },
+  data: () => ({
+    // // Create Fact instances
+    // const fact2 = new Fact("fact2");
+    // const fact3 = new Fact("fact3");
+    // const fact5 = new Fact("fact5");
+    // const fact6 = new Fact("fact6");
+    // const fact7 = new Fact("fact7");
+    //
+    // // Optionally, add subdivisions or children to facts here
+    // // For example, fact2.addSubdivision();
+    //
+    // // Build the subdivision tree using BooleanConstructs and Facts
+    // // Each BooleanConstruct can have children BooleanConstructs or a frame (Fact)
+    //
+    // // Helper function to create a BooleanConstruct node with a frame
+    // function createNodeWithFact(fact) {
+    //   const bc = new BooleanConstruct();
+    //   bc.frame = fact;
+    //   return bc;
+    // }
+    //
+    // // Example structure:
+    // // parent1 (BooleanConstruct)
+    // //  ├─ parent2 (BooleanConstruct)
+    // //  │    ├─ subdivision-parent2-1 (BooleanConstruct with fact2)
+    // //  │    └─ subdivision-parent2-2 (BooleanConstruct with fact3)
+    // //  ├─ parent3 (BooleanConstruct with children fact5 and fact6)
+    // //  └─ parent4 (BooleanConstruct with fact7)
+    //
+    // // Create BooleanConstruct nodes for parents
+    // const parent1 = new BooleanConstruct();
+    // parent1.operatorToJoinChildren = "and";
+    //
+    // const parent2 = new BooleanConstruct();
+    // parent2.operatorToJoinChildren = "and";
+    //
+    // const parent3 = new BooleanConstruct();
+    // parent3.operatorToJoinChildren = "and";
+    //
+    // const parent4 = createNodeWithFact(fact7);
+    //
+    // // Create subdivision-parent2-1 and subdivision-parent2-2 nodes
+    // const subdivisionParent2_1 = createNodeWithFact(fact2);
+    // const subdivisionParent2_2 = new BooleanConstruct();
+    //
+    // // Build parent2 children
+    // parent2.addChild(subdivisionParent2_1);
+    // parent2.addChild(subdivisionParent2_2);
+    //
+    // // Create children for parent3
+    // const subdivisionParent3_1 = createNodeWithFact(fact5);
+    // const subdivisionParent3_2 = createNodeWithFact(fact6);
+    //
+    // parent3.addChild(subdivisionParent3_1);
+    // parent3.addChild(subdivisionParent3_2);
+    //
+    // // Build parent1 children
+    // parent1.addChild(parent2);
+    // parent1.addChild(parent3);
+    // parent1.addChild(parent4);
+    //
+    // // Set parents properly (already done in addChild)
+    toResult: null,
+    draggingId: null,
+    dragOverId: null,
+    toggleOptions: [
+      { label: "Swap order", value: "swapping" },
+      { label: "Move child", value: "nesting" },
+    ],
+    mode: "nesting",
+    booleanOptions: [
+      { label: "AND", value: "and", description: "AND (boolean)" },
+      { label: "OR", value: "or", description: "OR (boolean)" },
+      { label: "PLUS", value: "plus", description: "Plus (arithmetic)" },
+      { label: "MINUS", value: "minus", description: "Minus (arithmetic)" },
+      { label: "NOT", value: "not", description: "Negation" },
+      {
+        label: ">",
+        value: "greaterThan",
+        description: "Greater than (comparison)",
+      },
+      { label: "<", value: "lessThan", description: "Less than (comparison)" },
+      {
+        label: "≥",
+        value: "greaterThanOrEqualTo",
+        description: "Greater than or Equal to (comparison)",
+      },
+      {
+        label: "≤",
+        value: "lessThanOrEqualTo",
+        description: "Less than or Equal to (comparison)",
+      },
+      { label: "=", value: "assign", description: "Assignment" },
+      { label: "==", value: "equals", description: "Equals (comparison)" },
+      { label: "IF", value: "if", description: "If function" },
+    ],
+    selectModel: [],
+    options: null,
+    selectedNode: null,
+    notMargined: false,
+    expanded: [],
+  }),
+  computed: {
+    frameBeingEdited() {
+      return this.$store.state.frameBeingEdited;
+    },
+    booleanConstructBeingEdited() {
+      return this.$store.state.booleanConstructBeingEdited;
+    },
+    booleanConstructBeingEditedId() {
+      return this.$store.state.booleanConstructBeingEdited?.id;
+    },
+    isBeingEdited() {
+      return (
+        this.selectedNode &&
+        this.selectedNode == this.booleanConstructBeingEditedId
+      );
+    },
+    parentNodeId() {
+      return this.booleanConstruct.id;
+    },
+    parentNode() {
+      return this.booleanConstruct;
+    },
   },
   watch: {
     toResult(val) {
       this.$nextTick(() => {
-        const treeRef = this.$refs["tree-structure"];
+        const treeRef = this.$refs["tree-structure-draggable"];
         if (!treeRef || typeof treeRef.setExpanded !== "function") {
           console.warn(
             "Tree structure ref or setExpanded() not ready",
@@ -101,11 +157,50 @@ export default {
         treeRef.setExpanded(val.id, true);
       });
     },
-  },
+    selectedNode: function (newV, oldV) {
+      console.log("newV:", newV, "oldV:", oldV);
+      const selectionOld = this.getNodeByKey(oldV);
+      selectionOld && oldV ? (selectionOld.beingEdited = false) : null;
 
+      const selectionNew = this.getNodeByKey(newV);
+      selectionNew ? (selectionNew.beingEdited = true) : null;
+      // set the focus to the new node
+      this.$store.state.booleanConstructBeingEdited = selectionNew;
+    },
+    booleanConstructBeingEdited: {
+      handler(n, o) {
+        console.log("n,o", n, o);
+        if (!this.booleanConstructBeingEdited) {
+          this.selectedNode = null;
+        }
+        if (o?.frame) {
+          o.beingEdited = false;
+          this.selectedNode = null;
+        }
+      },
+      once: true,
+    },
+    parentNodeId(value) {
+      this.$nextTick(() => {
+        const treeRef = this.$refs["tree-structure-draggable"];
+        if (!treeRef || typeof treeRef.setExpanded !== "function") {
+          console.warn(
+            "Tree structure ref or setExpanded() not ready",
+            treeRef,
+          );
+          return;
+        }
+        if (!value) {
+          console.warn("Invalid value for node id", value);
+          return;
+        }
+        treeRef.setExpanded(value, true);
+      });
+    },
+  },
   methods: {
     getNodeByKey(key) {
-      return this.$refs["tree-structure"].getNodeByKey(key);
+      return this.$refs["tree-structure-draggable"].getNodeByKey(key);
     },
     getNodeParent(elem) {
       let parent = null;
@@ -143,9 +238,11 @@ export default {
       console.log("from id:", from);
       console.log("to id:", to);
 
-      const fromResult = this.getNodeByLabel(this.subdivision, from, -1);
+      const fromResult = this.getNodeByLabel(this.booleanConstruct, from, -1);
       const toResult =
-        to === "root" ? null : this.getNodeByLabel(this.subdivision, to, -1);
+        to === "root"
+          ? null
+          : this.getNodeByLabel(this.booleanConstruct, to, -1);
 
       if (fromResult) {
         console.log("fromResult:", fromResult.node);
@@ -166,11 +263,13 @@ export default {
           console.log("fromResult.parent && fromResult.parent.children");
           fromResult.parent.children.splice(fromResult.index, 1);
         } else {
-          this.subdivision.splice(fromResult.index, 1);
+          this.booleanConstruct.splice(fromResult.index, 1);
         }
 
         // insert the source node as a child of the target node
         if (toResult && toResult.node) {
+          //TODO: fix case where user drags to root node. It should be added to the top and not create any subdivision.
+
           console.log("toResult: ", toResult.node);
           // If the target node already has a children array, the source node is inserted at the beginning.
           if (toResult.node.children.length > 0 && toResult.node.frame) {
@@ -192,7 +291,11 @@ export default {
           // this.$refs.tree.setExpanded(toResult.node.id, true);
           // If the target is "root", the source node is appended to the top-level subdivision array.
         } else if (to === "root") {
-          this.subdivision.splice(this.subdivision.length, 0, fromResult.node);
+          this.booleanConstruct.splice(
+            this.booleanConstruct.length,
+            0,
+            fromResult.node,
+          );
         }
       }
     },
@@ -200,8 +303,12 @@ export default {
       console.log("swapping nodes!");
       if (fromKey === toKey) return;
 
-      const fromResult = this.getNodeByLabel(this.subdivision, fromKey, -1);
-      const toResult = this.getNodeByLabel(this.subdivision, toKey, -1);
+      const fromResult = this.getNodeByLabel(
+        this.booleanConstruct,
+        fromKey,
+        -1,
+      );
+      const toResult = this.getNodeByLabel(this.booleanConstruct, toKey, -1);
 
       if (!fromResult || !toResult) return;
 
@@ -210,7 +317,7 @@ export default {
 
       // Helper to find index in parent's children or subdivision root
       const findIndex = (parent, node) => {
-        if (!parent) return this.subdivision.indexOf(node);
+        if (!parent) return this.booleanConstruct.indexOf(node);
         return parent.children.indexOf(node);
       };
 
@@ -225,27 +332,27 @@ export default {
           children.splice(toIndex, 1, fromResult.node);
         } else {
           // Top-level subdivision array
-          this.subdivision.splice(fromIndex, 1, toResult.node);
-          this.subdivision.splice(toIndex, 1, fromResult.node);
+          this.booleanConstruct.splice(fromIndex, 1, toResult.node);
+          this.booleanConstruct.splice(toIndex, 1, fromResult.node);
         }
       } else {
         // Different parents: remove nodes from their parents and insert into the other's children
         if (fromParent) fromParent.children.splice(fromIndex, 1);
-        else this.subdivision.splice(fromIndex, 1);
+        else this.booleanConstruct.splice(fromIndex, 1);
 
         if (toParent) toParent.children.splice(toIndex, 1);
-        else this.subdivision.splice(toIndex, 1);
+        else this.booleanConstruct.splice(toIndex, 1);
 
         if (fromParent) {
           fromParent.children.splice(fromIndex, 0, toResult.node);
         } else {
-          this.subdivision.splice(fromIndex, 0, toResult.node);
+          this.booleanConstruct.splice(fromIndex, 0, toResult.node);
         }
 
         if (toParent) {
           toParent.children.splice(toIndex, 0, fromResult.node);
         } else {
-          this.subdivision.splice(toIndex, 0, fromResult.node);
+          this.booleanConstruct.splice(toIndex, 0, fromResult.node);
         }
       }
     },
@@ -359,6 +466,47 @@ export default {
       if (target) target.classList.remove("container");
       if (this.dragOverId === id) this.dragOverId = null;
     },
+    selectValue(val, node) {
+      node.operatorToJoinChildren = val.value;
+      // temporary fix: if the selected function is not, update the corresponding property
+      val.value === "not" ? (node.isNegated = true) : (node.isNegated = false);
+    },
+    // filters the lists of operators in the select panel
+    filterFn(val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase();
+        this.options = this.booleanOptions.filter(
+          (v) => v.value.toLowerCase().indexOf(needle) > -1,
+        );
+      });
+    },
+    // adds children to the selected node.
+    addChild(nodeData) {
+      console.log("adding child to booleanConstruct", "nodeData", nodeData);
+      // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
+      // previous ones
+      // if (
+      //   !nodeData.children.every((c) => c.frame) &&
+      //   !nodeData.children.every((c) => c.children.length > 0)
+      // ) {
+      //   // if (!nodeData.children.every((c) => c.frame))
+      //   console.log(
+      //     "Please add frames to the previous children before creating a new one!",
+      //   );
+      //   alertWidget(
+      //     "error",
+      //     "Please fill in frames for the existing elements before adding new ones.",
+      //     4000,
+      //   );
+      //
+      //   return;
+      // }
+      const newChild = new BooleanConstruct();
+      nodeData.children.push(newChild);
+      newChild.parent = nodeData;
+      console.log("newCHild: ", newChild);
+      this.selectedNode = newChild.id;
+    },
     subdivide(event, nodeData) {
       console.log("nodeData to subdivide:", nodeData);
       event.stopPropagation();
@@ -366,23 +514,110 @@ export default {
       console.log("after subdivision: ", nodeData);
 
       // set the top level of the construct to be expanded
-      // this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
+      // this.$refs["tree-structure-draggable"].setExpanded(this.parentNodeId, true);
       // // set the current node to expanded
-      // this.$refs["tree-structure"].setExpanded(nodeData.id, true);
+      // this.$refs["tree-structure-draggable"].setExpanded(nodeData.id, true);
       // // determine margin of parent
       // !nodeData.parent && nodeData.children.length > 0
       //   ? (this.notMargined = false)
       //   : null;
     },
+    removeFrame(node) {
+      node.beingEdited = false;
+      node.frame = null;
+      // node.removeFrame(node.frame)
+    },
+    // removing extra level of hierarchy from a node
+    deleteBooleanConstruct(event, nodeData) {
+      event.stopPropagation();
+      console.log("deleting booleanConstruct");
+      nodeData.beingEdited = false;
+      //if bc has no parent, do not delete, since that would leave precondition empty
+      //instead: clean
+      if (nodeData.parent) {
+        console.log("nodeData.parent:", nodeData.parent);
+        nodeData.delete();
+      } else {
+        console.log("no parent: ", nodeData.parent);
+        nodeData.clean();
+      }
+      // set the initial margin to negative for styling purposes
+      !nodeData.parent.parent && nodeData.parent.children.length == 0
+        ? (this.notMargined = true)
+        : null;
+      this.selectedNode = null;
+    },
+    //  while clicking the body of each node in the treeview
+    handleClick(event, node) {
+      //prevent propagation to underlying panels
+      event.stopPropagation();
+      console.log(
+        "handle clicked: node",
+        node,
+        node.beingEdited,
+        this.selectedNode,
+      );
+
+      //
+      if (this.selectedNode == node.id && !node.frame) {
+        console.log("selected!");
+        this.selectedNode = null;
+        return;
+      }
+      if (this.selectedNode == node.id && node.frame) {
+        console.log("selected with frame!");
+        this.selectedNode = null;
+        return;
+      }
+
+      //if empty leaf node, select for adding frame
+      if (!node.frame && node.children.length == 0) {
+        //   // this.$store.state.booleanConstructBeingEdited =  node;
+        this.selectedNode = node.id;
+        //
+        //   //de-select any other properties of the active frame, if it is a relation
+      }
+      if ("activeField" in this.frameBeingEdited) {
+        this.frameBeingEdited.activeField = null;
+      }
+    },
+    parentNodeId(value) {
+      this.$nextTick(() => {
+        const treeRef = this.$refs["tree-structure-draggable"];
+        if (!treeRef || typeof treeRef.setExpanded !== "function") {
+          console.warn(
+            "Tree structure ref or setExpanded() not ready",
+            treeRef,
+          );
+          return;
+        }
+        if (!value) {
+          console.warn("Invalid value for node id", value);
+          return;
+        }
+        treeRef.setExpanded(value, true);
+      });
+    },
   },
   mounted() {
-    console.log("mounting Draggale:", this.subdivision);
+    console.log("mounting Draggale:", this.booleanConstruct, this.parentNode);
+    this.options = Array.from(this.booleanOptions);
+    // it expands the parent node of the hierarchy
+    this.$refs["tree-structure-draggable"].setExpanded(this.parentNodeId, true);
+    // this.$refs["tree-structure-draggable"].setExpanded(this.parentNodeId, true);
   },
 };
 </script>
 
 <template>
-  <div id="draggable-tree">
+  <div
+    id="treeview"
+    :class="{
+      notMargined: notMargined,
+    }"
+  >
+    BooleanConstruct {{ booleanConstruct }}<br />
+    NodeBeingEdited: {{ parentNode }}
     <div class="q-pa-md q-gutter-sm">
       <div class="flex flex-start items-baseline">
         <div id="label">Mode:</div>
@@ -398,11 +633,18 @@ export default {
       </div>
 
       <q-tree
-        ref="tree-structure"
-        :nodes="subdivision"
+        class="q-mt-sm tree-structure-draggable"
+        ref="tree-structure-draggable"
+        :nodes="[booleanConstruct]"
         node-key="id"
+        v-model:selected="selectedNode"
+        v-model:expanded="expanded"
+        selected-color="black"
+        selectable="false"
+        dense
         default-expand-all
       >
+        <!-- header section per node -->
         <template v-slot:default-header="prop">
           <span
             v-if="dragOverId === prop.node.id && mode == 'nesting'"
@@ -422,7 +664,7 @@ export default {
           </span>
           <div
             v-if="prop.node.children.length > 0"
-            class="row items-center my-row"
+            class="boolean-menu row items-center my-row tree-structure-draggable-item mt-2 no-wrap"
             :class="{
               'drag-over': dragOverId === prop.node.id,
               dragging: draggingId === prop.node.id,
@@ -431,8 +673,54 @@ export default {
             @dragleave="dragLeave($event, prop.node.id)"
             @drop="drop($event, prop.key)"
             @dragover="dragOver($event, prop.node.id)"
+            v-on:click.stop
           >
-            {{ prop.node.id }}
+            <!-- dropdown menu with provided functions -->
+            <div class="select-element">
+              <q-select
+                dense
+                hide-selected
+                filled
+                use-input
+                fill-input
+                hint="Pick a function"
+                hide-hint
+                hide-bottom-space
+                input-debounce="0"
+                :options="options"
+                style="width: 150px; margin: 5px 10px"
+                v-model="prop.node.operatorToJoinChildren"
+                @update:model-value="
+                  (value) => {
+                    selectValue(value, prop.node);
+                  }
+                "
+                @filter="filterFn"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-italic text-grey">
+                      No relevant options.
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <!-- child button. Adds additional operand to the same hierarchy level -->
+            <div class="add-child">
+              <q-btn
+                size="sm"
+                dense
+                outline
+                class="q-ml-sm add-child-btn"
+                label="Add child"
+                @click.stop="addChild(prop.node)"
+              >
+                <q-tooltip class="text-subtitle2">
+                  Add another child at this level of the hierarchy.
+                </q-tooltip>
+              </q-btn>
+            </div>
 
             <div>
               <q-icon
@@ -447,6 +735,7 @@ export default {
             </div>
           </div>
         </template>
+        <!-- main body section per node -->
         <template v-slot:default-body="prop">
           <div
             class="panel flex flex-row q-pr-md my-row"
@@ -459,7 +748,8 @@ export default {
             @dragleave="dragLeave($event, prop.node.id)"
             @drop="drop($event, prop.key)"
             @dragover="dragOver($event, prop.node.id)"
-            v-if="prop.node.children.length === 0"
+            @click="handleClick($event, prop.node)"
+            v-if="prop.node.children.length === 0 || prop.node.frame"
           >
             <div class="col">
               <template v-if="prop.node.frame">
@@ -513,10 +803,21 @@ export default {
                   dense
                   flat
                   icon="mdi-close"
+                  :disable="
+                    origin === 'Fact' &&
+                    !prop.node.parent.parent &&
+                    prop.node.parent.children.length === 1
+                  "
                   @click="deleteBooleanConstruct($event, prop.node)"
                 >
                   <q-tooltip class="text-subtitle2">
-                    <div v-if="!prop.node.parent.parent">
+                    <div
+                      v-if="
+                        origin === 'Fact' &&
+                        !prop.node.parent.parent &&
+                        prop.node.parent.children.length === 1
+                      "
+                    >
                       Can not remove the only child in the hierarchy.
                     </div>
                     <div v-else>Remove this child.</div>
@@ -551,25 +852,28 @@ export default {
   -ms-user-select: none;
 }
 
-.mett-page-tree .q-tree__node-header {
+.tree-structure-draggable .q-tree__node-header {
   padding: 0;
 }
 
-.mett-page-tree .q-tree__node--child > .q-tree__node-header:focus {
+.tree-structure-draggable .q-tree__node--child > .q-tree__node-header:focus {
   box-shadow: none;
 }
 
-.mett-page-tree .q-tree__node.dragging {
+.tree-structure-draggable .q-tree__node.dragging {
   background: rgba(51, 63, 82, 0.1); /* #333f52 in RGBA */
   border-radius: 4px;
 }
 
-.mett-page-tree .q-tree__node.dragging .q-hoverable:hover > .q-focus-helper {
+.tree-structure-draggable
+  .q-tree__node.dragging
+  .q-hoverable:hover
+  > .q-focus-helper {
   background: none;
   opacity: 0;
 }
 
-.mett-tree-item {
+.tree-structure-draggable-item {
   border-radius: 4px;
   padding: 8px;
 }
