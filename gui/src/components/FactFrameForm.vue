@@ -64,7 +64,10 @@
     </q-card-section>
     <q-card-section>
       <div class="label">Subdivision</div>
-      <draggable-tree-view></draggable-tree-view>
+      <draggable-tree-view
+        :boolean-construct="frame.subdivision"
+        origin="Fact"
+      ></draggable-tree-view>
       <TreeviewBooleanConstruct
         :boolean-construct="frame.subdivision"
         origin="Fact"
