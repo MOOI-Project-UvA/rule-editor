@@ -19,7 +19,7 @@
               >
                 <q-tooltip anchor="bottom middle" class="text-subtitle2">
                   <span
-                    >Detect roles of an act frame.<br/>This feature is still
+                    >Detect roles of an act frame.<br />This feature is still
                     experimental, so use it with caution.</span
                   >
                 </q-tooltip>
@@ -94,6 +94,11 @@
           :boolean-construct="frame.precondition"
           origin="Act"
         ></TreeviewBooleanConstruct>
+        <!-- draggable treeview        -->
+        <DraggableTreeView
+          :boolean-construct="frame.precondition"
+          origin="Act"
+        ></DraggableTreeView>
 
         <div class="label">Postcondition</div>
         <RoleSelector
@@ -174,6 +179,7 @@ import {
 } from "../helpers/annotating.js";
 import { Annotation } from "../model/annotation";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
+import DraggableTreeView from "./DraggableTreeView.vue";
 export default {
   emits: ["closed"],
   data: () => ({
@@ -221,7 +227,7 @@ export default {
   methods: {
     closeFrame() {
       this.frame.activeField = null;
-      this.$store.state.booleanConstructBeingEdited = null
+      this.$store.state.booleanConstructBeingEdited = null;
       this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
@@ -350,6 +356,7 @@ export default {
   },
   components: {
     TreeviewBooleanConstruct,
+    DraggableTreeView,
     RoleSelector,
     SentenceList,
     CommentsList,
