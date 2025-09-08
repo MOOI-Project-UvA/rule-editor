@@ -60,7 +60,7 @@ export default {
       return this.frameBeingEdited != null &&
       ((['act', 'claim-duty'].includes(this.frameBeingEdited.typeId) &&
             this.frameBeingEdited.activeField != null) || (this.booleanConstructBeingEdited != null))
-            && (this.frame.typeId != 'fact' || this.frame.id == this.frameBeingEdited.id)
+            && (this.frame.typeId == 'act' || this.frame.id == this.frameBeingEdited.id)
     }
   },
   methods: {
