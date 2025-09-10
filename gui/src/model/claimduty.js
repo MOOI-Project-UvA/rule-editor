@@ -45,9 +45,14 @@ class Claimduty {
     get holder() { return this._holder }
     set holder(holder) { this._holder = holder }
 
-    //TODO these methods are also present in fact and claim-duty.
-    //maybe use a super-class 'frame' and add them there
-    get annotations() { return this._annotations }
+    get allFrames() {
+        const framesInRoles = ["_duty", "_claimant", "_holder"].map(roleName =>
+            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
+        )
+            .flat()
+            .filter((value, index, self) => self.indexOf(value) === index)
+        return framesInRoles
+    }
 
     //check if any of the roles has this frame, if so, remove it
     deleteReferencesToFrame(frame) {

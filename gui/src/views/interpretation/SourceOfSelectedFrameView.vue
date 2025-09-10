@@ -3,7 +3,7 @@
         <div v-for="sourceDoc in sourceDocuments">
             <div class="text-primary text-bold">{{ sourceDoc.title }}</div>
             <SentenceList
-                :sentences="sourceDoc.getSentencesForFrame(frameBeingEdited)"
+                :sentences="getSentencesForFrameInSourcedoc(sourceDoc)"
                 :indent="false"
                 :showSentenceButtons="true"
                 @sentenceButtonClicked="scrollToSource"
@@ -24,11 +24,8 @@ export default {
         sourceDocuments() {
             return this.$store.state.sourceDocuments;
         },
-        //sentences part of which is annotated for this frame
-        sentencesInFrameSource() {
-            return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frameBeingEdited)).flat()
-        },
         //snippets that are part of the frame's annotations
+        //TODO -> do we need this?
         snippetIdsInFrameSource() {
             const snippets = this.sentencesInFrameSource.map(sentence => sentence.snippets).flat()
             return snippets.filter(snippet => snippet.annotations
@@ -37,6 +34,15 @@ export default {
         }
     },
     methods: {
+        //get sentences for selected frame (and all its subframes) from the given source doc
+        getSentencesForFrameInSourcedoc(doc) {
+            const frames = [this.frameBeingEdited, ...this.frameBeingEdited.allFrames]
+            const uniqueSentencesSorted = frames.map(f => doc.getSentencesForFrame(f))
+            .flat()
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .sort((s1,s2) => s1.id.localeCompare(s2.id))
+            return uniqueSentencesSorted
+        },
         //in source view, scroll to clicked sentence
         scrollToSource(sentence) {
             //show correct source

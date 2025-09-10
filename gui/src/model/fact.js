@@ -40,6 +40,8 @@ export class Fact {
 
     get annotations() { return this._annotations }
 
+    get allFrames() { return this._subdivision.allFrames }
+
     deleteReferencesToFrame(frame) {
         this._subdivision.removeFrame(frame)
     }
