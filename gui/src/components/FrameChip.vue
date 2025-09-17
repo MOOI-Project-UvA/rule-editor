@@ -21,6 +21,7 @@
 <script>
 import { icons, colors } from "../helpers/config.js";
 import { frameTypes } from "../model/frame";
+import { copySnippetsFromFrameToFrame } from "../helpers/annotating.js"
 export default {
   data: () => ({
     icons: icons,
@@ -61,6 +62,9 @@ export default {
       ((['act', 'claim-duty'].includes(this.frameBeingEdited.typeId) &&
             this.frameBeingEdited.activeField != null) || (this.booleanConstructBeingEdited != null))
             && (this.frame.typeId == 'act' || this.frame.id == this.frameBeingEdited.id)
+    },
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments
     }
   },
   methods: {
@@ -80,6 +84,8 @@ export default {
             //add frame to field in frame being edited
             this.frameBeingEdited.addFrame(this.frame);
             this.frameBeingEdited.activeField = null
+            //copy annotations of this frame to the frameBeingEdited (since this frame is now part of the frameBeingEdited)
+            copySnippetsFromFrameToFrame(this.sourceDocuments, this.frame, this.frameBeingEdited)
         } else if (this.booleanConstructBeingEdited) {
             this.booleanConstructBeingEdited.frame = this.frame;
             this.$store.state.booleanConstructBeingEdited = null;
@@ -92,6 +98,7 @@ export default {
             }
         }
     },
+
   }
 };
 </script>

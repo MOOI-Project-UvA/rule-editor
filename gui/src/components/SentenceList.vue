@@ -34,14 +34,15 @@ import {
   getStyleForLineSpacing,
   setVerticalPositionOfAnnotationLines
 } from "../helpers/underlining.js";
-import { getStyleForSentenceFormat } from "../helpers/sourceFormatting.js"
+import { getHeaderStyling } from "../helpers/sourceFormatting.js"
 import { Annotation } from "../model/annotation";
 
 export default {
   props: {
-    sentences: Array, //these sentences have been filtered according to their 'selected' property in SourceView
+    sentences: Array, //sentences to be displayed in this list
     indent: Boolean, //if true, indentation is applied depending on position in hierarchical structure of the source
-    showSentenceButtons: Boolean //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
+    showSentenceButtons: Boolean, //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
+    isSourceOfSelectedFrame: Boolean //if true, this list is in the 'source of selected frame' panel. This influences the options in the pop-up when text is selected
   },
   emits: ['sentenceButtonClicked'],
   computed: {
@@ -62,14 +63,15 @@ export default {
     }
   },
   methods: {
-    getStyleForUnderlining,
-    getStyleForSentence(sentence) {
+    getStyleForUnderlining, //snippets
+    getStyleForSentence(sentence) { //sentences: linespacing and header styling (indentation, font weight, font size)
       return {
         ...getStyleForLineSpacing(sentence),
-        ...getStyleForSentenceFormat(sentence)
+        ...getHeaderStyling(sentence)
       }
     },
     handleSelection(event) {
+      console.log("handleSelection")
       const selection = window.getSelection();
       if (selection.toString().length > 0) {
         //if no annotation is open, create a new one, else use the existing one that is open
@@ -139,6 +141,7 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
+      console.log("this.$store.state.clickedPosition", this.$store.state.clickedPosition)
     },
     //when user pressed 'scroll to source'
     scrollToSentence() {

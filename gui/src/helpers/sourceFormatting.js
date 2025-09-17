@@ -31,7 +31,7 @@ const extraIdentationForLeafSentences = 24
 //root has level zero. the root is not displayed, it has no content. its children are the headers at the
 //first visible level
 
-export function getStyleForSentenceFormat(sentence) {
+export function getHeaderStyling(sentence) {
     const level = sentence.level - 1 //root level is not displayed, set first level to 0
     const marginLeft = level * indentationPerLevel + (sentence.children.length == 0 ? extraIdentationForLeafSentences : 0)
     //apply formatting if sentence is header, and within the highest levels

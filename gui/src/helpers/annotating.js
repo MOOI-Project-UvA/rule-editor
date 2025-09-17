@@ -3,8 +3,9 @@
 //nested annotations, and corresponding underlining of text
 
 import { Snippet } from "../model/snippet"
+import { Annotation } from "../model/annotation.js"
 
-// This function returns sentences and snippets where that cover the selected text,
+// This function returns sentences and snippets that cover the selected text,
 // and it returns the offsets within the snippets of the selected text.
 // It takes into account that selection can be done from right to left as
 // well as from left to right
@@ -183,5 +184,20 @@ function splitSnippet(snippet, charIndex, sentence) {
 
         return [leftSnippet, rightSnippet]
     }
+}
 
+export function copySnippetsFromFrameToFrame(sourceDocs, sourceFrame, targetFrame) {
+    sourceDocs.forEach(doc => {
+        const sourceFrameAnnotations = doc.getAnnotationsForFrame(sourceFrame)
+        sourceFrameAnnotations.forEach(annotation => {
+            const snippetsForAnnotation = doc.getSnippetsForAnnotation(annotation)
+            //create a new annotation for the targetFrame
+            const newAnnotation = new Annotation()
+            newAnnotation.frame = targetFrame
+            //link it to the snippets of the annotation from the source
+            snippetsForAnnotation.forEach(snippet => {
+                snippet.annotations.push(newAnnotation)
+            })
+        })
+    })
 }

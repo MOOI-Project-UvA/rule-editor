@@ -19,6 +19,7 @@
             :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)"
             :indent="true"
             :showSentenceButtons="false"
+            :isSourceOfSelectedFrame="false"
           />
         </div>
       </template>

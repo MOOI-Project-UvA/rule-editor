@@ -1,5 +1,4 @@
 import { v4 as uuid4 } from 'uuid'
-import { Annotation } from './annotation'
 import { BooleanConstruct } from './booleanConstruct.js'
 
 export class Fact {
@@ -12,6 +11,7 @@ export class Fact {
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
         this._isComplex = true
+        this._parents = [] //keep track of relation frames that this fact has a role in. later: also subdivision, booleanconstruct, etc
     }
 
     get id() { return this._id }
@@ -38,9 +38,10 @@ export class Fact {
     get comments() { return this._comments }
     set comments(comments) { this._comments = comments }
 
-    get annotations() { return this._annotations }
-
     get allFrames() { return this._subdivision.allFrames }
+
+    get parents() { return this._parents }
+    set parents(parents) { this._parents = parents }
 
     deleteReferencesToFrame(frame) {
         this._subdivision.removeFrame(frame)
