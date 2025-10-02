@@ -18,7 +18,8 @@ class Act {
 
         this._comments = []
 
-        this._generateLabelAutomatically = true //by default, label is generated automatically
+        this._generateLabelAutomatically = true //by default, label is generated automatically TODO: generate on user request
+        this.sourceSentences = []
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -100,6 +101,12 @@ class Act {
 
     get generateLabelAutomatically() { return this._generateLabelAutomatically }
     set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
+    //sentences that contain source of this act. either because one of its parts has an annotation in the sentence
+    //or because the user explicitly added the sentence from the source
+    get sourceSentences() { return this._sourceSentences }
+    set sourceSentences(sourceSentences) { this._sourceSentences = sourceSentences }
+
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact

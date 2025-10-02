@@ -21,7 +21,6 @@
 <script>
 import { icons, colors } from "../helpers/config.js";
 import { frameTypes } from "../model/frame";
-import { copySnippetsFromFrameToFrame } from "../helpers/annotating.js"
 export default {
   data: () => ({
     icons: icons,
@@ -72,8 +71,18 @@ export default {
         if (
             this.addingAnnotationToExistingFrame
         ) {
-            //add annotation to this frame
-            this.$store.state.annotationToBeAddedToExistingFrame.frame = this.frame
+            //add annotation to this frame if the frame is a fact. else add sentences to the frames sourceSentences
+            if (this.frame.typeId == "fact") {
+              this.$store.state.annotationToBeAddedToExistingFrame.frame = this.frame
+            } else {
+              //get sentences for this annotation
+              const sentences = this.sourceDocuments
+                .map(doc => doc.getSentencesForAnnotation(this.$store.state.annotationToBeAddedToExistingFrame))
+                .flat()
+                .filter(sentence => !(this.frame.sourceSentences.some(s => s.id == sentence.id)))
+              this.frame.sourceSentences = this.frame.sourceSentences.concat(sentences)
+              this.$store.commit("deleteAnnotation", this.$store.state.annotationToBeAddedToExistingFrame)
+            }
             this.$store.state.addingAnnotationToExistingFrame = false;
             this.$store.state.annotationToBeAddedToExistingFrame = null;
         } else if (
@@ -81,11 +90,19 @@ export default {
             'activeField' in this.frameBeingEdited &&
             this.frameBeingEdited.activeField
         ) {
-            //add frame to field in frame being edited
+            //add frame to field in frame being edited (which is an act or claimduty)
             this.frameBeingEdited.addFrame(this.frame);
+            
+            //get sentences of the frame that is added as a role to the act or claimduty
+            //(only roles 'action','actor','object','recipient', not: precondition or postcondition creates/terminates)
+            //add sentences to sourceSentences of the act / claimduty
+            if (['action','actor','object','recipient','duty','claimant','holder'].includes(this.frameBeingEdited.activeField)) {
+            const sentences = this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
+              .filter(sentence => !(this.frameBeingEdited.sourceSentences.some(s => s.id == sentence.id)))
+            this.frameBeingEdited.sourceSentences = this.frameBeingEdited.sourceSentences.concat(sentences)
+            }
             this.frameBeingEdited.activeField = null
-            //copy annotations of this frame to the frameBeingEdited (since this frame is now part of the frameBeingEdited)
-            copySnippetsFromFrameToFrame(this.sourceDocuments, this.frame, this.frameBeingEdited)
+            
         } else if (this.booleanConstructBeingEdited) {
             this.booleanConstructBeingEdited.frame = this.frame;
             this.$store.state.booleanConstructBeingEdited = null;

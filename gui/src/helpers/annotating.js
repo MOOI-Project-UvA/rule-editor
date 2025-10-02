@@ -186,18 +186,4 @@ function splitSnippet(snippet, charIndex, sentence) {
     }
 }
 
-export function copySnippetsFromFrameToFrame(sourceDocs, sourceFrame, targetFrame) {
-    sourceDocs.forEach(doc => {
-        const sourceFrameAnnotations = doc.getAnnotationsForFrame(sourceFrame)
-        sourceFrameAnnotations.forEach(annotation => {
-            const snippetsForAnnotation = doc.getSnippetsForAnnotation(annotation)
-            //create a new annotation for the targetFrame
-            const newAnnotation = new Annotation()
-            newAnnotation.frame = targetFrame
-            //link it to the snippets of the annotation from the source
-            snippetsForAnnotation.forEach(snippet => {
-                snippet.annotations.push(newAnnotation)
-            })
-        })
-    })
-}
+

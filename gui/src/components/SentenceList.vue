@@ -20,6 +20,14 @@
           {{ snippet.text }}
         </span>
       </div>
+      <div v-if="showDeleteButtons" class="col-grow float-right">
+        <q-btn
+          round size="xs"
+          flat
+          icon="mdi-close"
+          text-color="primary"
+          @click="$emit('deleteButtonClicked', sentence)"/>
+      </div>
     </div>
   </div>
 </template>
@@ -42,9 +50,11 @@ export default {
     sentences: Array, //sentences to be displayed in this list
     indent: Boolean, //if true, indentation is applied depending on position in hierarchical structure of the source
     showSentenceButtons: Boolean, //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
+    showDeleteButtons: Boolean, //if true, show a delete button next to each sentence. pressing it emits an event, to delete the sentence from the source of an act/claim-duty
     isSourceOfSelectedFrame: Boolean //if true, this list is in the 'source of selected frame' panel. This influences the options in the pop-up when text is selected
+    
   },
-  emits: ['sentenceButtonClicked'],
+  emits: ['sentenceButtonClicked','deleteButtonClicked'],
   computed: {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -60,6 +70,9 @@ export default {
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument
+    },
+    sourceDocuments() {
+      return this.$store.state.sourceDocuments
     }
   },
   methods: {
@@ -94,8 +107,7 @@ export default {
                 : null;
 
             //store reference to the currently being edited frame
-            const relationFrame = this.$store.state.frameBeingEdited;
-            console.log("adding new fact with label", selection.toString())
+            const relationFrame = this.$store.state.frameBeingEdited
             this.$store.commit("addNewFrame", {
               frameTypeId: 'fact',
               subTypeId: subTypeId,
@@ -105,7 +117,15 @@ export default {
             });
             //add the frame that has just being created to the proper role in the relation (act / claim-duty)
             relationFrame.addFrame(this.$store.state.frameBeingEdited);
-            this.frameBeingEdited.activeField = null;
+            
+            //if active field is one of the roles 'action','actor','object','recipient','duty','claimant','duty holder'
+            //add sentences from the fact's annotation to the act/claim-duty
+            if (['action','actor','object','recipient','duty','claimant','holder'].includes(relationFrame.activeField)) {
+              const sentences = this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.$store.state.frameBeingEdited)).flat()
+                .filter(sentence => !(relationFrame.sourceSentences.some(s => s.id == sentence.id)))
+              relationFrame.sourceSentences = relationFrame.sourceSentences.concat(sentences)
+            }
+            relationFrame.activeField = null;
           } else {
             //no role is selected, or role is booleanconstruct (that requires annotation panel)
             this.$store.state.annotationBeingEdited = annotation;

@@ -11,8 +11,7 @@ const grey = "#666666"
 export function getStyleForUnderlining(snippet, activeFrame) {
     //check if snippet has annotation with a frame that is currently being edited (activeFrame),
     //if so, highlight the snippet
-    //unless the frame is not a fact (source of Act and ClaimDuty is not highlighted)
-    const highlight = activeFrame && activeFrame.typeId == "fact" && snippet.annotations.some(annotation => annotation.frame?.id == activeFrame.id)
+    const highlight = activeFrame && snippet.annotations.some(annotation => annotation.frame?.id == activeFrame.id)
 
     let backgroundStyle = "linear-gradient(180deg"
 
@@ -34,11 +33,10 @@ export function getStyleForUnderlining(snippet, activeFrame) {
     //sort annotations for this snippet according to vertical position.
     //loop through all annotations for this snippet and build the backgroundStyle.
     //keep track of the lowest position of any line, to calculate the backgroundSize
-    //only take annotations of facts, Acts and Claim duties are not underlined
     let backgroundSize = charHeight
-    let factAnnotations = snippet.annotations.filter(a => !a.frame || a.frame.typeId == "fact")
-    factAnnotations.sort((a1, a2) => a1.verticalPosition - a2.verticalPosition)
-    factAnnotations.forEach((annotation) => {
+    let annotations = snippet.annotations
+    annotations.sort((a1, a2) => a1.verticalPosition - a2.verticalPosition)
+    annotations.forEach((annotation) => {
         let lineColor
         if (annotation.frame) {
             lineColor = annotation.frame.typeId != "fact" || annotation.frame.subTypeIds.length == 0
@@ -87,9 +85,7 @@ export function getStyleForUnderlining(snippet, activeFrame) {
 
 export function getStyleForLineSpacing(sentence) {
     //line spacing is determined by the snippet with the lowest annotation line
-    //only take annotations for facts (so ignore Act and ClaimDuty)
-
-    const annotationsInSentence = sentence.snippets.map(s => s.annotations.filter(a => !a.frame || a.frame.typeId == "fact"))
+    const annotationsInSentence = sentence.snippets.map(s => s.annotations)
         .flat()
         .filter((value, index, array) => array.indexOf(value) === index);
 
@@ -102,13 +98,13 @@ export function getStyleForLineSpacing(sentence) {
 }
 
 export function setVerticalPositionOfAnnotationLines(sourceDoc) {
-    const snippetsWithAnnotationForFact = sourceDoc.sentences
-        .map(sentence => sentence.snippets.filter(snippet => snippet.annotations.filter(a => !a.frame || a.frame.typeId == "fact").length > 0))
+    const snippetsWithAnnotation = sourceDoc.sentences
+        .map(sentence => sentence.snippets.filter(snippet => snippet.annotations.length > 0))
         .flat()
     //for each snippet that contains annotations: sort annotations according to length, so that
     //long annotations appear closer to the source text, and shorter ones further down
     //push annotations for Acts and ClaimDuty all the way down, they are not displayed
-    snippetsWithAnnotationForFact.forEach(snippet => {
+    snippetsWithAnnotation.forEach(snippet => {
         snippet.annotations.sort((a1, a2) => a2.nrSnippets - a1.nrSnippets)
     })
 
@@ -116,10 +112,10 @@ export function setVerticalPositionOfAnnotationLines(sourceDoc) {
     //to determine at what position the line should be drawn, we check the highest index
     //of the annotation in all of its snippets. This will be the vertical position
     //of the line for this annotation
-    const annotations = snippetsWithAnnotationForFact.map(snippet => snippet.annotations).flat()
+    const annotations = snippetsWithAnnotation.map(snippet => snippet.annotations).flat()
         .filter((annotation, index, snippetAnnotations) => snippetAnnotations.findIndex(a => a.id == annotation.id) === index);
     annotations.forEach(annotation => {
-        annotation.verticalPosition = max(snippetsWithAnnotationForFact
+        annotation.verticalPosition = max(snippetsWithAnnotation
             .filter(snippet => snippet.annotations.some(a => a.id == annotation.id))
             .map(snippet => snippet.annotations.findIndex(a => a.id == annotation.id)))
     })

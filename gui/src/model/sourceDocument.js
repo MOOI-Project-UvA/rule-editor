@@ -49,6 +49,12 @@ export class SourceDocument {
       );
   }
 
+  getSentencesForAnnotation(annotation) {
+    return this.getSnippetsForAnnotation(annotation)
+      .map(snippet => snippet.sentence)
+      .filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index)
+  }
+
   getAnnotationsForFrame(frame) {
     const annotations = this.sentences
       .map((s) => s.snippets.map((snippet) => snippet.annotations))
@@ -72,13 +78,13 @@ export class SourceDocument {
     snippets.forEach((s) => s.deleteAnnotation(annotation));
   }
 
-  //return all sentences that have snippets with annotations for frame
+  //return all sentences that have snippets with annotations for frame in this document
   getSentencesForFrame(frame) {
     return this.sentences.filter((sentence) =>
       sentence.snippets.some((snippet) =>
         snippet.annotations.some((a) => a.frame && a.frame.id == frame.id),
       ),
-    );
+    ).filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index);
   }
 
   //parse Choppr element into tree of sentences
