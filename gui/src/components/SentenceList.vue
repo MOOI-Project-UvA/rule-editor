@@ -50,7 +50,7 @@ export default {
     sentences: Array, //sentences to be displayed in this list
     indent: Boolean, //if true, indentation is applied depending on position in hierarchical structure of the source
     showSentenceButtons: Boolean, //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
-    showDeleteButtons: Boolean, //if true, show a delete button next to each sentence. pressing it emits an event, to delete the sentence from the source of an act/claim-duty
+    showDeleteButtons: Boolean, //if true show a delete button next to each sentence. pressing it emits an event, to delete the sentence from the source of an act/claim-duty
     isSourceOfSelectedFrame: Boolean //if true, this list is in the 'source of selected frame' panel. This influences the options in the pop-up when text is selected
     
   },
@@ -93,45 +93,8 @@ export default {
           annotation = this.annotationBeingEdited;
         } else {
           annotation = new Annotation();
-          //if user is creating a frame for a role, create fact immediately, without
-          //showing the annotation panel
-          if (
-            this.frameBeingEdited &&
-            'activeField' in this.frameBeingEdited && //frame should have roles
-            this.frameBeingEdited.activeField
-          ) {
-            //if there is only one subtype allowed for this fact, assign that subtype to the frame
-            const subTypeId =
-              this.frameBeingEdited.allowedSubTypesForActiveField.length == 1
-                ? this.frameBeingEdited.allowedSubTypesForActiveField[0]
-                : null;
-
-            //store reference to the currently being edited frame
-            const relationFrame = this.$store.state.frameBeingEdited
-            this.$store.commit("addNewFrame", {
-              frameTypeId: 'fact',
-              subTypeId: subTypeId,
-              annotation: annotation,
-              openInEditor: true,
-              initialLabel: selection.toString()
-            });
-            //add the frame that has just being created to the proper role in the relation (act / claim-duty)
-            relationFrame.addFrame(this.$store.state.frameBeingEdited);
-            
-            //if active field is one of the roles 'action','actor','object','recipient','duty','claimant','duty holder'
-            //add sentences from the fact's annotation to the act/claim-duty
-            if (['action','actor','object','recipient','duty','claimant','holder'].includes(relationFrame.activeField)) {
-              const sentences = this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.$store.state.frameBeingEdited)).flat()
-                .filter(sentence => !(relationFrame.sourceSentences.some(s => s.id == sentence.id)))
-              relationFrame.sourceSentences = relationFrame.sourceSentences.concat(sentences)
-            }
-            relationFrame.activeField = null;
-          } else {
-            //no role is selected, or role is booleanconstruct (that requires annotation panel)
-            this.$store.state.annotationBeingEdited = annotation;
-          }
         }
-        //get selection in terms of start/end sentences, snippets, and offsets
+          //get selection in terms of start/end sentences, snippets, and offsets
         const selectionAsSnippets = getSelectionAsSnippets(
           selection,
           this.sentences,
@@ -150,6 +113,48 @@ export default {
         //update underlining of annotations in the source text, for the currently showing document
         setVerticalPositionOfAnnotationLines(this.displayedSourceDocument)
 
+        //if user is creating a frame for a role, create fact immediately, without
+        //showing the annotation panel
+        if (
+          !this.annotationBeingEdited &&
+          this.frameBeingEdited &&
+          'activeField' in this.frameBeingEdited && //frame should have roles
+          this.frameBeingEdited.activeField
+        ) {
+          //if there is only one subtype allowed for this fact, assign that subtype to the frame
+          const subTypeId =
+            this.frameBeingEdited.allowedSubTypesForActiveField.length == 1
+              ? this.frameBeingEdited.allowedSubTypesForActiveField[0]
+              : null;
+
+          //store reference to the currently being edited frame
+          //because frameBeingEdited will be set to the newly created frame
+          const relationFrame = this.frameBeingEdited
+
+          this.$store.commit("addNewFrame", {
+            frameTypeId: 'fact',
+            subTypeId: subTypeId,
+            annotation: annotation,
+            openInEditor: true,
+            initialLabel: selection.toString()
+          });
+
+          const newFrame = this.frameBeingEdited
+          //add the frame that has just being created to the proper role in the relation (act / claim-duty)
+          relationFrame.addFrame(newFrame);
+          
+          //if active field is one of the roles 'action','actor','object','recipient','duty','claimant','duty holder'
+          //add sentences from the newFrame's annotation to the relationFrame (act/claim-duty)
+          if (['action','actor','object','recipient','duty','claimant','holder'].includes(relationFrame.activeField)) {
+            const sentences = this.sourceDocuments.map(doc => doc.getSentencesForFrame(newFrame)).flat()
+              //.filter(sentence => !(relationFrame.sourceSentences.some(s => s.id == sentence.id)))
+            relationFrame.sourceSentences = relationFrame.sourceSentences.concat(sentences)
+          }
+          relationFrame.activeField = null;
+        } else {
+          //no role is selected, or role is booleanconstruct (that requires annotation panel)
+          this.$store.state.annotationBeingEdited = annotation;
+        }
         selection.empty()
       } else {
         const clickedSentence = this.sentences.find(
@@ -161,7 +166,6 @@ export default {
         this.$store.state.selectedSnippet = clickedSnippet;
       }
       this.$store.state.clickedPosition = [event.clientX, event.clientY];
-      console.log("this.$store.state.clickedPosition", this.$store.state.clickedPosition)
     },
     //when user pressed 'scroll to source'
     scrollToSentence() {

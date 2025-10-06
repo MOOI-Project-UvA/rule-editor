@@ -67,7 +67,6 @@
 import RoleSelector from "./RoleSelector.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
-import SentenceList from "./SentenceList.vue";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
 
 export default {
@@ -87,9 +86,6 @@ export default {
     },
     frame() {
       return this.$store.state.frameBeingEdited;
-    },
-    sentences() {
-      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
     },
   },
   mounted() {
@@ -141,7 +137,6 @@ export default {
     RoleSelector,
     CommentsList,
     BooleanConstructPanel,
-    SentenceList
   },
 };
 </script>
