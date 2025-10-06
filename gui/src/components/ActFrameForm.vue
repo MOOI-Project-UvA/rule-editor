@@ -5,7 +5,7 @@
         <div class="col-2">ACT</div>
         <div class="col">
           <div class="row items-center">
-            <template v-if="sentences?.length > 0">
+            <template v-if="frame.sourceSentences.length > 0">
               <q-btn
                 size="sm"
                 round
@@ -162,7 +162,6 @@
 
 <script>
 import RoleSelector from "./RoleSelector.vue";
-import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
@@ -201,9 +200,6 @@ export default {
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    sentences() {
-      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
-    },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
@@ -212,7 +208,7 @@ export default {
     },
     nlpIsBusy() {
       //if nlp is not ready for one or more of this act's sentences, return true
-      return this.sentences.some((s) => s.loading);
+      return this.frame.sourceSentences.some((s) => s.loading);
     },
   },
   methods: {
@@ -293,7 +289,7 @@ export default {
             //split snippets, and return those that fit the character range
             const selectedSnippets = splitAndReturnSelectedSnippets(
               selectionAsSnippets,
-              this.sentences,
+              this.frame.sourceSentences,
             );
             selectedSnippets.forEach((s) => {
               console.log("adding", annotation, "to snippet", s);
@@ -322,7 +318,7 @@ export default {
     },
     applyNlpToSource() {
       console.log("nlp");
-      this.sentences.forEach((sentence) => {
+      this.frame.sourceSentences.forEach((sentence) => {
         this.sendDataToNlp(sentence);
       });
     },
@@ -348,7 +344,6 @@ export default {
   components: {
     TreeviewBooleanConstruct,
     RoleSelector,
-    SentenceList,
     CommentsList,
     BooleanConstructPanel,
   },

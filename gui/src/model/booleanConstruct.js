@@ -12,7 +12,7 @@ export class BooleanConstruct {
     }
 
     get id() { return this._id }
-    set id(id){ this._id = id }
+    set id(id) { this._id = id }
 
     get isNegated() { return this._isNegated }
     set isNegated(isNegated) { this._isNegated = isNegated }
@@ -39,6 +39,20 @@ export class BooleanConstruct {
         } else {
             this._children.forEach(booleanConstruct => {
                 frames = frames.concat(booleanConstruct.allFrames)
+            })
+        }
+        return frames
+    }
+
+    //get all frames in this expression, but do not consider subdivisions of frames
+    //we use this to show sentences of the precondition in the sourceview of an act
+    get allFramesNoSubdivision() {
+        let frames = []
+        if (this._frame) {
+            frames = [this._frame]
+        } else {
+            this._children.forEach(booleanConstruct => {
+                frames = frames.concat(booleanConstruct.allFramesNoSubdivision)
             })
         }
         return frames
@@ -77,18 +91,18 @@ export class BooleanConstruct {
     }
 
     subdivide() {
-       //create copy of current
-       let bcCopy = new BooleanConstruct();
-       bcCopy.frame = this.frame;
-       bcCopy.children = [...this.children];
-       bcCopy.isNegated = this.isNegated;
-       bcCopy.operatorToJoinChildren = this.operatorToJoinChildren;
-       //clean current
-       this.clean();
-       this.addChild(bcCopy);
-       // the default function should be AND
-       this.operatorToJoinChildren = 'and'
-       //this.addEmptyChild()
+        //create copy of current
+        let bcCopy = new BooleanConstruct();
+        bcCopy.frame = this.frame;
+        bcCopy.children = [...this.children];
+        bcCopy.isNegated = this.isNegated;
+        bcCopy.operatorToJoinChildren = this.operatorToJoinChildren;
+        //clean current
+        this.clean();
+        this.addChild(bcCopy);
+        // the default function should be AND
+        this.operatorToJoinChildren = 'and'
+        //this.addEmptyChild()
     }
 
     delete() {

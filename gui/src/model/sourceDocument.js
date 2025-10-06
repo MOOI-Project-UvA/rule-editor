@@ -45,8 +45,14 @@ export class SourceDocument {
       .map((s) => s.snippets)
       .flat()
       .filter((snippet) =>
-        snippet.annotations.some((a) => a.id == annotation.id),
+        snippet.annotations.some((snippet) => snippet.id == annotation.id),
       );
+  }
+
+  getSentencesForAnnotation(annotation) {
+    return this.getSnippetsForAnnotation(annotation)
+      .map(snippet => snippet.sentence)
+      .filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index)
   }
 
   getAnnotationsForFrame(frame) {
@@ -72,13 +78,14 @@ export class SourceDocument {
     snippets.forEach((s) => s.deleteAnnotation(annotation));
   }
 
-  //return all sentences that have snippets with annotations for frame
+  //return all sentences that have snippets with annotations for frame in this document
   getSentencesForFrame(frame) {
-    return this.sentences.filter((sentence) =>
+    const sentences = this.sentences.filter((sentence) =>
       sentence.snippets.some((snippet) =>
         snippet.annotations.some((a) => a.frame && a.frame.id == frame.id),
       ),
-    );
+    ).filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index);
+    return sentences
   }
 
   //parse Choppr element into tree of sentences
@@ -108,9 +115,8 @@ export class SourceDocument {
       sentence.content =
         "content" in headerChildElement
           ? headerChildElement.content
-          : `${element.typeLabel ? element.typeLabel : ""} ${
-              element.numbering
-            }`;
+          : `${element.typeLabel ? element.typeLabel : ""} ${element.numbering
+          }`;
       sentence.id = headerChildElement.id;
       sentence.iri = headerChildElement.IRI;
       //add children, except the one that is the header child element

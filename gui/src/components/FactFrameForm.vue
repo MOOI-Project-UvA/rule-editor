@@ -88,7 +88,6 @@
 <script>
 import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
-import SentenceList from "./SentenceList.vue"
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
@@ -158,7 +157,6 @@ export default {
     TreeviewBooleanConstruct,
     BooleanConstructPanel,
     CommentsList,
-    SentenceList,
   },
 };
 </script>

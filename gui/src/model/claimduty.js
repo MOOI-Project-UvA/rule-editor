@@ -1,5 +1,4 @@
 import { v4 as uuid4 } from 'uuid'
-import { Annotation } from './annotation.js'
 
 class Claimduty {
     constructor() {
@@ -14,6 +13,7 @@ class Claimduty {
         this._highlight = false
         this._comments = []
         this._generateLabelAutomatically = true //by default, label is generated automatically
+        this.sourceSentences = []
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -45,9 +45,14 @@ class Claimduty {
     get holder() { return this._holder }
     set holder(holder) { this._holder = holder }
 
-    //TODO these methods are also present in fact and claim-duty.
-    //maybe use a super-class 'frame' and add them there
-    get annotations() { return this._annotations }
+    get allFrames() {
+        const framesInRoles = ["_duty", "_claimant", "_holder"].map(roleName =>
+            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
+        )
+            .flat()
+            .filter((value, index, self) => self.indexOf(value) === index)
+        return framesInRoles
+    }
 
     //check if any of the roles has this frame, if so, remove it
     deleteReferencesToFrame(frame) {
@@ -92,6 +97,11 @@ class Claimduty {
 
     get generateLabelAutomatically() { return this._generateLabelAutomatically }
     set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
+    //sentences that contain source of this act. either because one of its parts has an annotation in the sentence
+    //or because the user explicitly added the sentence from the source
+    get sourceSentences() { return this._sourceSentences }
+    set sourceSentences(sourceSentences) { this._sourceSentences = sourceSentences }
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact

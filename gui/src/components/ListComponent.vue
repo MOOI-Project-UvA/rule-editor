@@ -9,7 +9,7 @@
           @click="sentence.toggleCollapse()"></q-btn>
       </div>
 
-      <div :style="getStyleForSentenceFormat(sentence)">
+      <div :style="getHeaderStyling(sentence)">
         <span v-for="snippet in sentence.snippets">
           {{ snippet.text }}
         </span>
@@ -19,14 +19,14 @@
 </template>
 
 <script>
-import { getStyleForSentenceFormat } from "../helpers/sourceFormatting.js"
+import { getHeaderStyling } from "../helpers/sourceFormatting.js"
 export default {
   props: {
     sourceDocument: Object
   },
   methods: {
-    getStyleForSentenceFormat(sentence) {
-      return getStyleForSentenceFormat(sentence)
+    getHeaderStyling(sentence) {
+      return getHeaderStyling(sentence)
     }
   }
 }

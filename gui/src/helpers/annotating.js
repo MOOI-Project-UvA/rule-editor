@@ -3,8 +3,9 @@
 //nested annotations, and corresponding underlining of text
 
 import { Snippet } from "../model/snippet"
+import { Annotation } from "../model/annotation.js"
 
-// This function returns sentences and snippets where that cover the selected text,
+// This function returns sentences and snippets that cover the selected text,
 // and it returns the offsets within the snippets of the selected text.
 // It takes into account that selection can be done from right to left as
 // well as from left to right
@@ -183,5 +184,6 @@ function splitSnippet(snippet, charIndex, sentence) {
 
         return [leftSnippet, rightSnippet]
     }
-
 }
+
+

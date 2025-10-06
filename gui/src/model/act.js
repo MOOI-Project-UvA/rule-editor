@@ -18,7 +18,8 @@ class Act {
 
         this._comments = []
 
-        this._generateLabelAutomatically = true //by default, label is generated automatically
+        this._generateLabelAutomatically = true //by default, label is generated automatically TODO: generate on user request
+        this.sourceSentences = []
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -60,6 +61,22 @@ class Act {
     get terminates() { return this._terminates }
     set terminates(terminates) { this._terminates = terminates }
 
+    //get all frames in this Act: from its roles, precondition, and postcondition
+    //including all sub-frames of those frames
+    get allFrames() {
+        const framesInRoles = ["_action", "_actor", "_object", "_recipient"].map(roleName =>
+            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
+        ).flat()
+        const framesInPrecondition = this._precondition.allFrames
+        const framesInPostcondition = ["_creates", "_terminates"].map(attrName =>
+            this[attrName].map(frame => [frame, ...frame.allFrames]).flat()
+        ).flat()
+        //get unique frames
+        const frames = [...framesInRoles, ...framesInPrecondition, ...framesInPostcondition]
+            .filter((value, index, self) => self.indexOf(value) === index)
+        return frames
+    }
+
     get allowedSubTypesForActiveField() {
         switch (this._activeField) {
             case 'action':
@@ -84,6 +101,12 @@ class Act {
 
     get generateLabelAutomatically() { return this._generateLabelAutomatically }
     set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
+    //sentences that contain source of this act. either because one of its parts has an annotation in the sentence
+    //or because the user explicitly added the sentence from the source
+    get sourceSentences() { return this._sourceSentences }
+    set sourceSentences(sourceSentences) { this._sourceSentences = sourceSentences }
+
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact

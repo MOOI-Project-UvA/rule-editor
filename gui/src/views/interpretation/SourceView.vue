@@ -19,6 +19,7 @@
             :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)"
             :indent="true"
             :showSentenceButtons="false"
+            :isSourceOfSelectedFrame="false"
           />
         </div>
       </template>
@@ -50,12 +51,12 @@ export default {
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
-    }
+    },
   },
   methods: {
     setDisplayedSourceDocument(document) {
       this.$store.state.displayedSourceDocument = document
-    }
+    },
   },
   watch: {
     sourceDocuments() {
