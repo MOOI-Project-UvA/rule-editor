@@ -79,17 +79,15 @@ class Claimduty {
         return sentences
     }
 
-    get allowedSubTypesForActiveField() {
-        switch (this._activeField) {
-            case 'duty':
-                return ['duty']
-            case 'claimant':
-                return ['agent']
-            case 'holder':
-                return ['agent']
-            default:
-                return []
+    getSubTypeIdForActiveField() {
+        const subTypeIdPerRole = {
+            "duty": "duty",
+            "claimant": "agent",
+            "holder": "agent"
         }
+        return this._activeField in subTypeIdPerRole
+            ? subTypeIdPerRole[this._activeField]
+            : null
     }
 
     get comments() { return this._comments }

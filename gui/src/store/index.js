@@ -69,8 +69,8 @@ const store = createStore({
           break;
       }
       frame.typeId = frameTypeId;
-      if (subTypeId) {
-        frame.subTypeId = subTypeId;
+      if (subTypeId && !frame.subTypeIds.includes(subTypeId)) {
+        frame.subTypeIds.push(subTypeId);
       }
 
       //add annotation to frame, if frame is type fact.

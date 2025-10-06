@@ -87,11 +87,15 @@ export default {
             this.$store.state.annotationToBeAddedToExistingFrame = null;
         } else if (
             this.frameBeingEdited &&
-            'activeField' in this.frameBeingEdited &&
+            this.frameBeingEdited.typeId != "fact" &&
             this.frameBeingEdited.activeField
         ) {
             //add frame to field in frame being edited (which is an act or claimduty)
             this.frameBeingEdited.addFrame(this.frame);
+            const predefinedSubTypeId = this.frameBeingEdited.getSubTypeIdForActiveField()
+            if (predefinedSubTypeId && !this.frame.subTypeIds.includes(predefinedSubTypeId)) {
+              this.frame.subTypeIds.push(predefinedSubTypeId)
+            }
             
             //get sentences of the frame that is added as a role to the act or claimduty
             //(only roles 'action','actor','object','recipient', not: precondition or postcondition creates/terminates)

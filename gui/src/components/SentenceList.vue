@@ -118,14 +118,12 @@ export default {
         if (
           !this.annotationBeingEdited &&
           this.frameBeingEdited &&
-          'activeField' in this.frameBeingEdited && //frame should have roles
+          this.frameBeingEdited.typeId != "fact" &&
           this.frameBeingEdited.activeField
         ) {
-          //if there is only one subtype allowed for this fact, assign that subtype to the frame
-          const subTypeId =
-            this.frameBeingEdited.allowedSubTypesForActiveField.length == 1
-              ? this.frameBeingEdited.allowedSubTypesForActiveField[0]
-              : null;
+          //if there is a predefined subtype for the active field, assign it to the fact
+          const predefinedSubTypeId = this.frameBeingEdited.getSubTypeIdForActiveField()
+          const subTypeId = predefinedSubTypeId ? predefinedSubTypeId : null
 
           //store reference to the currently being edited frame
           //because frameBeingEdited will be set to the newly created frame

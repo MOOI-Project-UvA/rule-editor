@@ -77,23 +77,16 @@ class Act {
         return frames
     }
 
-    get allowedSubTypesForActiveField() {
-        switch (this._activeField) {
-            case 'action':
-                return ['action']
-            case 'actor':
-                return ['agent']
-            case 'object':
-                return ['object']
-            case 'recipient':
-                return ['agent']
-            case 'creates':
-                return ['agent', 'action', 'object']
-            case 'terminates':
-                return ['agent', 'action', 'object']
-            default:
-                return []
+    getSubTypeIdForActiveField() {
+        const subTypeIdPerRole = {
+            "action": "action",
+            "actor": "agent",
+            "object": "object",
+            "recipient": "agent"
         }
+        return this._activeField in subTypeIdPerRole
+            ? subTypeIdPerRole[this._activeField]
+            : null
     }
 
     get comments() { return this._comments }
