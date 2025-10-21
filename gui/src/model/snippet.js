@@ -53,7 +53,7 @@ export class Snippet {
 
   fromFlatObject(data) {
     //the sentence object will be retrieved based on documentId and sentenceId
-    //in import.js
+    //in importExport.js
     this._text = data.text;
   }
 }

@@ -162,6 +162,10 @@ class Claimduty {
             claimantId: this.claimant?.id,
             holderId: this.holder?.id,
             comments: this.comments.map(c => c.toFlatObject()),
+            sourceSentences: this.sourceSentences.map(s => ({
+                documentId: s.sourceDocument.id,
+                sentenceId: s.id
+            }))
         }
     }
 
@@ -174,7 +178,7 @@ class Claimduty {
         this._duty = frameData.dutyId ? allFrames.find(f => f.id == frameData.dutyId) : null
         this._claimant = frameData.claimantId ? allFrames.find(f => f.id == frameData.claimantId) : frameData.actorId ? allFrames.find(f => f.id == frameData.actorId) : null
         this._holder = frameData.holderId ? allFrames.find(f => f.id == frameData.holderId) : null
-        //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        //annotations, sourceSentences and comments are set in parseJsonToInterpretation in importExport.js
         this._generateLabelAutomatically = false
     }
 
