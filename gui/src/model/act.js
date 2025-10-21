@@ -165,6 +165,10 @@ class Act {
             creates: this.creates.map(f => f.id),
             terminates: this.terminates.map(f => f.id),
             comments: this.comments.map(c => c.toFlatObject()),
+            sourceSentences: this.sourceSentences.map(s => ({
+                documentId: s.sourceDocument.id,
+                sentenceId: s.id
+            }))
         }
     }
 
@@ -181,7 +185,7 @@ class Act {
         this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
-        //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        //annotations, sourceSentences and comments are set in parseJsonToInterpretation in importExport.js
         this._generateLabelAutomatically = false
     }
 

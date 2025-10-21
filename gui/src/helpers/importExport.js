@@ -143,12 +143,22 @@ function parseJsonToInterpretation(jsonText) {
             })
         })
 
-        // Add comments to the frame
+        // Add comments to the frame <- should we move this to fromFlatObject in the frame model
         frame.comments = parsedFrame.comments.map(parsedComment => {
             let comment = new Comment()
             comment.fromFlatObject(parsedComment)
             return comment
         })
+
+        // Add sourceSentences to acts and claim duties
+        // Find the corresponding sentence object for each entry (containing )
+        if (parsedFrame.typeId == 'act' || parsedFrame.typeId == 'claim_duty') {
+            frame.sourceSentences = parsedFrame.sourceSentences.map(s => {
+                const sourceDoc = sourceDocs.find(doc => doc.id == s.documentId)
+                const sentence = sourceDoc.sentences.find(sentence => sentence.id == s.sentenceId)
+                return sentence
+            })
+        }
     })
 
     //update underlining of annotations in the source text. each annotation contains the
