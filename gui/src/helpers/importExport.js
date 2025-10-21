@@ -99,6 +99,7 @@ function parseJsonToInterpretation(jsonText) {
         // Go through the snippets of each parsed annotation, and add snippets to the
         // correct sentence in the correct document. Add the annotation to the snippet
         // the annotation object links a frame with a snippet.
+
         parsedFrame.annotations.forEach(parsedAnnotation => {
             const annotation = new Annotation()
             annotation.frame = frame
@@ -111,34 +112,48 @@ function parseJsonToInterpretation(jsonText) {
 
                     //find sentence for this snippet
                     const sentence = sourceDoc.sentences.find(s => s.id == parsedSnippet.sentenceId)
-                    //snippet possibly exists, added by another annotation
-                    let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
-                    if (!snippet) {
-                        snippet = new Snippet(sentence, parsedSnippet.characterRange)
-                        //this new snippet overlaps the original snippet that contains the whole sentence,
-                        //created when the sentence was created
-                        const overlappedSnippetIndex = sentence.snippets.findIndex(s =>
-                            snippet.characterRange[0] < s.characterRange[1] &&
-                            snippet.characterRange[1] > s.characterRange[0]
-                        )
-                        const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
-                        //create new snippets, replacing the overlapped snippet
-                        if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
-                            //create snippet left of new snippet
-                            sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
+
+                    // acts and claim duties do not have annotations, however in older interpretations,
+                    // they still may have. In that case, do not add the annotation to a snippet,
+                    // but store the sentence in sourceSentences
+
+
+                    if (parsedFrame.typeId == "fact") {
+                        //snippet possibly exists, added by another annotation
+                        let snippet = sentence.snippets.find(s => s.characterRange[0] == parsedSnippet.characterRange[0] && s.characterRange[1] == parsedSnippet.characterRange[1])
+                        if (!snippet) {
+                            snippet = new Snippet(sentence, parsedSnippet.characterRange)
+                            //this new snippet overlaps the original snippet that contains the whole sentence,
+                            //created when the sentence was created
+                            const overlappedSnippetIndex = sentence.snippets.findIndex(s =>
+                                snippet.characterRange[0] < s.characterRange[1] &&
+                                snippet.characterRange[1] > s.characterRange[0]
+                            )
+                            const overlappedSnippet = sentence.snippets[overlappedSnippetIndex]
+                            //create new snippets, replacing the overlapped snippet
+                            if (overlappedSnippet.characterRange[0] < snippet.characterRange[0]) {
+                                //create snippet left of new snippet
+                                sentence.snippets.push(new Snippet(sentence, [overlappedSnippet.characterRange[0], snippet.characterRange[0]]))
+                            }
+                            if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
+                                //create snippet left of new snippet
+                                sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
+                            }
+                            //remove original overlapped snippet
+                            sentence.snippets.splice(overlappedSnippetIndex, 1)
+                            //add new snippet
+                            sentence.snippets.push(snippet)
+                            //sort snippets according to character range start
+                            sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
                         }
-                        if (overlappedSnippet.characterRange[1] > snippet.characterRange[1]) {
-                            //create snippet left of new snippet
-                            sentence.snippets.push(new Snippet(sentence, [snippet.characterRange[1], overlappedSnippet.characterRange[1]]))
+                        snippet.annotations.push(annotation)
+                    } else {
+                        // frame is act or claimDuty (so this is an older interpretation), add sentence to sourceSentences
+                        // if it is not there already
+                        if (!frame.sourceSentences.some(s => s.id == sentence.id)) {
+                            frame.sourceSentences.push(sentence)
                         }
-                        //remove original overlapped snippet
-                        sentence.snippets.splice(overlappedSnippetIndex, 1)
-                        //add new snippet
-                        sentence.snippets.push(snippet)
-                        //sort snippets according to character range start
-                        sentence.snippets.sort((s1, s2) => s1.characterRange[0] - s2.characterRange[0])
                     }
-                    snippet.annotations.push(annotation)
                 }
             })
         })
@@ -153,11 +168,15 @@ function parseJsonToInterpretation(jsonText) {
         // Add sourceSentences to acts and claim duties
         // Find the corresponding sentence object for each entry (containing )
         if (parsedFrame.typeId == 'act' || parsedFrame.typeId == 'claim_duty') {
-            frame.sourceSentences = parsedFrame.sourceSentences.map(s => {
-                const sourceDoc = sourceDocs.find(doc => doc.id == s.documentId)
-                const sentence = sourceDoc.sentences.find(sentence => sentence.id == s.sentenceId)
-                return sentence
-            })
+            //older versions have no 'sourceSentences', in that case we derived
+            //the sourceSentences from the annotations (see above)
+            if ("sourceSentences" in parsedFrame) {
+                frame.sourceSentences = parsedFrame.sourceSentences.map(s => {
+                    const sourceDoc = sourceDocs.find(doc => doc.id == s.documentId)
+                    const sentence = sourceDoc.sentences.find(sentence => sentence.id == s.sentenceId)
+                    return sentence
+                })
+            }
         }
     })
 
