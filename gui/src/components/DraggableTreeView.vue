@@ -77,11 +77,11 @@ export default {
     toResult: null,
     draggingId: null,
     dragOverId: null,
-    toggleOptions: [
-      { label: "Swap order", value: "swapping" },
-      { label: "Move child", value: "nesting" },
-    ],
-    mode: "nesting",
+    // toggleOptions: [
+    //   { label: "Swap order", value: "swapping" },
+    //   { label: "Move child", value: "nesting" },
+    // ],
+    // mode: "nesting",
     booleanOptions: [
       { label: "AND", value: "and", description: "AND (boolean)" },
       { label: "OR", value: "or", description: "OR (boolean)" },
@@ -406,15 +406,15 @@ export default {
         // nodeInfo.frame = null;
         // console.log("nodeInfo:", nodeInfo);
 
-        if (this.mode === "swapping") {
-          // Swap nodes
-          this.swapNodes(nodeKey, key);
-          console.log(`Swapped nodes ${nodeKey} and ${key}`);
-        } else {
-          // move nodes as child
-          this.moveNode(nodeKey, key);
-          console.log(`Moved node ${nodeKey} to ${key}`);
-        }
+        // if (this.mode === "swapping") {
+        // Swap nodes
+        this.swapNodes(nodeKey, key);
+        // console.log(`Swapped nodes ${nodeKey} and ${key}`);
+        // } else {
+        //   move nodes as child
+        // this.moveNode(nodeKey, key);
+        // console.log(`Moved node ${nodeKey} to ${key}`);
+        // }
 
         this.draggingId = null;
         this.dragOverId = null;
@@ -616,21 +616,21 @@ export default {
       notMargined: notMargined,
     }"
   >
-    BooleanConstruct {{ booleanConstruct }}<br />
-    NodeBeingEdited: {{ parentNode }}
+    <!--    BooleanConstruct {{ booleanConstruct }}<br />-->
+    <!--    NodeBeingEdited: {{ parentNode }}-->
     <div class="q-pa-md q-gutter-sm">
-      <div class="flex flex-start items-baseline">
-        <div id="label">Mode:</div>
-        <div id="ui-element" class="q-ml-sm">
-          <q-btn-toggle
-            v-model="mode"
-            :options="toggleOptions"
-            name="mode-selector"
-            size="sm"
-            rounded
-          ></q-btn-toggle>
-        </div>
-      </div>
+      <!--      <div class="flex flex-start items-baseline">-->
+      <!--        <div id="label">Mode:</div>-->
+      <!--        <div id="ui-element" class="q-ml-sm">-->
+      <!--          <q-btn-toggle-->
+      <!--            v-model="mode"-->
+      <!--            :options="toggleOptions"-->
+      <!--            name="mode-selector"-->
+      <!--            size="sm"-->
+      <!--            rounded-->
+      <!--          ></q-btn-toggle>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <q-tree
         class="q-mt-sm tree-structure-draggable"
@@ -646,16 +646,13 @@ export default {
       >
         <!-- header section per node -->
         <template v-slot:default-header="prop">
-          <span
-            v-if="dragOverId === prop.node.id && mode == 'nesting'"
-            class="plus-icon"
-          >
-            <q-icon name="mdi-plus-circle-outline" color="primary" size="sm" />
-          </span>
-          <span
-            v-if="dragOverId === prop.node.id && mode == 'swapping'"
-            class="plus-icon"
-          >
+          <!--          <span-->
+          <!--            v-if="dragOverId === prop.node.id && mode == 'nesting'"-->
+          <!--            class="plus-icon"-->
+          <!--          >-->
+          <!--            <q-icon name="mdi-plus-circle-outline" color="primary" size="sm" />-->
+          <!--          </span>-->
+          <span v-if="dragOverId === prop.node.id" class="plus-icon">
             <q-icon
               name="mdi-swap-vertical-circle-outline"
               color="primary"
@@ -722,7 +719,7 @@ export default {
               </q-btn>
             </div>
 
-            <div>
+            <div v-if="parentNodeId !== prop.node.id">
               <q-icon
                 name="mdi-drag"
                 draggable="true"
