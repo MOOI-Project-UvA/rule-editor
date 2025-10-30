@@ -39,9 +39,14 @@
     </q-card-section>
     <q-card-section>
       <div class="label">Subdivision</div>
-      <TreeviewBooleanConstruct
-          :boolean-construct="frame.subdivision"
-        ></TreeviewBooleanConstruct>
+      <draggable-tree-view
+        :boolean-construct="frame.subdivision"
+        origin="Fact"
+      ></draggable-tree-view>
+      <!--      <TreeviewBooleanConstruct-->
+      <!--        :boolean-construct="frame.subdivision"-->
+      <!--        origin="Fact"-->
+      <!--      ></TreeviewBooleanConstruct>-->
     </q-card-section>
 
     <q-card-actions align="right">
@@ -86,13 +91,15 @@
 </template>
 
 <script>
-import { icons, colors } from '../helpers/config.js'
-import CommentsList from './CommentsList.vue';
-import BooleanConstructPanel from './BooleanConstructPanel.vue'
-import { BooleanConstruct } from '../model/booleanConstruct.js';
+import { icons, colors } from "../helpers/config.js";
+import CommentsList from "./CommentsList.vue";
+import SentenceList from "./SentenceList.vue";
+import BooleanConstructPanel from "./BooleanConstructPanel.vue";
+import { BooleanConstruct } from "../model/booleanConstruct.js";
 import { frameTypes } from "../model/frame";
-import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js"
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
+import DraggableTreeView from "./DraggableTreeView.vue";
 
 export default {
   emits: ["closed"],
@@ -154,6 +161,7 @@ export default {
     }
   },
   components: {
+    DraggableTreeView,
     TreeviewBooleanConstruct,
     BooleanConstructPanel,
     CommentsList,

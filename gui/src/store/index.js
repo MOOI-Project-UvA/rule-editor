@@ -60,6 +60,7 @@ const store = createStore({
       switch (frameTypeId) {
         case "fact":
           frame = new Fact(initialLabel);
+          frame.addSubdivision();
           break;
         case "act":
           frame = new Act();
@@ -293,6 +294,8 @@ const store = createStore({
           (frame, index, array) =>
             array.findIndex((f) => f.id == frame.id) === index,
         );
+
+      console.log("allFrames:", allFrames);
 
       //ones and open in the editor
       const jsonString = JSON.stringify(

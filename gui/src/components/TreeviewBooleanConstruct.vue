@@ -8,6 +8,10 @@ export default {
   },
   props: {
     booleanConstruct: Object,
+    origin: {
+      type: String,
+      default: "Fact",
+    },
   },
   data: () => ({
     booleanOptions: [
@@ -39,7 +43,8 @@ export default {
     selectModel: [],
     options: null,
     selectedNode: null,
-    notMargined: true,
+    notMargined: false,
+    expanded: [],
   }),
   computed: {
     frameBeingEdited() {
@@ -52,7 +57,13 @@ export default {
       return this.$store.state.booleanConstructBeingEdited?.id;
     },
     isBeingEdited() {
-      return this.selectedNode && this.selectedNode == this.booleanConstructBeingEditedId
+      return (
+        this.selectedNode &&
+        this.selectedNode == this.booleanConstructBeingEditedId
+      );
+    },
+    parentNodeId() {
+      return this.booleanConstruct.id;
     },
   },
   watch: {
@@ -75,14 +86,33 @@ export default {
         if (o?.frame) {
           o.beingEdited = false;
           this.selectedNode = null;
-          
         }
       },
       once: true,
     },
+    parentNodeId(value) {
+      this.$nextTick(() => {
+        const treeRef = this.$refs["tree-structure"];
+        if (!treeRef || typeof treeRef.setExpanded !== "function") {
+          console.warn(
+            "Tree structure ref or setExpanded() not ready",
+            treeRef,
+          );
+          return;
+        }
+        if (!value) {
+          console.warn("Invalid value for node id", value);
+          return;
+        }
+        treeRef.setExpanded(value, true);
+      });
+    },
   },
   mounted() {
+    console.log("mounting Treeviewboolean:", this.booleanConstruct);
     this.options = Array.from(this.booleanOptions);
+    // it expands the parent node of the hierarchy
+    this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
   },
   methods: {
     getNodeByKey(key) {
@@ -108,7 +138,25 @@ export default {
     },
     // adds children to the selected node.
     addChild(nodeData) {
-      console.log("adding child to booleanConstruct");
+      console.log("adding child to booleanConstruct", "nodeData", nodeData);
+      // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
+      // previous ones
+      // if (
+      //   !nodeData.children.every((c) => c.frame) &&
+      //   !nodeData.children.every((c) => c.children.length > 0)
+      // ) {
+      //   // if (!nodeData.children.every((c) => c.frame))
+      //   console.log(
+      //     "Please add frames to the previous children before creating a new one!",
+      //   );
+      //   alertWidget(
+      //     "error",
+      //     "Please fill in frames for the existing elements before adding new ones.",
+      //     4000,
+      //   );
+      //
+      //   return;
+      // }
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
@@ -117,8 +165,13 @@ export default {
     },
     // adds an extra level of hierarchy to the selected node
     subdivide(event, nodeData) {
+      console.log("nodeData to subdivide:", nodeData);
       event.stopPropagation();
       nodeData.subdivide();
+      // set the top level of the construct to be expanded
+      this.$refs["tree-structure"].setExpanded(this.parentNodeId, true);
+      // set the current node to expanded
+      this.$refs["tree-structure"].setExpanded(nodeData.id, true);
       // determine margin of parent
       !nodeData.parent && nodeData.children.length > 0
         ? (this.notMargined = false)
@@ -130,7 +183,7 @@ export default {
     },
     removeFrame(node) {
       node.beingEdited = false;
-      node.frame = null
+      node.frame = null;
       // node.removeFrame(node.frame)
     },
     // removing extra level of hierarchy from a node
@@ -152,9 +205,10 @@ export default {
     },
     //  while clicking the body of each node in the treeview
     handleClick(event, node) {
-      console.log("node", node, node.beingEdited, this.selectedNode);
       //prevent propagation to underlying panels
       event.stopPropagation();
+      console.log("node", node, node.beingEdited, this.selectedNode);
+
       //
       if (this.selectedNode == node.id && !node.frame) {
         console.log("selected!");
@@ -169,14 +223,13 @@ export default {
 
       //if empty leaf node, select for adding frame
       if (!node.frame && node.children.length == 0) {
-        //   // this.$store.state.booleanConstructBeingEdited =  this.booleanConstruct;
+        //   // this.$store.state.booleanConstructBeingEdited =  node;
         this.selectedNode = node.id;
         //
         //   //de-select any other properties of the active frame, if it is a relation
-        
       }
-      if ('activeField' in this.frameBeingEdited) {
-          this.frameBeingEdited.activeField = null
+      if ("activeField" in this.frameBeingEdited) {
+        this.frameBeingEdited.activeField = null;
       }
     },
   },
@@ -196,6 +249,7 @@ export default {
       :nodes="[booleanConstruct]"
       node-key="id"
       v-model:selected="selectedNode"
+      v-model:expanded="expanded"
       selected-color="black"
       selectable="false"
       dense
@@ -204,12 +258,6 @@ export default {
       <!-- header section per node -->
       <template v-slot:default-header="prop">
         <div v-if="prop.node.children.length > 0">
-          <!--          <q-icon-->
-          <!--            :name="prop.node.icon || 'share'"-->
-          <!--            color="orange"-->
-          <!--            size="28px"-->
-          <!--            class="q-mr-sm"-->
-          <!--          />-->
           <div
             class="boolean-menu row items-center mt-2 no-wrap"
             v-on:click.stop
@@ -218,12 +266,14 @@ export default {
             <div class="select-element">
               <q-select
                 dense
+                hide-selected
                 filled
                 use-input
-                hide-selected
                 fill-input
+                hint="Pick a function"
+                hide-hint
+                hide-bottom-space
                 input-debounce="0"
-                label="Pick a function"
                 :options="options"
                 style="width: 150px; margin: 5px 10px"
                 v-model="prop.node.operatorToJoinChildren"
@@ -237,7 +287,7 @@ export default {
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-italic text-grey">
-                      No options slot
+                      No relevant options.
                     </q-item-section>
                   </q-item>
                 </template>
@@ -250,20 +300,28 @@ export default {
                 dense
                 outline
                 class="q-ml-sm add-child-btn"
-                @click="addChild(prop.node)"
-                >Add child</q-btn
+                label="Add child"
+                @click.stop="addChild(prop.node)"
               >
+                <q-tooltip class="text-subtitle2">
+                  Add another child at this level of the hierarchy.
+                </q-tooltip>
+              </q-btn>
             </div>
             <!-- subdivision button. Adds extra level of hierarchy-->
-            <div>
-              <q-btn
-                size="sm"
-                dense
-                flat
-                icon="mdi-format-list-bulleted-square"
-                @click="subdivide($event, prop.node)"
-              />
-            </div>
+            <!--            <div>-->
+            <!--              <q-btn-->
+            <!--                size="sm"-->
+            <!--                dense-->
+            <!--                flat-->
+            <!--                icon="mdi-format-list-bulleted-square"-->
+            <!--                @click="subdivide($event, prop.node)"-->
+            <!--              >-->
+            <!--                <q-tooltip class="text-subtitle2">-->
+            <!--                  <div>Add a new layer of complexity at this level.</div>-->
+            <!--                </q-tooltip>-->
+            <!--              </q-btn>-->
+            <!--            </div>-->
           </div>
         </div>
       </template>
@@ -276,11 +334,9 @@ export default {
             negated: prop.node.isNegated,
           }"
           @click="handleClick($event, prop.node)"
-          v-if="prop.node.children.length == 0"
+          v-if="prop.node.children.length == 0 || prop.node.frame"
         >
           <div class="col">
-            <!-- negation label -->
-            <!-- <div v-if="prop.node.isNegated" class="negation-label">NOT</div>-->
             <template v-if="prop.node.frame">
               <!-- boolean construct is 'atomic': it refers to a frame, and has no children -->
               <div class="row-container">
@@ -294,7 +350,11 @@ export default {
                   color="negative"
                   icon="mdi-close"
                   @click="removeFrame(prop.node)"
-                />
+                >
+                  <q-tooltip class="text-subtitle2">
+                    <div>Remove this frame.</div>
+                  </q-tooltip>
+                </q-btn>
               </div>
             </template>
             <div
@@ -306,17 +366,6 @@ export default {
           </div>
           <!--  list of buttons on the right  -->
           <div class="col-1 buttons-container">
-            <!-- negation -->
-            <!--            <div>-->
-            <!--              <q-btn-->
-            <!--                size="sm"-->
-            <!--                color="#d42d19"-->
-            <!--                dense-->
-            <!--                flat-->
-            <!--                icon="mdi-minus-circle-outline"-->
-            <!--                @click="toggleNegation(prop.node.id)"-->
-            <!--              />-->
-            <!--            </div>-->
             <div>
               <q-btn
                 size="sm"
@@ -325,18 +374,39 @@ export default {
                 flat
                 icon="mdi-format-list-bulleted-square"
                 @click="subdivide($event, prop.node)"
-              />
+              >
+                <q-tooltip class="text-subtitle2">
+                  <div>Add a new layer of complexity at this level.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
             <div v-if="prop.node.parent">
               <q-btn
                 class="button-label"
-
                 size="sm"
                 dense
                 flat
                 icon="mdi-close"
+                :disable="
+                  origin === 'Fact' &&
+                  !prop.node.parent.parent &&
+                  prop.node.parent.children.length === 1
+                "
                 @click="deleteBooleanConstruct($event, prop.node)"
-              />
+              >
+                <q-tooltip class="text-subtitle2">
+                  <div
+                    v-if="
+                      origin === 'Fact' &&
+                      !prop.node.parent.parent &&
+                      prop.node.parent.children.length === 1
+                    "
+                  >
+                    Can not remove the only child in the hierarchy.
+                  </div>
+                  <div v-else>Remove this child.</div>
+                </q-tooltip>
+              </q-btn>
             </div>
           </div>
           <!--              <div v-if="prop.node.label">-->
