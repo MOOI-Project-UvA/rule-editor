@@ -23,9 +23,6 @@
           <template v-if="sentences?.length == 0">
             <div class="text-italic">No source added yet</div>
           </template>
-          <template v-else>
-            <q-btn size="sm" flat @click="scrollToSource">Scroll to source</q-btn>
-          </template>
         </div>
         <div class="col-1">
           <q-btn size="sm" round flat color="primary" icon="mdi-comment-text-outline"
@@ -91,7 +88,6 @@
 <script>
 import { icons, colors } from '../helpers/config.js'
 import CommentsList from './CommentsList.vue';
-import SentenceList from "./SentenceList.vue"
 import BooleanConstructPanel from './BooleanConstructPanel.vue'
 import { BooleanConstruct } from '../model/booleanConstruct.js';
 import { frameTypes } from "../model/frame";
@@ -161,7 +157,6 @@ export default {
     TreeviewBooleanConstruct,
     BooleanConstructPanel,
     CommentsList,
-    SentenceList,
   },
 };
 </script>

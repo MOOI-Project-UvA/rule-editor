@@ -3,9 +3,9 @@
     <q-card-section>
       <div class="row items-center">
         <div class="col-2">ACT</div>
-        <div class="col-2">
-          <div class="row items-center float-right">
-            <template v-if="sentences?.length > 0">
+        <div class="col">
+          <div class="row items-center">
+            <template v-if="frame.sourceSentences.length > 0">
               <q-btn
                 size="sm"
                 round
@@ -28,23 +28,28 @@
                 </template>
               </q-btn>
             </template>
-            <q-btn
-              size="sm"
-              round
-              flat
-              color="primary"
-              icon="mdi-comment-text-outline"
-              @click="showComments = !showComments"
-            >
-              <q-badge
-                v-if="frame.comments.length > 0"
-                color="primary"
-                floating
-                >{{ frame.comments.length }}</q-badge
-              >
-              <q-tooltip class="text-subtitle2">Comments</q-tooltip>
-            </q-btn>
+            <template v-else>
+              <div class="text-italic">No source added yet</div>
+            </template>
           </div>
+        </div>
+        <div class="col-1">
+          <q-btn
+            size="sm"
+            round
+            flat
+            color="primary"
+            icon="mdi-comment-text-outline"
+            @click="showComments = !showComments"
+          >
+            <q-badge
+              v-if="frame.comments.length > 0"
+              color="primary"
+              floating
+              >{{ frame.comments.length }}</q-badge
+            >
+            <q-tooltip class="text-subtitle2">Comments</q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -149,14 +154,14 @@
   </q-card>
   <CommentsList
     :fact="frame"
-    :showComments="showComments"
+    :show-comments="showComments"
+    @update:show-comments="showComments = $event"
     @closed="showComments = false"
   />
 </template>
 
 <script>
 import RoleSelector from "./RoleSelector.vue";
-import SentenceList from "./SentenceList.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
@@ -195,9 +200,6 @@ export default {
     frame() {
       return this.$store.state.frameBeingEdited;
     },
-    sentences() {
-      return this.sourceDocuments.map(doc => doc.getSentencesForFrame(this.frame)).flat()
-    },
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
     },
@@ -206,7 +208,7 @@ export default {
     },
     nlpIsBusy() {
       //if nlp is not ready for one or more of this act's sentences, return true
-      return this.sentences.some((s) => s.loading);
+      return this.frame.sourceSentences.some((s) => s.loading);
     },
   },
   methods: {
@@ -287,7 +289,7 @@ export default {
             //split snippets, and return those that fit the character range
             const selectedSnippets = splitAndReturnSelectedSnippets(
               selectionAsSnippets,
-              this.sentences,
+              this.frame.sourceSentences,
             );
             selectedSnippets.forEach((s) => {
               console.log("adding", annotation, "to snippet", s);
@@ -316,7 +318,7 @@ export default {
     },
     applyNlpToSource() {
       console.log("nlp");
-      this.sentences.forEach((sentence) => {
+      this.frame.sourceSentences.forEach((sentence) => {
         this.sendDataToNlp(sentence);
       });
     },
@@ -342,7 +344,6 @@ export default {
   components: {
     TreeviewBooleanConstruct,
     RoleSelector,
-    SentenceList,
     CommentsList,
     BooleanConstructPanel,
   },

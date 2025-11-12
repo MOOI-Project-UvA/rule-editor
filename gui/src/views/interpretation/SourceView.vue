@@ -15,13 +15,18 @@
       <template v-if="displayedSourceDocument && displayedSourceDocument.sentences.length > 0">
         <!-- show selected sentences in document -->
         <div class="fill-height scrollable">
-          <SentenceList :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)" :showNLP="true" />
+          <SentenceList
+            :sentences="displayedSourceDocument.sentences.filter((s) => s.selected)"
+            :indent="true"
+            :showSentenceButtons="false"
+            :isSourceOfSelectedFrame="false"
+          />
         </div>
       </template>
       <template v-else>
         <div>
           <p>
-            No sentences selected. Select sentences in step 2.
+            No sentences selected. Select sentences in 'Collect sources'.
           </p>
         </div>
       </template>
@@ -46,12 +51,12 @@ export default {
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
-    }
+    },
   },
   methods: {
     setDisplayedSourceDocument(document) {
       this.$store.state.displayedSourceDocument = document
-    }
+    },
   },
   watch: {
     sourceDocuments() {

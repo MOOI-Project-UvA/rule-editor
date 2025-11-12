@@ -17,22 +17,23 @@ export class Network {
     //has to finish before another can start.
     createNetwork(frames) {
         frames.forEach(frame => {
-            switch (frame.typeId) {
-                case "act":
-                    this.addTreeForAct(frame)
-                    break;
-                case "claim_duty":
-                    this.addTreeForClaimDuty(frame)
-                    break;
-                default:
-                    this.addTreeForFact(frame)
-            }
+            this.addTreeForFrame(frame)
         })
-        //add dependency relations between acts: act1 - before - act2
-        //this.addDependencyLinksBetweenActNodes()
-        //for each act, determine position in dependency-chain. this is used for positioning the acts
-        //from left to right
-        ///this.setSequenceOfActnodes()
+    }
+
+    addTreeForFrame(frame) {
+        let node = null
+        switch (frame.typeId) {
+            case "act":
+                node = this.addTreeForAct(frame)
+                break;
+            case "claim_duty":
+                node = this.addTreeForClaimDuty(frame)
+                break;
+            default:
+                node = this.addTreeForFact(frame)
+        }
+        return node
     }
 
     addTreeForAct(act) {
@@ -44,7 +45,7 @@ export class Network {
                 //if act has this role filled in, get corresponding nodeTree.
                 //the fact for this role can be subdivided, so in general this
                 //is a node tree
-                const roleNode = this.addTreeForFact(act[roleAttribute])
+                const roleNode = this.addTreeForFrame(act[roleAttribute])
                 if (roleNode) {
                     this.addLink(actNode, roleNode, "role", roleAttribute)
                 }
@@ -54,7 +55,7 @@ export class Network {
         const rolesWithMultipleFrames = ["creates", "terminates"]
         rolesWithMultipleFrames.forEach(roleAttribute => {
             //get node trees for this attribute,
-            const roleRootNodes = act[roleAttribute].map(frame => this.addTreeForFact(frame))
+            const roleRootNodes = act[roleAttribute].map(frame => this.addTreeForFrame(frame))
             if (roleRootNodes.length == 1) {
                 //only one frame in this property: create node and connect with act
                 this.addLink(actNode, roleRootNodes[0], "role", roleAttribute)
@@ -86,7 +87,7 @@ export class Network {
                 //if claimDuty has this role filled in, get corresponding nodeTree.
                 //the fact for this role can be subdivided, so in general this
                 //is a node tree
-                const roleNode = this.addTreeForFact(claimDuty[roleAttribute])
+                const roleNode = this.addTreeForFrame(claimDuty[roleAttribute])
                 if (roleNode) {
                     this.addLink(claimDutyNode, roleNode, "role", roleAttribute)
                 }
@@ -111,14 +112,7 @@ export class Network {
         //if BC has a frame, create corresponding nodeTree, else create an anonymous node
         let bcRoot = null
         if (booleanConstruct.frame) {
-            switch (booleanConstruct.frame.typeId) {
-                case "act":
-                    //can an act be part of a boolean construct?
-                    bcRoot = this.addTreeForAct(booleanConstruct.frame)
-                    break;
-                default:
-                    bcRoot = this.addTreeForFact(booleanConstruct.frame)
-            }
+            bcRoot = this.addTreeForFrame(booleanConstruct.frame)
         } else {
             //create nodes for children. If there are more than zero: create
             //anonymous node to connect them

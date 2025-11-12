@@ -20,10 +20,17 @@
             :color="colors[frameTypeId]" @click="frameTypeButtonClicked(frameTypeId)" />
         </div>
       </q-card-section>
-      <q-card-actions>
+      <q-card-actions v-if="frameBeingEdited">
         <div class="label">Or</div>
-        <q-btn flat @click="addingToExistingFrame" color="primary" :disabled="frames.length == 0">
-          Add to existing frame
+        <q-btn flat @click="addingToOpenFrame" color="primary">
+          Add to {{ frameBeingEdited.typeId }}
+        </q-btn>
+        <div>{{ frameBeingEdited.shortName }}</div>
+      </q-card-actions>
+      <q-card-actions v-if="frames.length > 0">
+        <div class="label">Or</div>
+        <q-btn flat @click="addingToExistingFrame" color="primary">
+          Add to other frame
         </q-btn>
       </q-card-actions>
       <q-card-actions>
@@ -44,6 +51,9 @@ export default {
     frameTypes: frameTypes
   }),
   computed: {
+    frameBeingEdited() {
+        return this.$store.state.frameBeingEdited
+    },
     annotation() {
       return this.$store.state.annotationBeingEdited;
     },
@@ -71,6 +81,8 @@ export default {
   methods: {
     frameTypeButtonClicked(frameTypeId) {
       //create new frame, set annotation's frame to this new frame
+      //or, if the frame is an act or claimduty, add the sentences of the annotation
+      //to the sourceSentences of the act / claimduty
       this.$store.commit("addNewFrame", {
         frameTypeId: frameTypeId,
         subTypeId: null,
@@ -82,6 +94,20 @@ export default {
     },
     cancelAnnotation() {
       this.$store.commit("deleteAnnotation", this.annotation) // == annotationBeingEdited
+      this.$store.state.annotationBeingEdited = null
+    },
+    addingToOpenFrame() {
+      if (this.frameBeingEdited.typeId == "fact") {
+        this.annotation.frame = this.frameBeingEdited
+      } else {
+        //get sentences for this annotation
+        const sentences = this.snippetsForThisAnnotation
+          .map(snippet => snippet.sentence)
+          .filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index)
+          .filter(sentence => !(this.frameBeingEdited.sourceSentences.some(s => s.id == sentence.id)))
+        this.frameBeingEdited.sourceSentences = this.frameBeingEdited.sourceSentences.concat(sentences)
+        this.$store.commit("deleteAnnotation", this.annotation)
+      }
       this.$store.state.annotationBeingEdited = null
     },
     addingToExistingFrame() {

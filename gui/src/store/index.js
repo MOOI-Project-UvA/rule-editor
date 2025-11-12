@@ -69,12 +69,27 @@ const store = createStore({
           break;
       }
       frame.typeId = frameTypeId;
-      if (subTypeId) {
-        frame.subTypeId = subTypeId;
+      if (subTypeId && !frame.subTypeIds.includes(subTypeId)) {
+        frame.subTypeIds.push(subTypeId);
       }
 
+      //add annotation to frame, if frame is type fact.
+      //else add annotation's sentences to sourceSentences of act / claim-duty
       if (annotation) {
-        annotation.frame = frame;
+        if (frameTypeId == "fact") {
+          annotation.frame = frame;
+        } else {
+          //get sentences for this annotation
+          frame.sourceSentences = state.sourceDocuments
+            .map(doc => doc.getSnippetsForAnnotation(annotation))
+            .flat()
+            .map(snippet => snippet.sentence)
+            .filter((sentence, index, sentences) => sentences.findIndex(s => s.id == sentence.id) === index);
+          //delete annotation (since it is not assigned to any frame)
+          state.sourceDocuments.forEach((doc) => {
+            doc.deleteAnnotation(annotation);
+          });
+        }
       }
 
       state.frames = [...state.frames, frame];

@@ -19,7 +19,7 @@
                 f.typeId == frameTypeId &&
                 f.subTypeIds.includes(subTypeId),
         )">
-                            <FrameChip :frame="frame" @frameclicked="onClick(frame)"/>
+                            <FrameChip :frame="frame"/>
                         </div>
                     </div>
                 </div>
@@ -68,39 +68,7 @@ export default {
         booleanConstructBeingEdited() {
             return this.$store.state.booleanConstructBeingEdited
         }
-    },
-    methods: {
-        onClick(frame) {
-            console.log("clicked frame", frame)
-            if (
-                this.addingAnnotationToExistingFrame
-            ) {
-                //add annotation to this frame
-                this.$store.state.annotationToBeAddedToExistingFrame.frame = frame
-                this.$store.state.addingAnnotationToExistingFrame = false;
-                this.$store.state.annotationToBeAddedToExistingFrame = null;
-            } else if (
-                this.frameBeingEdited &&
-                'activeField' in this.frameBeingEdited &&
-                this.frameBeingEdited.activeField
-            ) {
-                //add frame to field in frame being edited
-                console.log("adding frame to", this.frameBeingEdited);
-                this.frameBeingEdited.addFrame(frame);
-                this.frameBeingEdited.activeField = null
-            } else if (this.booleanConstructBeingEdited) {
-                this.booleanConstructBeingEdited.frame = frame;
-                this.$store.state.booleanConstructBeingEdited = null;
-            } else {
-                //open this frame in edit panel
-                this.$store.state.frameBeingEdited = frame
-                //if the frame is not yet in the list of edited frames, add it
-                if (!(this.framesOpenInEditor.some(f => f.id == frame.id))) {
-                    this.$store.state.framesOpenInEditor = [...this.$store.state.framesOpenInEditor, frame]
-                }
-            }
-        },
-    },
+    }
 }
 </script>
 

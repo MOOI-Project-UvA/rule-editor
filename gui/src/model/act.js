@@ -18,7 +18,8 @@ class Act {
 
         this._comments = []
 
-        this._generateLabelAutomatically = true //by default, label is generated automatically
+        this._generateLabelAutomatically = true //by default, label is generated automatically TODO: generate on user request
+        this.sourceSentences = []
     }
     get id() { return this._id }
     set id(id) { this._id = id }
@@ -60,23 +61,32 @@ class Act {
     get terminates() { return this._terminates }
     set terminates(terminates) { this._terminates = terminates }
 
-    get allowedSubTypesForActiveField() {
-        switch (this._activeField) {
-            case 'action':
-                return ['action']
-            case 'actor':
-                return ['agent']
-            case 'object':
-                return ['object']
-            case 'recipient':
-                return ['agent']
-            case 'creates':
-                return ['agent', 'action', 'object']
-            case 'terminates':
-                return ['agent', 'action', 'object']
-            default:
-                return []
+    //get all frames in this Act: from its roles, precondition, and postcondition
+    //including all sub-frames of those frames
+    get allFrames() {
+        const framesInRoles = ["_action", "_actor", "_object", "_recipient"].map(roleName =>
+            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
+        ).flat()
+        const framesInPrecondition = this._precondition.allFrames
+        const framesInPostcondition = ["_creates", "_terminates"].map(attrName =>
+            this[attrName].map(frame => [frame, ...frame.allFrames]).flat()
+        ).flat()
+        //get unique frames
+        const frames = [...framesInRoles, ...framesInPrecondition, ...framesInPostcondition]
+            .filter((value, index, self) => self.indexOf(value) === index)
+        return frames
+    }
+
+    getSubTypeIdForActiveField() {
+        const subTypeIdPerRole = {
+            "action": "action",
+            "actor": "agent",
+            "object": "object",
+            "recipient": "agent"
         }
+        return this._activeField in subTypeIdPerRole
+            ? subTypeIdPerRole[this._activeField]
+            : null
     }
 
     get comments() { return this._comments }
@@ -84,6 +94,12 @@ class Act {
 
     get generateLabelAutomatically() { return this._generateLabelAutomatically }
     set generateLabelAutomatically(generateLabelAutomatically) { this._generateLabelAutomatically = generateLabelAutomatically }
+
+    //sentences that contain source of this act. either because one of its parts has an annotation in the sentence
+    //or because the user explicitly added the sentence from the source
+    get sourceSentences() { return this._sourceSentences }
+    set sourceSentences(sourceSentences) { this._sourceSentences = sourceSentences }
+
 
     addFrame(fact) {
         //todo: replace this code with: this[this._activeField] = fact
@@ -149,6 +165,10 @@ class Act {
             creates: this.creates.map(f => f.id),
             terminates: this.terminates.map(f => f.id),
             comments: this.comments.map(c => c.toFlatObject()),
+            sourceSentences: this.sourceSentences.map(s => ({
+                documentId: s.sourceDocument.id,
+                sentenceId: s.id
+            }))
         }
     }
 
@@ -165,7 +185,7 @@ class Act {
         this._recipient = frameData.recipientId ? allFrames.find(f => f.id == frameData.recipientId) : null
         this._creates = frameData.creates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
         this._terminates = frameData.terminates.map(id => allFrames.find(f => f.id == id)).filter(f => f !== undefined)
-        //annotations and comments are set in parseJsonToInterpretation in importExport.js
+        //annotations, sourceSentences and comments are set in parseJsonToInterpretation in importExport.js
         this._generateLabelAutomatically = false
     }
 

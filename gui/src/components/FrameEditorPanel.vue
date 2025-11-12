@@ -1,42 +1,45 @@
 <template>
-  <div class="row">
-    <div v-if="framesOpenInEditor.length > 0" class="col-2 bg-grey-12 q-pa-md q-ma-sm">
-      <div class="text-bold">
-        Editing:
-      </div>
-      <div v-for="frame in framesOpenInEditor">
-        <div class="edit-entry">
-          <div :class="{ dot: frame == frameBeingEdited }" />
-          <div class="text-white frame-label chip ellipsis" style="max-width: 200px;"
-            :class="`bg-${getFrameColor(frame)}`"
-            @click="frameChipClicked(frame)">
-            {{ frame.shortName != "" ? frame.shortName : frame.typeId == 'fact' && frame.subTypeId ?
-      frameTypes.fact.subTypes[frame.subTypeId].label : frameTypes[frame.typeId].label }}
-          </div>
+
+    <div v-if="framesOpenInEditor.length > 0" class="bg-grey-12 q-pa-md q-ma-sm">
+      <div class="row">
+        <div class="text-bold col">Editing:</div>
+        <div v-if="framesOpenInEditor.length > 1" class="col text-italic text-right text-underline cursor-pointer"
+          @click="$store.state.framesOpenInEditor = [frameBeingEdited]">Close all but current
         </div>
       </div>
+      
+      <div class="chips">
+        <div class="row" v-for="frame in framesOpenInEditor">
+          <div :class="{ dot: frame == frameBeingEdited }" />
+          <FrameChip :frame="frame"/>
+        </div>
+      </div>
+      <div>
+
+      </div>
     </div>
-    <div class="col">
-      <q-card flat bordered v-if="frameBeingEdited" class="my-card q-ma-sm">
-        <template v-if="frameBeingEdited.typeId == 'fact'">
-          <FactFrameForm />
-        </template>
-        <template v-else-if="frameBeingEdited.typeId == 'act'">
-          <ActFrameForm />
-        </template>
-        <template v-else-if="frameBeingEdited.typeId == 'claim_duty'">
-          <ClaimdutyFrameForm />
-        </template>
-      </q-card>
-    </div>
-  </div>
+    
+    <q-card flat bordered v-if="frameBeingEdited" class="my-card q-ma-sm">
+      <template v-if="frameBeingEdited.typeId == 'fact'">
+        <FactFrameForm />
+      </template>
+      <template v-else-if="frameBeingEdited.typeId == 'act'">
+        <ActFrameForm />
+      </template>
+      <template v-else-if="frameBeingEdited.typeId == 'claim_duty'">
+        <ClaimdutyFrameForm />
+      </template>
+    </q-card>
+
+
 
 </template>
 
 <script>
-import ActFrameForm from "../components/ActFrameForm.vue";
-import FactFrameForm from "../components/FactFrameForm.vue";
-import ClaimdutyFrameForm from "../components/ClaimdutyFrameForm.vue";
+import ActFrameForm from "./ActFrameForm.vue";
+import FactFrameForm from "./FactFrameForm.vue";
+import ClaimdutyFrameForm from "./ClaimdutyFrameForm.vue";
+import FrameChip from "./FrameChip.vue";
 import { icons, colors } from "../helpers/config.js";
 import { frameTypes } from "../model/frame";
 
@@ -50,6 +53,7 @@ export default {
     ActFrameForm,
     FactFrameForm,
     ClaimdutyFrameForm,
+    FrameChip
   },
   computed: {
     frameBeingEdited() {
@@ -101,23 +105,11 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.chip {
-  user-select: none;
-  cursor: pointer;
-}
 
-.frame-label {
-  border-radius: 4px;
-  padding: 4px 6px;
-  font-size: 10pt;
-  line-height: 1rem;
-  margin: 2px;
-}
-
-.edit-entry {
-  display: grid;
-  grid-template-columns: 8px auto;
-  column-gap: 2px;
+.chips {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .dot {

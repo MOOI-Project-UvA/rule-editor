@@ -34,8 +34,9 @@ export function getStyleForUnderlining(snippet, activeFrame) {
     //loop through all annotations for this snippet and build the backgroundStyle.
     //keep track of the lowest position of any line, to calculate the backgroundSize
     let backgroundSize = charHeight
-    snippet.annotations.sort((a1, a2) => a1.verticalPosition - a2.verticalPosition)
-    snippet.annotations.forEach((annotation) => {
+    let annotations = snippet.annotations
+    annotations.sort((a1, a2) => a1.verticalPosition - a2.verticalPosition)
+    annotations.forEach((annotation) => {
         let lineColor
         if (annotation.frame) {
             lineColor = annotation.frame.typeId != "fact" || annotation.frame.subTypeIds.length == 0
@@ -84,7 +85,6 @@ export function getStyleForUnderlining(snippet, activeFrame) {
 
 export function getStyleForLineSpacing(sentence) {
     //line spacing is determined by the snippet with the lowest annotation line
-
     const annotationsInSentence = sentence.snippets.map(s => s.annotations)
         .flat()
         .filter((value, index, array) => array.indexOf(value) === index);
@@ -103,6 +103,7 @@ export function setVerticalPositionOfAnnotationLines(sourceDoc) {
         .flat()
     //for each snippet that contains annotations: sort annotations according to length, so that
     //long annotations appear closer to the source text, and shorter ones further down
+    //push annotations for Acts and ClaimDuty all the way down, they are not displayed
     snippetsWithAnnotation.forEach(snippet => {
         snippet.annotations.sort((a1, a2) => a2.nrSnippets - a1.nrSnippets)
     })
