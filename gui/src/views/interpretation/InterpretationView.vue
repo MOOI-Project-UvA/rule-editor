@@ -79,8 +79,3 @@ export default {
   <AddingAnnotationToFramePanel />
 </template>
 
-<style scoped lang="css">
-.vertical {
-  writing-mode: vertical-rl;
-}
-</style>

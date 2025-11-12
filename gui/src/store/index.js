@@ -60,7 +60,6 @@ const store = createStore({
       switch (frameTypeId) {
         case "fact":
           frame = new Fact(initialLabel);
-          frame.addSubdivision();
           break;
         case "act":
           frame = new Act();

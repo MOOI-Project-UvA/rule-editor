@@ -33,15 +33,10 @@ export class BooleanConstruct {
 
     //get all frames in this expression, on all levels
     get allFrames() {
-        let frames = []
-        if (this._frame) {
-            frames = [this._frame].concat(this._frame.subdivision.allFrames)
-        } else {
-            this._children.forEach(booleanConstruct => {
-                frames = frames.concat(booleanConstruct.allFrames)
-            })
-        }
-        return frames
+        return this._frame
+            ? this._frame.allFrames //returns this.frame and all frames in its subdivision (if any)
+            : this._children.map(booleanConstruct => booleanConstruct.allFrames)
+                .flat()
     }
 
     //get all frames in this expression, but do not consider subdivisions of frames

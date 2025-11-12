@@ -46,12 +46,10 @@ class Claimduty {
     set holder(holder) { this._holder = holder }
 
     get allFrames() {
-        const framesInRoles = ["_duty", "_claimant", "_holder"].map(roleName =>
-            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
-        )
-            .flat()
-            .filter((value, index, self) => self.indexOf(value) === index)
-        return framesInRoles
+        const dutyFrames = this._duty ? this._duty.allFrames : []
+        const claimantFrames = this._claimant ? this._claimant.allFrames : []
+        const holderFrames = this._holder ? this._holder.allFrames : []
+        return [...dutyFrames, ...claimantFrames, ...holderFrames]
     }
 
     //check if any of the roles has this frame, if so, remove it

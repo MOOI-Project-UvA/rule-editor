@@ -14,7 +14,6 @@
 <script>
 import NewFrameMenu from "../../components/NewFrameMenu.vue";
 import FramesList from "../../components/FramesList.vue";
-import Network from "../../components/Network.vue"
 import FrameEditorPanel from "../../components/FrameEditorPanel.vue";
 import { icons, colors } from "../../helpers/config";
 
@@ -23,7 +22,6 @@ export default {
     icons: icons,
     colors: colors,
     searchTerm: "",
-    view: "list" //either 'list' or 'network'
   }),
   computed: {
     sourceViewIsCollapsed() {
@@ -58,7 +56,6 @@ export default {
 
   components: {
     FramesList,
-    Network,
     NewFrameMenu,
     FrameEditorPanel,
   },
