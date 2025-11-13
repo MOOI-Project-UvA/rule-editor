@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-ma-md items-center">
+  <div class="row items-center">
     <div class="q-ml-lg row items-center q-gutter-xs cursor-pointer nav-button text-primary"
       :class="{'selected': activeView?.id == view.id}"
       v-for="view in views"

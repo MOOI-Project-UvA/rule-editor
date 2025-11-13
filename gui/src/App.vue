@@ -17,11 +17,16 @@
     limitations under the License.
   */
   -->
-  <NavigationBar v-model:activeView="activeView"/>
 
-  <div class="q-pa-md">
-    <component v-if="activeView" :is="activeView.component" />
+  <div class="column fit">
+    <div class="col-auto">
+      <NavigationBar v-model:activeView="activeView"/>
+    </div>
+    <div class="col q-px-sm scroll">
+      <component v-if="activeView" :is="activeView.component" />
+    </div>
   </div>
+  
   
   <div>
     <TaskRetrieval />
@@ -58,9 +63,12 @@ export default {
     }
     // list of action to be dispatched on mount
     this.$store.dispatch("readAvailableSources");
-    this.$store.dispatch("readAvailableSourcesInTripleStore");
-    this.$store.dispatch("readAvailableTasksInTripleStore");
+    // this.$store.dispatch("readAvailableSourcesInTripleStore");
+    // this.$store.dispatch("readAvailableTasksInTripleStore");
   },
 };
 </script>
 
+<style>
+  
+</style>

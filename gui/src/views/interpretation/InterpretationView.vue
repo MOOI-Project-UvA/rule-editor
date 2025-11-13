@@ -55,21 +55,30 @@ export default {
 </script>
 
 <template>
-  <div class="row q-gutter-x-xs">
-    <div v-for="panel in panels" :class="{ col: panel.expanded }">
-      <div v-if="panel.expanded" class="row items-center q-px-xs bg-primary">
-        <q-avatar text-color="white" size="lg" :icon="panel.icon" />
-        <div class="col text-white">{{ panel.label }}</div>
-        <q-btn round flat text-color="white" size="xs" icon="mdi-arrow-collapse-left"
-          @click="panel.expanded = false"></q-btn>
-      </div>
-      <div v-else>
-        <q-btn round color="primary" size="sm" :icon="panel.icon" @click="panel.expanded = true"></q-btn>
-      </div>
+   <div class="row fit">
+    <template v-for="panel in panels">
       <template v-if="panel.expanded">
-        <component :is="panel.component" />
+        <div class="col column fit q-mr-xs">
+          <div class="col-auto">
+            <div class="row items-center q-px-xs bg-primary">
+              <q-btn round flat text-color="white" size="sm" :icon="panel.icon" @click="panel.expanded = false"></q-btn>
+              <div class="col text-white">{{ panel.label }}</div>
+              <q-btn round flat text-color="white" size="xs" icon="mdi-arrow-collapse-left"
+                @click="panel.expanded = false"></q-btn>
+            </div>
+          </div>
+          <!-- this part scrolls -->
+          <div class="col fit scroll">
+            <component :is="panel.component" />
+          </div>
+        </div>
       </template>
-    </div>
+      <template v-else>
+        <div class="q-mr-xs">
+          <q-btn round color="primary" size="sm" :icon="panel.icon" @click="panel.expanded = true"></q-btn>
+        </div>
+      </template>
+    </template>
   </div>
   <!-- panel that appears when a new annotation is made by selecting source text -->
   <AnnotationPanel />

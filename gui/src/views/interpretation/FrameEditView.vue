@@ -89,7 +89,7 @@ export default {
 }
 
 .fill-height {
-  height: calc(100vh - 215px);
+  height: calc(100vh - 145px);
 }
 
 .scrollable {

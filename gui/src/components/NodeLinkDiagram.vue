@@ -1,16 +1,16 @@
 <template>
-    <div>Network</div>
-    <div>{{ nodes.length }} nodes</div>
-    <div>{{ links.length }} links</div>
-    <svg width="1000" height="1000">
-        <g :transform="`translate(${width / 2},${height / 2})`">
-            <g id="nodes">
-                <circle v-for="node in nodePositions" :cx="node.x" :cy="node.y" r="5"
-                    fill="#000000" stroke="#000000" stroke-width="2"
-                    @mousedown=""/>
+    <div ref="container">
+        <svg :width="width" :height="height">
+            <g :transform="`translate(${width / 2},${height / 2})`">
+                <g id="nodes">
+                    <circle v-for="node in nodePositions" :cx="node.x" :cy="node.y" r="5"
+                        fill="#000000" stroke="#000000" stroke-width="2"
+                        @mousedown=""/>
+                </g>
             </g>
-        </g>
-    </svg>
+        </svg>
+    </div>
+    
 </template>
 
 <script>
@@ -24,22 +24,32 @@ export default {
     data: () => ({
         nodePositions: [],
         linkPositions: [],
-        width: 1000,
-        height: 1000
+        width: 0,
+        height: 0
     }),
     props: {
         nodes: Array,
         links: Array
     },
     mounted() {
+        //handle event coming from forceSimulation when node positions have been calculated
         positionsUpdated.on('change', (network) => {
             this.nodePositions = network.nodePositions
             this.linkPositions = network.linkPositions
         });
+        this.setSize()
         initSimulation()
         restartSimulation(this.nodes, this.links)
     },
     computed: {
+    },
+    methods: {
+        setSize() {
+            const bbox = this.$refs.container.getBoundingClientRect()
+            console.log(bbox.width, bbox.height)
+            this.width = bbox.width
+            this.height = bbox.height
+        },
     },
     watch: {
         // nodes() {

@@ -27,6 +27,8 @@ import "@quasar/extras/mdi-v6/mdi-v6.css";
 // Import Quasar css
 import "quasar/dist/quasar.css";
 
+import './style.css'
+
 // Assumes your root component is App.vue
 // and placed in same folder as main.js
 import App from "./App.vue";
