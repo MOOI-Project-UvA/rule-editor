@@ -9,11 +9,13 @@ import AnnotationPanel from "../../components/AnnotationPanel.vue";
 import AnnotationList from "../../components/AnnotationList.vue"
 import AddingAnnotationToFramePanel from "../../components/AddingAnnotationToFramePanel.vue"
 
-import { markRaw } from 'vue' //to prevent components from becoming reactie
+import { markRaw } from 'vue'
+import NlpModal from "../../components/NlpModal.vue"; //to prevent components from becoming reactie
 
 export default {
   name: "InterpretationView",
   components: {
+    NlpModal,
     FrameListView,
     FrameEditView,
     SourceView,
@@ -77,6 +79,8 @@ export default {
   <AnnotationList />
   <!-- panel that appears when user is adding an annotation to a frame -->
   <AddingAnnotationToFramePanel />
+  <!-- panel that appears when user requests NLP recommendations -->
+  <NlpModal />
 </template>
 
 <style scoped lang="css">

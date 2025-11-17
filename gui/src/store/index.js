@@ -46,6 +46,8 @@ const store = createStore({
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
+      showNlpModal: false,
+      textSentToNlp: []
     };
   },
   mutations: {
@@ -179,6 +181,18 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
+    setNlpModal(state, value){
+        state.showNlpModal = value
+    },
+    setTextToNlp(state, payload){
+        if (Array.isArray(payload)) {
+            // Reset the array if an array is passed
+            state.textSentToNlp = payload;
+        } else {
+            // Otherwise, push the single sentence
+            state.textSentToNlp.push(payload);
+        }
+    }
   },
   actions: {
     loadInterpretationForDebugging(context) {
