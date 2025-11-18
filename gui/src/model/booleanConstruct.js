@@ -53,6 +53,8 @@ export class BooleanConstruct {
         return frames
     }
 
+    get isEmpty() { return (this._frame == null) && (!this._children.some(child => !child.isEmpty)) }
+
     addChild(child) {
         this._children.push(child);
         child.parent = this;

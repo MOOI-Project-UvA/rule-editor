@@ -2,7 +2,9 @@
    <div class="row fit">
     <template v-for="panel in panels">
       <template v-if="panel.expanded">
-        <div class="col column fit q-mr-xs">
+        <!-- if panel is not the only one expanded, and has a max width, apply the max width -->
+        <div class="col column fit q-mr-xs"
+          :style="'maxWidth' in panel && panels.filter(p => p.expanded).length > 1 ? { 'max-width': panel.maxWidth + 'px' } : ''">
           <div class="col-auto">
             <div class="row items-center q-px-xs bg-primary">
               <q-btn round flat text-color="white" size="sm" :icon="panel.icon" @click="panel.expanded = false"></q-btn>
@@ -27,7 +29,7 @@
 </template>
 
 <script>
-import { markRaw } from 'vue' //to prevent components from becoming reactie
+import { markRaw } from 'vue' //to prevent components from becoming reactive
 //use component from interpretation view to list all frames
 import FrameListView from "../interpretation/FrameListView.vue";
 import VisualizationPanel from './VisualizationPanel.vue';
@@ -45,7 +47,8 @@ export default {
         label: "Frames",
         component: markRaw(FrameListView),
         expanded: false,
-        icon: 'mdi-format-list-bulleted-square'
+        icon: 'mdi-format-list-bulleted-square',
+        maxWidth: 300
       },
       {
         label: "Network",

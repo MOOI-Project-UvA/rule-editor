@@ -9,7 +9,7 @@ import AnnotationPanel from "../../components/AnnotationPanel.vue";
 import AnnotationList from "../../components/AnnotationList.vue"
 import AddingAnnotationToFramePanel from "../../components/AddingAnnotationToFramePanel.vue"
 
-import { markRaw } from 'vue' //to prevent components from becoming reactie
+import { markRaw } from 'vue' //to prevent components from becoming reactive
 
 export default {
   name: "InterpretationView",

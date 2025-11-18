@@ -49,6 +49,9 @@ function ticked() {
             n.fy = null
         })
     }
+    positionsUpdated.emit('change',
+        { nodePositions: nodesInSimulation, linkPositions: linksInSimulation }
+    )
 }
 
 //network contains attributes nodes and links
@@ -56,7 +59,6 @@ function ticked() {
 //edges: list of objects with properties 'source' and 'target', both having
 //values that are id's of nodess
 export function restartSimulation(nodes, links) {
-    console.log("restartSimulation", nodes, links)
     nodesInSimulation = [...nodes]
     linksInSimulation = [...links]
     if (simulation) {
