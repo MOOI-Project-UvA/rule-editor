@@ -103,7 +103,7 @@ export default {
     },
     methods: {
         showPosition(node) {
-            console.log("node", node.x, node.y)
+            console.log("node", node.frame.shortName)
         },
         initZoom() {
             select(this.$refs.svg).call(zoom().on("zoom",
@@ -114,21 +114,16 @@ export default {
             ))
         },
         setSize() {
-            console.log("setting size")
             const bbox = this.$refs.container.getBoundingClientRect()
-            console.log(bbox.width, bbox.height)
             this.width = bbox.width
             this.height = bbox.height
-            console.log(this.width, this.height)
         },
         handleMouseDown(e, node) {
-            console.log("handleMouseDown")
             e.stopPropagation();
             this.draggedNode = node;
             this.mouseDownPos = [e.clientX, e.clientY]
         },
         handleMouseMove(e) {
-            //console.log("handleMouseMove")
             if (this.draggedNode) {
                 this.draggedNode.fx = this.draggedNode.x
                 this.draggedNode.fy = this.draggedNode.y
@@ -144,16 +139,12 @@ export default {
             //e.stopPropagation();
             const dragHasHappened = this.mouseDownPos &&
                 Math.abs(e.clientX - this.mouseDownPos[0]) + Math.abs(e.clientY - this.mouseDownPos[1]) > 5;
-            console.log(dragHasHappened)
             if (!this.dragHasHappened) {
-                console.log("selection")
                 //toggle node selection
                 this.$store.state.selectedNode =
                     this.selectedNode && this.selectedNode.id == this.draggedNode.id
                         ? null
                         : this.draggedNode;
-
-                console.log("selectedNode", this.selectedNode)
             }
             this.draggedNode = null
             this.mouseDownPos = null;

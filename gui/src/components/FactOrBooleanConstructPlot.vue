@@ -1,46 +1,148 @@
 <template>
-    <div>Fact or Booleanconstruct</div>
-    <q-icon name="mdi-close" color="red" size="14px"/>
-    <div v-for="node in visibleNodes">
-        {{ node.frame.shortName }}
-    </div>
+    <svg :width="width" :height="height">
+        <g :transform="`translate(${margin.left},${margin.top})`">
+            <template v-for="node in visibleNodes.filter((node) => !node.collapsed && node.outgoingLinks.length > 0)">
+                <template v-if="node.outgoingLinks.length == 1">
+                    <path
+                        :d="`M${node.outgoingLinks[0].source.position[0]},
+                        ${node.outgoingLinks[0].source.position[1]}
+                        L${node.outgoingLinks[0].target.position[0]},
+                        ${node.outgoingLinks[0].target.position[1]}`"
+                        fill="none"
+                        :stroke="dotsAndLinesColor"
+                        stroke-width="1.5"
+                    />
+                </template>
+                <template v-else>
+                     <path
+                        :d="`M${node.position[0]},${node.position[1]}
+                        L${node.position[0] + 0.5 * nodeSpacing.hor},${node.position[1]}
+                        L${node.position[0] + 0.5 * nodeSpacing.hor},
+                        ${node.outgoingLinks[node.outgoingLinks.length - 1].target
+                            .position[1] + 1.5}`"
+                        fill="none"
+                        :stroke="dotsAndLinesColor"
+                        stroke-width="3"
+                    />
+                    <line v-for="link,i in node.outgoingLinks"
+                        :x1="node.position[0] + 0.5 * nodeSpacing.hor"
+                        :x2="link.target.position[0]"
+                        :y1="link.target.position[1]"
+                        :y2="link.target.position[1]"
+                        :stroke="dotsAndLinesColor"
+                        stroke-width="0.5"
+                    />
+                </template>
+            </template>
+            <template v-for="node in visibleNodes">
+                <g
+                    :transform="`translate(${node.position[0]},${node.position[1]})`"
+                    class={node.outgoingLinks.length > 0
+                        ? node.collapsed
+                            ? "cursor-s-resize"
+                            : "cursor-n-resize"
+                        : ""}
+                    @click="() => {
+                        node.collapsed = !node.collapsed;
+                        updateNodePositions();
+                    }"
+                >
+                    <template v-if="node.negated">
+                            <Cross :color="dotsAndLinesColor" />
+                    </template>
+                    <template v-else>
+                        <circle
+                            :r="node.outgoingLinks.length > 0 ? 6 : 2"
+                            :fill="dotsAndLinesColor"
+                        />
+                    </template>
+                    <template v-if="node.outgoingLinks.length > 1">
+                        <template v-if="node.collapsed">
+                            <text
+                                font-size="10"
+                                font-weight="bold"
+                                dx="8"
+                                dy="4"
+                                :fill="dotsAndLinesColor">
+                                {{node.operator in operatorSymbols
+                                    ? operatorSymbols[node.operator]
+                                    : node.operator}}
+                            </text>
+                        </template>
+                        <template v-else>
+                            <text
+                                font-size="12"
+                                font-weight="bold"
+                                dx="10"
+                                dy="18"
+                                text-anchor="end"
+                                :fill="dotsAndLinesColor">
+                                {{node.operator in operatorSymbols
+                                    ? operatorSymbols[node.operator]
+                                    : node.operator}}
+                            </text>
+                        </template>
+                    </template>
+                    <template v-else>
+                        <text
+                            class="cursor-pointer"
+                            font-size="12"
+                            :dx="node.outgoingLinks.length == 0 && !node.negated
+                                ? 5
+                                : 8"
+                            dy="4"
+                            @mouseover="() => {
+                                $hoveredNode = node;
+                            }"
+                            @mouseout="() => {
+                                $hoveredNode = null;
+                            }">
+                            {{node.frame.shortName}}
+                        </text>
+                    </template>
+                </g>
+            </template>
+        </g>
+    </svg>
 </template>
 
 <script>
 import { Tree } from "../model/viz/tree.js";
 import { max } from "d3-array"
-
-const margin = { left: 20, right: 700, top: 16, bottom: 16 };
-const nodeSpacing = {
-    hor: 30,
-    vert: 30,
-    onlyChildVertShift: 30,
-};
-const operatorSymbols = {
-    greaterThan: ">",
-    lessThan: "<",
-    lessThanOrEqualTo: "≤",
-    greaterThanOrEqualTo: "≥",
-    equals: "==",
-    assign: "=",
-    plus: "+",
-    minus: "-",
-};
-
-const dotsAndLinesColor = "#555555";
+import Cross from "./Cross.vue"
 
 
 export default {
     data: () => ({
+        margin: { left: 20, right: 700, top: 16, bottom: 16 },
+        nodeSpacing: {
+            hor: 30,
+            vert: 30,
+            onlyChildVertShift: 30,
+        },
+        operatorSymbols: {
+            greaterThan: ">",
+            lessThan: "<",
+            lessThanOrEqualTo: "≤",
+            greaterThanOrEqualTo: "≥",
+            equals: "==",
+            assign: "=",
+            plus: "+",
+            minus: "-",
+        },
+        dotsAndLinesColor: "#555555",
         tree: null,
         visibleNodes: []
     }),
     props: {
         factOrBooleanConstruct: Object
     },
+    components: {
+        Cross
+    },
     mounted() {
         this.tree = new Tree(this.factOrBooleanConstruct);
-        console.log("this.tree", this.tree)
+        console.log("tree for", this.factOrBooleanConstruct, ":", this.tree)
         //only top node visible, or (if top node is a boolean operator) the top 2 layers
         if (this.tree.root.outgoingLinks.length == 1) {
             this.tree.root.collapsed = true;
@@ -54,10 +156,10 @@ export default {
     },
     computed: {
         width() {
-            return margin.left + max(this.visibleNodes.map((n) => n.position[0])) + margin.right;
+            return this.margin.left + max(this.visibleNodes.map((n) => n.position[0])) + this.margin.right;
         },
         height() {
-            return margin.top + max(this.visibleNodes.map((n) => n.position[1])) + margin.top;
+            return this.margin.top + max(this.visibleNodes.map((n) => n.position[1])) + this.margin.top;
         }
     },
     methods: {
@@ -79,7 +181,7 @@ export default {
                 node.position[0] = 0;
             } else {
                 const parentNode = node.incomingLinks[0].source;
-                node.position[0] = parentNode.position[0] + nodeSpacing.hor;
+                node.position[0] = parentNode.position[0] + this.nodeSpacing.hor;
             }
             //set y position. y position of leafs have been set in updateNodePositions
             if (!node.collapsed && node.outgoingLinks.length > 0) {
@@ -99,13 +201,12 @@ export default {
             });
             //set y-pos of visible leaf nodes
             this.getVisibleLeafNodes(this.tree.root).forEach((leaf, i) => {
-                leaf.position[1] = i * nodeSpacing.vert;
+                leaf.position[1] = i * this.nodeSpacing.vert;
             });
             //tree is null when bc is empty (no frame, no children)
             this.setNodePositions(this.tree.root);
             this.shiftDownSingleChildNodes(this.tree.root);
             this.visibleNodes = allNodes.filter((node) => node.position.length > 0);
-            console.log("this.visibleNodes", this.visibleNodes)
         },
         shiftDownSingleChildNodes(node, dy = 0) {
             //apply shift of ancestor(s)
@@ -113,7 +214,7 @@ export default {
             node.position[1] += shift;
             if (!node.collapsed) {
                 if (node.outgoingLinks.length == 1) {
-                    shift += nodeSpacing.onlyChildVertShift;
+                    shift += this.nodeSpacing.onlyChildVertShift;
                     shift = this.shiftDownSingleChildNodes(
                         node.outgoingLinks[0].target,
                         shift,
@@ -133,6 +234,9 @@ export default {
         },
         height() {
             console.log("height", this.height)
+        },
+        visibleNodes() {
+            console.log("visible nodes", this.visibleNodes)
         }
     }
 }
