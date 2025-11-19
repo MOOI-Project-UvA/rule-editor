@@ -20,6 +20,7 @@
             :indent="true"
             :showSentenceButtons="false"
             :isSourceOfSelectedFrame="false"
+            :key="displayedSourceDocument.id"
           />
         </div>
       </template>
