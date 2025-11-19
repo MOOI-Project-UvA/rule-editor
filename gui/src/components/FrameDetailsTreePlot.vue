@@ -1,13 +1,13 @@
 <template>
-    <div class="bg-light-blue-1 q-pa-sm all-pointer-events">
-        <div class="row items-center">
+    <div class="bg-white q-pa-md all-pointer-events">
+        <div class="row items-top">
             <div class="col text-h6">{{ frame.shortName }}</div>
             <div>
-                <q-btn class="cursor-pointer" icon="mdi-close" flat round dense @click="close"/>
+                <q-btn class="cursor-pointer" icon="mdi-close" size="sm" flat round dense @click="close"/>
             </div>
         </div>
         <template v-if="frame.typeId == 'act'">
-            <div class="">Precondition</div>
+            <div class="main-label">Precondition</div>
             <template v-if="!frame.precondition.isEmpty">
                 <FactOrBooleanConstructPlot
                     :factOrBooleanConstruct="frame.precondition"
@@ -16,9 +16,9 @@
             <template v-else>
                 <div>-</div>
             </template>
-             <div class="">Roles</div>
-             <div v-for="roleName in ['action', 'actor', 'object', 'recipient']">
-                <div class="">{{roleName}}</div>
+            <div class="main-label">Roles</div>
+            <div v-for="roleName in ['action', 'actor', 'object', 'recipient']">
+                <div class="text-capitalize">{{roleName}}</div>
                 <template v-if="frame[roleName]">
                     <FactOrBooleanConstructPlot
                         :factOrBooleanConstruct="frame[roleName]"
@@ -27,10 +27,61 @@
                 <template>
                     <div>-</div>
                 </template>
-             </div>
+            </div>
+            <div class="main-label">Postcondition</div>
+            <div class="">Creates</div>
+            <template v-if="frame.creates.length > 0">
+                <div v-for="createdFrame in frame.creates">
+                    <template v-if="createdFrame.typeId == 'claim_duty'">
+                        <div class="row">
+                            <div class="claimDutyDot" />
+                            <div class="text-xs">{{createdFrame.shortName}}</div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <FactOrBooleanConstructPlot
+                            :factOrBooleanConstruct="createdFrame"
+                        />
+                    </template>
+                </div>
+            </template>
+            <template v-else>
+                <div>-</div>
+            </template>
+            
+            <div class="">Terminates</div>
+            <template v-if="frame.terminates.length > 0">
+                <div v-for="terminatedFrame in frame.terminates">
+                    <template v-if="terminatedFrame.typeId == 'claim_duty'">
+                        <div class="row">
+                            <div class="claim-duty-dot" />
+                            <div class="text-xs">{{terminatedFrame.shortName}}</div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <FactOrBooleanConstructPlot
+                            :factOrBooleanConstruct="terminatedFrame"
+                        />
+                    </template>
+                </div>
+            </template>
+            <template v-else>
+                <div>-</div>
+            </template>
         </template>
         <template v-if="frame.typeId == 'claim_duty'">
-
+            <div class="main-label">Roles</div>
+            <div v-for="roleName in ['duty', 'claimant', 'holder']">
+                <div class="text-capitalize">{{roleName}}</div>
+                <template v-if="frame[roleName]">
+                    <FactOrBooleanConstructPlot
+                        :factOrBooleanConstruct="frame[roleName]"
+                    />
+                </template>
+                <template>
+                    <div>-</div>
+                </template>
+            </div>
         </template>
     </div>
 </template>
@@ -58,87 +109,16 @@ export default {
 </script>
 
 
-<!--
-<div>
-
-    {#if $selectedNode.frame.typeId == "act"}
-        <div class="text-sm text-[#ffffff] bg-[#1F85DE] p-1">Precondition</div>
-        {#if !$selectedNode.frame.precondition.isEmpty}
-            <FactOrBooleanConstructPlot
-                factOrBooleanConstruct={$selectedNode.frame.precondition}
-            />
-        {:else}
-            <div>-</div>
-        {/if}
-        <div class="text-sm text-[#ffffff] bg-[#1F85DE] p-1">Roles</div>
-        {#each ["action", "actor", "object", "recipient"] as roleName}
-            <div class="text-xs font-bold capitalize bg-[#eeeeee]">
-                {roleName}
-            </div>
-            {#if $selectedNode.frame[roleName]}
-                <FactOrBooleanConstructPlot
-                    factOrBooleanConstruct={$selectedNode.frame[roleName]}
-                />
-            {:else}
-                <div>-</div>
-            {/if}
-        {/each}
-        <div class="text-sm text-[#ffffff] bg-[#1F85DE] p-1">Postcondition</div>
-        <div class="text-xs font-bold bg-[#eeeeee] p-1">Creates</div>
-        {#if $selectedNode.frame.creates.length > 0}
-            {#each $selectedNode.frame.creates as frame}
-                
-                {#if frame.typeId == "claim_duty"}
-                    <div class="flex gap-1 items-center ml-2 p-1">
-                        <div class="claimDutyDot" />
-                        <div class="text-xs">{frame.shortName}</div>
-                    </div>
-                {:else}
-                    <FactOrBooleanConstructPlot
-                        factOrBooleanConstruct={frame}
-                    />
-                {/if}
-            {/each}
-        {:else}
-            <div>-</div>
-        {/if}
-        <div class="text-xs font-bold bg-[#eeeeee] p-1">Terminates</div>
-        {#if $selectedNode.frame.terminates.length > 0}
-            {#each $selectedNode.frame.terminates as frame}
-                
-                {#if frame.typeId == "claim_duty"}
-                    <div class="flex gap-1 items-center ml-2 p-1">
-                        <div class="claimDutyDot" />
-                        <div class="text-xs">{frame.shortName}</div>
-                    </div>
-                {:else}
-                    <FactOrBooleanConstructPlot
-                        factOrBooleanConstruct={frame}
-                    />
-                {/if}
-            {/each}
-        {:else}
-            <div>-</div>
-        {/if}
-    {:else if $selectedNode.frame.typeId == "claim_duty"}
-        <div class="text-sm text-[#ffffff] bg-[#1F85DE] p-1">Roles</div>
-        {#each ["duty", "claimant", "holder"] as roleName}
-            <div class="text-xs font-bold capitalize bg-[#eeeeee]">
-                {roleName}
-            </div>
-            {#if $selectedNode.frame[roleName]}
-                <FactOrBooleanConstructPlot
-                    factOrBooleanConstruct={$selectedNode.frame[roleName]}
-                />
-            {:else}
-                <div>-</div>
-            {/if}
-        {/each}
-    {/if}
-</div>-->
-
 <style>
-    .claimDutyDot {
+    .main-label {
+        background-color: #b6d1ec;
+        /* color: #ffffff; */
+        padding: 2px 6px;
+        font-size: 10pt;
+        font-weight: bold;
+        margin-top:4px;
+    }
+    .claim-duty-dot {
         width: 12px;
         height: 12px;
         border-radius: 6px;

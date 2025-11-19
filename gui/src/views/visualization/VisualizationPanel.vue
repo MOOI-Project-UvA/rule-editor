@@ -43,7 +43,7 @@ export default {
     position:absolute;
     top:10px;
     bottom:10px;
-    right: 0px;
+    right: 10px;
     width: 400px;
 }
 </style>

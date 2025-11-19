@@ -5,7 +5,7 @@
             <rect
                 :width="width"
                 :height="height"
-                fill="#ffffff"
+                fill="#fafafa"
                 @click="this.$store.state.selectedNode = null"
             />
             <defs>
