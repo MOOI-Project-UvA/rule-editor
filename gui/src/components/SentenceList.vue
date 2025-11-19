@@ -52,9 +52,13 @@ export default {
     showSentenceButtons: Boolean, //if true, show little icon left of each sentence. pressing it emits an event, e.g. to be used to adapt another view
     showDeleteButtons: Boolean, //if true show a delete button next to each sentence. pressing it emits an event, to delete the sentence from the source of an act/claim-duty
     isSourceOfSelectedFrame: Boolean //if true, this list is in the 'source of selected frame' panel. This influences the options in the pop-up when text is selected
-    
   },
   emits: ['sentenceButtonClicked','deleteButtonClicked'],
+  mounted() {
+    if (!this.isSourceOfSelectedFrame) {
+      this.scrollToSentence()
+      }
+  },
   computed: {
     annotationBeingEdited() {
       return this.$store.state.annotationBeingEdited;
@@ -178,10 +182,14 @@ export default {
   },
   watch: {
     sentenceToScrollTo() {
-      this.scrollToSentence()
+      if (!this.isSourceOfSelectedFrame) {
+        this.scrollToSentence()
+      }
     },
     sentences() {
+      if (!this.isSourceOfSelectedFrame) {
       this.scrollToSentence()
+      }
     }
   },
 };
