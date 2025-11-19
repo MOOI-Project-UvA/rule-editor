@@ -14,6 +14,15 @@ export class Fact {
         this._parents = [] //keep track of relation frames that this fact has a role in. later: also subdivision, booleanconstruct, etc
     }
 
+
+     /*
+      It adds an extra level of hierarchy, since a fact can not be without function. It should be used when a user
+      adds an extra level of hierarchy, since a fact can not be without function.
+    */
+    addSubdivision() {
+      this._subdivision.subdivide();
+    }
+
     get id() { return this._id }
     set id(id) { this._id = id }
 

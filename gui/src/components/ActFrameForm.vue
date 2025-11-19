@@ -90,9 +90,10 @@
         />
 
         <div class="label">Precondition</div>
-        <TreeviewBooleanConstruct
+        <draggable-tree-view
           :boolean-construct="frame.precondition"
-        ></TreeviewBooleanConstruct>
+          origin="Act"
+        ></draggable-tree-view>
 
         <div class="label">Postcondition</div>
         <RoleSelector
@@ -172,6 +173,7 @@ import {
 } from "../helpers/annotating.js";
 import { Annotation } from "../model/annotation";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
+import DraggableTreeView from "./DraggableTreeView.vue";
 export default {
   emits: ["closed"],
   data: () => ({
@@ -192,7 +194,7 @@ export default {
   },
   computed: {
     sourceDocuments() {
-      return this.$store.state.sourceDocuments
+      return this.$store.state.sourceDocuments;
     },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
@@ -214,7 +216,7 @@ export default {
   methods: {
     closeFrame() {
       this.frame.activeField = null;
-      this.$store.state.booleanConstructBeingEdited = null
+      this.$store.state.booleanConstructBeingEdited = null;
       this.$store.commit("removeFrameFromEditList", this.frame);
     },
     deleteFrame() {
@@ -343,6 +345,7 @@ export default {
   },
   components: {
     TreeviewBooleanConstruct,
+    DraggableTreeView,
     RoleSelector,
     CommentsList,
     BooleanConstructPanel,

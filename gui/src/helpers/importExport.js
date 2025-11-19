@@ -1,12 +1,12 @@
-import { Task } from "../model/task.js"
-import { SourceDocument } from '../model/sourceDocument.js'
-import { Fact } from '../model/fact.js'
-import { Act } from "../model/act.js"
-import { Claimduty } from '../model/claimduty.js'
-import { Annotation } from '../model/annotation.js'
-import { Snippet } from '../model/snippet.js'
-import { Comment } from '../model/comment.js'
-import { setVerticalPositionOfAnnotationLines } from "./underlining.js"
+import { Task } from "../model/task.js";
+import { SourceDocument } from "../model/sourceDocument.js";
+import { Fact } from "../model/fact.js";
+import { Act } from "../model/act.js";
+import { Claimduty } from "../model/claimduty.js";
+import { Annotation } from "../model/annotation.js";
+import { Snippet } from "../model/snippet.js";
+import { Comment } from "../model/comment.js";
+import { setVerticalPositionOfAnnotationLines } from "./underlining.js";
 
 function convertInterpretationToJson(task, frames, sourceDocuments) {
     const sourceDocsString = sourceDocuments.map(doc => ({
@@ -54,9 +54,8 @@ function parseJsonToInterpretation(jsonText) {
         task.interpretation = parsedInterpretation.interpretation //iri
     }
 
-
-    let sourceDocs = []
-    let frames = []
+    let sourceDocs = [];
+    let frames = [];
 
     //read sourceDocs from loaded interpretation
     parsedInterpretation.sourceDocs.forEach(doc => {
@@ -69,25 +68,28 @@ function parseJsonToInterpretation(jsonText) {
         sourceDocs.push(sourceDoc)
     })
 
-    // create an empty frame for each frame in the loaded json
-    // each frame gets its id from the json data
-    parsedInterpretation.frames.forEach(d => {
-        let frame
-        //create empty frame of correct type
-        switch (d.typeId) {
-            case 'fact':
-                frame = new Fact()
-                break
-            case 'act':
-                frame = new Act()
-                break
-            case 'claim_duty':
-                frame = new Claimduty()
-                break
-        }
-        frame.id = d.id //overwrite generated id
-        frames.push(frame)
-    })
+  // create an empty frame for each frame in the loaded json
+  // each frame gets its id from the json data
+  parsedInterpretation.frames.forEach((d) => {
+    let frame;
+    //create empty frame of correct type
+    switch (d.typeId) {
+      case "fact":
+        frame = new Fact();
+        // adds an extra layer of hierarchy for correct rendering of the subdivision
+        // in the fact form
+        frame.addSubdivision();
+        break;
+      case "act":
+        frame = new Act();
+        break;
+      case "claim_duty":
+        frame = new Claimduty();
+        break;
+    }
+    frame.id = d.id; //overwrite generated id
+    frames.push(frame);
+  });
 
     // Go to the loaded json once more, and fill each frame with data
     // while replacing references by ID with references to frame objects
@@ -180,17 +182,19 @@ function parseJsonToInterpretation(jsonText) {
         }
     })
 
-    //update underlining of annotations in the source text. each annotation contains the
-    //vertical position of the underline
-    sourceDocs.forEach(sourceDoc => {
-        setVerticalPositionOfAnnotationLines(sourceDoc)
-    })
+    console.log("frames loaded")
 
-    return {
-        task: task,
-        sourceDocs: sourceDocs,
-        frames: frames,
-    }
+  //update underlining of annotations in the source text. each annotation contains the
+  //vertical position of the underline
+  sourceDocs.forEach((sourceDoc) => {
+    setVerticalPositionOfAnnotationLines(sourceDoc);
+  });
+
+  return {
+    task: task,
+    sourceDocs: sourceDocs,
+    frames: frames,
+  };
 }
 
 
