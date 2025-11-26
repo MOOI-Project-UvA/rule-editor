@@ -105,7 +105,7 @@ export default {
     },
     methods: {
         showPosition(node) {
-            console.log("node", node.frame.shortName)
+            //console.log("node", node.frame.shortName)
         },
         initZoom() {
             select(this.$refs.svg).call(zoom().on("zoom",
@@ -137,7 +137,6 @@ export default {
             }
         },
         handleMouseUp(e) {
-            console.log("draggedDistance", this.draggedDistance);
             if (this.draggedDistance < 3) {
                 //no drag, but selection only
                 this.$store.state.selectedNode =
