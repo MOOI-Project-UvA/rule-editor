@@ -71,3 +71,7 @@ export function restartSimulation(nodes, links) {
     }
 }
 
+export function stopSimulation() {
+    simulation.stop()
+}
+

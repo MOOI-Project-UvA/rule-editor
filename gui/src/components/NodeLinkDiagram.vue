@@ -60,7 +60,8 @@
 import {
         initSimulation,
         restartSimulation,
-        positionsUpdated
+        positionsUpdated,
+        stopSimulation
     } from "../helpers/forceSimulation.js";
 import NodePanel from "./NodePanel.vue"
 import { select } from "d3-selection"
@@ -72,6 +73,7 @@ export default {
         width: 0,
         height: 0,
         draggedNode: null,
+        draggedDistance: 0,
         mouseDownPos: null, //to see if node is just clicked or also dragged
         currentZoomLevel: 1,
         edgeColor: "#666666",
@@ -122,31 +124,34 @@ export default {
             e.stopPropagation();
             this.draggedNode = node;
             this.mouseDownPos = [e.clientX, e.clientY]
+            //halt simulation
+            stopSimulation()
+
         },
         handleMouseMove(e) {
             if (this.draggedNode) {
-                this.draggedNode.fx = this.draggedNode.x
-                this.draggedNode.fy = this.draggedNode.y
-                this.draggedNode.fx += e.movementX / this.currentZoomLevel;
-                this.draggedNode.fy += e.movementY / this.currentZoomLevel;
+                this.draggedDistance += Math.abs(e.movementX + e.movementY);
+                this.draggedNode.x += e.movementX / this.currentZoomLevel;
+                this.draggedNode.y += e.movementY / this.currentZoomLevel;
                 this.nodePositions = [...this.nodePositions]
-                // this.nodesInSimulation = [...this.nodesInSimulation]
-                // this.linksInSimulation = [...this.linksInSimulation]   
-                restartSimulation(this.nodePositions, this.linkPositions) 
             }
         },
         handleMouseUp(e) {
-            //e.stopPropagation();
-            const dragHasHappened = this.mouseDownPos &&
-                Math.abs(e.clientX - this.mouseDownPos[0]) + Math.abs(e.clientY - this.mouseDownPos[1]) > 5;
-            if (!this.dragHasHappened) {
-                //toggle node selection
+            console.log("draggedDistance", this.draggedDistance);
+            if (this.draggedDistance < 3) {
+                //no drag, but selection only
                 this.$store.state.selectedNode =
-                    this.selectedNode && this.selectedNode.id == this.draggedNode.id
-                        ? null
-                        : this.draggedNode;
+                        this.selectedNode && this.selectedNode.id == this.draggedNode.id
+                            ? null
+                            : this.draggedNode;
+            } else {
+                //fix position
+                this.draggedNode.fx = this.draggedNode.x
+                this.draggedNode.fy = this.draggedNode.y
+                //restart simulation?
             }
-            this.draggedNode = null
+            this.draggedNode = null;
+            this.draggedDistance = 0;
             this.mouseDownPos = null;
         },
         //to prevent arrow point overlapping with node
@@ -159,7 +164,7 @@ export default {
                 y2 - (this.arrowSize / length) * deltaY
             ]
         },
-        getCurvedPath(x1, y1, x2, y2, adaptLength = false, curve = 30) {
+        getCurvedPath(x1, y1, x2, y2, adaptLength = false, curve = 0) {
             if (x1 == x2 && y1 == y2) {
                 //self loop. shift y1 up, and y2 down
                 y1 += 4;
@@ -182,9 +187,15 @@ export default {
             const cy = my + normY * curve;
 
             return `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`;
-        }
+        },
     },
     watch: {
     }
 }
 </script>
+
+<style>
+    text {
+        user-select: none;
+    }
+</style>

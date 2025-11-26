@@ -8,7 +8,7 @@
             :y2="size"
             :stroke="color"
             :stroke-width="strokeWidth"
-            :stroke-linecap="round"
+            stroke-linecap="round"
         />
         <line
             :x1="size"
@@ -17,7 +17,7 @@
             :y2="size"
             :stroke="color"
             :stroke-width="strokeWidth"
-            :stroke-linecap="round"
+            stroke-linecap="round"
         />
     </g>
 </template>
