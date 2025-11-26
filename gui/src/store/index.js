@@ -46,6 +46,7 @@ const store = createStore({
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
+      selectedNode: null //node that is selected in the network visualization
     };
   },
   mutations: {
@@ -60,7 +61,6 @@ const store = createStore({
       switch (frameTypeId) {
         case "fact":
           frame = new Fact(initialLabel);
-          frame.addSubdivision();
           break;
         case "act":
           frame = new Act();

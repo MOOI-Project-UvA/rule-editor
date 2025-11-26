@@ -1,5 +1,5 @@
 <template>
-    <div class="fill-height scrollable q-pa-sm" v-if="frameBeingEdited">
+    <div class="fit scroll q-pa-sm" v-if="frameBeingEdited">
        <div v-if="frameBeingEdited.typeId != 'fact'">
         <span class="text-sm">Show source of</span>
         <q-checkbox v-model="showSourceOfPrecondition" size="xs">precondition</q-checkbox>
@@ -91,6 +91,6 @@ export default {
 }
 
 .fill-height {
-  height: calc(100vh - 250px);
+  height: calc(100vh - 180px);
 }
 </style>
