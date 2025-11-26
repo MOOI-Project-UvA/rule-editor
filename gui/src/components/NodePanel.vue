@@ -15,7 +15,14 @@
                 :stroke="this.selectedNode && node.id != this.selectedNode.id ? this.grayedOutColor : roleColors[role]"
                 r="4"
             />
+            
         </g>
+        <text
+                font-size="12"
+                dx="16"
+                dy="5"
+                fill="#111111">{{node.frame.shortName}}</text
+            >
     </g>
 </template>
 

@@ -1,23 +1,23 @@
 <template>
     <g>
-        <circle r={backgroundRadius} fill={backgroundColor} />
+        <circle :r="backgroundRadius" :fill="backgroundColor" />
         <line
-            x1={-size}
-            y1={-size}
-            x2={size}
-            y2={size}
-            stroke={color}
-            stroke-width={strokeWidth}
-            stroke-linecap="round"
+            :x1="-size"
+            :y1="-size"
+            :x2="size"
+            :y2="size"
+            :stroke="color"
+            :stroke-width="strokeWidth"
+            :stroke-linecap="round"
         />
         <line
-            x1={size}
-            y1={-size}
-            x2={-size}
-            y2={size}
-            stroke={color}
-            stroke-width={strokeWidth}
-            stroke-linecap="round"
+            :x1="size"
+            :y1="-size"
+            :x2="-size"
+            :y2="size"
+            :stroke="color"
+            :stroke-width="strokeWidth"
+            :stroke-linecap="round"
         />
     </g>
 </template>

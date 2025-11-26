@@ -53,6 +53,7 @@ export class BooleanConstruct {
         return frames
     }
 
+    //true if there is no frame down the tree
     get isEmpty() { return (this._frame == null) && (!this._children.some(child => !child.isEmpty)) }
 
     addChild(child) {

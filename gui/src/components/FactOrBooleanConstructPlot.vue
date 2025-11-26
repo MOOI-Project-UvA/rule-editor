@@ -1,109 +1,111 @@
 <template>
-    <svg :width="width" :height="height">
-        <g :transform="`translate(${margin.left},${margin.top})`">
-            <template v-for="node in visibleNodes.filter((node) => !node.collapsed && node.outgoingLinks.length > 0)">
-                <template v-if="node.outgoingLinks.length == 1">
-                    <path
-                        :d="`M${node.outgoingLinks[0].source.position[0]},
-                        ${node.outgoingLinks[0].source.position[1]}
-                        L${node.outgoingLinks[0].target.position[0]},
-                        ${node.outgoingLinks[0].target.position[1]}`"
-                        fill="none"
-                        :stroke="dotsAndLinesColor"
-                        stroke-width="1.5"
-                    />
-                </template>
-                <template v-else>
-                     <path
-                        :d="`M${node.position[0]},${node.position[1]}
-                        L${node.position[0] + 0.5 * nodeSpacing.hor},${node.position[1]}
-                        L${node.position[0] + 0.5 * nodeSpacing.hor},
-                        ${node.outgoingLinks[node.outgoingLinks.length - 1].target
-                            .position[1] + 1.5}`"
-                        fill="none"
-                        :stroke="dotsAndLinesColor"
-                        stroke-width="3"
-                    />
-                    <line v-for="link,i in node.outgoingLinks"
-                        :x1="node.position[0] + 0.5 * nodeSpacing.hor"
-                        :x2="link.target.position[0]"
-                        :y1="link.target.position[1]"
-                        :y2="link.target.position[1]"
-                        :stroke="dotsAndLinesColor"
-                        stroke-width="0.5"
-                    />
-                </template>
-            </template>
-            <template v-for="node in visibleNodes">
-                <g
-                    :transform="`translate(${node.position[0]},${node.position[1]})`"
-                    class={node.outgoingLinks.length > 0
-                        ? node.collapsed
-                            ? "cursor-s-resize"
-                            : "cursor-n-resize"
-                        : ""}
-                    @click="() => {
-                        node.collapsed = !node.collapsed;
-                        updateNodePositions();
-                    }"
-                >
-                    <template v-if="node.negated">
-                            <Cross :color="dotsAndLinesColor" />
-                    </template>
-                    <template v-else>
-                        <circle
-                            :r="node.outgoingLinks.length > 0 ? 6 : 2"
-                            :fill="dotsAndLinesColor"
+    <div class="overflow-auto">
+        <svg :width="width" :height="height">
+            <g :transform="`translate(${margin.left},${margin.top})`">
+                <template v-for="node in visibleNodes.filter((node) => !node.collapsed && node.outgoingLinks.length > 0)">
+                    <template v-if="node.outgoingLinks.length == 1">
+                        <path
+                            :d="`M${node.outgoingLinks[0].source.position[0]},
+                            ${node.outgoingLinks[0].source.position[1]}
+                            L${node.outgoingLinks[0].target.position[0]},
+                            ${node.outgoingLinks[0].target.position[1]}`"
+                            fill="none"
+                            :stroke="dotsAndLinesColor"
+                            stroke-width="1.5"
                         />
                     </template>
-                    <template v-if="node.outgoingLinks.length > 1">
-                        <template v-if="node.collapsed">
-                            <text
-                                font-size="10"
-                                font-weight="bold"
-                                dx="8"
-                                dy="4"
-                                :fill="dotsAndLinesColor">
-                                {{node.operator in operatorSymbols
-                                    ? operatorSymbols[node.operator]
-                                    : node.operator}}
-                            </text>
+                    <template v-else>
+                        <path
+                            :d="`M${node.position[0]},${node.position[1]}
+                            L${node.position[0] + 0.5 * nodeSpacing.hor},${node.position[1]}
+                            L${node.position[0] + 0.5 * nodeSpacing.hor},
+                            ${node.outgoingLinks[node.outgoingLinks.length - 1].target
+                                .position[1] + 1.5}`"
+                            fill="none"
+                            :stroke="dotsAndLinesColor"
+                            stroke-width="3"
+                        />
+                        <line v-for="link,i in node.outgoingLinks"
+                            :x1="node.position[0] + 0.5 * nodeSpacing.hor"
+                            :x2="link.target.position[0]"
+                            :y1="link.target.position[1]"
+                            :y2="link.target.position[1]"
+                            :stroke="dotsAndLinesColor"
+                            stroke-width="0.5"
+                        />
+                    </template>
+                </template>
+                <template v-for="node in visibleNodes">
+                    <g
+                        :transform="`translate(${node.position[0]},${node.position[1]})`"
+                        :class="node.outgoingLinks.length > 0
+                            ? node.collapsed
+                                ? 'cursor-expand'
+                                : 'cursor-collapse'
+                            : ''"
+                        @click="() => {
+                            node.collapsed = !node.collapsed;
+                            updateNodePositions();
+                        }"
+                    >
+                        <template v-if="node.negated">
+                                <Cross :color="dotsAndLinesColor" />
+                        </template>
+                        <template v-else>
+                            <circle
+                                :r="node.outgoingLinks.length > 0 ? 6 : 2"
+                                :fill="dotsAndLinesColor"
+                            />
+                        </template>
+                        <template v-if="node.outgoingLinks.length > 1">
+                            <template v-if="node.collapsed">
+                                <text
+                                    font-size="10"
+                                    font-weight="bold"
+                                    dx="8"
+                                    dy="4"
+                                    :fill="dotsAndLinesColor">
+                                    {{node.operator in operatorSymbols
+                                        ? operatorSymbols[node.operator]
+                                        : node.operator}}
+                                </text>
+                            </template>
+                            <template v-else>
+                                <text
+                                    font-size="12"
+                                    font-weight="bold"
+                                    dx="10"
+                                    dy="18"
+                                    text-anchor="end"
+                                    :fill="dotsAndLinesColor">
+                                    {{node.operator in operatorSymbols
+                                        ? operatorSymbols[node.operator]
+                                        : node.operator}}
+                                </text>
+                            </template>
                         </template>
                         <template v-else>
                             <text
+                                class="cursor-pointer"
                                 font-size="12"
-                                font-weight="bold"
-                                dx="10"
-                                dy="18"
-                                text-anchor="end"
-                                :fill="dotsAndLinesColor">
-                                {{node.operator in operatorSymbols
-                                    ? operatorSymbols[node.operator]
-                                    : node.operator}}
+                                :dx="node.outgoingLinks.length == 0 && !node.negated
+                                    ? 5
+                                    : 8"
+                                dy="4"
+                                @mouseover="() => {
+                                    $hoveredNode = node;
+                                }"
+                                @mouseout="() => {
+                                    $hoveredNode = null;
+                                }">
+                                {{node.frame.shortName}}
                             </text>
                         </template>
-                    </template>
-                    <template v-else>
-                        <text
-                            class="cursor-pointer"
-                            font-size="12"
-                            :dx="node.outgoingLinks.length == 0 && !node.negated
-                                ? 5
-                                : 8"
-                            dy="4"
-                            @mouseover="() => {
-                                $hoveredNode = node;
-                            }"
-                            @mouseout="() => {
-                                $hoveredNode = null;
-                            }">
-                            {{node.frame.shortName}}
-                        </text>
-                    </template>
-                </g>
-            </template>
-        </g>
-    </svg>
+                    </g>
+                </template>
+            </g>
+        </svg>
+    </div>
 </template>
 
 <script>
@@ -156,10 +158,12 @@ export default {
     },
     computed: {
         width() {
-            return this.margin.left + max(this.visibleNodes.map((n) => n.position[0])) + this.margin.right;
+            const maxNodeX = this.visibleNodes.length > 0 ? max(this.visibleNodes.map((n) => n.position[0])) : 0
+            return this.margin.left + maxNodeX + this.margin.right;
         },
         height() {
-            return this.margin.top + max(this.visibleNodes.map((n) => n.position[1])) + this.margin.top;
+            const maxNodeY = this.visibleNodes.length > 0 ? max(this.visibleNodes.map((n) => n.position[1])) : 0
+            return this.margin.top + maxNodeY + this.margin.top;
         }
     },
     methods: {
@@ -241,3 +245,12 @@ export default {
     }
 }
 </script>
+
+<style>
+    .cursor-expand {
+        cursor:s-resize
+    }
+    .cursor-collapse {
+        cursor:n-resize
+    }
+</style>
