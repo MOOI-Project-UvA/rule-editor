@@ -41,12 +41,12 @@ const store = createStore({
       availableSources: [], //list of sources available in repo
       availableSourcesInTripleStore: [], //list of sources available in triple store
       task: null,
-      sourceViewIsCollapsed: false, //whether or not the panel showing the source is collapsed
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
-      selectedNode: null //node that is selected in the network visualization
+      selectedNode: null, //node that is selected in the network visualization
+
     };
   },
   mutations: {

@@ -44,9 +44,6 @@ export default {
     searchTerm: "",
   }),
   computed: {
-    sourceViewIsCollapsed() {
-      return this.$store.state.sourceViewIsCollapsed;
-    },
     frames() {
       return this.$store.state.frames;
     },
