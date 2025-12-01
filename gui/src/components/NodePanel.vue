@@ -64,7 +64,9 @@
             roles() {
                 return this.node.frame.typeId == "act"
                     ? ["actor", "object", "recipient"]
-                    : ["duty", "claimant", "holder"];
+                    : this.node.frame.typeId == "claimDuty"
+                        ? ["duty", "claimant", "holder"]
+                        : []
             },
             selectedNode() {
                 return this.$store.state.selectedNode

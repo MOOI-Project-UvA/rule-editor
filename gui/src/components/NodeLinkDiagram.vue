@@ -66,6 +66,7 @@ import {
 import NodePanel from "./NodePanel.vue"
 import { select } from "d3-selection"
 import { zoom } from "d3-zoom"
+
 export default {
     data: () => ({
         nodePositions: [],
@@ -85,6 +86,7 @@ export default {
         links: Array
     },
     mounted() {
+        console.log("NLD mounted", this.nodes, this.links)
         this.initZoom()
         //handle event coming from forceSimulation when node positions have been calculated
         positionsUpdated.on('change', (network) => {
@@ -101,7 +103,7 @@ export default {
     computed: {
         selectedNode() {
             return this.$store.state.selectedNode
-        }
+        },
     },
     methods: {
         showPosition(node) {
@@ -189,6 +191,14 @@ export default {
         },
     },
     watch: {
+        nodes() {
+            console.log("NLD nodes changed", this.nodes)
+            //restart simulation
+            restartSimulation(this.nodes, this.links)
+        },
+        links() {
+            console.log("links changed")
+        }
     }
 }
 </script>

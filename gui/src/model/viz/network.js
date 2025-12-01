@@ -4,14 +4,63 @@ import { Link } from "./link.js"
 export class Network {
     constructor(frameList) {
         console.log("Network - constructor")
-        const network = createNetwork(frameList)
-        this._nodes = network.nodes
-        this._links = network.links
+
+        const networkFromFrames = createNetwork(frameList)
+        this._nodes = networkFromFrames.nodes;
+        this._links = networkFromFrames.links;
+
         presetNodePositions(this._nodes)
     }
 
     get nodes() { return this._nodes }
-    get links() { return this._links }
+    get links() { return this._links } // do we need this? we could construct this from all outgoing links from the nodes
+
+    addNode(frame) {
+        //check if frame is already in network
+        if (!this._nodes.some(n => n.frame.id == frame.id)) {
+            console.log("adding node")
+            let node = new Node()
+            node.frame = frame
+            //this frame is a fact (because all acts and claimDuties have been permanently added to the network)
+            //check if this frame is part of any other frame
+            this._nodes.forEach(otherNode => {
+                console.log("otherNode", otherNode)
+                if (["act", "claimDuty"].includes(otherNode.frame.typeId)) {
+                    ["actor", "action", "object", "recipient", "duty", "claimant", "holder"].forEach(role => {
+                        if (role in otherNode.frame && otherNode.frame[role] && otherNode.frame[role].id == frame.id) {
+                            const link = new Link(node, otherNode, role, false)
+                            this._links.push(link)
+                            otherNode.incomingLinks.push(link)
+                            node.outgoingLinks.push(link)
+                        }
+                    })
+                } else {
+                    //other node is a fact. check if new node is part of its subdivision
+                    if (otherNode.frame.allFrames.map(f => f.id).includes(frame.id)) {
+                        const link = new Link(node, otherNode, "subdivision", false)
+                        this._links.push(link)
+                        otherNode.incomingLinks.push(link)
+                        node.outgoingLinks.push(link)
+                    } else if (frame.allFrames.map(f => f.id).includes(otherNode.frame.id)) {
+                        const link = new Link(otherNode, node, "subdivision", false)
+                        this._links.push(link)
+                        otherNode.outgoingLinks.push(link)
+                        node.incomingLinks.push(link)
+                    }
+                }
+                // if (otherNode.frame.allFrames.map(f => f.id).includes(frame.id)) {
+                //     const link = new Link(node, otherNode, "", false)
+                //     this._links.push(link)
+                //     otherNode.outgoingLinks.push(link)
+                //     node.incomingLinks.push(link)
+                // }
+            })
+            this._nodes.push(node)
+        } else {
+            //remove node
+        }
+    }
+
 }
 
 function createNetwork(frameList) {
