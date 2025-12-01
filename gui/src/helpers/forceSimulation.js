@@ -45,8 +45,11 @@ function ticked() {
     if (simulation.alpha() < 0.5) {
         //release nodes that have fixed position
         nodesInSimulation.forEach(n => {
-            n.fx = null
-            n.fy = null
+            if (!n.sticky) {
+                n.fx = null
+                n.fy = null
+            }
+
         })
     }
     positionsUpdated.emit('change',

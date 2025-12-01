@@ -107,7 +107,7 @@ export default {
     },
     methods: {
         showPosition(node) {
-            //console.log("node", node.frame.shortName)
+            console.log("node", node.fx, node.fy)
         },
         initZoom() {
             select(this.$refs.svg).call(zoom().on("zoom",
@@ -149,6 +149,7 @@ export default {
                 //fix position
                 this.draggedNode.fx = this.draggedNode.x
                 this.draggedNode.fy = this.draggedNode.y
+                this.draggedNode.sticky = true
                 //restart simulation?
             }
             this.draggedNode = null;
