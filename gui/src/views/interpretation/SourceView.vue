@@ -20,6 +20,7 @@
             :indent="true"
             :showSentenceButtons="false"
             :isSourceOfSelectedFrame="false"
+            :key="displayedSourceDocument.id"
           />
         </div>
       </template>
@@ -72,7 +73,7 @@ export default {
 }
 
 .fill-height {
-  height: calc(100vh - 250px);
+  height: calc(100vh - 18px);
 }
 
 .snippet {

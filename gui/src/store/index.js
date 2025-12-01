@@ -46,6 +46,7 @@ const store = createStore({
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
+      selectedNode: null //node that is selected in the network visualization
       showNlpModal: false,
       textSentToNlp: []
     };

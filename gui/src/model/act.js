@@ -61,22 +61,6 @@ class Act {
     get terminates() { return this._terminates }
     set terminates(terminates) { this._terminates = terminates }
 
-    //get all frames in this Act: from its roles, precondition, and postcondition
-    //including all sub-frames of those frames
-    get allFrames() {
-        const framesInRoles = ["_action", "_actor", "_object", "_recipient"].map(roleName =>
-            this[roleName] ? [this[roleName], ...this[roleName].allFrames] : []
-        ).flat()
-        const framesInPrecondition = this._precondition.allFrames
-        const framesInPostcondition = ["_creates", "_terminates"].map(attrName =>
-            this[attrName].map(frame => [frame, ...frame.allFrames]).flat()
-        ).flat()
-        //get unique frames
-        const frames = [...framesInRoles, ...framesInPrecondition, ...framesInPostcondition]
-            .filter((value, index, self) => self.indexOf(value) === index)
-        return frames
-    }
-
     getSubTypeIdForActiveField() {
         const subTypeIdPerRole = {
             "action": "action",

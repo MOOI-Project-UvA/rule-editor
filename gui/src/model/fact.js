@@ -10,17 +10,18 @@ export class Fact {
         this._subTypeIds = [] //subtype ids, a fact can have multiple subtypes
         this._comments = [] //comments from interpretor about this fact
         this._subdivision = new BooleanConstruct()
+        this.addSubdivision()
         this._isComplex = true
         this._parents = [] //keep track of relation frames that this fact has a role in. later: also subdivision, booleanconstruct, etc
     }
 
 
-     /*
-      It adds an extra level of hierarchy, since a fact can not be without function. It should be used when a user
-      adds an extra level of hierarchy, since a fact can not be without function.
-    */
+    /*
+     It adds an extra level of hierarchy, since a fact can not be without function. It should be used when a user
+     adds an extra level of hierarchy, since a fact can not be without function.
+   */
     addSubdivision() {
-      this._subdivision.subdivide();
+        this._subdivision.subdivide();
     }
 
     get id() { return this._id }
@@ -47,7 +48,10 @@ export class Fact {
     get comments() { return this._comments }
     set comments(comments) { this._comments = comments }
 
-    get allFrames() { return this._subdivision.allFrames }
+    //returns this frame and all its subframes, as a list
+    get allFrames() {
+        return [this, ...this._subdivision.allFrames]
+    }
 
     get parents() { return this._parents }
     set parents(parents) { this._parents = parents }
@@ -88,8 +92,6 @@ export class Fact {
         this.subdivision = new BooleanConstruct()
         this.subdivision.fromFlatObject(data.subdivision, allFrames)
         //annotations and comments are set in parseJsonToInterpretation in importExport.js
-
-
     }
 }
 
