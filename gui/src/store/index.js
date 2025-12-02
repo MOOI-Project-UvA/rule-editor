@@ -47,8 +47,8 @@ const store = createStore({
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
-      showNlpModal: false,
-      textSentToNlp: []
+      showNlpModal: false, // whether or not the NLP modal is open
+      textSentToNlp: [] // array of sentences to be sent to the NLP model
     };
   },
   mutations: {
