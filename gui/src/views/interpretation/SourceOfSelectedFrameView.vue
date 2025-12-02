@@ -45,11 +45,23 @@
 </template>
 <script>
 import SentenceList from "../../components/SentenceList.vue";
+// added for nlp support
 import {fetchNlpPrediction} from "../../services/ApiServices.js";
+import { Annotation } from "../../model/annotation";
+import { setVerticalPositionOfAnnotationLines } from "../../helpers/underlining.js";
+import { getSelectedRangeAsSnippets,splitAndReturnSelectedSnippets } from "../../helpers/annotating.js";
+
 export default {
   data: () => ({
     showSourceOfPrecondition: false,
     showSourceOfPostcondition: false,
+    nlpRoleToSubtype: {
+      Actor: "agent",
+      Recipient: "agent",
+      Action: "action",
+      Object: "object",
+      Duty: "duty",
+    },
   }),
   components: {
     SentenceList
@@ -98,16 +110,28 @@ export default {
       sentences.sort((s1, s2) => s1.id.localeCompare(s2.id))
       return sentences
     },
+    getRange(string, token, lastIndex) {
+      // how about a potential second occurrence of the same token?
+      const index = string.indexOf(token, lastIndex);
+      if (index !== -1) {
+        const endIndex = index + token.length;
+        return [index, endIndex];
+      } else {
+        return null;
+      }
+    },
     async sendDataToNlp(sentence) {
       sentence.loading = true;
+      console.log("sentence:", sentence)
       // store the sentence that is sent for analysis..
       this.$store.commit("setTextToNlp", sentence)
       const response = await fetchNlpPrediction(sentence.text);
-      //filter out entries with no role
+
       let entities = response.predicted_entities; //.filter(([_, role]) => role != "None")
 
       sentence.loading = false;
       console.log("entities", entities);
+      console.log("response:", response)
       //ignore entities that have special tokens like '[CLS]'.
       entities = entities.filter(
           ([token, _]) => sentence.text.indexOf(token) != -1,
@@ -115,60 +139,69 @@ export default {
 
       this.$store.commit('setNlpModal', true)
 
+      const annotations = []
+
       //current character range of subsequent tokens with equal roles
-      // let characterRangeStart = 0;
-      // let characterRangeEnd = 0;
-      // entities.forEach(([token, role], index) => {
-      //   //get start and end index of token in sentence
-      //   const tokenRange = this.getRange(
-      //     sentence.text,
-      //     token,
-      //     characterRangeEnd,
-      //   );
-      //
-      //   characterRangeEnd = tokenRange[1];
-      //
-      //   if (
-      //     (index < entities.length - 1 && role != entities[index + 1][1]) ||
-      //     index == entities.length - 1
-      //   ) {
-      //     //next token has different role, or this is last token
-      //     //create annotation for current sequence of tokens with same role
-      //     //unless the role is None
-      //     if (role != "None") {
-      //       const annotation = new Annotation();
-      //       //create fact for this annotation, use the role suggested by NLP to set the correct subtype
-      //       const subTypeId = this.nlpRoleToSubtype[role];
-      //       this.$store.commit("addNewFrame", {
-      //         frameTypeId: "fact",
-      //         subTypeId: subTypeId,
-      //         annotation: annotation,
-      //         openInEditor: false,
-      //       });
-      //       //get snippets that are covered by the character range
-      //       const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
-      //         characterRangeStart,
-      //         characterRangeEnd,
-      //       ]);
-      //       //split snippets, and return those that fit the character range
-      //       const selectedSnippets = splitAndReturnSelectedSnippets(
-      //         selectionAsSnippets,
-      //         this.frame.sourceSentences,
-      //       );
-      //       selectedSnippets.forEach((s) => {
-      //         console.log("adding", annotation, "to snippet", s);
-      //         s.addAnnotation(annotation);
-      //       });
-      //       //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
-      //       //will be closer to the text than shorter ones
-      //       annotation.nrSnippets = selectedSnippets.length;
-      //       //update underlining of annotations in the source text, for the currently showing document
-      //       setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
-      //     }
-      //     //start new sequence of tokens
-      //     characterRangeStart = tokenRange[0];
-      //   }
-      // });
+      let characterRangeStart = 0;
+      let characterRangeEnd = 0;
+      entities.forEach(([token, role], index) => {
+
+        console.log("token:", token, "role:", role, "index:", index);
+        //get start and end index of token in sentence
+        const tokenRange = this.getRange(
+          sentence.text,
+          token,
+          characterRangeEnd,
+        );
+
+        characterRangeEnd = tokenRange[1];
+
+        console.log("token range:", tokenRange)
+
+
+
+
+        // if (
+        //   (index < entities.length - 1 && role != entities[index + 1][1]) ||
+        //   index == entities.length - 1
+        // ) {
+        //   //next token has different role, or this is last token
+        //   //create annotation for current sequence of tokens with same role
+        //   //unless the role is None
+        //   if (role != "None") {
+        //     const annotation = new Annotation();
+        //     //create fact for this annotation, use the role suggested by NLP to set the correct subtype
+        //     const subTypeId = this.nlpRoleToSubtype[role];
+        //     this.$store.commit("addNewFrame", {
+        //       frameTypeId: "fact",
+        //       subTypeId: subTypeId,
+        //       annotation: annotation,
+        //       openInEditor: false,
+        //     });
+        //     //get snippets that are covered by the character range
+        //     const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
+        //       characterRangeStart,
+        //       characterRangeEnd,
+        //     ]);
+        //     //split snippets, and return those that fit the character range
+        //     const selectedSnippets = splitAndReturnSelectedSnippets(
+        //       selectionAsSnippets,
+        //       this.frameBeingEdited.sourceSentences,
+        //     );
+        //     selectedSnippets.forEach((s) => {
+        //       console.log("adding", annotation, "to snippet", s);
+        //       s.addAnnotation(annotation);
+        //     });
+        //     //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+        //     //will be closer to the text than shorter ones
+        //     annotation.nrSnippets = selectedSnippets.length;
+        //     //update underlining of annotations in the source text, for the currently showing document
+        //     setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
+        //   }
+        //   //start new sequence of tokens
+        //   characterRangeStart = tokenRange[0];
+        // }
+      });
     },
     applyNlpToSource() {
       console.log("nlp", this.frameBeingEdited.sourceSentences);
