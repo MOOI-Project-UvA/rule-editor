@@ -1,5 +1,11 @@
 <template>
-    <g>
+    <g @mouseenter="hovered = true" @mouseleave="hovered = false">
+        <g v-if="hovered">
+            <rect width="50" height="50" x="-25" y="-25" fill="#ffffff"/>
+            <g :transform="`translate(10,-10)`">
+                <text @mousedown.stop="" @mouseup.stop="" @click="$emit('delete')">x</text>
+            </g>
+        </g>
         <circle
             :fill="selectedNode && node.id != selectedNode.id
                 ? grayedOutColor
@@ -18,11 +24,12 @@
             
         </g>
         <text
-                font-size="12"
-                dx="16"
-                dy="5"
-                fill="#111111">{{node.frame.shortName}}</text
-            >
+            font-size="12"
+            dx="16"
+            dy="5"
+            fill="#111111">{{node.frame.shortName}}
+        </text>
+        
     </g>
 </template>
 
@@ -55,11 +62,13 @@
                 "claimant":subTypeColors.agent,
                 "holder":subTypeColors.agent,
             },
-            grayedOutColor: "#dddddd"
+            grayedOutColor: "#dddddd",
+            hovered: false
         }),
         props: {
             node: Object
         },
+        emits: ["delete"],
         computed: {
             roles() {
                 return this.node.frame.typeId == "act"

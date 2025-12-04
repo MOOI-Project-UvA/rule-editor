@@ -1,7 +1,7 @@
 <!-- shows the actual visualization: the overall node-link graph of acts, and the detailed tree-view of a frame -->
 <template>
     <div class="fit relative">
-        <NodeLinkDiagram v-if="network" :nodes="nodes" :links="links"/>
+        <NodeLinkDiagram v-if="network" :nodes="nodes" :links="links" @delete="deleteNode"/>
         <div v-if="selectedNode" class="overlay no-pointer-events">
             <FrameDetailsTreePlot :frame="selectedNode.frame"/>
         </div>
@@ -38,6 +38,9 @@ export default {
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
+        },
+        deleteNode(e, node) {
+            console.log("DELETE node", node)
         }
     },
     watch: {

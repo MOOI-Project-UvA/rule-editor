@@ -47,7 +47,7 @@
                             @mousedown="handleMouseDown($event, node)"
                             @mouseover="showPosition(node)"
                         >
-                            <NodePanel :node="node" />
+                            <NodePanel :node="node" @delete="$emit('delete', node)"/>
                         </g>
                     </g>
                 </g>
@@ -85,6 +85,7 @@ export default {
         nodes: Array,
         links: Array
     },
+    emits: ["delete"],
     mounted() {
         console.log("NLD mounted", this.nodes, this.links)
         this.initZoom()
@@ -107,7 +108,7 @@ export default {
     },
     methods: {
         showPosition(node) {
-            console.log("node", node.fx, node.fy)
+            //console.log("node", node.fx, node.fy)
         },
         initZoom() {
             select(this.$refs.svg).call(zoom().on("zoom",

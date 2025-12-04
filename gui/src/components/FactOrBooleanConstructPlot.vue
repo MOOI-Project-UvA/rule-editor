@@ -60,7 +60,7 @@
                         <template v-if="node.outgoingLinks.length > 1">
                             <template v-if="node.collapsed">
                                 <text
-                                    font-size="10"
+                                    font-size="11"
                                     font-weight="bold"
                                     dx="8"
                                     dy="4"
@@ -72,7 +72,7 @@
                             </template>
                             <template v-else>
                                 <text
-                                    font-size="12"
+                                    font-size="14"
                                     font-weight="bold"
                                     dx="10"
                                     dy="18"
@@ -87,19 +87,14 @@
                         <template v-else>
                             <text
                                 class="cursor-pointer"
-                                font-size="12"
+                                font-size="14"
                                 :dx="node.outgoingLinks.length == 0 && !node.negated
-                                    ? 5
-                                    : 8"
-                                dy="4"
-                                @mouseover="() => {
-                                    $hoveredNode = node;
-                                }"
-                                @mouseout="() => {
-                                    $hoveredNode = null;
-                                }">
+                                    ? 6
+                                    : 9"
+                                dy="4">
                                 {{node.frame.shortName}}
                             </text>
+                           <!-- <circle /> for adding to network --> 
                         </template>
                     </g>
                 </template>
