@@ -49,9 +49,11 @@ export default {
             return this.$store.state.frames;
         },
         filteredFrames() {
-            return this.searchTerm.length >= this.minimumLengthSearchTerm
+            let frames = this.searchTerm.length >= this.minimumLengthSearchTerm
                 ? this.frames.filter(f => f.shortName.toLowerCase().includes(this.searchTerm.toLowerCase()))
                 : this.frames
+            frames.sort((f1, f2) => f1.shortName.localeCompare(f2.shortName))
+            return frames
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited;
