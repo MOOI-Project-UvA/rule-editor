@@ -38,9 +38,14 @@ export default {
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
-        },
-        deleteNode(e, node) {
+        },       
+    },
+    methods: {
+        deleteNode(node) {
             console.log("DELETE node", node)
+            this.network.deleteNode(node)
+            this.nodes = [...this.network.nodes]
+
         }
     },
     watch: {
@@ -52,7 +57,7 @@ export default {
         },
         nodes() {
             console.log("VP nodes changed", this.nodes)
-        }
+        },
     }
 }
 </script>

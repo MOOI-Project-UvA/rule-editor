@@ -1,9 +1,9 @@
 <template>
     <g @mouseenter="hovered = true" @mouseleave="hovered = false">
         <g v-if="hovered">
-            <rect width="50" height="50" x="-25" y="-25" fill="#ffffff"/>
-            <g :transform="`translate(10,-10)`">
-                <text @mousedown.stop="" @mouseup.stop="" @click="$emit('delete')">x</text>
+            <rect width="60" height="50" x="-30" y="-30" fill="#ffffff"/>
+            <g :transform="`translate(20,-20)`">
+                <text class="" @mousedown.stop="" @mouseup.stop="" @click="$emit('delete')">x</text>
             </g>
         </g>
         <circle
@@ -82,7 +82,7 @@
             }
         },
         mounted() {
-            console.log("node", this.node)
+            //console.log("node", this.node)
         },
         methods: {
             getColor(frame) {
@@ -91,8 +91,13 @@
                 } else {
                     return typeColors[frame.typeId];
                 }
-            }
+            },
         }
     }
 </script>
 
+<style>
+.bold {
+  font-weight: bold;
+}
+</style>

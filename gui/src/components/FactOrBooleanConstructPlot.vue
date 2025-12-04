@@ -139,7 +139,6 @@ export default {
     },
     mounted() {
         this.tree = new Tree(this.factOrBooleanConstruct);
-        console.log("tree for", this.factOrBooleanConstruct, ":", this.tree)
         //only top node visible, or (if top node is a boolean operator) the top 2 layers
         if (this.tree.root.outgoingLinks.length == 1) {
             this.tree.root.collapsed = true;
@@ -229,13 +228,13 @@ export default {
     },
     watch: {
         width() {
-            console.log("width", this.width)
+            //console.log("width", this.width)
         },
         height() {
-            console.log("height", this.height)
+            //console.log("height", this.height)
         },
         visibleNodes() {
-            console.log("visible nodes", this.visibleNodes)
+            //console.log("visible nodes", this.visibleNodes)
         }
     }
 }

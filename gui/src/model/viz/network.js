@@ -60,7 +60,20 @@ export class Network {
             //remove node
         }
     }
-
+    deleteNode(node) {
+        console.log("deleting node", node)
+        const index = this._nodes.findIndex(n => n.id == node.id)
+        if (index != -1) {
+            this._nodes.splice(index, 1)
+        }
+        //remove links to and from this node
+        node.outgoingLinks.concat(node.incomingLinks).forEach(link => {
+            const index = this._links.findIndex(l => l.id == link.id)
+            if (index != -1) {
+                this._links.splice(index, 1)
+            }
+        })
+    }
 }
 
 function createNetwork(frameList) {
