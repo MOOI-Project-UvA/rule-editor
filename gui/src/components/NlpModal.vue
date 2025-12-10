@@ -138,7 +138,7 @@ export default {
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
           <q-btn flat label="OK" @click="acceptActions" :disable="this.$refs.annotatedRecommendations?.pendingCount > 0" color="primary">
-            <q-tooltip v-if="this.$refs.annotatedRecommendations?.pendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+            <q-tooltip v-if="this.$refs.annotatedRecommendations?.pendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
               There are still pending annotations. Please accept or discard them before proceeding further.
             </q-tooltip>
           </q-btn>
