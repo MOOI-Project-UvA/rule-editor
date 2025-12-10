@@ -225,15 +225,12 @@ export default {
       const results = []
 
       // send each source sentence to NLP and get the result.
-      this.frameBeingEdited.sourceSentences.forEach((sentence) => {
-        console.log("sentence:", sentence)        // set the loading indicator
-
-        // get the response from NLP for this sentence
-        const response =  this.sendDataToNlp(sentence)
-        // store the sentence analyzed and the NLP output to the results array
-        results.push({sentence: sentence, predictions: response?.predicted_entities})
-
-      });
+      for (const sentence of this.frameBeingEdited.sourceSentences) {
+        console.log("sentence:", sentence);
+        const response = await this.sendDataToNlp(sentence);
+        console.log("response:", response?.predicted_entities);
+        results.push({ sentence, predictions: response?.predicted_entities });
+      }
 
       // pass the results to the store
       this.$store.commit('setNlpResults', results)
