@@ -54,6 +54,16 @@ export default {
       this.$store.commit('setNlpModal',false);
       // remove the sentences sent for analysis to model
       this.$store.commit('setTextToNlp', []);
+    },
+    acceptActions(){
+      // TODO: what happens if there are pending recommendations yet...
+      console.log("pendingCount: ", this.$refs.annotatedRecommendations?.pendingCount)
+
+      // // close nlp modal
+      // this.$store.commit('setNlpModal',false);
+      // // remove the sentences sent for analysis to model
+      // this.$store.commit('setTextToNlp', []);
+      // TODO: make the recommendations part of the interpretation
     }
   }
 }
@@ -80,7 +90,7 @@ export default {
 <!--            :isSourceOfSelectedFrame="false"-->
 <!--          />-->
           <div class="recommendations-section">
-            <AnnotatedRecommendations :text="sampleText" :annotations="sampleAnnotations"></AnnotatedRecommendations>
+            <AnnotatedRecommendations ref="annotatedRecommendations" :text="sampleText" :annotations="sampleAnnotations"></AnnotatedRecommendations>
           </div>
           <div class="bottom q-mx-sm">
             <div class="legend">
@@ -126,7 +136,12 @@ export default {
           </div>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" @click="closeNlpModal" />
+          <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
+          <q-btn flat label="OK" @click="acceptActions" :disable="this.$refs.annotatedRecommendations?.pendingCount > 0" color="primary">
+            <q-tooltip v-if="this.$refs.annotatedRecommendations?.pendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+              There are still pending annotations. Please accept or discard them before proceeding further.
+            </q-tooltip>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-dialog>
