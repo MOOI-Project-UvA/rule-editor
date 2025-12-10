@@ -87,7 +87,7 @@ export default {
     },
     emits: ["delete"],
     mounted() {
-        console.log("NLD mounted", this.nodes, this.links)
+        console.log("NLD mounted | nodes", this.nodes, "links", this.links)
         this.initZoom()
         //handle event coming from forceSimulation when node positions have been calculated
         positionsUpdated.on('change', (network) => {

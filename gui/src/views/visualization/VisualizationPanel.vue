@@ -17,14 +17,13 @@ export default {
     data: () => ({
         nodes: [], //reactive,
         links: [], //reactive
-        network: null
     }),
     components: {
         NodeLinkDiagram,
         FrameDetailsTreePlot
     },
     created() {
-        this.network = new Network(this.frames)
+        this.$store.state.network = new Network(this.frames) //TODO: change this, so network is not recreated every time the user switches view
         this.nodes = this.network.nodes
         this.links = this.network.links
     },
@@ -38,22 +37,28 @@ export default {
         },
         frameBeingEdited() {
             return this.$store.state.frameBeingEdited
-        },       
+        },  
+        network() {
+            return this.$store.state.network
+        },
+        nodesInNetwork() {
+            return this.$store.state.network ? this.$store.state.network.nodes : [] 
+        }
     },
     methods: {
         deleteNode(node) {
             console.log("DELETE node", node)
-            this.network.deleteNode(node)
-            this.nodes = [...this.network.nodes]
-
+            this.network.deleteNode(node.frame)
         }
     },
     watch: {
-        frameBeingEdited() {
-            console.log("VP frameBeingEdited", this.frameBeingEdited)
-            this.network.addNode(this.frameBeingEdited)
-            this.nodes = [...this.network.nodes]
-            console.log("this.nodes", this.nodes)
+        nodesInNetwork() {
+            console.log("nodesInNetwork changed")
+            this.nodes = this.network.nodes
+            this.links = this.network.links
+        },
+        network() {
+            console.log("network changed")
         },
         nodes() {
             console.log("VP nodes changed", this.nodes)

@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     updateActiveView(newView) {
-      this.$emit('update:activeView', newView);
+      this.$emit('changed', newView);
     }
   }
 

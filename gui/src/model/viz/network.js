@@ -15,8 +15,10 @@ export class Network {
     get nodes() { return this._nodes }
     get links() { return this._links } // do we need this? we could construct this from all outgoing links from the nodes
 
+    set nodes(nodes) { this._nodes = nodes }
+
     addNode(frame) {
-        //check if frame is already in network
+        //check if frame is already in network. if so, do not add node.
         if (!this._nodes.some(n => n.frame.id == frame.id)) {
             console.log("adding node")
             let node = new Node()
@@ -24,7 +26,6 @@ export class Network {
             //this frame is a fact (because all acts and claimDuties have been permanently added to the network)
             //check if this frame is part of any other frame
             this._nodes.forEach(otherNode => {
-                console.log("otherNode", otherNode)
                 if (["act", "claimDuty"].includes(otherNode.frame.typeId)) {
                     ["actor", "action", "object", "recipient", "duty", "claimant", "holder"].forEach(role => {
                         if (role in otherNode.frame && otherNode.frame[role] && otherNode.frame[role].id == frame.id) {
@@ -56,23 +57,28 @@ export class Network {
                 // }
             })
             this._nodes.push(node)
+            this.nodes = [...this.nodes]
         } else {
             //remove node
         }
     }
-    deleteNode(node) {
-        console.log("deleting node", node)
-        const index = this._nodes.findIndex(n => n.id == node.id)
-        if (index != -1) {
-            this._nodes.splice(index, 1)
-        }
-        //remove links to and from this node
-        node.outgoingLinks.concat(node.incomingLinks).forEach(link => {
-            const index = this._links.findIndex(l => l.id == link.id)
-            if (index != -1) {
-                this._links.splice(index, 1)
+    deleteNode(frame) {
+        const node = this._nodes.find(n => n.frame.id == frame.id)
+        console.log("deleting node", node, "frame", frame)
+        if (node) {
+            const nodeIndex = this._nodes.findIndex(n => n.id == node.id)
+            if (nodeIndex != -1) {
+                this._nodes.splice(nodeIndex, 1)
             }
-        })
+            //remove links to and from this node
+            node.outgoingLinks.concat(node.incomingLinks).forEach(link => {
+                const index = this._links.findIndex(l => l.id == link.id)
+                if (index != -1) {
+                    this._links.splice(index, 1)
+                }
+            })
+            this.nodes = [...this.nodes]
+        }
     }
 }
 
@@ -135,6 +141,8 @@ function presetNodePositions(nodes) {
     bottomNodes.forEach(n => n.fy = 500)
 }
 
+function isConnected(frameFrom, frameTo) {
 
+}
 
 
