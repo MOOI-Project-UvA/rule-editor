@@ -48,7 +48,7 @@ const store = createStore({
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
       showNlpModal: false, // whether or not the NLP modal is open
-      textSentToNlp: [] // array of sentences to be sent to the NLP model
+      nlpResults: [] // array of sentences to be sent to the NLP model
     };
   },
   mutations: {
@@ -185,13 +185,13 @@ const store = createStore({
     setNlpModal(state, value){
         state.showNlpModal = value
     },
-    setTextToNlp(state, payload){
+    setNlpResults(state, payload){
         if (Array.isArray(payload)) {
             // Reset the array if an array is passed
-            state.textSentToNlp = payload;
+            state.nlpResults = payload;
         } else {
             // Otherwise, push the single sentence
-            state.textSentToNlp.push(payload);
+            state.nlpResults.push(payload);
         }
     }
   },

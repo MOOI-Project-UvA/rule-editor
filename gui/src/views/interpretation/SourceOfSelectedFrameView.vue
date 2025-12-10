@@ -62,6 +62,7 @@ export default {
       Object: "object",
       Duty: "duty",
     },
+    nlpIsBusy: false,
   }),
   components: {
     SentenceList
@@ -73,10 +74,10 @@ export default {
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
     },
-    nlpIsBusy() {
-      //if nlp is not ready for one or more of this act's sentences, return true
-      return this.frameBeingEdited.sourceSentences.some((s) => s.loading);
-    },
+    // nlpIsBusy() {
+    //   //if nlp is not ready for one or more of this act's sentences, return true
+    //   return this.frameBeingEdited.sourceSentences.some((s) => s.loading);
+    // },
   },
   methods: {
     //in source view, scroll to clicked sentence
@@ -120,90 +121,94 @@ export default {
         return null;
       }
     },
+    // async sendDataToNlp(sentence) {
+    //   sentence.loading = true;
+    //   console.log("sentence:", sentence)
+    //   // store the sentence that is sent for analysis..
+    //   this.$store.commit("setTextToNlp", sentence)
+    //   const response = await fetchNlpPrediction(sentence.text);
+    //
+    //   let entities = response.predicted_entities; //.filter(([_, role]) => role != "None")
+    //
+    //   sentence.loading = false;
+    //   console.log("entities", entities);
+    //   console.log("response:", response)
+    //   //ignore entities that have special tokens like '[CLS]'.
+    //   entities = entities.filter(
+    //       ([token, _]) => sentence.text.indexOf(token) != -1,
+    //   );
+    //
+    //   this.$store.commit('setNlpModal', true)
+    //
+    //   const annotations = []
+    //
+    //   //current character range of subsequent tokens with equal roles
+    //   let characterRangeStart = 0;
+    //   let characterRangeEnd = 0;
+    //   entities.forEach(([token, role], index) => {
+    //
+    //     console.log("token:", token, "role:", role, "index:", index);
+    //     //get start and end index of token in sentence
+    //     const tokenRange = this.getRange(
+    //       sentence.text,
+    //       token,
+    //       characterRangeEnd,
+    //     );
+    //
+    //     characterRangeEnd = tokenRange[1];
+    //
+    //     console.log("token range:", tokenRange)
+    //
+    //
+    //
+    //
+    //     // if (
+    //     //   (index < entities.length - 1 && role != entities[index + 1][1]) ||
+    //     //   index == entities.length - 1
+    //     // ) {
+    //     //   //next token has different role, or this is last token
+    //     //   //create annotation for current sequence of tokens with same role
+    //     //   //unless the role is None
+    //     //   if (role != "None") {
+    //     //     const annotation = new Annotation();
+    //     //     //create fact for this annotation, use the role suggested by NLP to set the correct subtype
+    //     //     const subTypeId = this.nlpRoleToSubtype[role];
+    //     //     this.$store.commit("addNewFrame", {
+    //     //       frameTypeId: "fact",
+    //     //       subTypeId: subTypeId,
+    //     //       annotation: annotation,
+    //     //       openInEditor: false,
+    //     //     });
+    //     //     //get snippets that are covered by the character range
+    //     //     const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
+    //     //       characterRangeStart,
+    //     //       characterRangeEnd,
+    //     //     ]);
+    //     //     //split snippets, and return those that fit the character range
+    //     //     const selectedSnippets = splitAndReturnSelectedSnippets(
+    //     //       selectionAsSnippets,
+    //     //       this.frameBeingEdited.sourceSentences,
+    //     //     );
+    //     //     selectedSnippets.forEach((s) => {
+    //     //       console.log("adding", annotation, "to snippet", s);
+    //     //       s.addAnnotation(annotation);
+    //     //     });
+    //     //     //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+    //     //     //will be closer to the text than shorter ones
+    //     //     annotation.nrSnippets = selectedSnippets.length;
+    //     //     //update underlining of annotations in the source text, for the currently showing document
+    //     //     setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
+    //     //   }
+    //     //   //start new sequence of tokens
+    //     //   characterRangeStart = tokenRange[0];
+    //     // }
+    //   });
+    // },
     async sendDataToNlp(sentence) {
-      sentence.loading = true;
-      console.log("sentence:", sentence)
-      // store the sentence that is sent for analysis..
-      this.$store.commit("setTextToNlp", sentence)
       const response = await fetchNlpPrediction(sentence.text);
-
-      let entities = response.predicted_entities; //.filter(([_, role]) => role != "None")
-
-      sentence.loading = false;
-      console.log("entities", entities);
-      console.log("response:", response)
-      //ignore entities that have special tokens like '[CLS]'.
-      entities = entities.filter(
-          ([token, _]) => sentence.text.indexOf(token) != -1,
-      );
-
-      this.$store.commit('setNlpModal', true)
-
-      const annotations = []
-
-      //current character range of subsequent tokens with equal roles
-      let characterRangeStart = 0;
-      let characterRangeEnd = 0;
-      entities.forEach(([token, role], index) => {
-
-        console.log("token:", token, "role:", role, "index:", index);
-        //get start and end index of token in sentence
-        const tokenRange = this.getRange(
-          sentence.text,
-          token,
-          characterRangeEnd,
-        );
-
-        characterRangeEnd = tokenRange[1];
-
-        console.log("token range:", tokenRange)
-
-
-
-
-        // if (
-        //   (index < entities.length - 1 && role != entities[index + 1][1]) ||
-        //   index == entities.length - 1
-        // ) {
-        //   //next token has different role, or this is last token
-        //   //create annotation for current sequence of tokens with same role
-        //   //unless the role is None
-        //   if (role != "None") {
-        //     const annotation = new Annotation();
-        //     //create fact for this annotation, use the role suggested by NLP to set the correct subtype
-        //     const subTypeId = this.nlpRoleToSubtype[role];
-        //     this.$store.commit("addNewFrame", {
-        //       frameTypeId: "fact",
-        //       subTypeId: subTypeId,
-        //       annotation: annotation,
-        //       openInEditor: false,
-        //     });
-        //     //get snippets that are covered by the character range
-        //     const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
-        //       characterRangeStart,
-        //       characterRangeEnd,
-        //     ]);
-        //     //split snippets, and return those that fit the character range
-        //     const selectedSnippets = splitAndReturnSelectedSnippets(
-        //       selectionAsSnippets,
-        //       this.frameBeingEdited.sourceSentences,
-        //     );
-        //     selectedSnippets.forEach((s) => {
-        //       console.log("adding", annotation, "to snippet", s);
-        //       s.addAnnotation(annotation);
-        //     });
-        //     //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
-        //     //will be closer to the text than shorter ones
-        //     annotation.nrSnippets = selectedSnippets.length;
-        //     //update underlining of annotations in the source text, for the currently showing document
-        //     setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
-        //   }
-        //   //start new sequence of tokens
-        //   characterRangeStart = tokenRange[0];
-        // }
-      });
+      return response
     },
-    applyNlpToSource() {
+    applyNlpToSource: async function () {
       console.log("nlp", this.frameBeingEdited.sourceSentences);
       // sending multiple snippets at the same time. all of them at once in the source of
       // selected frame pane ...
@@ -212,9 +217,30 @@ export default {
       // Show recommendations ...
       // accept/reject
       // integrate into the interpretation the accepted ones.
+
+      // set the loading indicator to true
+      this.nlpIsBusy = true;
+
+      // store the sentences that are sent for analysis and the results in an array.
+      const results = []
+
+      // send each source sentence to NLP and get the result.
       this.frameBeingEdited.sourceSentences.forEach((sentence) => {
-        this.sendDataToNlp(sentence);
+        console.log("sentence:", sentence)        // set the loading indicator
+
+        // get the response from NLP for this sentence
+        const response =  this.sendDataToNlp(sentence)
+        // store the sentence analyzed and the NLP output to the results array
+        results.push({sentence: sentence, predictions: response?.predicted_entities})
+
       });
+
+      // pass the results to the store
+      this.$store.commit('setNlpResults', results)
+      // set the loading indicator to false
+      this.nlpIsBusy = false;
+      // show the NLP modal window
+      this.$store.commit('setNlpModal', true)
     }
   },
   watch: {

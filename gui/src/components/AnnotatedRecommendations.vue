@@ -18,7 +18,7 @@
               {{ seg.text }}
               <span class="status-icon" v-html="statusIconSvg(seg.annotation.status)"></span>
             </button>
-
+            <!-- Popover for accepting/discarding recommendations -->
             <div
               v-if="openPopovers[seg.annotation.id]"
               class="popover"
@@ -68,6 +68,7 @@
 export default {
   name: 'AnnotatedRecommendations',
   props: {
+    index: Number,
     text: { type: String, required: true },
     annotations: { type: Array, default: () => [] }
   },
@@ -173,7 +174,17 @@ export default {
       if (status === 'discarded') return this.iconX;
       return this.iconClock;
     }
-  }
+  },
+  mounted(){
+    this.$emit('pending-count-changed', { index: this.index, count: this.pendingCount });
+  },
+  watch: {
+    // Assuming you have a computed property called pendingCount
+    pendingCount(newVal) {
+      console.log("pendingCount changed to: ", newVal)
+      this.$emit('pending-count-changed', { index: this.index, count: newVal });
+    }
+  },
 };
 </script>
 

@@ -34,30 +34,41 @@ export default {
           end: 97,
           status: 'pending'
         }
-        ]
+        ],
+      pendingCounts: []
     }
   },
   computed: {
     showNlpModal(){
       return this.$store.state.showNlpModal
     },
-    sentencesToNlp(){
-      return this.$store.state.textSentToNlp
+    nlpResults(){
+      return this.$store.state.nlpResults
+    },
+    totalPendingCount() {
+      return this.pendingCounts.reduce((sum, c) => sum + c, 0);
     }
   },
   mounted(){
-    console.log("NLP Modal mounted with sentences: ", this.sentencesToNlp)
+    console.log("NLP Modal mounted with sentences")
+  },
+  beforeUpdate() {
+    console.log("this.sentencesToNlp:", this.nlpResults)
   },
   methods:{
+    updatePendingCount({ index, count }) {
+      console.log("updatePendingCount called with index: ", index, "count: ", count)
+      this.pendingCounts[index] = count;
+    },
     closeNlpModal(){
       // close nlp modal
       this.$store.commit('setNlpModal',false);
       // remove the sentences sent for analysis to model
-      this.$store.commit('setTextToNlp', []);
+      this.$store.commit('setNlpResults', []);
     },
     acceptActions(){
       // TODO: what happens if there are pending recommendations yet...
-      console.log("pendingCount: ", this.$refs.annotatedRecommendations?.pendingCount)
+      console.log("pendingCount: ", totalPendingCount)
 
       // // close nlp modal
       // this.$store.commit('setNlpModal',false);
@@ -89,8 +100,14 @@ export default {
 <!--            :showSentenceButtons="false"-->
 <!--            :isSourceOfSelectedFrame="false"-->
 <!--          />-->
-          <div class="recommendations-section">
-            <AnnotatedRecommendations ref="annotatedRecommendations" :text="sampleText" :annotations="sampleAnnotations"></AnnotatedRecommendations>
+          <div class="recommendations-section" v-for="(sentence,index) in [{text: sampleText, annotations: sampleAnnotations},{text: sampleText, annotations: sampleAnnotations}]" :key="`sentence-${index}`">
+            <AnnotatedRecommendations
+                ref="annotatedRecommendations"
+                :index=index
+                :text="sentence.text"
+                :annotations="sentence.annotations"
+                @pending-count-changed="updatePendingCount"
+                class="mb-2" />
           </div>
           <div class="bottom q-mx-sm">
             <div class="legend">
@@ -137,8 +154,8 @@ export default {
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
-          <q-btn flat label="OK" @click="acceptActions" :disable="this.$refs.annotatedRecommendations?.pendingCount > 0" color="primary">
-            <q-tooltip v-if="this.$refs.annotatedRecommendations?.pendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
+          <q-btn flat label="OK" @click="acceptActions" :disable="totalPendingCount >0" color="primary">
+            <q-tooltip v-if="totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
               There are still pending annotations. Please accept or discard them before proceeding further.
             </q-tooltip>
           </q-btn>
