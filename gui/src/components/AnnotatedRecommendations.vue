@@ -75,13 +75,13 @@ export default {
   data() {
     return {
       // local copy so the component can mutate statuses
-      items: this.annotations.map(a => ({ ...a })),
+      // items: this.annotations.map(a => ({ ...a })),
       openPopovers: {}
     };
   },
   computed: {
     sortedAnnotations() {
-      return [...this.items].sort((a, b) => a.start - b.start);
+      return [...this.annotations].sort((a, b) => a.start - b.start);
     },
     segments() {
       // Build segments array of plain text and annotated spans
@@ -118,13 +118,13 @@ export default {
       return res;
     },
     pendingCount() {
-      return this.items.filter(a => a.status === 'pending').length;
+      return this.annotations.filter(a => a.status === 'pending').length;
     },
     acceptedCount() {
-      return this.items.filter(a => a.status === 'accepted').length;
+      return this.annotations.filter(a => a.status === 'accepted').length;
     },
     discardedCount() {
-      return this.items.filter(a => a.status === 'discarded').length;
+      return this.annotations.filter(a => a.status === 'discarded').length;
     },
     // small inline SVGs as strings
     iconCheck() {
@@ -135,7 +135,8 @@ export default {
     },
     iconClock() {
       return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    }
+    },
+
   },
   methods: {
     togglePopover(id) {
@@ -146,11 +147,13 @@ export default {
       this.openPopovers[id] = !this.openPopovers[id];
     },
     accept(id) {
-      this.items = this.items.map(a => (a.id === id ? { ...a, status: 'accepted' } : a));
+      const updated = this.annotations.map(a => a.id === id ? { ...a, status: 'accepted' } : a);
+      this.$emit('update:annotations', updated);
       this.openPopovers[id] = false;
     },
     discard(id) {
-      this.items = this.items.map(a => (a.id === id ? { ...a, status: 'discarded' } : a));
+      const updated = this.annotations.map(a => a.id === id ? { ...a, status: 'discarded' } : a);
+      this.$emit('update:annotations', updated);
       this.openPopovers[id] = false;
     },
     // returns simple class names: 'accepted', 'discarded', or a type class like 'type-action'
@@ -165,7 +168,6 @@ export default {
         action: 'type-action',
         object: 'type-object',
         recipient: 'type-recipient',
-        location: 'type-location',
       };
       return `${map[type]} ${status}` || 'type-default';
     },
@@ -237,11 +239,6 @@ export default {
 }
 .type-recipient {
   background: #FEF9C3;
-  color: #92400E;
-  border-color: #FDE68A;
-}
-.type-location {
-  background: #FFFBEB;
   color: #92400E;
   border-color: #FDE68A;
 }

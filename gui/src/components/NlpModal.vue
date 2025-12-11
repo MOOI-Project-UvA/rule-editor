@@ -1,41 +1,24 @@
 <script>
 import SentenceList from "./SentenceList.vue";
 import AnnotatedRecommendations from "./AnnotatedRecommendations.vue";
+import {buildAnnotations} from "../helpers/utilities.js";
+import {Annotation} from "../model/annotation.js";
+import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
+import { getSelectedRangeAsSnippets,splitAndReturnSelectedSnippets } from "../helpers/annotating.js";
 
 export default {
   name: "NlpModal",
   components: {SentenceList, AnnotatedRecommendations},
   data(){
     return {
-      sampleText:
-        'Indien door het college is vastgesteld dat recht op bijstand bestaat, wordt de bijstand toegekend vanaf de dag waarop dit recht is ontstaan, voorzover deze dag niet ligt voor de dag waarop de belanghebbende zich heeft gemeld om bijstand aan te vragen.',
-      sampleAnnotations: [
-          {
-          id: '1',
-          text: 'wordt',
-          type: 'Action',
-          start: 70,
-          end: 75,
-          status: 'pending'
-        },
-        {
-          id: '2',
-          text: 'de bijstand',
-          type: 'Object',
-          start: 76,
-          end: 87,
-          status: 'pending'
-        },
-        {
-          id: '3',
-          text: 'toegekend',
-          type: 'Action',
-          start: 88,
-          end: 97,
-          status: 'pending'
-        }
-        ],
-      pendingCounts: []
+      pendingCounts: [], // combines the counts of the pending annotation in the children component
+      nlpRoleToSubtype: {
+        Actor: "agent",
+        Recipient: "agent",
+        Action: "action",
+        Object: "object",
+        Duty: "duty",
+      },
     }
   },
   computed: {
@@ -47,6 +30,16 @@ export default {
     },
     totalPendingCount() {
       return this.pendingCounts.reduce((sum, c) => sum + c, 0);
+    },
+    acceptedRecommendations(){
+      return this.nlpResults.map(r => r.recommendedAnnotations)
+          .reduce((accumulator, currentValue) => accumulator + currentValue.filter(z => (z.status === 'accepted')).length, 0);
+    },
+    displayedSourceDocument() {
+      return this.$store.state.displayedSourceDocument;
+    },
+    frameBeingEdited(){
+      return this.$store.state.frameBeingEdited;
     }
   },
   mounted(){
@@ -54,10 +47,12 @@ export default {
   },
   beforeUpdate() {
     console.log("this.sentencesToNlp:", this.nlpResults)
+    this.nlpResults.forEach((r)=>{
+      r.recommendedAnnotations = buildAnnotations(r.predictions,r.sentence.text)
+    })
   },
   methods:{
     updatePendingCount({ index, count }) {
-      console.log("updatePendingCount called with index: ", index, "count: ", count)
       this.pendingCounts[index] = count;
     },
     closeNlpModal(){
@@ -66,16 +61,67 @@ export default {
       // remove the sentences sent for analysis to model
       this.$store.commit('setNlpResults', []);
     },
-    acceptActions(){
-      // TODO: what happens if there are pending recommendations yet...
-      console.log("pendingCount: ", totalPendingCount)
+    integrateRecommendations(){
 
-      // // close nlp modal
-      // this.$store.commit('setNlpModal',false);
-      // // remove the sentences sent for analysis to model
-      // this.$store.commit('setTextToNlp', []);
+      this.nlpResults.forEach(
+          ({recommendedAnnotations, sentence},index)=>{
+            console.log("recommendedAnnotations:", recommendedAnnotations.filter(a => a.status === 'accepted'))
+            console.log("sentence:", sentence)
+            console.log("index:", index)
+
+            // if there multiple snippets and there are no accepted annotations in one, skip it
+            if (recommendedAnnotations.filter(a => a.status === 'accepted').length === 0) return;
+
+            for (let i=0;i<recommendedAnnotations.filter(a => a.status === 'accepted').length;i++){
+              const annotation = new Annotation();
+              console.log("recommendedAnnotation:", recommendedAnnotations[i])
+              const role = recommendedAnnotations[i].type
+              console.log("role", role)
+              console.log("this.nlpRoleToSubtype", this.nlpRoleToSubtype)
+              //create fact for this annotation, use the role suggested by NLP to set the correct subtype
+              const subTypeId = this.nlpRoleToSubtype[role];
+              this.$store.commit("addNewFrame", {
+                frameTypeId: "fact",
+                subTypeId: subTypeId,
+                annotation: annotation,
+                openInEditor: false,
+              });
+              //get snippets that are covered by the character range
+              const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [recommendedAnnotations[i].start,
+                recommendedAnnotations[i].end,
+              ]);
+
+              //split snippets, and return those that fit the character range
+              const selectedSnippets = splitAndReturnSelectedSnippets(
+                  selectionAsSnippets,
+                  this.frameBeingEdited.sourceSentences,
+              );
+
+              selectedSnippets.forEach((s) => {
+                console.log("adding", annotation, "to snippet", s);
+                s.addAnnotation(annotation);
+              });
+
+              //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+              //will be closer to the text than shorter ones
+              annotation.nrSnippets = selectedSnippets.length;
+              //update underlining of annotations in the source text, for the currently showing document
+              setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
+
+
+            }
+          })
+    },
+    acceptActions(){
+      console.log("clicking OK!", this.acceptedRecommendations)
+      // close nlp modal
+      this.$store.commit('setNlpModal',false);
+      // remove the sentences sent for analysis to model
+      this.$store.commit('setTextToNlp', []);
       // TODO: make the recommendations part of the interpretation
-    }
+      this.acceptedRecommendations > 0 ? this.integrateRecommendations() : null
+    },
+
   }
 }
 </script>
@@ -94,20 +140,14 @@ export default {
           Click on the highlighted words to accept or discard the annotations. Each annotation type has its own color - green indicates accepted, faded red with dashed border indicates discarded.
         </q-card-section>
         <q-card-section class="col">
-<!--          <SentenceList-->
-<!--            :sentences="sentencesToNlp"-->
-<!--            :indent="false"-->
-<!--            :showSentenceButtons="false"-->
-<!--            :isSourceOfSelectedFrame="false"-->
-<!--          />-->
-          <div class="recommendations-section" v-for="(sentence,index) in [{text: sampleText, annotations: sampleAnnotations},{text: sampleText, annotations: sampleAnnotations}]" :key="`sentence-${index}`">
+          <div class="recommendations-section mb-2" v-for="(sentence,index) in nlpResults" :key="`sentence-${index}`">
             <AnnotatedRecommendations
                 ref="annotatedRecommendations"
                 :index=index
-                :text="sentence.text"
-                :annotations="sentence.annotations"
+                :text="sentence.sentence.text"
+                v-model:annotations="sentence.recommendedAnnotations"
                 @pending-count-changed="updatePendingCount"
-                class="mb-2" />
+            />
           </div>
           <div class="bottom q-mx-sm">
             <div class="legend">
@@ -153,6 +193,7 @@ export default {
           </div>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
+          {{acceptedRecommendations}}
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
           <q-btn flat label="OK" @click="acceptActions" :disable="totalPendingCount >0" color="primary">
             <q-tooltip v-if="totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
@@ -187,17 +228,20 @@ export default {
   gap: 10px;
   margin-top: 8px;
 }
+
 .legend-item {
   display: flex;
   gap: 8px;
   align-items: center;
 }
+
 .swatch {
   width: 18px;
   height: 18px;
   border-radius: 4px;
   border: 1px solid #ddd;
 }
+
 .swatch.actor { background: #FEF9C3; border-color: #FDE68A; }
 .swatch.action { background: #CCFBF1; border-color: #99F6E4; }
 .swatch.object { background: #FFF7ED; border-color: #FFD8A8; }
@@ -211,6 +255,7 @@ export default {
   list-style: none;
   color: #555;
 }
+
 .instructions-list li {
   margin-bottom: 6px;
 }
