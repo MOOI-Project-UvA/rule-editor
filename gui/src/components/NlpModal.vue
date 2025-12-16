@@ -140,7 +140,7 @@ export default {
           Click on the highlighted words to accept or discard the annotations. Each annotation type has its own color - green indicates accepted, faded red with dashed border indicates discarded.
         </q-card-section>
         <q-card-section class="col">
-          <div class="recommendations-section mb-2" v-for="(sentence,index) in nlpResults" :key="`sentence-${index}`">
+          <div class="recommendations-section q-mb-sm" v-for="(sentence,index) in nlpResults" :key="`sentence-${index}`">
             <AnnotatedRecommendations
                 ref="annotatedRecommendations"
                 :index=index
@@ -193,7 +193,6 @@ export default {
           </div>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
-          {{acceptedRecommendations}}
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
           <q-btn flat label="OK" @click="acceptActions" :disable="totalPendingCount >0" color="primary">
             <q-tooltip v-if="totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
