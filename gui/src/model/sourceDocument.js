@@ -1,7 +1,7 @@
 import { Sentence } from "./sentence.js";
 
 export class SourceDocument {
-  constructor(jsonLdObject) {
+  constructor(jsonLdObject, isUpdateOf = null) {
     console.log("sourceDoc", jsonLdObject);
     this._id = jsonLdObject["@context"]["@base"];
     const rootElement = jsonLdObject["@graph"].find(
@@ -18,6 +18,8 @@ export class SourceDocument {
 
     //keep original jsonLd so it can be stored together with the interpretation
     this._jsonLd = jsonLdObject;
+
+    this._isUpdateOf = isUpdateOf // the id of the older version of the document that this is based on, if any.
   }
 
   get id() {
@@ -38,6 +40,8 @@ export class SourceDocument {
   get jsonLd() {
     return this._jsonLd;
   }
+
+  get isUpdateOf() { return this._isUpdateOf }
 
   getSnippetsForAnnotation(annotation) {
     //check all snippets to see if they contain given annotation
