@@ -137,7 +137,7 @@ export default {
           <div class="text-h6">FlintFiller Recommendations</div>
         </q-card-section>
         <q-card-section class="col q-pt-none">
-          Click on the highlighted words to accept or discard the annotations. Each annotation type has its own color - green indicates accepted, faded red with dashed border indicates discarded.
+          Review the highlighted words to see FlintFiller recommendations. Click on a highlighted word to accept, discard, or skip the recommendation. Click Cancel to return to the interpretation view without making changes, or click OK to integrate all accepted recommendations into the interpretation.
         </q-card-section>
         <q-card-section class="col">
           <div class="recommendations-section q-mb-sm" v-for="(sentence,index) in nlpResults" :key="`sentence-${index}`">
@@ -168,14 +168,6 @@ export default {
             <div class="legend-item">
               <span class="swatch recipient"></span>
               <span class="label">Recipient</span>
-            </div>
-            <div class="legend-item">
-              <span class="swatch accepted"></span>
-              <span class="label">Accepted</span>
-            </div>
-            <div class="legend-item">
-              <span class="swatch discarded"></span>
-              <span class="label">Discarded</span>
             </div>
           </div>
             </div>
@@ -245,8 +237,6 @@ export default {
 .swatch.action { background: #CCFBF1; border-color: #99F6E4; }
 .swatch.object { background: #FFF7ED; border-color: #FFD8A8; }
 .swatch.recipient { background: #FEF9C3; border-color: #FDE68A; }
-.swatch.accepted { background: #DCFCE7; border-color: #86EFAC; }
-.swatch.discarded { background: #FFEBEE; border-color: #FBCACA; opacity: 0.8; }
 
 .instructions-list {
   margin: 8px 0 0 0;
