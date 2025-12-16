@@ -34,6 +34,10 @@
                     <span class="icon" v-html="iconCheck"></span>
                     Accept
                   </button>
+                  <button class="btn skip" @click="skip(seg.annotation.id)">
+                    <span class="icon" v-html="iconMinus"></span>
+                    Skip
+                  </button>
                   <button class="btn discard" @click="discard(seg.annotation.id)">
                     <span class="icon" v-html="iconX"></span>
                     Discard
@@ -133,6 +137,9 @@ export default {
     iconX() {
       return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     },
+    iconMinus() {
+      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
+    },
     iconClock() {
       return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     },
@@ -154,6 +161,9 @@ export default {
     discard(id) {
       const updated = this.annotations.map(a => a.id === id ? { ...a, status: 'discarded' } : a);
       this.$emit('update:annotations', updated);
+      this.openPopovers[id] = false;
+    },
+    skip(id) {
       this.openPopovers[id] = false;
     },
     // returns simple class names: 'accepted', 'discarded', or a type class like 'type-action'
@@ -221,21 +231,21 @@ export default {
   border-width: 1px;
 }
 
-/* Type color classes (approximate colors) */
+/* Type color classes */
 .type-actor {
-  background: #FEF9C3; /* yellow-100 */
-  color: #92400E;      /* yellow-800 */
-  border-color: #FDE68A; /* yellow-300 */
+  background: #FEF9C3;
+  color: #92400E;
+  border-color: #FDE68A;
 }
 .type-action {
-  background: #CCFBF1; /* teal-100 */
-  color: #134E4A;      /* teal-800 */
-  border-color: #99F6E4; /* teal-300 */
+  background: #CCFBF1;
+  color: #134E4A;
+  border-color: #99F6E4;
 }
 .type-object {
-  background: #FFF7ED; /* orange-100 */
-  color: #7C2D12;      /* orange-800 */
-  border-color: #FFD8A8; /* orange-300 */
+  background: #FFF7ED;
+  color: #7C2D12;
+  border-color: #FFD8A8;
 }
 .type-recipient {
   background: #FEF9C3;
@@ -313,7 +323,7 @@ export default {
 }
 .btn .icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
-/* Accept / discard button visuals */
+/* Accept / discard button */
 .btn.accept {
   background: #16A34A;
   color: white;
@@ -323,6 +333,12 @@ export default {
   background: #FFFFFF;
   color: #9B1C1C;
   border: 1px solid #E5A7A7;
+}
+
+.btn.skip{
+  background: #ffffff;      /* light gray background */
+  color: #6B7280;           /* neutral gray text */
+  border: 1px solid #D1D5DB;/* subtle gray border */
 }
 
 /* Status summary at bottom */
