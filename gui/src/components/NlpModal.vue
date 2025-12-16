@@ -69,19 +69,13 @@ export default {
 
       this.nlpResults.forEach(
           ({recommendedAnnotations, sentence},index)=>{
-            console.log("recommendedAnnotations:", recommendedAnnotations.filter(a => a.status === 'accepted'))
-            console.log("sentence:", sentence)
-            console.log("index:", index)
 
             // if there multiple snippets and there are no accepted annotations in one, skip it
             if (recommendedAnnotations.filter(a => a.status === 'accepted').length === 0) return;
 
             for (let i=0;i<recommendedAnnotations.filter(a => a.status === 'accepted').length;i++){
               const annotation = new Annotation();
-              console.log("recommendedAnnotation:", recommendedAnnotations[i])
               const role = recommendedAnnotations[i].type
-              console.log("role", role)
-              console.log("this.nlpRoleToSubtype", this.nlpRoleToSubtype)
               //create fact for this annotation, use the role suggested by NLP to set the correct subtype
               const subTypeId = this.nlpRoleToSubtype[role];
               this.$store.commit("addNewFrame", {
@@ -102,7 +96,6 @@ export default {
               );
 
               selectedSnippets.forEach((s) => {
-                console.log("adding", annotation, "to snippet", s);
                 s.addAnnotation(annotation);
               });
 
@@ -111,19 +104,16 @@ export default {
               annotation.nrSnippets = selectedSnippets.length;
               //update underlining of annotations in the source text, for the currently showing document
               setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
-
-
             }
           })
     },
-    acceptActions(){
-      console.log("clicking OK!", this.acceptedRecommendations)
+    acceptActions: function () {
       // close nlp modal
-      this.$store.commit('setNlpModal',false);
+      this.$store.commit('setNlpModal', false);
       // remove the sentences sent for analysis to model
       this.$store.commit('setTextToNlp', []);
-      // TODO: make the recommendations part of the interpretation
-      this.acceptedRecommendations > 0 ? this.integrateRecommendations() : null
+      // if any recommendations were accepted, integrate them into the interpretation
+      if(this.acceptedRecommendations > 0) this.integrateRecommendations();
     },
 
   }
