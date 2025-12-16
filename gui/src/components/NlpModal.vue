@@ -171,17 +171,6 @@ export default {
             </div>
           </div>
             </div>
-            <div class="instructions">
-              <h2 class="text-h6">How to use:</h2>
-              <ul class="instructions-list">
-                <li>• Click on highlighted words to see annotation details</li>
-                <li>• Each annotation type has its own color as shown above</li>
-                <li>• Use the "Accept" button to approve the annotation</li>
-                <li>• Use the "Discard" button to reject the annotation</li>
-                <li>• Accepted annotations turn green, discarded ones become faded with a dashed border</li>
-                <li>• The status summary shows counts of pending, accepted, and discarded annotations</li>
-              </ul>
-            </div>
           </div>
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
@@ -238,14 +227,4 @@ export default {
 .swatch.object { background: #FFF7ED; border-color: #FFD8A8; }
 .swatch.recipient { background: #FEF9C3; border-color: #FDE68A; }
 
-.instructions-list {
-  margin: 8px 0 0 0;
-  padding-left: 0;
-  list-style: none;
-  color: #555;
-}
-
-.instructions-list li {
-  margin-bottom: 6px;
-}
 </style>
