@@ -35,6 +35,10 @@ export default {
       return this.nlpResults.map(r => r.recommendedAnnotations)
           .reduce((accumulator, currentValue) => accumulator + currentValue.filter(z => (z.status === 'accepted')).length, 0);
     },
+    reviewedRecommendations(){
+      return this.nlpResults.map(r => r.recommendedAnnotations)
+          .reduce((accumulator, currentValue) => accumulator + currentValue.filter(z => (z.status === 'accepted' || z.status === 'discarded')).length, 0);
+    },
     displayedSourceDocument() {
       return this.$store.state.displayedSourceDocument;
     },
@@ -137,7 +141,7 @@ export default {
           <div class="text-h6">FlintFiller Recommendations</div>
         </q-card-section>
         <q-card-section class="col q-pt-none">
-          Review the highlighted words to see FlintFiller recommendations. Click on a highlighted word to accept, discard, or skip the recommendation. Click Cancel to return to the interpretation view without making changes, or click OK to integrate all accepted recommendations into the interpretation.
+          Review the FlintFiller recommendations. Click on a highlighted text snippet to accept, discard, or skip the recommendation. Click Cancel to return to the interpretation view without making changes, or click OK to integrate the accepted recommendations into the interpretation.
         </q-card-section>
         <q-card-section class="col">
           <div class="recommendations-section q-mb-sm" v-for="(sentence,index) in nlpResults" :key="`sentence-${index}`">
@@ -151,7 +155,7 @@ export default {
           </div>
           <div class="bottom q-mx-sm">
             <div class="legend">
-              <div class="text-h6">Annotation Type Colors:</div>
+              <div class="text-h6">Roles:</div>
               <div class="legend-grid">
             <div class="legend-item">
               <span class="swatch actor"></span>
@@ -173,11 +177,15 @@ export default {
             </div>
           </div>
         </q-card-section>
+        {{reviewedRecommendations}}
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
-          <q-btn flat label="OK" @click="acceptActions" :disable="totalPendingCount >0" color="primary">
-            <q-tooltip v-if="totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
-              There are still pending annotations. Please accept or discard them before proceeding further.
+          <q-btn flat label="OK" @click="acceptActions" :disable="reviewedRecommendations === 0" color="primary">
+            <q-tooltip v-if="reviewedRecommendations === 0 && totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
+              You have not reviewed any recommendations yet.
+            </q-tooltip>
+            <q-tooltip v-if="reviewedRecommendations > 0 && totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
+              Have in mind that there are still pending annotations.
             </q-tooltip>
           </q-btn>
         </q-card-actions>
@@ -222,9 +230,9 @@ export default {
   border: 1px solid #ddd;
 }
 
-.swatch.actor { background: #FEF9C3; border-color: #FDE68A; }
-.swatch.action { background: #CCFBF1; border-color: #99F6E4; }
-.swatch.object { background: #FFF7ED; border-color: #FFD8A8; }
-.swatch.recipient { background: #FEF9C3; border-color: #FDE68A; }
+.swatch.actor { background: #F2C037; border-color: #FDE68A; }
+.swatch.action { background: #26A69A; border-color: #99F6E4; }
+.swatch.object { background: #ff6f00; border-color: #FFD8A8; }
+.swatch.recipient { background: #F2C037; border-color: #FDE68A; }
 
 </style>

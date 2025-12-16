@@ -216,12 +216,12 @@ export default {
 /* Base annotation styles */
 .annotation {
   display: inline-block;
-  padding: 2px 6px;
+  padding: 2px 4px;
   border-radius: 4px;
   border: 1px solid transparent;
   font-size: 0.95em;
   vertical-align: baseline;
-  margin: 0 1px;
+  margin: 1px 1px;
 }
 
 /* interactive pending style (button) */
@@ -235,22 +235,22 @@ export default {
 .type-actor {
   background: #FEF9C3;
   color: #92400E;
-  border-color: #FDE68A;
+  border-color: #F2C037;
 }
 .type-action {
   background: #CCFBF1;
   color: #134E4A;
-  border-color: #99F6E4;
+  border-color: #26A69A;
 }
 .type-object {
   background: #FFF7ED;
   color: #7C2D12;
-  border-color: #FFD8A8;
+  border-color: #ff6f00;
 }
 .type-recipient {
   background: #FEF9C3;
   color: #92400E;
-  border-color: #FDE68A;
+  border-color: #F2C037;
 }
 
 .discarded {
