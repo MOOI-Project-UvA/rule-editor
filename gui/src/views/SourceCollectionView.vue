@@ -89,6 +89,8 @@ export default {
       let newDoc = this.sourceDocuments.find(d => d.isUpdateOf && d.isUpdateOf == sourceDocument.id)
       if (!newDoc) {
         newDoc = new SourceDocument(sourceDocument.jsonLd, sourceDocument.id)
+        //update title, for now: add '_new'
+        newDoc.title += "_new"
         this.$store.state.sourceDocuments.push(newDoc)
       }
       this.newSourceDocument = newDoc

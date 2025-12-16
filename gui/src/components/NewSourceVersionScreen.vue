@@ -4,9 +4,35 @@
             <div class="col"></div>
             <q-btn icon="mdi-close" flat round dense @click="applyAndClose" />
         </div>
+        <div class="row bg-grey-2 q-pa-xs">
+            <div class="col">
+                <div class="row items-center">
+                    <div class="text-h6 q-mr-md">Current version</div>
+                    <div class="text-h7">valid from {{ oldSource.validityPeriod[0] }} to {{ oldSource.validityPeriod[1] }}</div>
+                </div>
+            </div>
+            <div class="col-1"></div>
+            <div class="col">
+                <div class="row items-center">
+                    <div class="text-h6 q-mr-md">New version</div>
+                    <div class="text-h7 q-mr-sm">valid from</div>
+                    <q-input
+                        dense
+                        v-model="newSource.validityPeriod[0]"
+                        label="start date"
+                    />
+                    <div class="text-h7 q-mr-sm">to</div>
+                    <q-input
+                        dense
+                        v-model="newSource.validityPeriod[1]"
+                        label="end date"
+                    />
+                </div>
+            </div>
+        </div>
         <div class="scrollable" v-if="mappingFromOldToNew">
             <div v-for="oldSentence in oldSource.sentences" class="row">
-                <div class="col">
+                <div class="col" :style="getHeaderStylingNoIndent(oldSentence)">
                     <span v-for="snippet in oldSentence.snippets">
                         {{ snippet.text }}
                     </span>
@@ -17,7 +43,7 @@
             :color="mappingFromOldToNew[oldSentence.id].operation == operation.id ? operation.color : 'grey-5'" :icon="operation.icon"
             @click="mappingFromOldToNew[oldSentence.id].operation = operation.id" />
                 </div>
-                <div class="col">
+                <div class="col" :style="getHeaderStylingNoIndent(oldSentence)">
                     <template v-if="mappingFromOldToNew[oldSentence.id].operation == 'COPIED'">
                         <span v-for="snippet in mappingFromOldToNew[oldSentence.id].newSentence.snippets">
                             {{ snippet.text }}
@@ -34,6 +60,8 @@
 </template>
 
 <script>
+    import { getHeaderStylingNoIndent } from '../helpers/sourceFormatting';
+
     export default {
         data: () => ({
             mappingFromOldToNew : null,
@@ -63,6 +91,7 @@
             this.initializeMapping()
         },
         methods: {
+            getHeaderStylingNoIndent,
             initializeMapping() {
                 const oldSentences = this.oldSource.sentences;
                 const newSentences = this.newSource.sentences;

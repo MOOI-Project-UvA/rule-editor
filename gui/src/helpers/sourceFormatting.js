@@ -43,3 +43,14 @@ export function getHeaderStyling(sentence) {
         fontWeight: fontWeight
     }
 }
+
+export function getHeaderStylingNoIndent(sentence) {
+    //apply formatting if sentence is header, and within the highest levels
+    const level = sentence.level - 1 //root level is not displayed, set first level to 0
+    const fontSize = sentence.isHeader && level < fontSizes.length && sentence.children.length > 0 ? fontSizes[level] : defaultFontSize
+    const fontWeight = sentence.isHeader && level < fontWeights.length && sentence.children.length > 0 ? fontWeights[level] : defaultFontWeight
+    return {
+        fontSize: `${fontSize}pt`,
+        fontWeight: fontWeight
+    }
+}
