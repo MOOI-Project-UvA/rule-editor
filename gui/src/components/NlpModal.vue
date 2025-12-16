@@ -167,7 +167,6 @@ export default {
             </div>
           </div>
         </q-card-section>
-        {{reviewedRecommendations}}
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
           <q-btn flat label="OK" @click="acceptActions" :disable="reviewedRecommendations === 0" color="primary">

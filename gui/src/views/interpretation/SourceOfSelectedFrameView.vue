@@ -1,33 +1,35 @@
 <template>
     <div class="fit scroll q-pa-sm" v-if="frameBeingEdited">
-       <div v-if="frameBeingEdited.typeId != 'fact'">
-        <span class="text-sm">Show source of</span>
-        <q-checkbox v-model="showSourceOfPrecondition" size="xs">precondition</q-checkbox>
-        <q-checkbox v-model="showSourceOfPostcondition" size="xs">postcondition</q-checkbox>
-       </div>
-       <div v-if="frameBeingEdited.sourceSentences.length > 0">
-         <span class="text-sm">Detect roles in the snippets</span>
-         <q-btn
+      <div class="controller-group">
+        <div id="checkbox-group" v-if="frameBeingEdited.typeId != 'fact'">
+          <span class="text-sm">Show source of: </span>
+          <q-checkbox v-model="showSourceOfPrecondition" size="xs">precondition</q-checkbox>
+          <q-checkbox v-model="showSourceOfPostcondition" size="xs">postcondition</q-checkbox>
+        </div>
+        <div class="action-group q-mt-md" v-if="frameBeingEdited.sourceSentences.length > 0">
+          <q-btn
              size="sm"
              round
              flat
+             label="Detect roles in snippets"
              color="primary"
              icon="mdi-text-recognition"
              :loading="nlpIsBusy"
              @click.stop="applyNlpToSource"
              @mouseup.stop
          >
-           <q-tooltip anchor="bottom middle" class="text-subtitle2">
-             <span>
-               Detect roles in the snippetsof an act frame.<br/>This feature is still
-               experimental, so use it with caution.
-             </span>
-           </q-tooltip>
-           <template v-slot:loading>
-             <q-spinner-gears />
-           </template>
-         </q-btn>
-       </div>
+            <q-tooltip anchor="bottom middle" class="text-subtitle2">
+              <span>
+                Detect roles in the sources of an act frame.<br/>This feature is still
+                experimental, so use it with caution.
+              </span>
+            </q-tooltip>
+            <template v-slot:loading>
+              <q-spinner-gears />
+            </template>
+          </q-btn>
+        </div>
+      </div>
        <div v-for="sourceDoc in sourceDocuments">
             <div class="text-primary text-bold">{{ sourceDoc.title }}</div>
             <SentenceList
@@ -50,6 +52,9 @@ import {fetchNlpPrediction} from "../../services/ApiServices.js";
 import { Annotation } from "../../model/annotation";
 import { setVerticalPositionOfAnnotationLines } from "../../helpers/underlining.js";
 import { getSelectedRangeAsSnippets,splitAndReturnSelectedSnippets } from "../../helpers/annotating.js";
+
+
+// TODO: Allow user to pick which snippets will be sent for analysis, using a checkbox
 
 export default {
   data: () => ({
