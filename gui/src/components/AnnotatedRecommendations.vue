@@ -1,6 +1,7 @@
 <template>
   <div class="annotated-text">
     <div class="paragraph">
+      <div class="text-bold q-mb-sm" v-if="annotations.length === 0">No recommendations for the selected source!</div>
       <p class="text">
         <template v-for="(seg, idx) in segments" :key="seg.key || idx">
           <span v-if="seg.type === 'text'">{{ seg.text }}</span>
@@ -14,6 +15,7 @@
               class="annotation interactive"
               :class="annotationClass(seg.annotation)"
               @click="togglePopover(seg.annotation.id)"
+              :ref="'annotationBtn-' + seg.annotation.id"
             >
               {{ seg.text }}
               <span class="status-icon" v-html="statusIconSvg(seg.annotation.status)"></span>
@@ -22,6 +24,7 @@
             <div
               v-if="openPopovers[seg.annotation.id]"
               class="popover"
+              :ref="'popover-' + seg.annotation.id"
             >
               <div class="popover-content">
                 <div>
@@ -30,18 +33,9 @@
                   <p class="popover-meta">Type: {{ seg.annotation.type }}</p>
                 </div>
                 <div class="popover-actions">
-                  <button class="btn accept" @click="accept(seg.annotation.id)">
-                    <span class="icon" v-html="iconCheck"></span>
-                    Accept
-                  </button>
-                  <button class="btn skip" @click="skip(seg.annotation.id)">
-                    <span class="icon" v-html="iconMinus"></span>
-                    Skip
-                  </button>
-                  <button class="btn discard" @click="discard(seg.annotation.id)">
-                    <span class="icon" v-html="iconX"></span>
-                    Discard
-                  </button>
+                  <q-btn size="xs" label="Accept" icon="mdi-check" class="accept" @click="accept(seg.annotation.id)" />
+                  <q-btn size="xs" label="Skip"  icon="mdi-minus" class="skip" @click="skip(seg.annotation.id)" />
+                  <q-btn size="xs" label="Discard" icon="mdi-alpha-x" class="discard" @click="discard(seg.annotation.id)" />
                 </div>
               </div>
             </div>
@@ -137,9 +131,6 @@ export default {
     iconX() {
       return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     },
-    iconMinus() {
-      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
-    },
     iconClock() {
       return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     },
@@ -152,6 +143,57 @@ export default {
         if (k !== id) this.openPopovers[k] = false;
       });
       this.openPopovers[id] = !this.openPopovers[id];
+
+      // Adjust popover position after it's rendered
+      this.$nextTick(() => {
+        if (this.openPopovers[id]) {
+          this.adjustPopoverPosition(id);
+        }
+      });
+    },
+    adjustPopoverPosition(id) {
+      // Get popover and button elements by dynamic ref
+      let popover = this.$refs['popover-' + id];
+      let btn = this.$refs['annotationBtn-' + id];
+
+      // If multiple elements with the same ref, $refs returns an array
+      if (Array.isArray(popover)) popover = popover[0];
+      if (Array.isArray(btn)) btn = btn[0];
+
+      // If either is missing, do nothing
+      if (!popover || !btn) return;
+
+      // Reset any previous positioning
+      popover.style.left = '';
+      popover.style.right = '';
+      popover.style.transform = '';
+
+      // Get bounding rectangles
+      const popoverRect = popover.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+
+      // Calculate default left position (centered over button)
+      const btnCenter = btnRect.left + btnRect.width / 2;
+      let left = btnCenter - popoverRect.width / 2;
+
+      // Prevent overflow on the left
+      if (left < 8) left = 8;
+
+      // Prevent overflow on the right
+      if (left + popoverRect.width > viewportWidth - 8) {
+        left = viewportWidth - popoverRect.width - 8;
+      }
+
+      // Set the calculated left position relative to the viewport
+      popover.style.left = left + 'px';
+      popover.style.right = 'auto';
+      popover.style.transform = 'none';
+      popover.style.minWidth = '220px';
+      popover.style.maxWidth = '320px';
+      popover.style.position = 'fixed'; // Use fixed to position relative to viewport
+      popover.style.top = (btnRect.bottom + 6) + 'px'; // 6px below the button
+      popover.style.zIndex = 1000;
     },
     accept(id) {
       const updated = this.annotations.map(a => a.id === id ? { ...a, status: 'accepted' } : a);
@@ -203,7 +245,6 @@ export default {
 <style scoped>
 .annotated-text {
   display: block;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: #222;
 }
 
@@ -283,9 +324,8 @@ export default {
   position: absolute;
   left: 0;
   top: calc(100% + 6px);
-  z-index: 40;
-  min-width: 220px;
-  max-width: 320px;
+  z-index: 41;
+  width: 280px;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -310,32 +350,21 @@ export default {
   display: flex;
   gap: 8px;
 }
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-}
-.btn .icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
-/* Accept / discard button */
-.btn.accept {
+
+/* buttons */
+.accept {
   background: #16A34A;
   color: white;
   border-color: rgba(0,0,0,0.05);
 }
-.btn.discard {
+.discard {
   background: #FFFFFF;
   color: #9B1C1C;
   border: 1px solid #E5A7A7;
 }
 
-.btn.skip{
+.skip{
   background: #ffffff;      /* light gray background */
   color: #6B7280;           /* neutral gray text */
   border: 1px solid #D1D5DB;/* subtle gray border */

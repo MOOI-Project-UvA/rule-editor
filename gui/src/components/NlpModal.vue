@@ -44,6 +44,9 @@ export default {
     },
     frameBeingEdited(){
       return this.$store.state.frameBeingEdited;
+    },
+    anyRecommendations(){
+      return this.nlpResults.some(r => r.recommendedAnnotations.length>0)
     }
   },
   mounted(){
@@ -110,10 +113,10 @@ export default {
     acceptActions: function () {
       // close nlp modal
       this.$store.commit('setNlpModal', false);
-      // remove the sentences sent for analysis to model
-      this.$store.commit('setTextToNlp', []);
       // if any recommendations were accepted, integrate them into the interpretation
       if(this.acceptedRecommendations > 0) this.integrateRecommendations();
+      // remove the sentences sent for analysis to model
+      this.$store.commit('setNlpResults', []);
     },
 
   }
@@ -169,11 +172,11 @@ export default {
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Cancel" color="negative" @click="closeNlpModal" />
-          <q-btn flat label="OK" @click="acceptActions" :disable="reviewedRecommendations === 0" color="primary">
-            <q-tooltip v-if="reviewedRecommendations === 0 && totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
+          <q-btn flat label="OK" @click="acceptActions" :disable="reviewedRecommendations === 0 && anyRecommendations" color="primary">
+            <q-tooltip v-if="anyRecommendations && reviewedRecommendations === 0 && totalPendingCount > 0 " anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
               You have not reviewed any recommendations yet.
             </q-tooltip>
-            <q-tooltip v-if="reviewedRecommendations > 0 && totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
+            <q-tooltip v-if="anyRecommendations && reviewedRecommendations > 0 && totalPendingCount > 0" anchor="top middle" self="bottom middle" :offset="[10, 10]" class="text-body2">
               Have in mind that there are still pending annotations.
             </q-tooltip>
           </q-btn>
@@ -185,6 +188,10 @@ export default {
 </template>
 
 <style scoped lang="css">
+
+#nlp-modal-div {
+  z-index: 40;
+}
 
 .recommendations-section {
   background: #fff;
