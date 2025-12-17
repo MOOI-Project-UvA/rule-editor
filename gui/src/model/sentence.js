@@ -16,6 +16,7 @@ export class Sentence {
     this._collapsed = false; //collapse or expand this node to hide/show its children
     this._selected = false; //selected by the user to be included in the interpretation
     this._isHeader = false; //corresponding element in source has a 'containsAsHeader' attribute
+    this._nlpSelected = false; //sentence was selected by the user for NLP analysis in source of selected frame view
   }
 
   //set text and create snippet
@@ -104,6 +105,14 @@ export class Sentence {
   }
   get collapsed() {
     return this._collapsed;
+  }
+
+  set nlpSelected(nlpSelected) {
+    this._nlpSelected = nlpSelected;
+  }
+
+  get nlpSelected() {
+    return this._nlpSelected;
   }
 
   set selected(selected) {
