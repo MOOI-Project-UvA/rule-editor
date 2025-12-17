@@ -46,7 +46,8 @@ const store = createStore({
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
-      network: null
+      network: null,
+      nodePositions: {},
     };
   },
   mutations: {
@@ -179,6 +180,12 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
+    setNodePosition(state, { nodeId, pos }) {
+        state.nodePositions[nodeId] = pos;
+    },
+    setNetwork(state, network) {
+        state.network = network;
+    }
   },
   actions: {
     loadInterpretationForDebugging(context) {

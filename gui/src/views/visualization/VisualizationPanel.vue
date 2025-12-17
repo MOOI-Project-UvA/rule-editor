@@ -23,9 +23,13 @@ export default {
         FrameDetailsTreePlot
     },
     created() {
-        this.$store.state.network = new Network(this.frames) //TODO: change this, so network is not recreated every time the user switches view
+        if(!this.$store.state.network){
+          this.$store.commit('setNetwork', new Network(this.frames));
+        }
+        // this.$store.state.network = new Network(this.frames)
         this.nodes = this.network.nodes
         this.links = this.network.links
+
     },
     computed: {
         frames() {

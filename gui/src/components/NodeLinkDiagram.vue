@@ -153,9 +153,14 @@ export default {
                 this.draggedNode.sticky = true
                 //restart simulation?
             }
+            this.$store.commit('setNodePosition', {
+              nodeId: this.draggedNode.id,
+              pos: { x: this.draggedNode.x, y: this.draggedNode.y, fx: this.draggedNode.fx, fy: this.draggedNode.fy }
+            });
             this.draggedNode = null;
             this.draggedDistance = 0;
             this.mouseDownPos = null;
+
         },
         //to prevent arrow point overlapping with node
         adaptLinkLength(x1, y1, x2, y2) {
