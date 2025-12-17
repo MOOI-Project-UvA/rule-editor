@@ -24,7 +24,10 @@ export default {
     },
     created() {
         if(!this.$store.state.network){
+          console.log("Creating network from frames in VP", new Network(this.frames))
           this.$store.commit('setNetwork', new Network(this.frames));
+          console.log("this.$store.state.network:", this.$store.state.network)
+          this.$store.state.network.simulated = false;
         }
         // this.$store.state.network = new Network(this.frames)
         this.nodes = this.network.nodes
@@ -67,6 +70,14 @@ export default {
         nodes() {
             console.log("VP nodes changed", this.nodes)
         },
+        frames(){
+          console.log("Frames changed in VP:", this.frames)
+          this.$store.commit('setNetwork', new Network(this.frames));
+          // this.$store.state.network = new Network(this.frames)
+          this.nodes = this.network.nodes
+          this.links = this.network.links
+        }
+
     }
 }
 </script>

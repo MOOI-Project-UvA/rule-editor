@@ -47,7 +47,7 @@ const store = createStore({
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
       network: null,
-      nodePositions: {},
+      networkZoomTransform: null, // default zoom
     };
   },
   mutations: {
@@ -180,12 +180,12 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
-    setNodePosition(state, { nodeId, pos }) {
-        state.nodePositions[nodeId] = pos;
-    },
     setNetwork(state, network) {
         state.network = network;
-    }
+    },
+    setNetworkZoom(state, zoom) {
+        state.networkZoomTransform = zoom;
+    },
   },
   actions: {
     loadInterpretationForDebugging(context) {
