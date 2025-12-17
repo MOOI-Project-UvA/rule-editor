@@ -36,8 +36,11 @@ export class Network {
                         }
                     })
                 } else {
+                    const allFrames = Array.isArray(otherNode.frame.allFrames) ? otherNode.frame.allFrames : [];
+                    // if a new Act is added to the interpretation, allFrames is undefined, so in this case we set it to an empty array
+                    !Array.isArray(frame.allFrames) ? frame.allFrames = [] : null
                     //other node is a fact. check if new node is part of its subdivision
-                    if (otherNode.frame.allFrames.map(f => f.id).includes(frame.id)) {
+                    if (allFrames.map(f => f.id).includes(frame.id)) {
                         const link = new Link(node, otherNode, "subdivision", false)
                         this._links.push(link)
                         otherNode.incomingLinks.push(link)
