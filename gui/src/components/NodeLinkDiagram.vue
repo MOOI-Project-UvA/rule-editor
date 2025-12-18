@@ -47,7 +47,7 @@
                             @mousedown="handleMouseDown($event, node)"
                             @mouseover="showPosition(node)"
                         >
-                            <NodePanel :node="node" />
+                            <NodePanel :node="node" @delete="$emit('delete', node)"/>
                         </g>
                     </g>
                 </g>
@@ -65,7 +65,9 @@ import {
     } from "../helpers/forceSimulation.js";
 import NodePanel from "./NodePanel.vue"
 import { select } from "d3-selection"
-import { zoom } from "d3-zoom"
+import { zoom, zoomIdentity } from "d3-zoom"
+import {Network} from "../model/viz/network.js";
+
 export default {
     data: () => ({
         nodePositions: [],
@@ -78,22 +80,52 @@ export default {
         currentZoomLevel: 1,
         edgeColor: "#666666",
         grayedOutColor: "#dddddd",
-        arrowSize: 25
+        arrowSize: 25,
+        zoomBehaviour: null
     }),
     props: {
         nodes: Array,
         links: Array
     },
+    emits: ["delete"],
     mounted() {
+        console.log("NLD mounted | nodes", this.nodes, "links", this.links)
         this.initZoom()
         //handle event coming from forceSimulation when node positions have been calculated
         positionsUpdated.on('change', (network) => {
             this.nodePositions = [...network.nodePositions]
             this.linkPositions = [...network.linkPositions]
+
+           if (network.isFinal) {
+            // Mark the network as simulated
+            if (this.$store.state.network) {
+                this.$store.state.network.simulated = true;
+            }
+           }
+
         });
+
         this.setSize()
-        initSimulation()
-        restartSimulation(this.nodes, this.links)
+        // Only run simulation if not already simulated
+        if (!this.$store.state.network.simulated) {
+          initSimulation();
+          restartSimulation(this.nodes, this.links);
+        } else {
+          // Just use the stored positions
+          this.nodePositions = this.nodes;
+          this.linkPositions = this.links;
+        }
+        // initSimulation()
+        // restartSimulation(this.nodes, this.links)
+        // if there is a saved zoom, apply it
+        if (this.$store.state.networkZoomTransform) {
+          const t = this.$store.state.networkZoomTransform;
+          const svg = select(this.$refs.svg);
+          // Create a transform with the given zoom level and translation
+          const transform = zoomIdentity.translate(t.x, t.y).scale(t.k);
+          // Apply the transform
+          svg.call(this.zoomBehaviour.transform, transform);
+        }
     },
     components: {
         NodePanel
@@ -101,19 +133,21 @@ export default {
     computed: {
         selectedNode() {
             return this.$store.state.selectedNode
-        }
+        },
     },
     methods: {
         showPosition(node) {
-            //console.log("node", node.frame.shortName)
+            //console.log("node", node.fx, node.fy)
         },
         initZoom() {
-            select(this.$refs.svg).call(zoom().on("zoom",
+            this.zoomBehaviour = zoom().on("zoom",
                 (e) => {
                     this.currentZoomLevel = e.transform.k;
                     select(this.$refs.network).attr("transform", e.transform)
+                    this.$store.commit('setNetworkZoom', e.transform);
                 }
-            ))
+            )
+            select(this.$refs.svg).call(this.zoomBehaviour)
         },
         setSize() {
             const bbox = this.$refs.container.getBoundingClientRect()
@@ -147,11 +181,14 @@ export default {
                 //fix position
                 this.draggedNode.fx = this.draggedNode.x
                 this.draggedNode.fy = this.draggedNode.y
+                this.draggedNode.sticky = true
                 //restart simulation?
             }
+
             this.draggedNode = null;
             this.draggedDistance = 0;
             this.mouseDownPos = null;
+
         },
         //to prevent arrow point overlapping with node
         adaptLinkLength(x1, y1, x2, y2) {
@@ -189,6 +226,14 @@ export default {
         },
     },
     watch: {
+        nodes() {
+            console.log("NLD nodes changed", this.nodes)
+            //restart simulation
+            restartSimulation(this.nodes, this.links)
+        },
+        links() {
+            console.log("links changed")
+        }
     }
 }
 </script>

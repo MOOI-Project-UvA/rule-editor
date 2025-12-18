@@ -1,5 +1,11 @@
 <template>
-    <g>
+    <g @mouseenter="hovered = true" @mouseleave="hovered = false">
+        <g v-if="hovered">
+            <rect width="60" height="50" x="-30" y="-30" fill="#ffffff"/>
+            <g :transform="`translate(20,-20)`">
+                <text class="" @mousedown.stop="" @mouseup.stop="" @click="$emit('delete')">x</text>
+            </g>
+        </g>
         <circle
             :fill="selectedNode && node.id != selectedNode.id
                 ? grayedOutColor
@@ -18,11 +24,12 @@
             
         </g>
         <text
-                font-size="12"
-                dx="16"
-                dy="5"
-                fill="#111111">{{node.frame.shortName}}</text
-            >
+            font-size="12"
+            dx="16"
+            dy="5"
+            fill="#111111">{{node.frame.shortName}}
+        </text>
+        
     </g>
 </template>
 
@@ -55,23 +62,27 @@
                 "claimant":subTypeColors.agent,
                 "holder":subTypeColors.agent,
             },
-            grayedOutColor: "#dddddd"
+            grayedOutColor: "#dddddd",
+            hovered: false
         }),
         props: {
             node: Object
         },
+        emits: ["delete"],
         computed: {
             roles() {
                 return this.node.frame.typeId == "act"
                     ? ["actor", "object", "recipient"]
-                    : ["duty", "claimant", "holder"];
+                    : this.node.frame.typeId == "claimDuty"
+                        ? ["duty", "claimant", "holder"]
+                        : []
             },
             selectedNode() {
                 return this.$store.state.selectedNode
             }
         },
         mounted() {
-            console.log("node", this.node)
+            //console.log("node", this.node)
         },
         methods: {
             getColor(frame) {
@@ -80,8 +91,13 @@
                 } else {
                     return typeColors[frame.typeId];
                 }
-            }
+            },
         }
     }
 </script>
 
+<style>
+.bold {
+  font-weight: bold;
+}
+</style>

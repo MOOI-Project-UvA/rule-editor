@@ -12,21 +12,17 @@ export class Tree {
 
 
 function getTreeForFactOrBooleanConstruct(obj) {
-    console.log("getTreeForFactOrBooleanConstruct", obj)
     let node = null
     if ("typeId" in obj && obj.typeId == "fact") {
-        console.log("--FACT", obj.shortName)
         node = new Node()
         node.frame = obj
         let subdivisionNode = getTreeForFactOrBooleanConstruct(obj.subdivision)
-        console.log("--subdivisionNode", subdivisionNode)
         if (subdivisionNode) {
             const link = new Link(node, subdivisionNode, "subdivision", false)
             node.outgoingLinks.push(link)
             subdivisionNode.incomingLinks.push(link)
         }
     } else {
-        console.log("--BC with", obj.children.length, "children", obj.frame ? "with" : "without", "frame")
         //obj is boolean construct
         if (!obj.isEmpty) {
             if (obj.frame) {

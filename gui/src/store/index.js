@@ -25,7 +25,7 @@ import { Task } from "../model/task.js";
 const store = createStore({
   state() {
     return {
-      step: 1, //step in the process
+      activeView: null,
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
@@ -47,6 +47,8 @@ const store = createStore({
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
+      network: null,
+      networkZoomTransform: null, // default zoom
       showNlpModal: false, // whether or not the NLP modal is open
       nlpResults: [] // array of sentences to be sent to the NLP model
     };
@@ -63,7 +65,6 @@ const store = createStore({
       switch (frameTypeId) {
         case "fact":
           frame = new Fact(initialLabel);
-          // frame.addSubdivision();
           break;
         case "act":
           frame = new Act();
@@ -181,6 +182,12 @@ const store = createStore({
     },
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
+    },
+    setNetwork(state, network) {
+        state.network = network;
+    },
+    setNetworkZoom(state, zoom) {
+        state.networkZoomTransform = zoom;
     },
     setNlpModal(state, value){
         state.showNlpModal = value
@@ -374,8 +381,6 @@ const store = createStore({
       context.state.frameBeingEdited = null;
       context.state.framesOpenInEditor = [];
       context.state.booleanConstructBeingEdited = null;
-      //show the interpretation view
-      context.state.step = 3;
     },
     async loadInterpretationFromRDF(context, rdfText) {
       //set loading indication
