@@ -36,8 +36,10 @@ export function initSimulation() {
         .alphaDecay(0.0228)
         .on("end", () => {
             positionsUpdated.emit('change',
-                { nodePositions: nodesInSimulation, linkPositions: linksInSimulation }
+                { nodePositions: nodesInSimulation, linkPositions: linksInSimulation, isFinal: true }
             )
+            console.log("simulation ended")
+
         })
 }
 
@@ -53,7 +55,7 @@ function ticked() {
         })
     }
     positionsUpdated.emit('change',
-        { nodePositions: nodesInSimulation, linkPositions: linksInSimulation }
+        { nodePositions: nodesInSimulation, linkPositions: linksInSimulation, isFinal: false }
     )
 }
 

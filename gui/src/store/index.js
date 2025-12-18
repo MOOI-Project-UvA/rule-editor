@@ -46,7 +46,8 @@ const store = createStore({
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
-      network: null
+      network: null,
+      networkZoomTransform: null, // default zoom
     };
   },
   mutations: {
@@ -178,6 +179,12 @@ const store = createStore({
     },
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
+    },
+    setNetwork(state, network) {
+        state.network = network;
+    },
+    setNetworkZoom(state, zoom) {
+        state.networkZoomTransform = zoom;
     },
   },
   actions: {
