@@ -85,13 +85,25 @@ There are three ways of adding sources to the editor:
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
-Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**. 
+Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**.
+
+To remove a source document from the interpretation altogether, click the **Remove from interpretation button**.
 
 You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
 
 Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
 The only way to navigate between screens is by using the tabs at the top of the page.
+
+#### *Experimental: source versioning*
+
+An experimental functionality, only for demo purposes, is the one allowing for creating new versions of a source. Clicking the **New version** button will create a copy of the currently selected source. It opens a new window, showing the current version of that source next to the created copy. Using the buttons in the middle of the screen, the user can change the copy, sentence by sentence. These buttons are:
+  - Copy: copies the sentence from current to new version (this is the default setting)
+  - Delete: does not include the sentence in the copy
+  - Edit: allows the sentence in the copy to be edited
+
+Clicking the close button will save the new version and brings back the previous view. The newly created source will appear in the list of active sources.
+
 
 ### Interpret sources (step 3)
 
