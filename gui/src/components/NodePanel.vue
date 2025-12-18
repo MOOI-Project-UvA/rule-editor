@@ -40,27 +40,23 @@
         claim_duty: "#c51162",
     };
     const subTypeColors = {
+        action: "#26A69A",
         agent: "#F2C037",
         object: "#9C27B0",
         duty: "#c51162",
+        condition: "#21BA45",
     };
-    const roleColors = {
-        "actor":subTypeColors.agent,
-        "object":subTypeColors.object,
-        "recipient":subTypeColors.agent,
-        "duty":subTypeColors.duty,
-        "claimant":subTypeColors.agent,
-        "holder":subTypeColors.agent,
-    }
     export default {
         data: () => ({
             roleColors: {
-                "actor":subTypeColors.agent,
-                "object":subTypeColors.object,
-                "recipient":subTypeColors.agent,
-                "duty":subTypeColors.duty,
-                "claimant":subTypeColors.agent,
-                "holder":subTypeColors.agent,
+                actor: subTypeColors.agent,
+                action: subTypeColors.action,
+                object: subTypeColors.object,
+                recipient: subTypeColors.agent,
+                duty: subTypeColors.duty,
+                claimant: subTypeColors.agent,
+                holder: subTypeColors.agent,
+                condition: subTypeColors.condition
             },
             grayedOutColor: "#dddddd",
             hovered: false
