@@ -5,6 +5,7 @@ export class Sentence {
     this._id = id;
     this._iri = iri;
     this._sourceDocument = sourceDocument;
+    this._isRevisionOf = null //sentence id in previous version, if this sentence is edited in the new version of the source
     this._loading = false;
     this._snippets = [];
     this._text = "";
@@ -41,6 +42,14 @@ export class Sentence {
 
   get iri() {
     return this._iri;
+  }
+
+  get isRevisionOf() {
+    return this._isRevisionOf
+  }
+
+  set isRevisionOf(sentenceId) {
+    this._isRevisionOf = sentenceId
   }
 
   get parent() {
