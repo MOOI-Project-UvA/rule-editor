@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-ma-md items-center">
+  <div class="row items-center">
     <div class="q-ml-lg row items-center q-gutter-xs cursor-pointer nav-button text-primary"
       :class="{'selected': activeView?.id == view.id}"
       v-for="view in views"
@@ -20,6 +20,7 @@
 import TaskDefinitionView from "../views/TaskDefinitionView.vue";
 import SourceCollectionView from "../views/SourceCollectionView.vue";
 import InterpretationView from "../views/interpretation/InterpretationView.vue";
+import VisualizationView from "../views/visualization/VisualizationView.vue";
 import LoadSaveInterpretationBanner from "./LoadSaveIntepretationBanner.vue"
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
@@ -49,13 +50,20 @@ export default {
       },
       {
         id: 3,
+        label: "View interpretation",
+        component: markRaw(VisualizationView),
+        completed: false,
+        icon: 'mdi-file-tree'
+      },
+      {
+        id: 4,
         label: "Make interpretations executable", 
         component: null,
         completed: false,
         icon: 'mdi-timeline-check-outline'
       },
       {
-        id: 4,
+        id: 5,
         label: "Execute task",
         component: null,
         completed: false,
@@ -77,7 +85,7 @@ export default {
   },
   methods: {
     updateActiveView(newView) {
-      this.$emit('update:activeView', newView);
+      this.$emit('changed', newView);
     }
   }
 

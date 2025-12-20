@@ -17,11 +17,16 @@
     limitations under the License.
   */
   -->
-  <NavigationBar v-model:activeView="activeView"/>
 
-  <div class="q-pa-md">
-    <component v-if="activeView" :is="activeView.component" />
+  <div class="column fit">
+    <div class="col-auto">
+      <NavigationBar :activeView="activeView" @changed="$store.state.activeView = $event"/>
+    </div>
+    <div class="col q-px-sm scroll">
+      <component v-if="activeView" :is="activeView.component" />
+    </div>
   </div>
+  
   
   <div>
     <TaskRetrieval />
@@ -39,8 +44,12 @@ export default {
     hash: import.meta.env.VITE_VERSION,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
-    activeView: null
   }),
+  computed: {
+    activeView() {
+      return this.$store.state.activeView
+    }
+  },
   components: {
     NavigationBar,
     TaskRetrieval,
@@ -58,9 +67,12 @@ export default {
     }
     // list of action to be dispatched on mount
     this.$store.dispatch("readAvailableSources");
-    this.$store.dispatch("readAvailableSourcesInTripleStore");
-    this.$store.dispatch("readAvailableTasksInTripleStore");
+    // this.$store.dispatch("readAvailableSourcesInTripleStore");
+    // this.$store.dispatch("readAvailableTasksInTripleStore");
   },
 };
 </script>
 
+<style>
+  
+</style>

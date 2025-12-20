@@ -5,6 +5,7 @@ export class Sentence {
     this._id = id;
     this._iri = iri;
     this._sourceDocument = sourceDocument;
+    this._isRevisionOf = null //sentence id in previous version, if this sentence is edited in the new version of the source
     this._loading = false;
     this._snippets = [];
     this._text = "";
@@ -16,6 +17,7 @@ export class Sentence {
     this._collapsed = false; //collapse or expand this node to hide/show its children
     this._selected = false; //selected by the user to be included in the interpretation
     this._isHeader = false; //corresponding element in source has a 'containsAsHeader' attribute
+    this._nlpSelected = false; //sentence was selected by the user for NLP analysis in source of selected frame view
   }
 
   //set text and create snippet
@@ -40,6 +42,14 @@ export class Sentence {
 
   get iri() {
     return this._iri;
+  }
+
+  get isRevisionOf() {
+    return this._isRevisionOf
+  }
+
+  set isRevisionOf(sentenceId) {
+    this._isRevisionOf = sentenceId
   }
 
   get parent() {
@@ -104,6 +114,14 @@ export class Sentence {
   }
   get collapsed() {
     return this._collapsed;
+  }
+
+  set nlpSelected(nlpSelected) {
+    this._nlpSelected = nlpSelected;
+  }
+
+  get nlpSelected() {
+    return this._nlpSelected;
   }
 
   set selected(selected) {

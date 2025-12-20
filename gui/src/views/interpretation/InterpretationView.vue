@@ -9,11 +9,13 @@ import AnnotationPanel from "../../components/AnnotationPanel.vue";
 import AnnotationList from "../../components/AnnotationList.vue"
 import AddingAnnotationToFramePanel from "../../components/AddingAnnotationToFramePanel.vue"
 
-import { markRaw } from 'vue' //to prevent components from becoming reactie
+import NlpModal from "../../components/NlpModal.vue"; //to prevent components from becoming reactie
+import { markRaw } from 'vue' //to prevent components from becoming reactive
 
 export default {
   name: "InterpretationView",
   components: {
+    NlpModal,
     FrameListView,
     FrameEditView,
     SourceView,
@@ -55,21 +57,30 @@ export default {
 </script>
 
 <template>
-  <div class="row q-gutter-x-xs">
-    <div v-for="panel in panels" :class="{ col: panel.expanded }">
-      <div v-if="panel.expanded" class="row items-center q-px-xs bg-primary">
-        <q-avatar text-color="white" size="lg" :icon="panel.icon" />
-        <div class="col text-white">{{ panel.label }}</div>
-        <q-btn round flat text-color="white" size="xs" icon="mdi-arrow-collapse-left"
-          @click="panel.expanded = false"></q-btn>
-      </div>
-      <div v-else>
-        <q-btn round color="primary" size="sm" :icon="panel.icon" @click="panel.expanded = true"></q-btn>
-      </div>
+   <div class="row fit">
+    <template v-for="panel in panels">
       <template v-if="panel.expanded">
-        <component :is="panel.component" />
+        <div class="col column fit q-mr-xs">
+          <div class="col-auto">
+            <div class="row items-center q-px-xs bg-primary">
+              <q-btn round flat text-color="white" size="sm" :icon="panel.icon" @click="panel.expanded = false"></q-btn>
+              <div class="col text-white">{{ panel.label }}</div>
+              <q-btn round flat text-color="white" size="xs" icon="mdi-arrow-collapse-left"
+                @click="panel.expanded = false"></q-btn>
+            </div>
+          </div>
+          <!-- this part scrolls -->
+          <div class="col fit scroll">
+            <component :is="panel.component" />
+          </div>
+        </div>
       </template>
-    </div>
+      <template v-else>
+        <div class="q-mr-xs">
+          <q-btn round color="primary" size="sm" :icon="panel.icon" @click="panel.expanded = true"></q-btn>
+        </div>
+      </template>
+    </template>
   </div>
   <!-- panel that appears when a new annotation is made by selecting source text -->
   <AnnotationPanel />
@@ -77,10 +88,7 @@ export default {
   <AnnotationList />
   <!-- panel that appears when user is adding an annotation to a frame -->
   <AddingAnnotationToFramePanel />
+  <!-- panel that appears when user requests NLP recommendations -->
+  <NlpModal />
 </template>
 
-<style scoped lang="css">
-.vertical {
-  writing-mode: vertical-rl;
-}
-</style>

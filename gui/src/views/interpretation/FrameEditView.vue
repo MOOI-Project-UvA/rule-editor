@@ -14,7 +14,6 @@
 <script>
 import NewFrameMenu from "../../components/NewFrameMenu.vue";
 import FramesList from "../../components/FramesList.vue";
-import Network from "../../components/Network.vue"
 import FrameEditorPanel from "../../components/FrameEditorPanel.vue";
 import { icons, colors } from "../../helpers/config";
 
@@ -23,12 +22,8 @@ export default {
     icons: icons,
     colors: colors,
     searchTerm: "",
-    view: "list" //either 'list' or 'network'
   }),
   computed: {
-    sourceViewIsCollapsed() {
-      return this.$store.state.sourceViewIsCollapsed;
-    },
     frames() {
       return this.$store.state.frames;
     },
@@ -58,15 +53,8 @@ export default {
 
   components: {
     FramesList,
-    Network,
     NewFrameMenu,
     FrameEditorPanel,
-  },
-
-  watch: {
-    sourceViewIsCollapsed() {
-      console.log("sourceViewIsCollapsed", this.sourceViewIsCollapsed);
-    },
   },
 };
 </script>
@@ -92,7 +80,7 @@ export default {
 }
 
 .fill-height {
-  height: calc(100vh - 215px);
+  height: calc(100vh - 145px);
 }
 
 .scrollable {
