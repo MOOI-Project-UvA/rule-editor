@@ -22,6 +22,8 @@ import SourceCollectionView from "../views/SourceCollectionView.vue";
 import InterpretationView from "../views/interpretation/InterpretationView.vue";
 import VisualizationView from "../views/visualization/VisualizationView.vue";
 import LoadSaveInterpretationBanner from "./LoadSaveIntepretationBanner.vue"
+import ExecutableInterpretationsView from "../views/ExecutableInterpretationsView.vue";
+import ExecuteTaskView from "../views/ExecuteTaskView.vue";
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
 export default {
@@ -58,14 +60,14 @@ export default {
       {
         id: 4,
         label: "Make interpretations executable", 
-        component: null,
+        component: markRaw(ExecutableInterpretationsView),
         completed: false,
         icon: 'mdi-timeline-check-outline'
       },
       {
         id: 5,
         label: "Execute task",
-        component: null,
+        component: markRaw(ExecuteTaskView),
         completed: false,
         icon: 'mdi-playlist-check'
       },
@@ -78,6 +80,8 @@ export default {
     TaskDefinitionView,
     InterpretationView,
     SourceCollectionView,
+    ExecutableInterpretationsView,
+    ExecuteTaskView,
     LoadSaveInterpretationBanner
   },
   mounted() {

@@ -50,10 +50,14 @@ const store = createStore({
       network: null,
       networkZoomTransform: null, // default zoom
       showNlpModal: false, // whether or not the NLP modal is open
-      nlpResults: [] // array of sentences to be sent to the NLP model
+      nlpResults: [], // array of sentences to be sent to the NLP model
+      executableResponse: '' // response from executable interpretations API
     };
   },
   mutations: {
+    setExecutableResponse(state, response) {
+      state.executableResponse = response;
+    },
     //add new frame to list of frames being edited. does not permanently store
     //the frame to the frames list yet. storing permanently is done when the save
     //button in the frame editor is clicked.
