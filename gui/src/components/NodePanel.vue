@@ -1,11 +1,5 @@
 <template>
-    <g @mouseenter="hovered = true" @mouseleave="hovered = false">
-        <g v-if="hovered">
-            <rect width="60" height="50" x="-30" y="-30" fill="#ffffff"/>
-            <g :transform="`translate(20,-20)`">
-                <text class="" @mousedown.stop="" @mouseup.stop="" @click="$emit('delete')">x</text>
-            </g>
-        </g>
+    <g>
         <circle
             :fill="selectedNode && node.id != selectedNode.id
                 ? grayedOutColor
@@ -24,12 +18,11 @@
             
         </g>
         <text
-            font-size="12"
-            dx="16"
-            dy="5"
-            fill="#111111">{{node.frame.shortName}}
-        </text>
-        
+                font-size="12"
+                dx="16"
+                dy="5"
+                fill="#111111">{{node.frame.shortName}}</text
+            >
     </g>
 </template>
 
@@ -40,45 +33,45 @@
         claim_duty: "#c51162",
     };
     const subTypeColors = {
-        action: "#26A69A",
         agent: "#F2C037",
         object: "#9C27B0",
         duty: "#c51162",
-        condition: "#21BA45",
     };
+    const roleColors = {
+        "actor":subTypeColors.agent,
+        "object":subTypeColors.object,
+        "recipient":subTypeColors.agent,
+        "duty":subTypeColors.duty,
+        "claimant":subTypeColors.agent,
+        "holder":subTypeColors.agent,
+    }
     export default {
         data: () => ({
             roleColors: {
-                actor: subTypeColors.agent,
-                action: subTypeColors.action,
-                object: subTypeColors.object,
-                recipient: subTypeColors.agent,
-                duty: subTypeColors.duty,
-                claimant: subTypeColors.agent,
-                holder: subTypeColors.agent,
-                condition: subTypeColors.condition
+                "actor":subTypeColors.agent,
+                "object":subTypeColors.object,
+                "recipient":subTypeColors.agent,
+                "duty":subTypeColors.duty,
+                "claimant":subTypeColors.agent,
+                "holder":subTypeColors.agent,
             },
-            grayedOutColor: "#dddddd",
-            hovered: false
+            grayedOutColor: "#dddddd"
         }),
         props: {
             node: Object
         },
-        emits: ["delete"],
         computed: {
             roles() {
                 return this.node.frame.typeId == "act"
                     ? ["actor", "object", "recipient"]
-                    : this.node.frame.typeId == "claimDuty"
-                        ? ["duty", "claimant", "holder"]
-                        : []
+                    : ["duty", "claimant", "holder"];
             },
             selectedNode() {
                 return this.$store.state.selectedNode
             }
         },
         mounted() {
-            //console.log("node", this.node)
+            console.log("node", this.node)
         },
         methods: {
             getColor(frame) {
@@ -87,13 +80,8 @@
                 } else {
                     return typeColors[frame.typeId];
                 }
-            },
+            }
         }
     }
 </script>
 
-<style>
-.bold {
-  font-weight: bold;
-}
-</style>

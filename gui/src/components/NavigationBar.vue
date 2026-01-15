@@ -21,9 +21,8 @@ import TaskDefinitionView from "../views/TaskDefinitionView.vue";
 import SourceCollectionView from "../views/SourceCollectionView.vue";
 import InterpretationView from "../views/interpretation/InterpretationView.vue";
 import VisualizationView from "../views/visualization/VisualizationView.vue";
+import MakeExecutableView from "../views/executable/MakeExecutableView.vue";
 import LoadSaveInterpretationBanner from "./LoadSaveIntepretationBanner.vue"
-import ExecutableInterpretationsView from "../views/ExecutableInterpretationsView.vue";
-import ExecuteTaskView from "../views/ExecuteTaskView.vue";
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
 export default {
@@ -60,14 +59,14 @@ export default {
       {
         id: 4,
         label: "Make interpretations executable", 
-        component: markRaw(ExecutableInterpretationsView),
+        component: markRaw(MakeExecutableView),
         completed: false,
         icon: 'mdi-timeline-check-outline'
       },
       {
         id: 5,
         label: "Execute task",
-        component: markRaw(ExecuteTaskView),
+        component: null,
         completed: false,
         icon: 'mdi-playlist-check'
       },
@@ -80,8 +79,6 @@ export default {
     TaskDefinitionView,
     InterpretationView,
     SourceCollectionView,
-    ExecutableInterpretationsView,
-    ExecuteTaskView,
     LoadSaveInterpretationBanner
   },
   mounted() {
@@ -89,7 +86,7 @@ export default {
   },
   methods: {
     updateActiveView(newView) {
-      this.$emit('changed', newView);
+      this.$emit('update:activeView', newView);
     }
   }
 

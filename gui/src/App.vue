@@ -20,7 +20,7 @@
 
   <div class="column fit">
     <div class="col-auto">
-      <NavigationBar :activeView="activeView" @changed="$store.state.activeView = $event"/>
+      <NavigationBar v-model:activeView="activeView"/>
     </div>
     <div class="col q-px-sm scroll">
       <component v-if="activeView" :is="activeView.component" />
@@ -44,12 +44,8 @@ export default {
     hash: import.meta.env.VITE_VERSION,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
+    activeView: null
   }),
-  computed: {
-    activeView() {
-      return this.$store.state.activeView
-    }
-  },
   components: {
     NavigationBar,
     TaskRetrieval,
