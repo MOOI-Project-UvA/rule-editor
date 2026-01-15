@@ -60,7 +60,7 @@
                         <template v-if="node.outgoingLinks.length > 1">
                             <template v-if="node.collapsed">
                                 <text
-                                    font-size="11"
+                                    font-size="10"
                                     font-weight="bold"
                                     dx="8"
                                     dy="4"
@@ -72,7 +72,7 @@
                             </template>
                             <template v-else>
                                 <text
-                                    font-size="14"
+                                    font-size="12"
                                     font-weight="bold"
                                     dx="10"
                                     dy="18"
@@ -87,14 +87,19 @@
                         <template v-else>
                             <text
                                 class="cursor-pointer"
-                                font-size="14"
+                                font-size="12"
                                 :dx="node.outgoingLinks.length == 0 && !node.negated
-                                    ? 6
-                                    : 9"
-                                dy="4">
+                                    ? 5
+                                    : 8"
+                                dy="4"
+                                @mouseover="() => {
+                                    $hoveredNode = node;
+                                }"
+                                @mouseout="() => {
+                                    $hoveredNode = null;
+                                }">
                                 {{node.frame.shortName}}
                             </text>
-                           <!-- <circle /> for adding to network --> 
                         </template>
                     </g>
                 </template>
@@ -139,6 +144,7 @@ export default {
     },
     mounted() {
         this.tree = new Tree(this.factOrBooleanConstruct);
+        console.log("tree for", this.factOrBooleanConstruct, ":", this.tree)
         //only top node visible, or (if top node is a boolean operator) the top 2 layers
         if (this.tree.root.outgoingLinks.length == 1) {
             this.tree.root.collapsed = true;
@@ -228,13 +234,13 @@ export default {
     },
     watch: {
         width() {
-            //console.log("width", this.width)
+            console.log("width", this.width)
         },
         height() {
-            //console.log("height", this.height)
+            console.log("height", this.height)
         },
         visibleNodes() {
-            //console.log("visible nodes", this.visibleNodes)
+            console.log("visible nodes", this.visibleNodes)
         }
     }
 }

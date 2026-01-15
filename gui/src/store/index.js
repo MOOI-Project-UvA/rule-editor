@@ -25,7 +25,7 @@ import { Task } from "../model/task.js";
 const store = createStore({
   state() {
     return {
-      activeView: null,
+      step: 1, //step in the process
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
@@ -47,10 +47,8 @@ const store = createStore({
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
       showTaskOverview: false,
       selectedNode: null, //node that is selected in the network visualization
-      network: null,
-      networkZoomTransform: null, // default zoom
-      showNlpModal: false, // whether or not the NLP modal is open
-      nlpResults: [] // array of sentences to be sent to the NLP model
+      executableFrameIds: [], // ids of frames selected in "Make interpretations executable"
+      executableSelectionDirty: false,
     };
   },
   mutations: {
@@ -183,24 +181,54 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
-    setNetwork(state, network) {
-        state.network = network;
+    setExecutableFrames(state, ids) {
+      // store as unique strings
+      const unique = Array.from(new Set((ids || []).map(String)));
+      state.executableFrameIds = unique;
+      state.executableSelectionDirty = true;
     },
-    setNetworkZoom(state, zoom) {
-        state.networkZoomTransform = zoom;
-    },
-    setNlpModal(state, value){
-        state.showNlpModal = value
-    },
-    setNlpResults(state, payload){
-        if (Array.isArray(payload)) {
-            // Reset the array if an array is passed
-            state.nlpResults = payload;
-        } else {
-            // Otherwise, push the single sentence
-            state.nlpResults.push(payload);
+
+    loadExecutableFramesFromStorage(state, { storageKey }) {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+          state.executableFrameIds = [];
+          state.executableSelectionDirty = false;
+          return;
         }
-    }
+        const parsed = JSON.parse(raw);
+        state.executableFrameIds = Array.isArray(parsed)
+          ? Array.from(new Set(parsed.map(String)))
+          : [];
+        state.executableSelectionDirty = false;
+      } catch {
+        state.executableFrameIds = [];
+        state.executableSelectionDirty = false;
+      }
+    },
+
+    persistExecutableFramesToStorage(state, { storageKey }) {
+      localStorage.setItem(storageKey, JSON.stringify(state.executableFrameIds));
+      state.executableSelectionDirty = false;
+    },
+  },
+  getters: {
+    // union frames + framesOpenInEditor (same logic used by save/export) :contentReference[oaicite:1]{index=1}
+    allFramesForCurrentInterpretation(state) {
+      return state.frames
+        .concat(state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id === frame.id) === index,
+        );
+    },
+
+    executableFrames(state, getters) {
+      const idSet = new Set((state.executableFrameIds || []).map(String));
+      return getters.allFramesForCurrentInterpretation.filter((f) =>
+        idSet.has(String(f.id)),
+      );
+    },
   },
   actions: {
     loadInterpretationForDebugging(context) {
@@ -381,6 +409,8 @@ const store = createStore({
       context.state.frameBeingEdited = null;
       context.state.framesOpenInEditor = [];
       context.state.booleanConstructBeingEdited = null;
+      //show the interpretation view
+      context.state.step = 3;
     },
     async loadInterpretationFromRDF(context, rdfText) {
       //set loading indication
@@ -440,6 +470,12 @@ const store = createStore({
         //dismiss notification
         notification();
       }
+    },
+    loadExecutableSelection(context, { storageKey = "rule-editor.executableFrames.v1" } = {}) {
+      context.commit("loadExecutableFramesFromStorage", { storageKey });
+    },
+    persistExecutableSelection(context, { storageKey = "rule-editor.executableFrames.v1" } = {}) {
+      context.commit("persistExecutableFramesToStorage", { storageKey });
     },
   },
 });

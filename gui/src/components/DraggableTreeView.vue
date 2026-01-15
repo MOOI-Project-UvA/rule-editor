@@ -158,7 +158,7 @@ export default {
       });
     },
     selectedNode: function (newV, oldV) {
-      // console.log("newV:", newV, "oldV:", oldV);
+      console.log("newV:", newV, "oldV:", oldV);
       const selectionOld = this.getNodeByKey(oldV);
       selectionOld && oldV ? (selectionOld.beingEdited = false) : null;
 
@@ -169,7 +169,7 @@ export default {
     },
     booleanConstructBeingEdited: {
       handler(n, o) {
-        // console.log("n,o", n, o);
+        console.log("n,o", n, o);
         if (!this.booleanConstructBeingEdited) {
           this.selectedNode = null;
         }
@@ -232,11 +232,11 @@ export default {
       return null;
     },
     moveNode(from, to) {
-      // console.log("moving nodes!");
+      console.log("moving nodes!");
       if (from === to) return;
 
-      // console.log("from id:", from);
-      // console.log("to id:", to);
+      console.log("from id:", from);
+      console.log("to id:", to);
 
       const fromResult = this.getNodeByLabel(this.booleanConstruct, from, -1);
       const toResult =
@@ -245,7 +245,7 @@ export default {
           : this.getNodeByLabel(this.booleanConstruct, to, -1);
 
       if (fromResult) {
-        // console.log("fromResult:", fromResult.node);
+        console.log("fromResult:", fromResult.node);
 
         // Return if trying to move a parent node into its own descendants
         if (
@@ -270,17 +270,17 @@ export default {
         if (toResult && toResult.node) {
           //TODO: fix case where user drags to root node. It should be added to the top and not create any subdivision.
 
-          // console.log("toResult: ", toResult.node);
+          console.log("toResult: ", toResult.node);
           // If the target node already has a children array, the source node is inserted at the beginning.
           if (toResult.node.children.length > 0 && toResult.node.frame) {
-            // console.log("it has children", toResult.node.children);
-            // console.log("fromResult:", fromResult);
+            console.log("it has children", toResult.node.children);
+            console.log("fromResult:", fromResult);
             toResult.node.children.splice(0, 0, fromResult.node);
-            // console.log("if-after", toResult.node.children);
+            console.log("if-after", toResult.node.children);
           }
           // If not, the targeted node is subdivided and the dragged node is added as a child.
           else {
-            // console.log("create a new subdivision:");
+            console.log("create a new subdivision:");
             // fromResult.node.subdivide()
             toResult.node.subdivide();
             toResult.node.children.push(fromResult.node);
@@ -300,7 +300,7 @@ export default {
       }
     },
     swapNodes(fromKey, toKey) {
-      // console.log("swapping nodes!");
+      console.log("swapping nodes!");
       if (fromKey === toKey) return;
 
       const fromResult = this.getNodeByLabel(
@@ -357,8 +357,8 @@ export default {
       }
     },
     dragStart(event, key) {
-      // console.log("drag started...");
-      // console.log("drag key:", key);
+      console.log("drag started...");
+      console.log("drag key:", key);
       this.draggingId = key;
       if (event.target) {
         const target = event.target;
@@ -380,7 +380,7 @@ export default {
         event.dataTransfer.setData("node", key);
     },
     dragStop(event) {
-      // console.log("drag stop...");
+      console.log("drag stop...");
       if (event.target) {
         const target = event.target;
         const parent = this.getNodeParent(target);
@@ -391,7 +391,7 @@ export default {
     },
     drop(event, key) {
       event.preventDefault();
-      // console.log("drop key:", key);
+      console.log("drop key:", key);
       const target = event.target;
       let nodeKey = "";
       if (event.dataTransfer) nodeKey = event.dataTransfer.getData("node");
@@ -453,14 +453,14 @@ export default {
     //   }
     // },
     dragOver(event, id) {
-      // console.log("dragging...");
+      console.log("dragging...");
       event.preventDefault();
       const target = event.target;
       if (target) target.classList.add("container");
       if (id !== this.dragOverId) this.dragOverId = id;
     },
     dragLeave(event, id) {
-      // console.log("drag event is over!");
+      console.log("drag event is over!");
       event.preventDefault();
       const target = event.target;
       if (target) target.classList.remove("container");
@@ -482,7 +482,7 @@ export default {
     },
     // adds children to the selected node.
     addChild(nodeData) {
-      // console.log("adding child to booleanConstruct", "nodeData", nodeData);
+      console.log("adding child to booleanConstruct", "nodeData", nodeData);
       // if no frame has been assigned to the children, do not allow the creation of new children before filling in the
       // previous ones
       // if (
@@ -504,14 +504,14 @@ export default {
       const newChild = new BooleanConstruct();
       nodeData.children.push(newChild);
       newChild.parent = nodeData;
-      // console.log("newCHild: ", newChild);
+      console.log("newCHild: ", newChild);
       this.selectedNode = newChild.id;
     },
     subdivide(event, nodeData) {
-      // console.log("nodeData to subdivide:", nodeData);
+      console.log("nodeData to subdivide:", nodeData);
       event.stopPropagation();
       nodeData.subdivide();
-      // console.log("after subdivision: ", nodeData);
+      console.log("after subdivision: ", nodeData);
 
       // set the top level of the construct to be expanded
       // this.$refs["tree-structure-draggable"].setExpanded(this.parentNodeId, true);
@@ -530,15 +530,15 @@ export default {
     // removing extra level of hierarchy from a node
     deleteBooleanConstruct(event, nodeData) {
       event.stopPropagation();
-      // console.log("deleting booleanConstruct");
+      console.log("deleting booleanConstruct");
       nodeData.beingEdited = false;
       //if bc has no parent, do not delete, since that would leave precondition empty
       //instead: clean
       if (nodeData.parent) {
-        // console.log("nodeData.parent:", nodeData.parent);
+        console.log("nodeData.parent:", nodeData.parent);
         nodeData.delete();
       } else {
-        // console.log("no parent: ", nodeData.parent);
+        console.log("no parent: ", nodeData.parent);
         nodeData.clean();
       }
       // set the initial margin to negative for styling purposes
@@ -551,21 +551,21 @@ export default {
     handleClick(event, node) {
       //prevent propagation to underlying panels
       event.stopPropagation();
-      // console.log(
-      //   "handle clicked: node",
-      //   node,
-      //   node.beingEdited,
-      //   this.selectedNode,
-      // );
+      console.log(
+        "handle clicked: node",
+        node,
+        node.beingEdited,
+        this.selectedNode,
+      );
 
       //
       if (this.selectedNode == node.id && !node.frame) {
-        // console.log("selected!");
+        console.log("selected!");
         this.selectedNode = null;
         return;
       }
       if (this.selectedNode == node.id && node.frame) {
-        // console.log("selected with frame!");
+        console.log("selected with frame!");
         this.selectedNode = null;
         return;
       }
@@ -600,7 +600,7 @@ export default {
     },
   },
   mounted() {
-    // console.log("mounting Draggale:", this.booleanConstruct, this.parentNode);
+    console.log("mounting Draggale:", this.booleanConstruct, this.parentNode);
     this.options = Array.from(this.booleanOptions);
     // it expands the parent node of the hierarchy
     this.$refs["tree-structure-draggable"].setExpanded(this.parentNodeId, true);

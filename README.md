@@ -32,7 +32,7 @@ Feel free to explore both!
 
 ## Application Overview
 
-The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation. The editor allows to view an interpretation as a network, to get a clearer understanding of the relations between the frames in an interpretation.
+The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
 The current version of the Editor enables users to express interpretations in FLINT. The Editor is designed to be easily extendable for other interpretation schemes. It allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
@@ -57,9 +57,8 @@ The interface of the Rule Editor consists of five main views:
 1. Set task
 2. Collect sources
 3. Interpret sources
-4. View interpretation
-5. Make interpretations executable (not yet in use)
-6. Execute task (not yet in use)
+4. Make interpretations executable (not yet in use)
+5. Execute task (not yet in use)
 
 Navigate between views using the tabs at the top of the page.
 
@@ -85,25 +84,13 @@ There are three ways of adding sources to the editor:
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
-Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**.
-
-To remove a source document from the interpretation altogether, click the **Remove from interpretation button**.
+Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**. 
 
 You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
 
 Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
 The only way to navigate between screens is by using the tabs at the top of the page.
-
-#### *Experimental: source versioning*
-
-An experimental functionality, only for demo purposes, is the one allowing for creating new versions of a source. Clicking the **New version** button will create a copy of the currently selected source. It opens a new window, showing the current version of that source next to the created copy. Using the buttons in the middle of the screen, the user can change the copy, sentence by sentence. These buttons are:
-  - Copy: copies the sentence from current to new version (this is the default setting)
-  - Delete: does not include the sentence in the copy
-  - Edit: allows the sentence in the copy to be edited
-
-Clicking the close button will save the new version and brings back the previous view. The newly created source will appear in the list of active sources.
-
 
 ### Interpret sources (step 3)
 
@@ -135,7 +122,8 @@ This pane provides an overview of the linked text fragments (per source) for the
 
 **Frames**
 
-The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top.
+The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top. Alternatively, you can switch to a network visualization, which shows how different frames are related.
+Switch between **List** and **Network** views using the provided radio buttons.
 
 **Edit** 
 
@@ -204,33 +192,10 @@ A **duty** should be linked to:
 - One or more **acts** that can create the **duty**
 - One or more **acts** that terminate the **duty**
 
-### View interpretation (step 4)
-This step shows the frames in the interpretation as a network of connected nodes. Its purpose is to allow for visual inspection of the interpretation. This helps in understanding the interpretation, its frames, and how frames are related to each other. It also may make visible any problems in the interpretation, e.g. missing parts or connections.
-
-The view consists of two panels:
-
-#### Frames
-A list of all frames currently present in the interpretation. It is the same panel as the one in the previous step (Interpret sources) with a view enhancements specifically designed for this view:
-- Clicking a frame will add a node representing that frame to the network
-- Frames that are part of the network visualization are presented with a coloured fill; frames not part of the network visualization have a blank fill.
-- Each frame type and sub type header (e.g. 'Act', 'Agent') has two buttons. They respectivally add and remove all frames of the corresponding (sub)type to the network visualization.
-
-#### Network
-This is actual visualization as a node-link network. Each node represents a frame, drawn as a circle, its colour indicating the (sub)type of the frame. Acts and ClaimDuty nodes have smaller circles left of the main one, showing the roles of the Act / ClaimDuty. Fact nodes are drawn as smaller circles.
-
-Nodes are connected with a line if there is a relation between the frames represented by those nodes. Currently we show two types of relations:
-- Undirected: these are relations between Facts and Acts/ClaimDuties or between Facts and other Facts. A fact is connected to an Act if it has a role in that Act, is created by the Act, or if it is part of the Act's precondition. A Fact is connected to another Fact if one is part of the subdivision of the other
-- Directed: these are relations between Acts, depicted as an arrow from one Act to another. The relation can be read as *affects* meaning that one Act is affecting, or is needed for, another Act. Act `A` is affecting Act `B` if at least one of three conditions is true:
-  - `A` creates a frame that is part of the preconditions of `B`
-  - `A` creates a frame that is connected to a role in `B`
-  - `A` creates a frame that is terminated by `B`
-
-When hovering over a node, a button appears for removing that node from the network. It can be added again by clicking its corresponding frame in the frame list, as described under *Frames*.
-
-### Make interpretations executable (step 5)
+### Make interpretations executable (step 4)
 Not yet available.
 
-### Execute task (step 6)
+### Execute task (step 5)
 Not yet available.
 
 ## Data Model

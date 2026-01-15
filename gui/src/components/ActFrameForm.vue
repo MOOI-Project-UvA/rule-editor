@@ -3,6 +3,36 @@
     <q-card-section>
       <div class="row items-center">
         <div class="col-2">ACT</div>
+        <div class="col">
+          <div class="row items-center">
+            <template v-if="frame.sourceSentences.length > 0">
+              <q-btn
+                size="sm"
+                round
+                flat
+                color="primary"
+                class="q-mt-sm"
+                icon="mdi-text-recognition"
+                :loading="nlpIsBusy"
+                @click.stop="applyNlpToSource"
+                @mouseup.stop
+              >
+                <q-tooltip anchor="bottom middle" class="text-subtitle2">
+                  <span
+                    >Detect roles of an act frame.<br/>This feature is still
+                    experimental, so use it with caution.</span
+                  >
+                </q-tooltip>
+                <template v-slot:loading>
+                  <q-spinner-gears />
+                </template>
+              </q-btn>
+            </template>
+            <template v-else>
+              <div class="text-italic">No source added yet</div>
+            </template>
+          </div>
+        </div>
         <div class="col-1">
           <q-btn
             size="sm"
@@ -129,7 +159,6 @@
     @update:show-comments="showComments = $event"
     @closed="showComments = false"
   />
-
 </template>
 
 <script>
@@ -137,6 +166,12 @@ import RoleSelector from "./RoleSelector.vue";
 import CommentsList from "./CommentsList.vue";
 import BooleanConstructPanel from "./BooleanConstructPanel.vue";
 import { setVerticalPositionOfAnnotationLines } from "../helpers/underlining.js";
+import { fetchNlpPrediction } from "../services/ApiServices.js";
+import {
+  getSelectedRangeAsSnippets,
+  splitAndReturnSelectedSnippets,
+} from "../helpers/annotating.js";
+import { Annotation } from "../model/annotation";
 import TreeviewBooleanConstruct from "./TreeviewBooleanConstruct.vue";
 import DraggableTreeView from "./DraggableTreeView.vue";
 export default {
@@ -145,6 +180,13 @@ export default {
     showSource: false,
     showComments: false,
     frameIsBeingDeleted: false, //true when user clicked delete button
+    nlpRoleToSubtype: {
+      Actor: "agent",
+      Recipient: "agent",
+      Action: "action",
+      Object: "object",
+      Duty: "duty",
+    },
     idIsCopiedToClipboard: false,
   }),
   mounted() {
@@ -165,6 +207,10 @@ export default {
     },
     booleanConstructBeingEdited() {
       return this.$store.state.booleanConstructBeingEdited;
+    },
+    nlpIsBusy() {
+      //if nlp is not ready for one or more of this act's sentences, return true
+      return this.frame.sourceSentences.some((s) => s.loading);
     },
   },
   methods: {
@@ -193,6 +239,90 @@ export default {
       if (this.frame && this.frame.generateLabelAutomatically) {
         this.frame.generateLabel();
       }
+    },
+    async sendDataToNlp(sentence) {
+      sentence.loading = true;
+      const response = await fetchNlpPrediction(sentence.text);
+      //filter out entries with no role
+      let entities = response.predicted_entities; //.filter(([_, role]) => role != "None")
+
+      sentence.loading = false;
+      console.log("entities", entities);
+      //ignore entities that have special tokens like '[CLS]'.
+      entities = entities.filter(
+        ([token, _]) => sentence.text.indexOf(token) != -1,
+      );
+
+      //current character range of subsequent tokens with equal roles
+      let characterRangeStart = 0;
+      let characterRangeEnd = 0;
+      entities.forEach(([token, role], index) => {
+        //get start and end index of token in sentence
+        const tokenRange = this.getRange(
+          sentence.text,
+          token,
+          characterRangeEnd,
+        );
+
+        characterRangeEnd = tokenRange[1];
+
+        if (
+          (index < entities.length - 1 && role != entities[index + 1][1]) ||
+          index == entities.length - 1
+        ) {
+          //next token has different role, or this is last token
+          //create annotation for current sequence of tokens with same role
+          //unless the role is None
+          if (role != "None") {
+            const annotation = new Annotation();
+            //create fact for this annotation, use the role suggested by NLP to set the correct subtype
+            const subTypeId = this.nlpRoleToSubtype[role];
+            this.$store.commit("addNewFrame", {
+              frameTypeId: "fact",
+              subTypeId: subTypeId,
+              annotation: annotation,
+              openInEditor: false,
+            });
+            //get snippets that are covered by the character range
+            const selectionAsSnippets = getSelectedRangeAsSnippets(sentence, [
+              characterRangeStart,
+              characterRangeEnd,
+            ]);
+            //split snippets, and return those that fit the character range
+            const selectedSnippets = splitAndReturnSelectedSnippets(
+              selectionAsSnippets,
+              this.frame.sourceSentences,
+            );
+            selectedSnippets.forEach((s) => {
+              console.log("adding", annotation, "to snippet", s);
+              s.addAnnotation(annotation);
+            });
+            //set length of annotation in number of snippets. this is used to set the order of the underlining: long annotations
+            //will be closer to the text than shorter ones
+            annotation.nrSnippets = selectedSnippets.length;
+            //update underlining of annotations in the source text, for the currently showing document
+            setVerticalPositionOfAnnotationLines(this.displayedSourceDocument);
+          }
+          //start new sequence of tokens
+          characterRangeStart = tokenRange[0];
+        }
+      });
+    },
+    getRange(string, token, lastIndex) {
+      // how about a potential second occurrence of the same token?
+      const index = string.indexOf(token, lastIndex);
+      if (index !== -1) {
+        const endIndex = index + token.length;
+        return [index, endIndex];
+      } else {
+        return null;
+      }
+    },
+    applyNlpToSource() {
+      console.log("nlp");
+      this.frame.sourceSentences.forEach((sentence) => {
+        this.sendDataToNlp(sentence);
+      });
     },
     copyIdToClipboard() {
       navigator.clipboard.writeText(this.frame.id);
