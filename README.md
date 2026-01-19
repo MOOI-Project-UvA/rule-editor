@@ -1,3 +1,13 @@
+# Note: 
+
+This is branch of the editor focuses on expanding its functionality towards translating 
+the generated FLINT norm specification into an executable form (eFLINT). 
+Part of code contributed by https://github.com/Azoth4006/bsc-thesis.
+
+![screenshot_eflint.png](screenshot_eflint.png)
+
+_Figure 1: Screenshot of the "Make Interpretations executable" tab that translates the FLINT specification to eFLINT_  
+
 # Rule editor
 
 **The Rule Editor** is an application built using web-based technologies that allows users to create interpretations of 
