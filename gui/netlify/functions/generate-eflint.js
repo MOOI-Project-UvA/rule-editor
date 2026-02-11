@@ -2,7 +2,10 @@
 // Proxies interpretation JSON to ${FLINT_TRANSLATION_URL}/generate-eflint
 
 export async function handler(event) {
-  const baseUrl = process.env.FLINT_TRANSLATION_URL || "http://localhost:8000";
+  const baseUrl =
+    process.env.FLINT_TRANSLATION_URL ||
+    process.env.PY_SERVICE_URL ||
+    "http://localhost:8000";
   // console.log("Base URL:",baseUrl);
 
   // console.log("Received event:", event);

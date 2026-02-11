@@ -9,9 +9,17 @@ from pathlib import Path
 import subprocess
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="eFLINT Reasoner API")
+
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins=["*"],
+	allow_methods=["*"],
+	allow_headers=["*"],
+)
 
 
 class ExecuteRequest(BaseModel):
