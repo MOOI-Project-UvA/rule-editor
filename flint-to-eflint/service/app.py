@@ -12,8 +12,8 @@ app = FastAPI(title="eFLINT Generator API")
 class GenerateRequest(BaseModel):
     interpretation: dict
 
-@app.post("/generate")
-def generate(req: GenerateRequest):
+@app.post("/generate-eflint")
+def generate_eflint_endpoint(req: GenerateRequest):
     eflint = generate_eflint(req.interpretation)
     return {"eflint": eflint}
 
