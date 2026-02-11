@@ -49,6 +49,12 @@ const store = createStore({
       selectedNode: null, //node that is selected in the network visualization
       executableFrameIds: [], // ids of frames selected in "Make interpretations executable"
       executableSelectionDirty: false,
+      executableSelectedIds: [],
+      executableClickOrder: [],
+      executableAgentInstanceNames: {},
+      executableActSelections: {},
+      executableEflintBase: "",
+      executableEflintFinal: "",
     };
   },
   mutations: {
