@@ -1,5 +1,7 @@
-
-# python -m uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
+"""
+python -m venv .venv
+uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
+"""
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -12,10 +14,10 @@ class GenerateRequest(BaseModel):
 
 @app.post("/generate")
 def generate(req: GenerateRequest):
-    try:
-        eflint = generate_eflint(req.interpretation)
-        return {"eflint": eflint}
-    except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Missing key in interpretation JSON: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    eflint = generate_eflint(req.interpretation)
+    return {"eflint": eflint}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
