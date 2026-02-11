@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import { buildExecuteUrl } from "../../services/eflintEndpoints.js";
 export default {
   name: "ExecuteTaskView",
 
@@ -114,7 +115,7 @@ export default {
       }
 
       try {
-        const url = import.meta.env.VITE_EFLINT_EXECUTE_URL || "http://127.0.0.1:8001/execute";
+        const url = buildExecuteUrl();
         const resp = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
