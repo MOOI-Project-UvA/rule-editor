@@ -3,6 +3,21 @@
     <div class="row items-center q-gutter-sm q-mb-md">
       <q-btn color="primary" label="Generate eFLINT" :loading="isGenerating" @click="generateEflint" />
       <q-btn color="primary" outline label="Apply selection" :disable="!eflintBase" @click="applySelection" />
+      <q-btn-dropdown
+        color="primary"
+        outline
+        label="Export eFLINT"
+        :disable="!eflintBase && !eflintFinal"
+      >
+        <q-list>
+          <q-item clickable v-close-popup dense :disable="!eflintBase" @click="exportEflint('specification')">
+            <q-item-section>Specification (.eflint)</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup dense :disable="!eflintFinal" @click="exportEflint('scenario')">
+            <q-item-section>Scenario (.eflint)</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
 
     <div class="row q-col-gutter-md">
@@ -356,6 +371,39 @@ export default {
 
     applySelection() {
       this.eflintFinal = `${this.eflintBase}\n\n${this.selectionLines.join("\n")}\n`;
+    },
+
+    sanitizeFilePart(value) {
+      return String(value || "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9-_]/g, "")
+        .slice(0, 50);
+    },
+
+    buildEflintFilename(kind) {
+      const dateString = new Date().toISOString().substring(0, 19).replace(/[:T]/g, "-");
+      const taskLabel = this.sanitizeFilePart(this.$store.state.task?.label) || "task";
+      return `${dateString}_${taskLabel}_${kind}.eflint`;
+    },
+
+    downloadTextFile(content, fileName, mimeType = "text/plain;charset=utf-8") {
+      const blob = new Blob([content], { type: mimeType });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    },
+
+    exportEflint(kind) {
+      const content = kind === "scenario" ? this.eflintFinal : this.eflintBase;
+      if (!content) return;
+      const fileName = this.buildEflintFilename(kind);
+      this.downloadTextFile(content, fileName, "application/octet-stream;charset=utf-8");
     },
 
     async generateEflint() {
