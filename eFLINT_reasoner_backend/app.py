@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import fcntl
+import json
 import os
 import select
 import subprocess
@@ -21,11 +22,25 @@ from pydantic import BaseModel, Field
 
 app = FastAPI(title="eFLINT Reasoner API")
 
+
+def _load_config():
+	config_path = Path(__file__).parent / "config.json"
+	try:
+		with config_path.open("r", encoding="utf-8") as config_file:
+			return json.load(config_file)
+	except FileNotFoundError as exc:
+		raise RuntimeError(f"Missing configuration file: {config_path}") from exc
+	except json.JSONDecodeError as exc:
+		raise RuntimeError(f"Invalid JSON in configuration file: {config_path}") from exc
+
+
+CONFIG = _load_config()
+
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins=["*"],
-	allow_methods=["*"],
-	allow_headers=["*"],
+	allow_origins=CONFIG["cors"]["allowOrigins"],
+	allow_methods=CONFIG["cors"]["allowMethods"],
+	allow_headers=CONFIG["cors"]["allowHeaders"],
 )
 
 
@@ -49,7 +64,6 @@ class ReplSession:
 	last_used_at: float
 
 
-REPL_SESSION_TTL_SECONDS = 15 * 60
 _repl_sessions: dict[str, ReplSession] = {}
 _repl_lock = threading.Lock()
 
@@ -60,16 +74,19 @@ def _set_nonblocking(stream):
 	fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
 
-def _read_available_output(proc: subprocess.Popen, idle_timeout: float = 0.15, max_duration: float = 1.5):
+def _read_available_output(proc: subprocess.Popen, idle_timeout: float | None = None, max_duration: float | None = None):
+	repl_config = CONFIG["repl"]
+	resolved_idle_timeout = idle_timeout if idle_timeout is not None else repl_config["readIdleTimeoutSeconds"]
+	resolved_max_duration = max_duration if max_duration is not None else repl_config["readMaxDurationSeconds"]
 	stdout_chunks: list[str] = []
 	stderr_chunks: list[str] = []
 	started = time.time()
 	last_data = started
 
-	while time.time() - started < max_duration:
-		ready, _, _ = select.select([proc.stdout, proc.stderr], [], [], idle_timeout)
+	while time.time() - started < resolved_max_duration:
+		ready, _, _ = select.select([proc.stdout, proc.stderr], [], [], resolved_idle_timeout)
 		if not ready:
-			if time.time() - last_data >= idle_timeout:
+			if time.time() - last_data >= resolved_idle_timeout:
 				break
 			continue
 
@@ -103,9 +120,10 @@ def _read_available_output(proc: subprocess.Popen, idle_timeout: float = 0.15, m
 def _cleanup_stale_repl_sessions():
 	now = time.time()
 	stale_ids: list[str] = []
+	session_ttl = CONFIG["repl"]["sessionTtlSeconds"]
 	with _repl_lock:
 		for session_id, session in _repl_sessions.items():
-			if now - session.last_used_at > REPL_SESSION_TTL_SECONDS or session.proc.poll() is not None:
+			if now - session.last_used_at > session_ttl or session.proc.poll() is not None:
 				stale_ids.append(session_id)
 
 		for session_id in stale_ids:
@@ -118,7 +136,9 @@ def _cleanup_stale_repl_sessions():
 
 def _start_interactive_repl_session():
 	_cleanup_stale_repl_sessions()
-	eflint_image = os.getenv("EFLINT_DOCKER_IMAGE", "eflint")
+	eflint_image = CONFIG["docker"]["image"]
+	interactive_config = CONFIG["docker"]["interactive"]
+	repl_config = CONFIG["repl"]
 
 	docker_cmd = [
 		"docker",
@@ -126,13 +146,13 @@ def _start_interactive_repl_session():
 		"--rm",
 		"-i",
 		"--network",
-		"none",
+		interactive_config["network"],
 		"--pids-limit",
-		"256",
+		str(interactive_config["pidsLimit"]),
 		"--memory",
-		"512m",
+		interactive_config["memory"],
 		"--cpus",
-		"1.5",
+		str(interactive_config["cpus"]),
 		eflint_image,
 		"repl",
 	]
@@ -160,7 +180,11 @@ def _start_interactive_repl_session():
 	with _repl_lock:
 		_repl_sessions[session_id] = session
 
-	stdout, stderr = _read_available_output(proc, idle_timeout=0.2, max_duration=2.0)
+	stdout, stderr = _read_available_output(
+		proc,
+		idle_timeout=repl_config["sessionStartReadIdleTimeoutSeconds"],
+		max_duration=repl_config["sessionStartReadMaxDurationSeconds"],
+	)
 	return session_id, stdout, stderr
 
 
@@ -176,34 +200,43 @@ def _get_repl_session_or_404(session_id: str):
 	return session
 
 
-def _run_eflint_in_docker(*args: str, stdin_data: str | None = None, timeout_seconds: int = 30):
+def _run_eflint_in_docker(*args: str, stdin_data: str | None = None, timeout_seconds: int | None = None):
 	tests_dir = Path(__file__).parent / "eflint_tests"
 	tests_dir.mkdir(parents=True, exist_ok=True)
 
-	eflint_image = os.getenv("EFLINT_DOCKER_IMAGE", "eflint")
+	eflint_image = CONFIG["docker"]["image"]
+	execute_config = CONFIG["docker"]["execute"]
+	resolved_timeout = timeout_seconds if timeout_seconds is not None else execute_config["timeoutSeconds"]
 
 	docker_cmd = [
 		"docker",
 		"run",
 		"--rm",
 		"--network",
-		"none",
-		"--read-only",
+		execute_config["network"],
 		"--security-opt",
 		"no-new-privileges:true",
-		"--cap-drop",
-		"ALL",
 		"--pids-limit",
-		"128",
+		str(execute_config["pidsLimit"]),
 		"--memory",
-		"256m",
+		execute_config["memory"],
 		"--cpus",
-		"1.0",
+		str(execute_config["cpus"]),
 		"--tmpfs",
-		"/tmp:size=64m,noexec,nosuid,nodev",
+		execute_config["tmpfs"],
 		"--mount",
 		f"type=bind,source={tests_dir.resolve()},target=/eflint_tests,readonly",
 	]
+
+	if execute_config["readOnly"]:
+		docker_cmd.insert(6, "--read-only")
+
+	if execute_config["securityNoNewPrivileges"] is False:
+		security_idx = docker_cmd.index("--security-opt")
+		del docker_cmd[security_idx:security_idx + 2]
+
+	if execute_config["capDropAll"]:
+		docker_cmd.extend(["--cap-drop", "ALL"])
 
 	if stdin_data is not None:
 		docker_cmd.extend(["-i"])
@@ -220,7 +253,7 @@ def _run_eflint_in_docker(*args: str, stdin_data: str | None = None, timeout_sec
 			capture_output=True,
 			text=True,
 			check=False,
-			timeout=timeout_seconds,
+			timeout=resolved_timeout,
 		)
 	except subprocess.TimeoutExpired as exc:
 		raise HTTPException(status_code=504, detail="eFLINT execution timed out") from exc
@@ -258,7 +291,11 @@ def repl(req: ReplRequest):
 	if not repl_input:
 		raise HTTPException(status_code=400, detail="REPL input is empty")
 
-	result = _run_eflint_in_docker("repl", stdin_data=f"{repl_input}\n", timeout_seconds=20)
+	result = _run_eflint_in_docker(
+		"repl",
+		stdin_data=f"{repl_input}\n",
+		timeout_seconds=CONFIG["repl"]["singleShotTimeoutSeconds"],
+	)
 
 	if result.returncode != 0:
 		raise HTTPException(
@@ -295,7 +332,12 @@ def repl_session_input(session_id: str, req: ReplInputRequest):
 	except OSError as exc:
 		raise HTTPException(status_code=410, detail="REPL session is not writable") from exc
 
-	stdout, stderr = _read_available_output(session.proc, idle_timeout=0.2, max_duration=2.0)
+	repl_config = CONFIG["repl"]
+	stdout, stderr = _read_available_output(
+		session.proc,
+		idle_timeout=repl_config["sessionInputReadIdleTimeoutSeconds"],
+		max_duration=repl_config["sessionInputReadMaxDurationSeconds"],
+	)
 	session.last_used_at = time.time()
 
 	return {
@@ -317,7 +359,7 @@ def repl_session_stop(session_id: str):
 	try:
 		session.proc.terminate()
 		try:
-			session.proc.wait(timeout=2)
+			session.proc.wait(timeout=CONFIG["repl"]["sessionStopWaitTimeoutSeconds"])
 		except subprocess.TimeoutExpired:
 			session.proc.kill()
 	except OSError:
