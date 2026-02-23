@@ -15,3 +15,4 @@
 *.pyc
 *.pyc
 /flint-to-eflint/service/.venv
+*.env
