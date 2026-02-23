@@ -117,6 +117,9 @@ export default {
       } finally {
         this.isAuthenticated = false;
         this.authLoading = false;
+        this.appInitialized = false;
+        this.activeView = null;
+        window.location.reload();
       }
     },
     initializeAppAfterAuth() {

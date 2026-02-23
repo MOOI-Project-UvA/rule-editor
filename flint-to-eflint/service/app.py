@@ -194,7 +194,6 @@ def _clear_auth_cookie(response: Response, request: Request) -> None:
 def _verify_credentials(username: str, password: str) -> bool:
     if username != AUTH_USERNAME:
         _debug(f"Login rejected: username mismatch (provided={username})")
-        _debug(f"Login rejected: expected username={AUTH_USERNAME}")
         return False
     if not AUTH_PASSWORD_HASH:
         _debug("Login rejected: AUTH_PASSWORD_HASH is empty")
