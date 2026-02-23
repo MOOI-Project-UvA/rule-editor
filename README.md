@@ -425,6 +425,50 @@ Add these variables to your Netlify dashboard or a local .env file as appropriat
 
 Create an `.env` file in the `gui` folder and define the environment variable there. 
 
+### Optional self-hosted authentication (no Netlify dependency)
+
+The eFLINT translation backend (`flint-to-eflint/service/app.py`) now supports cookie-based authentication with username/password and Argon2 password hashes.
+
+Backend environment variables:
+
+| Variable | Explanation |
+|---|---|
+| AUTH_USERNAME | Login username (example: `editor`) |
+| AUTH_PASSWORD_HASH | Argon2 hash of the password (required) |
+| AUTH_SESSION_SECRET | Secret used to sign session cookies |
+| AUTH_SESSION_TTL_SECONDS | Session lifetime in seconds (default `28800`) |
+| AUTH_COOKIE_NAME | Cookie name (default `rule_editor_session`) |
+| AUTH_COOKIE_SECURE | Set `true` in HTTPS production environments |
+| AUTH_ALLOWED_ORIGINS | Comma-separated CORS origins for GUI, e.g. `http://localhost:5173,http://localhost:8888` |
+
+Frontend environment variables (in `gui/.env`):
+
+| Variable | Explanation |
+|---|---|
+| VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
+| VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
+| VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; empty means same origin) |
+
+Generate an Argon2 hash locally:
+
+```bash
+python -c "from argon2 import PasswordHasher; print(PasswordHasher().hash('your-password'))"
+```
+
+Then start backend and frontend (example local development):
+
+```bash
+# backend
+cd flint-to-eflint
+pip install -r requirements.txt
+uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
+
+# frontend
+cd gui
+npm install
+npm run dev
+```
+
 ## Contributing
 
 We welcome contributions of all kinds!

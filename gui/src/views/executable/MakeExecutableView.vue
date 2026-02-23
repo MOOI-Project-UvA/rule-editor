@@ -161,6 +161,7 @@
 
 <script>
 import { convertInterpretationToJson } from "../../helpers/importExport.js";
+import { buildEflintApiUrl } from "../../services/AuthService.js";
 
 export default {
   name: "MakeExecutableView",
@@ -416,9 +417,10 @@ export default {
           this.$store.state.sourceDocuments || []
         );
 
-        const resp = await fetch("/.netlify/functions/generate-eflint", {
+        const resp = await fetch(buildEflintApiUrl("/generate-eflint"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ interpretation }),
         });
 

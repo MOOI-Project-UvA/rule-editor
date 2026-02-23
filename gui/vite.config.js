@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 
+const eflintApiBaseUrl = process.env.VITE_EFLINT_API_BASE_URL || "http://localhost:8000";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -53,6 +55,16 @@ export default defineConfig({
       },
       "/api/serverless/saveTaskAtTriply": {
         target: "/.netlify/functions/saveTask",
+        secure: false,
+        changeOrigin: true,
+      },
+      "/auth": {
+        target: eflintApiBaseUrl,
+        secure: false,
+        changeOrigin: true,
+      },
+      "/generate-eflint": {
+        target: eflintApiBaseUrl,
         secure: false,
         changeOrigin: true,
       },
