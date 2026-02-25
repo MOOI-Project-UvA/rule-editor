@@ -66,7 +66,7 @@ export default {
           <q-item clickable v-close-popup dense @click="chooseFile('json')">
             <q-item-section>JSON</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup dense @click="chooseFile('rdf')">
+          <q-item disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -109,12 +109,7 @@ export default {
           >
             <q-item-section>JSON</q-item-section>
           </q-item>
-          <q-item
-            clickable
-            v-close-popup
-            dense
-            @click="saveInterpretationAsTrig"
-          >
+          <q-item disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
