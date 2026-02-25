@@ -478,6 +478,29 @@ const store = createStore({
       //show the interpretation view
       context.state.step = 3;
     },
+    loadInterpretationFromExport(context, jsonText) {
+      try {
+        const parsed = JSON.parse(jsonText);
+        const flintSpec = parsed?.flint_spec;
+
+        if (!flintSpec) {
+          alertWidget("error", "Invalid export file: missing flint_spec.");
+          return;
+        }
+
+        const interpretationJson =
+          typeof flintSpec === "string" ? flintSpec : JSON.stringify(flintSpec);
+
+        context.dispatch("loadInterpretation", interpretationJson);
+
+        context.state.executableEflintBase = parsed?.eflint?.specification || "";
+        context.state.executableEflintFinal = parsed?.eflint?.scenario || "";
+
+        alertWidget("success", "The export has been loaded successfully!");
+      } catch {
+        alertWidget("error", "Invalid export file: unable to parse JSON.");
+      }
+    },
     async loadInterpretationFromRDF(context, rdfText) {
       //set loading indication
       const notification = alertWidget("loading", "loading task...");

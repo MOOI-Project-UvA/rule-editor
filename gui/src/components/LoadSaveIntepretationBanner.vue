@@ -24,6 +24,9 @@ export default {
         case "json":
           this.$refs.fileUpload.click();
           break;
+        case "import":
+          this.$refs.fileUploadImport.click();
+          break;
         case "rdf":
           this.$refs.fileUploadRDF.click();
           break;
@@ -33,6 +36,13 @@ export default {
       const reader = new FileReader();
       reader.onload = (evt) => {
         this.$store.dispatch("loadInterpretation", evt.target.result);
+      };
+      reader.readAsText(evt.target.files[0]);
+    },
+    handleImportFileSelection(evt) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        this.$store.dispatch("loadInterpretationFromExport", evt.target.result);
       };
       reader.readAsText(evt.target.files[0]);
     },
@@ -68,6 +78,9 @@ export default {
           <q-separator></q-separator>
           <q-item clickable v-close-popup dense @click="chooseFile('json')">
             <q-item-section>JSON</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup dense @click="chooseFile('import')">
+            <q-item-section>IMPORT</q-item-section>
           </q-item>
           <q-item disable dense>
             <q-item-section>RDF</q-item-section>
@@ -144,6 +157,13 @@ export default {
     </q-btn>
 
     <input type="file" @change="handleFileSelection" hidden ref="fileUpload" />
+    <input
+      type="file"
+      @change="handleImportFileSelection"
+      accept=".json,application/json"
+      hidden
+      ref="fileUploadImport"
+    />
     <input
       type="file"
       @change="handleFileSelectionRDF"
