@@ -57,6 +57,15 @@ import {
   logout,
 } from "./services/AuthService.js";
 
+function resolveUserIdentity(user) {
+  return {
+    username:
+      user?.username || user?.user || user?.name || user?.email || "",
+    ownerGroup:
+      user?.owner_group || "",
+  };
+}
+
 export default {
   name: "app",
   data: () => ({
@@ -85,7 +94,12 @@ export default {
 
     this.authLoading = true;
     try {
-      await getCurrentUser();
+      const user = await getCurrentUser();
+      const { username, ownerGroup } = resolveUserIdentity(user);
+      const resolvedUsername = username || localStorage.getItem("rule-editor.username") || "unknown";
+      this.$store.commit("setEditorIdentity", { username: resolvedUsername, ownerGroup });
+      localStorage.setItem("rule-editor.username", resolvedUsername);
+      localStorage.setItem("rule-editor.ownerGroup", ownerGroup);
       this.isAuthenticated = true;
       this.authError = "";
       this.initializeAppAfterAuth();
@@ -101,7 +115,18 @@ export default {
       this.authError = "";
       this.authLoading = true;
       try {
-        await login(username, password);
+        const user = await login(username, password);
+        const identityFromResponse = resolveUserIdentity(user);
+        const resolvedUsername = identityFromResponse.username || username || "unknown";
+        const resolvedOwnerGroup = identityFromResponse.ownerGroup || "";
+
+        this.$store.commit("setEditorIdentity", {
+          username: resolvedUsername,
+          ownerGroup: resolvedOwnerGroup,
+        });
+        localStorage.setItem("rule-editor.username", resolvedUsername);
+        localStorage.setItem("rule-editor.ownerGroup", resolvedOwnerGroup);
+
         this.isAuthenticated = true;
         this.initializeAppAfterAuth();
       } catch {

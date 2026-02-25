@@ -55,6 +55,8 @@ const store = createStore({
       executableActSelections: {},
       executableEflintBase: "",
       executableEflintFinal: "",
+      editorUsername: "",
+      editorOwnerGroup: "",
     };
   },
   mutations: {
@@ -216,6 +218,10 @@ const store = createStore({
     persistExecutableFramesToStorage(state, { storageKey }) {
       localStorage.setItem(storageKey, JSON.stringify(state.executableFrameIds));
       state.executableSelectionDirty = false;
+    },
+    setEditorIdentity(state, { username, ownerGroup } = {}) {
+      state.editorUsername = username || "";
+      state.editorOwnerGroup = ownerGroup || "";
     },
   },
   getters: {
@@ -405,6 +411,60 @@ const store = createStore({
       });
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.trig`);
+    },
+    async saveInterpretationAsExport(context) {
+      const notification = alertWidget("loading", "exporting...");
+
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id == frame.id) === index,
+        );
+
+      const interpretationJson = convertInterpretationToJson(
+        context.state.task,
+        allFrames,
+        context.state.sourceDocuments,
+      );
+      const interpretationAsString = JSON.stringify(interpretationJson);
+
+      const nowIso = new Date().toISOString();
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "unknown";
+      const ownerGroup =
+        context.state.editorOwnerGroup || localStorage.getItem("rule-editor.ownerGroup") || "";
+
+      const exportDocument = {
+        task_id: interpretationJson?.id || uuid4(),
+        metadata: {
+          owner: username,
+          owner_group: ownerGroup,
+          created_at: { $date: nowIso },
+          modified_at: { $date: nowIso },
+          title: interpretationJson?.label || "",
+        },
+        flint_spec: interpretationJson,
+        saved_artifact: {
+          format: "application/json",
+          content: interpretationAsString,
+        },
+        eflint: {
+          specification: context.state.executableEflintBase || "",
+          scenario: context.state.executableEflintFinal || "",
+          generated_at: { $date: nowIso },
+          generator_version: "",
+        },
+      };
+
+      notification();
+      alertWidget("success", "Export created successfully!");
+
+      const blob = new Blob([JSON.stringify(exportDocument, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const dateString = new Date().toISOString().substring(0, 19);
+      saveAs(blob, `${dateString}_export.json`);
     },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);

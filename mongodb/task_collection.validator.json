@@ -76,13 +76,18 @@
       "eflint": {
         "bsonType": "object",
         "required": [
-          "code",
+          "specification",
+          "scenario",
           "generated_at"
         ],
         "properties": {
-          "code": {
+          "specification": {
             "bsonType": "string",
-            "description": "Generated eFLINT code"
+            "description": "Generated eFLINT specification"
+          },
+          "scenario": {
+            "bsonType": "string",
+            "description": "Generated eFLINT scenario"
           },
           "generated_at": {
             "bsonType": "date"
@@ -91,9 +96,6 @@
             "bsonType": "string"
           }
         }
-      },
-      "version": {
-        "bsonType": "int"
       }
     }
   }

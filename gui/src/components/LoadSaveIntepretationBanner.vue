@@ -10,6 +10,9 @@ export default {
     saveInterpretationAsJson() {
       this.$store.dispatch("saveInterpretationAsJson");
     },
+    saveInterpretationAsExport() {
+      this.$store.dispatch("saveInterpretationAsExport");
+    },
     saveInterpretationAsTrig() {
       this.$store.dispatch("saveInterpretationAsTrig");
     },
@@ -108,6 +111,14 @@ export default {
             @click="saveInterpretationAsJson"
           >
             <q-item-section>JSON</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationAsExport"
+          >
+            <q-item-section>EXPORT</q-item-section>
           </q-item>
           <q-item disable dense>
             <q-item-section>RDF</q-item-section>

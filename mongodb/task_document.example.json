@@ -31,11 +31,11 @@
     "content": "@prefix ex: <https://example.org/> .\nex:task-1 ex:hasTitle \"GDPR (with a duty)\" ."
   },
   "eflint": {
-    "code": "Fact Example(actor).\nAct DoSomething(actor).",
+    "specification": "Fact Example(actor).",
+    "scenario": "Act DoSomething(actor).",
     "generated_at": {
       "$date": "2026-02-25T11:02:00Z"
     },
     "generator_version": "flint-to-eflint@1.0.0"
-  },
-  "version": 1
+  }
 }
