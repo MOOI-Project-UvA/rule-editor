@@ -1,0 +1,100 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "task_id",
+      "metadata",
+      "flint_spec",
+      "saved_artifact",
+      "eflint"
+    ],
+    "properties": {
+      "task_id": {
+        "bsonType": "string",
+        "description": "Stable application-level identifier for the task/document"
+      },
+      "metadata": {
+        "bsonType": "object",
+        "required": [
+          "owner",
+          "owner_group",
+          "created_at",
+          "modified_at"
+        ],
+        "properties": {
+          "owner": {
+            "bsonType": "string"
+          },
+          "owner_group": {
+            "bsonType": "string"
+          },
+          "created_at": {
+            "bsonType": "date"
+          },
+          "modified_at": {
+            "bsonType": "date"
+          },
+          "title": {
+            "bsonType": "string"
+          },
+          "description": {
+            "bsonType": "string"
+          },
+          "tags": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string"
+            }
+          }
+        }
+      },
+      "flint_spec": {
+        "description": "Original FLINT specification payload",
+        "bsonType": [
+          "object",
+          "string"
+        ]
+      },
+      "saved_artifact": {
+        "bsonType": "object",
+        "required": [
+          "format",
+          "content"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "application/trig"
+            ]
+          },
+          "content": {
+            "bsonType": "string",
+            "description": "Existing generated artifact saved today as data.task in saveTask"
+          }
+        }
+      },
+      "eflint": {
+        "bsonType": "object",
+        "required": [
+          "code",
+          "generated_at"
+        ],
+        "properties": {
+          "code": {
+            "bsonType": "string",
+            "description": "Generated eFLINT code"
+          },
+          "generated_at": {
+            "bsonType": "date"
+          },
+          "generator_version": {
+            "bsonType": "string"
+          }
+        }
+      },
+      "version": {
+        "bsonType": "int"
+      }
+    }
+  }
+}
