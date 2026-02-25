@@ -27,8 +27,8 @@
     "frames": []
   },
   "saved_artifact": {
-    "format": "application/trig",
-    "content": "@prefix ex: <https://example.org/> .\nex:task-1 ex:hasTitle \"GDPR (with a duty)\" ."
+    "format": "application/json",
+    "content": "{\"id\":\"task-1\",\"label\":\"GDPR (with a duty)\"}"
   },
   "eflint": {
     "specification": "Fact Example(actor).",

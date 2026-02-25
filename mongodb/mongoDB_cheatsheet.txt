@@ -1,0 +1,25 @@
+Run these from repo root in PowerShell:
+
+Push-Location .\mongodb
+Check databases:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "show dbs"
+Check users in rule_editor:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "db.getSiblingDB('rule_editor').getUsers()"
+Check collections (“tables”) in rule_editor:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "db.getSiblingDB('rule_editor').getCollectionNames()"
+Check indexes on task_collection:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "db.getSiblingDB('rule_editor').task_collection.getIndexes()"
+Check validator on task_collection:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "db.getSiblingDB('rule_editor').getCollectionInfos({name:'task_collection'})"
+Quick count:
+
+docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticationDatabase admin --eval "db.getSiblingDB('rule_editor').task_collection.countDocuments({})"
+
+Pop-Location
+
+

@@ -64,12 +64,12 @@
         "properties": {
           "format": {
             "enum": [
-              "application/trig"
+              "application/json"
             ]
           },
           "content": {
             "bsonType": "string",
-            "description": "Existing generated artifact saved today as data.task in saveTask"
+            "description": "Generated artifact content saved by export"
           }
         }
       },
