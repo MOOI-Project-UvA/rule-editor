@@ -16,4 +16,5 @@
 *.pyc
 /flint-to-eflint/service/.venv
 *.env
+deploy/netlify/netlify.env
 my_notes.md

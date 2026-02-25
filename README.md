@@ -427,7 +427,7 @@ Create an `.env` file in the `gui` folder and define the environment variable th
 
 ### Optional self-hosted authentication (no Netlify dependency)
 
-The eFLINT translation backend (`flint-to-eflint/service/app.py`) now supports cookie-based authentication with username/password and Argon2 password hashes.
+The eFLINT translation backend (`flint-to-eflint/service/app.py`) now supports cookie-based authentication with) username/password and Argon2 password hashes.
 
 Backend environment variables:
 
@@ -449,7 +449,7 @@ Frontend environment variables (in `gui/.env`):
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
 | VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; empty means same origin) |
 
-Generate an Argon2 hash locally:
+Gen<!-- erate an Argon2 hash locally:
 
 ```bash
 python -c "from argon2 import PasswordHasher; print(PasswordHasher().hash('your-password'))"
@@ -467,7 +467,61 @@ uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
 cd gui
 npm install
 npm run dev
+``` -->
+
+## Streamlined GUI deployment (self-hosted on VM)
+
+Use this flow if you host the GUI and Netlify functions on your own Linux VM (without Netlify SaaS).
+
+### 1) Bootstrap VM prerequisites
+
+```bash
+chmod +x deploy/netlify/*.sh
+./deploy/netlify/bootstrap-vm.sh
 ```
+
+### 2) Prepare runtime environment file
+
+```bash
+cp deploy/netlify/env.netlify.example deploy/netlify/netlify.env
+```
+
+Variable guidance:
+- **Optional (Triply features):** `TRIPLY_KEY_R`, `TRIPLY_KEY_W`, `TRIPLY_ENDPOINT`
+- **Optional (frontend runtime):** `VITE_X_API_KEY`, `VITE_AUTH_*`, `VITE_EFLINT_*`
+- **Recommended:** `X_API_KEY`, `ALLOWED_DOMAINS`, `FLINT_TRANSLATION_URL`
+
+### 3) Start runtime
+
+```bash
+./deploy/netlify/start-netlify-dev.sh deploy/netlify/netlify.env 8888
+```
+
+### 4) Test installation
+
+```bash
+./deploy/netlify/verify-installation.sh deploy/netlify/netlify.env 8888
+```
+
+What this test checks:
+- Required binaries exist (`node`, `npm`, `netlify`, `curl`)
+- `npm ci` and `npm run build` succeed
+- `netlify dev` starts and serves UI + function routes
+- Missing `TRIPLY_*` and `VITE_*` values are reported as warnings, not hard failures
+
+### 5) Ensure repeatability
+
+Run both scripts twice; both runs should pass without manual changes:
+
+```bash
+./deploy/netlify/bootstrap-vm.sh
+./deploy/netlify/bootstrap-vm.sh
+
+./deploy/netlify/verify-installation.sh deploy/netlify/netlify.env 8888
+./deploy/netlify/verify-installation.sh deploy/netlify/netlify.env 8888
+```
+
+For strongest confidence, repeat on a fresh VM snapshot.
 
 ## Contributing
 
