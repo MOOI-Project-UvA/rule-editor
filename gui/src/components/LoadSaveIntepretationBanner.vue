@@ -58,7 +58,10 @@ export default {
       reader.readAsText(evt.target.files[0]);
     },
     loadRemoteInterpretation() {
-      this.$store.commit("setTaskOverview", true);
+      this.$store.dispatch("openTaskOverviewTriply");
+    },
+    loadRemoteInterpretationMongo() {
+      this.$store.dispatch("openTaskOverviewMongo");
     },
   },
 };
@@ -100,6 +103,14 @@ export default {
             @click="loadRemoteInterpretation"
           >
             <q-item-section>Triply</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="loadRemoteInterpretationMongo"
+          >
+            <q-item-section>MongoDB</q-item-section>
           </q-item>
         </q-list>
       </q-menu>

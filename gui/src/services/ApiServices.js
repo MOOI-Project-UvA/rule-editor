@@ -296,3 +296,84 @@ export async function saveTaskAtMongo(exportDocument) {
     return { message: error };
   }
 }
+
+export async function getProjectsFromMongo() {
+  try {
+    const response = await fetch("/.netlify/functions/getAvailableProjectsFromMongo");
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.projects || [];
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving projects from MongoDB. " + error,
+    );
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getProjectVersionsFromMongo(projectId) {
+  try {
+    const response = await fetch("/.netlify/functions/getProjectVersionsFromMongo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ project_id: projectId }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.versions || [];
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving project versions from MongoDB. " + error,
+    );
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getTaskFromMongo(projectId, projectVersion = null) {
+  try {
+    const response = await fetch("/.netlify/functions/getTaskFromMongo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        project_id: projectId,
+        project_version: projectVersion,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.task;
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving a task from MongoDB. " + error,
+    );
+    console.error(error);
+    return null;
+  }
+}

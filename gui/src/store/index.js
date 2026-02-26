@@ -13,6 +13,9 @@ import { v4 as uuid4 } from "uuid";
 import {
   convertToRDF,
   convertRDFToJSON,
+  getProjectsFromMongo,
+  getProjectVersionsFromMongo,
+  getTaskFromMongo,
   getTasksFromTriply,
   getTaskFromTriply,
   saveTaskAtTriply,
@@ -46,7 +49,10 @@ const store = createStore({
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
+      availableProjectsInMongo: [],
+      availableProjectVersionsInMongo: [],
       showTaskOverview: false,
+      taskOverviewSource: "triply",
       selectedNode: null, //node that is selected in the network visualization
       executableFrameIds: [], // ids of frames selected in "Make interpretations executable"
       executableSelectionDirty: false,
@@ -190,6 +196,12 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
+    setTaskOverviewSource(state, source) {
+      state.taskOverviewSource = source || "triply";
+    },
+    setAvailableProjectVersionsInMongo(state, versions) {
+      state.availableProjectVersionsInMongo = versions || [];
+    },
     setExecutableFrames(state, ids) {
       // store as unique strings
       const unique = Array.from(new Set((ids || []).map(String)));
@@ -325,12 +337,58 @@ const store = createStore({
         });
       }
     },
+    async addTaskFromMongo(context, { projectId, projectVersion = null }) {
+      const notification = alertWidget("loading", "Retrieving task...");
+
+      const mongoTask = await getTaskFromMongo(projectId, projectVersion);
+      if (!mongoTask) {
+        notification();
+        alertWidget("error", "Could not retrieve the task from MongoDB.");
+        return;
+      }
+
+      context.dispatch("loadInterpretationFromExport", JSON.stringify(mongoTask));
+
+      notification({
+        message: "The task has been loaded successfully!",
+        color: "teal",
+        icon: "mdi-check-circle-outline",
+        position: "top",
+        spinner: false,
+        timeout: 0,
+        actions: [
+          {
+            label: "Dismiss",
+            color: "white",
+          },
+        ],
+      });
+    },
     async readAvailableTasksInTripleStore(context) {
       context.state.availableTasksInTripleStore = await getTasksFromTriply();
       // console.log(
       //   "availableTasksInTripleStore",
       //   context.state.availableTasksInTripleStore,
       // );
+    },
+    async readAvailableProjectsInMongo(context) {
+      context.state.availableProjectsInMongo = await getProjectsFromMongo();
+    },
+    async readAvailableProjectVersionsInMongo(context, projectId) {
+      const versions = await getProjectVersionsFromMongo(projectId);
+      context.commit("setAvailableProjectVersionsInMongo", versions);
+      return versions;
+    },
+    async openTaskOverviewTriply(context) {
+      context.commit("setTaskOverviewSource", "triply");
+      await context.dispatch("readAvailableTasksInTripleStore");
+      context.commit("setTaskOverview", true);
+    },
+    async openTaskOverviewMongo(context) {
+      context.commit("setTaskOverviewSource", "mongo");
+      context.commit("setAvailableProjectVersionsInMongo", []);
+      await context.dispatch("readAvailableProjectsInMongo");
+      context.commit("setTaskOverview", true);
     },
     async createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
