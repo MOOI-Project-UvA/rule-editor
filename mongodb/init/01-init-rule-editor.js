@@ -9,11 +9,19 @@ if (!appPassword) {
 const validator = {
   $jsonSchema: {
     bsonType: "object",
-    required: ["task_id", "metadata", "flint_spec", "saved_artifact", "eflint"],
+    required: ["project_id", "project_version", "task_id", "metadata", "flint_spec", "saved_artifact", "eflint"],
     properties: {
+      project_id: {
+        bsonType: "string",
+        description: "Stable identifier grouping all versions of the same project"
+      },
+      project_version: {
+        bsonType: "int",
+        description: "Monotonic version number within a project"
+      },
       task_id: {
         bsonType: "string",
-        description: "Stable application-level identifier for the task/document"
+        description: "Snapshot identifier for a specific saved project version"
       },
       metadata: {
         bsonType: "object",
@@ -95,8 +103,13 @@ if (existingCollection.length === 0) {
 }
 
 targetDb.task_collection.createIndex({ task_id: 1 }, { unique: true });
+targetDb.task_collection.createIndex(
+  { project_id: 1, project_version: -1 },
+  { unique: true, name: "project_version_unique" }
+);
 targetDb.task_collection.createIndex({ "metadata.owner": 1 });
 targetDb.task_collection.createIndex({ "metadata.owner_group": 1 });
 targetDb.task_collection.createIndex({ "metadata.modified_at": -1 });
+targetDb.task_collection.createIndex({ project_id: 1, "metadata.modified_at": -1 });
 
 print(`Initialized MongoDB database '${dbName}' with task_collection schema and indexes.`);

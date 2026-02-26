@@ -44,7 +44,8 @@ docker compose exec mongodb mongosh -u root -p "<ROOT_PASSWORD>" --authenticatio
 ```
 
 Expected indexes include:
-- `task_id` (unique)
+- `task_id` (unique snapshot id)
+- `project_id + project_version` (unique)
 - `metadata.owner`
 - `metadata.owner_group`
 - `metadata.modified_at`

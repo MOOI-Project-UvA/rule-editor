@@ -1,5 +1,7 @@
 {
-  "task_id": "gdpr-2025-05-01T12:20:52Z",
+  "project_id": "gdpr-2025-05-01T12:20:52Z",
+  "project_version": 3,
+  "task_id": "gdpr-2025-05-01T12:20:52Z:v3",
   "metadata": {
     "owner": "alice@example.org",
     "owner_group": "company1",

@@ -2,6 +2,8 @@
   "$jsonSchema": {
     "bsonType": "object",
     "required": [
+      "project_id",
+      "project_version",
       "task_id",
       "metadata",
       "flint_spec",
@@ -9,9 +11,17 @@
       "eflint"
     ],
     "properties": {
+      "project_id": {
+        "bsonType": "string",
+        "description": "Stable identifier grouping all versions of the same project"
+      },
+      "project_version": {
+        "bsonType": "int",
+        "description": "Monotonic version number within a project"
+      },
       "task_id": {
         "bsonType": "string",
-        "description": "Stable application-level identifier for the task/document"
+        "description": "Snapshot identifier for a specific saved project version"
       },
       "metadata": {
         "bsonType": "object",
