@@ -5,6 +5,8 @@ export default {
   name: "LoadSaveInterpretationBanner",
   data: () => ({
     icons: icons,
+    showRdfOptions: false,
+    showTriplyOptions: false,
   }),
   methods: {
     saveInterpretationAsJson() {
@@ -88,7 +90,7 @@ export default {
           <q-item clickable v-close-popup dense @click="chooseFile('import')">
             <q-item-section>IMPORT</q-item-section>
           </q-item>
-          <q-item disable dense>
+          <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -97,6 +99,7 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item
+            v-if="showTriplyOptions"
             clickable
             v-close-popup
             dense
@@ -147,7 +150,7 @@ export default {
           >
             <q-item-section>EXPORT</q-item-section>
           </q-item>
-          <q-item disable dense>
+          <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -156,6 +159,7 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item
+            v-if="showTriplyOptions"
             clickable
             v-close-popup
             dense
