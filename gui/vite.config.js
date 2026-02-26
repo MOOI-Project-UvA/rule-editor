@@ -58,6 +58,11 @@ export default defineConfig({
         secure: false,
         changeOrigin: true,
       },
+      "/api/serverless/saveTaskAtMongo": {
+        target: "/.netlify/functions/saveTaskToMongo",
+        secure: false,
+        changeOrigin: true,
+      },
       "/auth": {
         target: eflintApiBaseUrl,
         secure: false,

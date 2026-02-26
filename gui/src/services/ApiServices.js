@@ -267,3 +267,32 @@ export async function saveTaskAtTriply(taskInRdf) {
     // throw new Error(error);
   }
 }
+
+export async function saveTaskAtMongo(exportDocument) {
+  try {
+    const resp = await fetch("/.netlify/functions/saveTaskToMongo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ task: exportDocument }),
+    });
+
+    if (!resp.ok) {
+      if (resp.status === 404) throw new Error("404, Not found");
+      if (resp.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${resp.status},${resp.statusText}`);
+    }
+
+    const data = await resp.json();
+    alertWidget("success", "The export has been saved to MongoDB successfully!");
+    return { status: resp.status, message: data.message };
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to save the export to MongoDB. " + error,
+    );
+    console.error(error);
+    return { message: error };
+  }
+}

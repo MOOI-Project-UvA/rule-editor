@@ -19,6 +19,9 @@ export default {
     saveInterpretationRemotely() {
       this.$store.dispatch("saveInterpretationTriply");
     },
+    saveInterpretationToMongo() {
+      this.$store.dispatch("saveInterpretationMongo");
+    },
     chooseFile(fileType) {
       switch (fileType) {
         case "json":
@@ -148,6 +151,14 @@ export default {
             @click="saveInterpretationRemotely"
           >
             <q-item-section>Triply</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationToMongo"
+          >
+            <q-item-section>MongoDB</q-item-section>
           </q-item>
         </q-list>
       </q-menu>

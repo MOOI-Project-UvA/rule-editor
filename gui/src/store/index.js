@@ -16,6 +16,7 @@ import {
   getTasksFromTriply,
   getTaskFromTriply,
   saveTaskAtTriply,
+  saveTaskAtMongo,
 } from "../services/ApiServices.js";
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 import { alertWidget } from "../helpers/alertWidget.js";
@@ -558,6 +559,58 @@ const store = createStore({
       } else {
         //dismiss notification
         notification();
+      }
+    },
+    async saveInterpretationMongo(context) {
+      const notification = alertWidget("loading", "saving to MongoDB...");
+
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id == frame.id) === index,
+        );
+
+      const interpretationJson = convertInterpretationToJson(
+        context.state.task,
+        allFrames,
+        context.state.sourceDocuments,
+      );
+      const interpretationAsString = JSON.stringify(interpretationJson);
+
+      const nowIso = new Date().toISOString();
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "unknown";
+      const ownerGroup =
+        context.state.editorOwnerGroup || localStorage.getItem("rule-editor.ownerGroup") || "";
+
+      const exportDocument = {
+        task_id: interpretationJson?.id || uuid4(),
+        metadata: {
+          owner: username,
+          owner_group: ownerGroup,
+          created_at: { $date: nowIso },
+          modified_at: { $date: nowIso },
+          title: interpretationJson?.label || "",
+        },
+        flint_spec: interpretationJson,
+        saved_artifact: {
+          format: "application/json",
+          content: interpretationAsString,
+        },
+        eflint: {
+          specification: context.state.executableEflintBase || "",
+          scenario: context.state.executableEflintFinal || "",
+          generated_at: { $date: nowIso },
+          generator_version: "",
+        },
+      };
+
+      const resp = await saveTaskAtMongo(exportDocument);
+      notification();
+
+      if (resp?.status !== 200) {
+        alertWidget("error", "Could not save export to MongoDB.");
       }
     },
     loadExecutableSelection(context, { storageKey = "rule-editor.executableFrames.v1" } = {}) {
