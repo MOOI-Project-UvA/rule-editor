@@ -85,10 +85,10 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item clickable v-close-popup dense @click="chooseFile('json')">
-            <q-item-section>JSON</q-item-section>
+            <q-item-section>JSON (legacy)</q-item-section>
           </q-item>
           <q-item clickable v-close-popup dense @click="chooseFile('import')">
-            <q-item-section>IMPORT</q-item-section>
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
           <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
@@ -113,7 +113,7 @@ export default {
             dense
             @click="loadRemoteInterpretationMongo"
           >
-            <q-item-section>MongoDB</q-item-section>
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
@@ -140,7 +140,7 @@ export default {
             dense
             @click="saveInterpretationAsJson"
           >
-            <q-item-section>JSON</q-item-section>
+            <q-item-section>JSON (legacy)</q-item-section>
           </q-item>
           <q-item
             clickable
@@ -148,7 +148,7 @@ export default {
             dense
             @click="saveInterpretationAsExport"
           >
-            <q-item-section>EXPORT</q-item-section>
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
           <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
@@ -173,7 +173,7 @@ export default {
             dense
             @click="saveInterpretationToMongo"
           >
-            <q-item-section>MongoDB</q-item-section>
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
