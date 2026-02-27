@@ -433,8 +433,7 @@ Backend environment variables:
 
 | Variable | Explanation |
 |---|---|
-| AUTH_USERNAME | Login username (example: `editor`) |
-| AUTH_PASSWORD_HASH | Argon2 hash of the password (required) |
+| AUTH_USERS_JSON | Preferred. JSON object mapping username to Argon2 hash, e.g. `{"editor":"$argon2id$...","alice":"$argon2id$..."}` |
 | AUTH_SESSION_SECRET | Secret used to sign session cookies |
 | AUTH_SESSION_TTL_SECONDS | Session lifetime in seconds (default `28800`) |
 | AUTH_COOKIE_NAME | Cookie name (default `rule_editor_session`) |
@@ -454,6 +453,16 @@ Generate an Argon2 hash locally:
 ```bash
 python -c "from argon2 import PasswordHasher; print(PasswordHasher().hash('your-password'))"
 ```
+
+Streamlined user creation (recommended):
+
+```bash
+cd flint-to-eflint
+python scripts/generate_auth_user.py --username editor --env-file secrets.env
+python scripts/generate_auth_user.py --username alice --env-file secrets.env
+```
+
+This updates `AUTH_USERS_JSON` in `secrets.env` and lets you add users incrementally without manually editing Argon2 hashes.
 
 Then start backend and frontend (example local development):
 

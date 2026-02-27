@@ -7,6 +7,7 @@ uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
 import base64
 import hashlib
 import hmac
+import json
 import logging
 import os
 import time
@@ -72,15 +73,35 @@ app.add_middleware(
 COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "rule_editor_session")
 SESSION_SECRET = os.getenv("AUTH_SESSION_SECRET", "replace-me-in-production")
 SESSION_TTL_SECONDS = int(os.getenv("AUTH_SESSION_TTL_SECONDS", "28800"))
-AUTH_USERNAME = os.getenv("AUTH_USERNAME", "admin")
-AUTH_PASSWORD_HASH = os.getenv("AUTH_PASSWORD_HASH", "")
 COOKIE_SECURE = _env_bool("AUTH_COOKIE_SECURE", default=False)
 AUTH_DEBUG = _env_bool("AUTH_DEBUG", default=False)
+USERS_JSON_RAW = os.getenv("AUTH_USERS_JSON", "").strip()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn.error")
 
 _password_hasher = PasswordHasher()
+
+
+def _load_auth_users() -> dict[str, str]:
+    users: dict[str, str] = {}
+
+    if USERS_JSON_RAW:
+        try:
+            parsed_json = json.loads(USERS_JSON_RAW)
+            if isinstance(parsed_json, dict):
+                for username, password_hash in parsed_json.items():
+                    normalized_username = str(username).strip()
+                    normalized_hash = str(password_hash).strip()
+                    if normalized_username and normalized_hash:
+                        users[normalized_username] = normalized_hash
+        except json.JSONDecodeError:
+            logger.warning("[AUTH] Ignoring invalid AUTH_USERS_JSON value")
+
+    return users
+
+
+AUTH_USERS = _load_auth_users()
 
 
 def _debug(message: str) -> None:
@@ -89,11 +110,14 @@ def _debug(message: str) -> None:
 
 
 _debug(f"Loaded secrets file: {_configured_secrets_file}")
-_debug(f"AUTH_USERNAME set: {bool(AUTH_USERNAME)}")
-_debug(f"AUTH_PASSWORD_HASH present: {bool(AUTH_PASSWORD_HASH)}")
-_debug(f"AUTH_PASSWORD_HASH prefix: {AUTH_PASSWORD_HASH[:10] if AUTH_PASSWORD_HASH else '<empty>'}")
+_debug(f"AUTH_USERS_JSON present: {bool(USERS_JSON_RAW)}")
+_debug(f"AUTH_USERS entries loaded: {len(AUTH_USERS)}")
 _debug(f"COOKIE_NAME={COOKIE_NAME}, COOKIE_SECURE={COOKIE_SECURE}, SESSION_TTL_SECONDS={SESSION_TTL_SECONDS}")
-logger.warning("[AUTH] Startup config: AUTH_DEBUG=%s, AUTH_USERNAME=%s, AUTH_PASSWORD_HASH_PRESENT=%s", AUTH_DEBUG, AUTH_USERNAME, bool(AUTH_PASSWORD_HASH))
+logger.warning(
+    "[AUTH] Startup config: AUTH_DEBUG=%s, AUTH_USERS_COUNT=%s",
+    AUTH_DEBUG,
+    len(AUTH_USERS),
+)
 
 class GenerateRequest(BaseModel):
     interpretation: dict
@@ -156,7 +180,8 @@ def _read_session_username(request: Request) -> str | None:
 
 
 def _is_authenticated(request: Request) -> bool:
-    return _read_session_username(request) == AUTH_USERNAME
+    username = _read_session_username(request)
+    return bool(username and username in AUTH_USERS)
 
 
 def _ensure_authenticated(request: Request) -> None:
@@ -192,14 +217,15 @@ def _clear_auth_cookie(response: Response, request: Request) -> None:
 
 
 def _verify_credentials(username: str, password: str) -> bool:
-    if username != AUTH_USERNAME:
-        _debug(f"Login rejected: username mismatch (provided={username})")
+    expected_hash = AUTH_USERS.get(username)
+    if not expected_hash:
+        _debug(f"Login rejected: unknown username (provided={username})")
         return False
-    if not AUTH_PASSWORD_HASH:
-        _debug("Login rejected: AUTH_PASSWORD_HASH is empty")
+    if not AUTH_USERS:
+        _debug("Login rejected: no auth users configured")
         return False
     try:
-        verified = _password_hasher.verify(AUTH_PASSWORD_HASH, password)
+        verified = _password_hasher.verify(expected_hash, password)
         _debug(f"Argon2 verification result: {verified}")
         return verified
     except (VerifyMismatchError, InvalidHash):
@@ -232,8 +258,8 @@ def logout(request: Request, response: Response):
 def me(request: Request):
     _debug("/auth/me called")
     username = _read_session_username(request)
-    if username != AUTH_USERNAME:
-        _debug(f"/auth/me unauthorized: session_username={username}, expected={AUTH_USERNAME}")
+    if not username or username not in AUTH_USERS:
+        _debug(f"/auth/me unauthorized: session_username={username}, configured_users={len(AUTH_USERS)}")
         raise HTTPException(status_code=401, detail="Unauthorized")
     return {"authenticated": True, "username": username}
 
