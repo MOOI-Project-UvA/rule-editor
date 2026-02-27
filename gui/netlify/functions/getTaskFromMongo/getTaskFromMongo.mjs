@@ -1,10 +1,22 @@
-import { getMongoCollection } from "../_mongoClient.mjs";
+import {
+  buildOwnerScopedQuery,
+  getMongoCollection,
+  resolveRequestUsername,
+} from "../_mongoClient.mjs";
 
 export const handler = async function (event) {
   try {
     const body = JSON.parse(event.body || "{}");
+    const username = resolveRequestUsername(event, body);
     const projectId = body.project_id;
     const projectVersion = body.project_version;
+
+    if (!username) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ error: "Missing username context" }),
+      };
+    }
 
     if (!projectId) {
       return {
@@ -15,10 +27,11 @@ export const handler = async function (event) {
 
     const collection = await getMongoCollection();
 
-    const query =
+    const baseQuery =
       projectVersion != null
         ? { project_id: projectId, project_version: Number(projectVersion) }
         : { project_id: projectId };
+    const query = buildOwnerScopedQuery(username, baseQuery);
 
     const options = projectVersion != null ? {} : { sort: { project_version: -1 } };
     const task = await collection.findOne(query, options);

@@ -1,9 +1,21 @@
-import { getMongoCollection } from "../_mongoClient.mjs";
+import {
+  buildOwnerScopedQuery,
+  getMongoCollection,
+  resolveRequestUsername,
+} from "../_mongoClient.mjs";
 
 export const handler = async function (event) {
   try {
     const body = JSON.parse(event.body || "{}");
+    const username = resolveRequestUsername(event, body);
     const projectId = body.project_id;
+
+    if (!username) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ error: "Missing username context" }),
+      };
+    }
 
     if (!projectId) {
       return {
@@ -13,11 +25,13 @@ export const handler = async function (event) {
     }
 
     const collection = await getMongoCollection();
+    const query = buildOwnerScopedQuery(username, { project_id: projectId });
     const versions = await collection.find(
-      { project_id: projectId },
+      query,
       {
         projection: {
           _id: 0,
+          owner_username: 1,
           project_id: 1,
           project_version: 1,
           task_id: 1,

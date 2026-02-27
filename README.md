@@ -478,6 +478,17 @@ npm install
 npm run dev
 ```
 
+### MongoDB artifact ownership (multi-user)
+
+MongoDB saves are now scoped per user.
+
+- Every saved export stores a canonical `owner_username`.
+- Save versioning is computed per `(owner_username, project_id)`.
+- Retrieval endpoints (projects list, versions list, task retrieval) are filtered by owner, so users only see their own saved artifacts.
+- For backward compatibility, legacy records without `owner_username` are matched using `metadata.owner`.
+
+If you apply Mongo schema changes on an existing database, re-run the init/migration script from `mongodb/init/01-init-rule-editor.js` and backfill legacy documents where needed.
+
 ## Contributing
 
 We welcome contributions of all kinds!

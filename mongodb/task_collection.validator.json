@@ -2,6 +2,7 @@
   "$jsonSchema": {
     "bsonType": "object",
     "required": [
+      "owner_username",
       "project_id",
       "project_version",
       "task_id",
@@ -11,6 +12,10 @@
       "eflint"
     ],
     "properties": {
+      "owner_username": {
+        "bsonType": "string",
+        "description": "Canonical username used for user-level ownership and access control"
+      },
       "project_id": {
         "bsonType": "string",
         "description": "Stable identifier grouping all versions of the same project"

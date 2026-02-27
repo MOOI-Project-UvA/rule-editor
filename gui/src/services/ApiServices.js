@@ -268,14 +268,15 @@ export async function saveTaskAtTriply(taskInRdf) {
   }
 }
 
-export async function saveTaskAtMongo(exportDocument) {
+export async function saveTaskAtMongo(exportDocument, username) {
   try {
     const resp = await fetch("/.netlify/functions/saveTaskToMongo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
       },
-      body: JSON.stringify({ task: exportDocument }),
+      body: JSON.stringify({ task: exportDocument, username }),
     });
 
     if (!resp.ok) {
@@ -297,9 +298,16 @@ export async function saveTaskAtMongo(exportDocument) {
   }
 }
 
-export async function getProjectsFromMongo() {
+export async function getProjectsFromMongo(username) {
   try {
-    const response = await fetch("/.netlify/functions/getAvailableProjectsFromMongo");
+    const response = await fetch("/.netlify/functions/getAvailableProjectsFromMongo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
+      },
+      body: JSON.stringify({ username }),
+    });
 
     if (!response.ok) {
       if (response.status === 404) throw new Error("404, Not found");
@@ -319,14 +327,15 @@ export async function getProjectsFromMongo() {
   }
 }
 
-export async function getProjectVersionsFromMongo(projectId) {
+export async function getProjectVersionsFromMongo(projectId, username) {
   try {
     const response = await fetch("/.netlify/functions/getProjectVersionsFromMongo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
       },
-      body: JSON.stringify({ project_id: projectId }),
+      body: JSON.stringify({ project_id: projectId, username }),
     });
 
     if (!response.ok) {
@@ -347,16 +356,18 @@ export async function getProjectVersionsFromMongo(projectId) {
   }
 }
 
-export async function getTaskFromMongo(projectId, projectVersion = null) {
+export async function getTaskFromMongo(projectId, projectVersion = null, username) {
   try {
     const response = await fetch("/.netlify/functions/getTaskFromMongo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
       },
       body: JSON.stringify({
         project_id: projectId,
         project_version: projectVersion,
+        username,
       }),
     });
 

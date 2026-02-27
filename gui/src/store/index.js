@@ -339,8 +339,10 @@ const store = createStore({
     },
     async addTaskFromMongo(context, { projectId, projectVersion = null }) {
       const notification = alertWidget("loading", "Retrieving task...");
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
 
-      const mongoTask = await getTaskFromMongo(projectId, projectVersion);
+      const mongoTask = await getTaskFromMongo(projectId, projectVersion, username);
       if (!mongoTask) {
         notification();
         alertWidget("error", "Could not retrieve the task from MongoDB.");
@@ -372,10 +374,14 @@ const store = createStore({
       // );
     },
     async readAvailableProjectsInMongo(context) {
-      context.state.availableProjectsInMongo = await getProjectsFromMongo();
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
+      context.state.availableProjectsInMongo = await getProjectsFromMongo(username);
     },
     async readAvailableProjectVersionsInMongo(context, projectId) {
-      const versions = await getProjectVersionsFromMongo(projectId);
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
+      const versions = await getProjectVersionsFromMongo(projectId, username);
       context.commit("setAvailableProjectVersionsInMongo", versions);
       return versions;
     },
@@ -664,7 +670,7 @@ const store = createStore({
         },
       };
 
-      const resp = await saveTaskAtMongo(exportDocument);
+      const resp = await saveTaskAtMongo(exportDocument, username);
       notification();
 
       if (resp?.status !== 200) {

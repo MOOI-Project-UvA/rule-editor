@@ -37,3 +37,28 @@ export function parseDateField(value) {
   if (value instanceof Date) return value;
   return null;
 }
+
+export function normalizeUsername(value) {
+  if (value == null) return "";
+  return String(value).trim();
+}
+
+export function resolveRequestUsername(event, body = {}) {
+  const headerUsername =
+    event?.headers?.["x-editor-username"] || event?.headers?.["X-Editor-Username"];
+  const bodyUsername = body?.username;
+  return normalizeUsername(headerUsername || bodyUsername);
+}
+
+export function buildOwnerScopedQuery(username, query = {}) {
+  return {
+    ...query,
+    $or: [
+      { owner_username: username },
+      {
+        owner_username: { $exists: false },
+        "metadata.owner": username,
+      },
+    ],
+  };
+}

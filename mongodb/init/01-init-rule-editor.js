@@ -9,8 +9,12 @@ if (!appPassword) {
 const validator = {
   $jsonSchema: {
     bsonType: "object",
-    required: ["project_id", "project_version", "task_id", "metadata", "flint_spec", "saved_artifact", "eflint"],
+    required: ["owner_username", "project_id", "project_version", "task_id", "metadata", "flint_spec", "saved_artifact", "eflint"],
     properties: {
+      owner_username: {
+        bsonType: "string",
+        description: "Canonical username used for user-level ownership and access control"
+      },
       project_id: {
         bsonType: "string",
         description: "Stable identifier grouping all versions of the same project"
@@ -104,9 +108,10 @@ if (existingCollection.length === 0) {
 
 targetDb.task_collection.createIndex({ task_id: 1 }, { unique: true });
 targetDb.task_collection.createIndex(
-  { project_id: 1, project_version: -1 },
-  { unique: true, name: "project_version_unique" }
+  { owner_username: 1, project_id: 1, project_version: -1 },
+  { unique: true, name: "owner_project_version_unique" }
 );
+targetDb.task_collection.createIndex({ owner_username: 1, project_id: 1, "metadata.modified_at": -1 });
 targetDb.task_collection.createIndex({ "metadata.owner": 1 });
 targetDb.task_collection.createIndex({ "metadata.owner_group": 1 });
 targetDb.task_collection.createIndex({ "metadata.modified_at": -1 });
