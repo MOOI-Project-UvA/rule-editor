@@ -5,11 +5,15 @@ uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
 """
 
 import base64
+import datetime as dt
 import hashlib
 import hmac
+import json
 import logging
 import os
 import time
+import traceback
+import uuid
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -50,6 +54,43 @@ _default_secrets_file = Path(__file__).resolve().parent.parent / "secrets.env"
 _configured_secrets_file = Path(os.getenv("AUTH_SECRETS_FILE", str(_default_secrets_file)))
 _load_env_file(_configured_secrets_file)
 
+SERVICE_NAME = "flint-to-eflint"
+APP_ENV = os.getenv("APP_ENV", "dev")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+
+def _to_python_log_level(level: str) -> int:
+    normalized = (level or "INFO").upper()
+    if normalized == "WARN":
+        normalized = "WARNING"
+    return getattr(logging, normalized, logging.INFO)
+
+
+def _configure_logging() -> logging.Logger:
+    service_logger = logging.getLogger(SERVICE_NAME)
+    service_logger.setLevel(_to_python_log_level(LOG_LEVEL))
+    service_logger.propagate = False
+
+    if not service_logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        service_logger.addHandler(handler)
+
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    return service_logger
+
+
+def _log(level: str, message: str, **fields) -> None:
+    event = {
+        "timestamp": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "level": level,
+        "service": SERVICE_NAME,
+        "env": APP_ENV,
+        "message": message,
+        **fields,
+    }
+    logger.log(_to_python_log_level(level), json.dumps(event, default=str))
+
 app = FastAPI(title="eFLINT Generator API")
 
 app.add_middleware(
@@ -71,20 +112,63 @@ COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "rule_editor_session")
 SESSION_SECRET = os.getenv("AUTH_SESSION_SECRET", "replace-me-in-production")
 AUTH_DEBUG = _env_bool("AUTH_DEBUG", default=False)
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("uvicorn.error")
+logger = _configure_logging()
 
 def _debug(message: str) -> None:
     if AUTH_DEBUG:
-        logger.warning("[AUTH DEBUG] %s", message)
+        _log("DEBUG", message)
 
 
 _debug(f"Loaded secrets file: {_configured_secrets_file}")
 _debug(f"COOKIE_NAME={COOKIE_NAME}")
-logger.warning(
-    "[AUTH] Startup config: AUTH_DEBUG=%s",
-    AUTH_DEBUG,
+_log(
+    "INFO",
+    "startup",
+    auth_debug=AUTH_DEBUG,
+    log_level=LOG_LEVEL,
 )
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    started = time.perf_counter()
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    except Exception as exc:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        _log(
+            "ERROR",
+            "request_failed",
+            request_id=request_id,
+            method=request.method,
+            path=request.url.path,
+            status_code=500,
+            duration_ms=duration_ms,
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+            stack_trace=traceback.format_exc(),
+        )
+        raise
+
+    duration_ms = round((time.perf_counter() - started) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    if request.url.path == "/health":
+        level = "DEBUG"
+    else:
+        level = "ERROR" if status_code >= 500 else "WARN" if status_code >= 400 else "INFO"
+    _log(
+        level,
+        "health_check" if request.url.path == "/health" else "request_completed",
+        request_id=request_id,
+        method=request.method,
+        path=request.url.path,
+        status_code=status_code,
+        duration_ms=duration_ms,
+    )
+    return response
 
 class GenerateRequest(BaseModel):
     interpretation: dict

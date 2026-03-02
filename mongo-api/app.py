@@ -1,9 +1,13 @@
 import datetime as dt
+import json
+import logging
 import os
+import time
+import traceback
 import uuid
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import DESCENDING, MongoClient
@@ -15,6 +19,48 @@ def _parse_allowed_origins() -> list[str]:
         "http://localhost:5173,http://localhost:8888,http://127.0.0.1:5173,http://127.0.0.1:8888",
     )
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+SERVICE_NAME = "mongo-api"
+APP_ENV = os.getenv("APP_ENV", "dev")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+
+def _to_python_log_level(level: str) -> int:
+    normalized = (level or "INFO").upper()
+    if normalized == "WARN":
+        normalized = "WARNING"
+    return getattr(logging, normalized, logging.INFO)
+
+
+def _configure_logging() -> logging.Logger:
+    service_logger = logging.getLogger(SERVICE_NAME)
+    service_logger.setLevel(_to_python_log_level(LOG_LEVEL))
+    service_logger.propagate = False
+
+    if not service_logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        service_logger.addHandler(handler)
+
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("pymongo").setLevel(logging.WARNING)
+    return service_logger
+
+
+logger = _configure_logging()
+
+
+def _log(level: str, message: str, **fields) -> None:
+    event = {
+        "timestamp": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "level": level,
+        "service": SERVICE_NAME,
+        "env": APP_ENV,
+        "message": message,
+        **fields,
+    }
+    logger.log(_to_python_log_level(level), json.dumps(event, default=str))
 
 
 def _normalize_username(value: Any) -> str:
@@ -96,6 +142,51 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    started = time.perf_counter()
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    except Exception as exc:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        _log(
+            "ERROR",
+            "request_failed",
+            request_id=request_id,
+            method=request.method,
+            path=request.url.path,
+            status_code=500,
+            duration_ms=duration_ms,
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+            stack_trace=traceback.format_exc(),
+        )
+        raise
+
+    duration_ms = round((time.perf_counter() - started) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    if request.url.path == "/health":
+        level = "DEBUG"
+    else:
+        level = "ERROR" if status_code >= 500 else "WARN" if status_code >= 400 else "INFO"
+    _log(
+        level,
+        "health_check" if request.url.path == "/health" else "request_completed",
+        request_id=request_id,
+        method=request.method,
+        path=request.url.path,
+        status_code=status_code,
+        duration_ms=duration_ms,
+    )
+    return response
+
+
+_log("INFO", "startup", log_level=LOG_LEVEL)
 
 
 def _get_collection():

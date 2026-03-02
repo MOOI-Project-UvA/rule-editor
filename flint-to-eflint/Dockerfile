@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "service.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn service.app:app --host 0.0.0.0 --port 8000 --no-access-log --log-level ${UVICORN_LOG_LEVEL:-warning}"]

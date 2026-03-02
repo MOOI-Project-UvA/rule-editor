@@ -1,10 +1,13 @@
 import base64
+import datetime as dt
 import hashlib
 import hmac
 import json
 import logging
 import os
 import time
+import traceback
+import uuid
 from pathlib import Path
 
 from argon2 import PasswordHasher
@@ -45,6 +48,43 @@ _default_secrets_file = Path(__file__).resolve().parent / "secrets.env"
 _configured_secrets_file = Path(os.getenv("AUTH_SECRETS_FILE", str(_default_secrets_file)))
 _load_env_file(_configured_secrets_file)
 
+SERVICE_NAME = "auth-service"
+APP_ENV = os.getenv("APP_ENV", "dev")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+
+def _to_python_log_level(level: str) -> int:
+    normalized = (level or "INFO").upper()
+    if normalized == "WARN":
+        normalized = "WARNING"
+    return getattr(logging, normalized, logging.INFO)
+
+
+def _configure_logging() -> logging.Logger:
+    logger = logging.getLogger(SERVICE_NAME)
+    logger.setLevel(_to_python_log_level(LOG_LEVEL))
+    logger.propagate = False
+
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(handler)
+
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    return logger
+
+
+def _log(level: str, message: str, **fields) -> None:
+    event = {
+        "timestamp": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "level": level,
+        "service": SERVICE_NAME,
+        "env": APP_ENV,
+        "message": message,
+        **fields,
+    }
+    logger.log(_to_python_log_level(level), json.dumps(event, default=str))
+
 app = FastAPI(title="Rule Editor Auth API")
 
 app.add_middleware(
@@ -69,8 +109,7 @@ COOKIE_SECURE = _env_bool("AUTH_COOKIE_SECURE", default=False)
 AUTH_DEBUG = _env_bool("AUTH_DEBUG", default=False)
 USERS_JSON_RAW = os.getenv("AUTH_USERS_JSON", "").strip().strip('"').strip("'")
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("uvicorn.error")
+logger = _configure_logging()
 
 _password_hasher = PasswordHasher()
 
@@ -98,18 +137,62 @@ AUTH_USERS = _load_auth_users()
 
 def _debug(message: str) -> None:
     if AUTH_DEBUG:
-        logger.warning("[AUTH DEBUG] %s", message)
+        _log("DEBUG", message)
 
 
 _debug(f"Loaded secrets file: {_configured_secrets_file}")
 _debug(f"AUTH_USERS_JSON present: {bool(USERS_JSON_RAW)}")
 _debug(f"AUTH_USERS entries loaded: {len(AUTH_USERS)}")
 _debug(f"COOKIE_NAME={COOKIE_NAME}, COOKIE_SECURE={COOKIE_SECURE}, SESSION_TTL_SECONDS={SESSION_TTL_SECONDS}")
-logger.warning(
-    "[AUTH] Startup config: AUTH_DEBUG=%s, AUTH_USERS_COUNT=%s",
-    AUTH_DEBUG,
-    len(AUTH_USERS),
+_log(
+    "INFO",
+    "startup",
+    auth_debug=AUTH_DEBUG,
+    auth_users_count=len(AUTH_USERS),
+    log_level=LOG_LEVEL,
 )
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    started = time.perf_counter()
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    except Exception as exc:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        _log(
+            "ERROR",
+            "request_failed",
+            request_id=request_id,
+            method=request.method,
+            path=request.url.path,
+            status_code=500,
+            duration_ms=duration_ms,
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+            stack_trace=traceback.format_exc(),
+        )
+        raise
+
+    duration_ms = round((time.perf_counter() - started) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    if request.url.path == "/health":
+        level = "DEBUG"
+    else:
+        level = "ERROR" if status_code >= 500 else "WARN" if status_code >= 400 else "INFO"
+    _log(
+        level,
+        "health_check" if request.url.path == "/health" else "request_completed",
+        request_id=request_id,
+        method=request.method,
+        path=request.url.path,
+        status_code=status_code,
+        duration_ms=duration_ms,
+    )
+    return response
 
 
 class LoginRequest(BaseModel):
