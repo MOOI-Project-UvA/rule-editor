@@ -2,6 +2,16 @@ import SuperAgent from "superagent";
 import { alertWidget } from "../helpers/alertWidget.js";
 import { reformatDate } from "../helpers/dateTimeFunctions.js";
 
+function getMongoApiBaseUrl() {
+  return (import.meta.env.VITE_MONGO_API_BASE_URL || "").replace(/\/+$/, "");
+}
+
+function buildMongoApiUrl(path, netlifyFallbackPath) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const baseUrl = getMongoApiBaseUrl();
+  return baseUrl ? `${baseUrl}${normalizedPath}` : netlifyFallbackPath;
+}
+
 export async function fetchNlpPrediction(text) {
   try {
     const response = await fetch("/api/predict", {
@@ -270,14 +280,17 @@ export async function saveTaskAtTriply(taskInRdf) {
 
 export async function saveTaskAtMongo(exportDocument, username) {
   try {
-    const resp = await fetch("/.netlify/functions/saveTaskToMongo", {
+    const resp = await fetch(
+      buildMongoApiUrl("/mongo-api/saveTask", "/.netlify/functions/saveTaskToMongo"),
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Editor-Username": username || "",
       },
       body: JSON.stringify({ task: exportDocument, username }),
-    });
+      },
+    );
 
     if (!resp.ok) {
       if (resp.status === 404) throw new Error("404, Not found");
@@ -300,14 +313,20 @@ export async function saveTaskAtMongo(exportDocument, username) {
 
 export async function getProjectsFromMongo(username) {
   try {
-    const response = await fetch("/.netlify/functions/getAvailableProjectsFromMongo", {
+    const response = await fetch(
+      buildMongoApiUrl(
+        "/mongo-api/projects",
+        "/.netlify/functions/getAvailableProjectsFromMongo",
+      ),
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Editor-Username": username || "",
       },
       body: JSON.stringify({ username }),
-    });
+      },
+    );
 
     if (!response.ok) {
       if (response.status === 404) throw new Error("404, Not found");
@@ -329,14 +348,20 @@ export async function getProjectsFromMongo(username) {
 
 export async function getProjectVersionsFromMongo(projectId, username) {
   try {
-    const response = await fetch("/.netlify/functions/getProjectVersionsFromMongo", {
+    const response = await fetch(
+      buildMongoApiUrl(
+        "/mongo-api/project-versions",
+        "/.netlify/functions/getProjectVersionsFromMongo",
+      ),
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Editor-Username": username || "",
       },
       body: JSON.stringify({ project_id: projectId, username }),
-    });
+      },
+    );
 
     if (!response.ok) {
       if (response.status === 404) throw new Error("404, Not found");
@@ -358,7 +383,9 @@ export async function getProjectVersionsFromMongo(projectId, username) {
 
 export async function getTaskFromMongo(projectId, projectVersion = null, username) {
   try {
-    const response = await fetch("/.netlify/functions/getTaskFromMongo", {
+    const response = await fetch(
+      buildMongoApiUrl("/mongo-api/task", "/.netlify/functions/getTaskFromMongo"),
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -369,7 +396,8 @@ export async function getTaskFromMongo(projectId, projectVersion = null, usernam
         project_version: projectVersion,
         username,
       }),
-    });
+      },
+    );
 
     if (!response.ok) {
       if (response.status === 404) throw new Error("404, Not found");

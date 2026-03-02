@@ -380,7 +380,7 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-### Unified backend stack via Docker Compose (auth + eFLINT + MongoDB)
+### Unified backend stack via Docker Compose (auth + eFLINT + mongo-api + MongoDB)
 
 From the project root, you can start the self-hosted backend dependencies with one command.
 
@@ -414,6 +414,7 @@ curl http://localhost:8000/health
 This starts:
 - `auth-service` on `http://localhost:8101`
 - `flint-to-eflint` on `http://localhost:8000`
+- `mongo-api` on `http://localhost:8102`
 - `mongodb` on `localhost:27017`
 
 To stop:
@@ -502,6 +503,7 @@ Frontend environment variables (in `gui/.env`):
 | VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
 | VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
+| VITE_MONGO_API_BASE_URL | Base URL for Mongo intermediate API (optional; falls back to Netlify functions when empty) |
 
 Generate an Argon2 hash locally:
 
