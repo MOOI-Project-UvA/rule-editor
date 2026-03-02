@@ -12,11 +12,7 @@ export function getAuthApiBaseUrl() {
 }
 
 export function getEflintApiBaseUrl() {
-  return (
-    import.meta.env.VITE_EFLINT_API_BASE_URL ||
-    import.meta.env.VITE_AUTH_API_BASE_URL ||
-    ""
-  ).replace(/\/+$/, "");
+  return (import.meta.env.VITE_EFLINT_API_BASE_URL || "").replace(/\/+$/, "");
 }
 
 export function buildAuthUrl(path) {

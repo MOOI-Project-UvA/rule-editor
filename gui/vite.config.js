@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 
 const eflintApiBaseUrl = process.env.VITE_EFLINT_API_BASE_URL || "http://localhost:8000";
+const authApiBaseUrl = process.env.VITE_AUTH_API_BASE_URL || "http://localhost:8101";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -64,7 +65,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       "/auth": {
-        target: eflintApiBaseUrl,
+        target: authApiBaseUrl,
         secure: false,
         changeOrigin: true,
       },

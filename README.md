@@ -302,6 +302,10 @@ The link between snippets and annotation is stored in the snippets, see above. A
     │    ├── package.json           # Project dependencies and scripts
     │    ├── .env                   # Environment variables
     │    └── vite.config.js         # Vite and dev server configuration, plugin registration
+    ├── auth-service/               # Dedicated authentication API (cookie/session based)
+    │    ├── app.py
+    │    ├── requirements.txt
+    │    └── scripts/
     ├── .gitignore                  # Git ignored files   
     ├── docker-compose.yml
     ├── netlify.toml                # Netlify build, functions and routing configuration
@@ -376,6 +380,48 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+### Unified backend stack via Docker Compose (auth + eFLINT + MongoDB)
+
+From the project root, you can start the self-hosted backend dependencies with one command.
+
+1. Create and fill stack environment file:
+
+```bash
+cp .env.stack.example .env.stack
+```
+
+2. Add at least one auth user hash to `AUTH_USERS_JSON` (in `.env.stack`), for example:
+
+```bash
+cd auth-service
+python scripts/generate_auth_user.py --username editor --env-file ../.env.stack
+cd ..
+```
+
+3. Start services:
+
+```bash
+docker compose up -d --build
+```
+
+4. Check health endpoints:
+
+```bash
+curl http://localhost:8101/health
+curl http://localhost:8000/health
+```
+
+This starts:
+- `auth-service` on `http://localhost:8101`
+- `flint-to-eflint` on `http://localhost:8000`
+- `mongodb` on `localhost:27017`
+
+To stop:
+
+```bash
+docker compose down
+```
+
 ### Deploy to Netlify
 
 Want to deploy immediately to Netlify? Click this button
@@ -427,9 +473,10 @@ Create an `.env` file in the `gui` folder and define the environment variable th
 
 ### Optional self-hosted authentication (no Netlify dependency)
 
-The eFLINT translation backend (`flint-to-eflint/service/app.py`) now supports cookie-based authentication with username/password and Argon2 password hashes.
+Authentication is implemented as a dedicated API service in `auth-service/app.py`.
+The eFLINT translation backend (`flint-to-eflint/service/app.py`) only validates signed session cookies and no longer stores user password hashes.
 
-Backend environment variables:
+Authentication service environment variables:
 
 | Variable | Explanation |
 |---|---|
@@ -440,13 +487,21 @@ Backend environment variables:
 | AUTH_COOKIE_SECURE | Set `true` in HTTPS production environments |
 | AUTH_ALLOWED_ORIGINS | Comma-separated CORS origins for GUI, e.g. `http://localhost:5173,http://localhost:8888` |
 
+eFLINT translation backend environment variables:
+
+| Variable | Explanation |
+|---|---|
+| AUTH_SESSION_SECRET | Must match auth-service secret to verify signed cookies |
+| AUTH_COOKIE_NAME | Must match auth-service cookie name |
+| AUTH_ALLOWED_ORIGINS | Comma-separated CORS origins for GUI, e.g. `http://localhost:5173,http://localhost:8888` |
+
 Frontend environment variables (in `gui/.env`):
 
 | Variable | Explanation |
 |---|---|
 | VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
-| VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; empty means same origin) |
+| VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
 
 Generate an Argon2 hash locally:
 
@@ -457,17 +512,21 @@ python -c "from argon2 import PasswordHasher; print(PasswordHasher().hash('your-
 Streamlined user creation (recommended):
 
 ```bash
-cd flint-to-eflint
+cd auth-service
+pip install -r requirements.txt
+cp secrets.env.example secrets.env
 python scripts/generate_auth_user.py --username editor --env-file secrets.env
 python scripts/generate_auth_user.py --username alice --env-file secrets.env
 ```
 
-This updates `AUTH_USERS_JSON` in `secrets.env` and lets you add users incrementally without manually editing Argon2 hashes.
-
-Then start backend and frontend (example local development):
+Then start auth service, backend, and frontend (example local development):
 
 ```bash
-# backend
+# auth-service
+cd auth-service
+uvicorn app:app --reload --host 0.0.0.0 --port 8101
+
+# eFLINT backend
 cd flint-to-eflint
 pip install -r requirements.txt
 uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
@@ -477,6 +536,8 @@ cd gui
 npm install
 npm run dev
 ```
+
+This updates `AUTH_USERS_JSON` in `auth-service/secrets.env` and lets you add users incrementally without manually editing Argon2 hashes.
 
 ### MongoDB artifact ownership (multi-user)
 

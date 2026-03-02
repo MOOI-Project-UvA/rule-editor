@@ -7,17 +7,14 @@ uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
 import base64
 import hashlib
 import hmac
-import json
 import logging
 import os
 import time
 from pathlib import Path
 
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError, InvalidHash
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from eflint_generator import generate_eflint
 
@@ -72,37 +69,10 @@ app.add_middleware(
 
 COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "rule_editor_session")
 SESSION_SECRET = os.getenv("AUTH_SESSION_SECRET", "replace-me-in-production")
-SESSION_TTL_SECONDS = int(os.getenv("AUTH_SESSION_TTL_SECONDS", "28800"))
-COOKIE_SECURE = _env_bool("AUTH_COOKIE_SECURE", default=False)
 AUTH_DEBUG = _env_bool("AUTH_DEBUG", default=False)
-USERS_JSON_RAW = os.getenv("AUTH_USERS_JSON", "").strip()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn.error")
-
-_password_hasher = PasswordHasher()
-
-
-def _load_auth_users() -> dict[str, str]:
-    users: dict[str, str] = {}
-
-    if USERS_JSON_RAW:
-        try:
-            parsed_json = json.loads(USERS_JSON_RAW)
-            if isinstance(parsed_json, dict):
-                for username, password_hash in parsed_json.items():
-                    normalized_username = str(username).strip()
-                    normalized_hash = str(password_hash).strip()
-                    if normalized_username and normalized_hash:
-                        users[normalized_username] = normalized_hash
-        except json.JSONDecodeError:
-            logger.warning("[AUTH] Ignoring invalid AUTH_USERS_JSON value")
-
-    return users
-
-
-AUTH_USERS = _load_auth_users()
-
 
 def _debug(message: str) -> None:
     if AUTH_DEBUG:
@@ -110,22 +80,14 @@ def _debug(message: str) -> None:
 
 
 _debug(f"Loaded secrets file: {_configured_secrets_file}")
-_debug(f"AUTH_USERS_JSON present: {bool(USERS_JSON_RAW)}")
-_debug(f"AUTH_USERS entries loaded: {len(AUTH_USERS)}")
-_debug(f"COOKIE_NAME={COOKIE_NAME}, COOKIE_SECURE={COOKIE_SECURE}, SESSION_TTL_SECONDS={SESSION_TTL_SECONDS}")
+_debug(f"COOKIE_NAME={COOKIE_NAME}")
 logger.warning(
-    "[AUTH] Startup config: AUTH_DEBUG=%s, AUTH_USERS_COUNT=%s",
+    "[AUTH] Startup config: AUTH_DEBUG=%s",
     AUTH_DEBUG,
-    len(AUTH_USERS),
 )
 
 class GenerateRequest(BaseModel):
     interpretation: dict
-
-
-class LoginRequest(BaseModel):
-    username: str = Field(..., min_length=1, max_length=100)
-    password: str = Field(..., min_length=1, max_length=1000)
 
 
 def _b64url_encode(raw: bytes) -> str:
@@ -144,14 +106,6 @@ def _sign_payload(payload: str) -> str:
         hashlib.sha256,
     ).digest()
     return _b64url_encode(signature)
-
-
-def _create_session_token(username: str) -> str:
-    expires_at = int(time.time()) + SESSION_TTL_SECONDS
-    payload = f"{username}:{expires_at}"
-    payload_encoded = _b64url_encode(payload.encode("utf-8"))
-    signature = _sign_payload(payload_encoded)
-    return f"{payload_encoded}.{signature}"
 
 
 def _read_session_username(request: Request) -> str | None:
@@ -181,87 +135,13 @@ def _read_session_username(request: Request) -> str | None:
 
 def _is_authenticated(request: Request) -> bool:
     username = _read_session_username(request)
-    return bool(username and username in AUTH_USERS)
+    return bool(username)
 
 
 def _ensure_authenticated(request: Request) -> None:
     if not _is_authenticated(request):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-
-def _set_auth_cookie(response: Response, token: str, request: Request) -> None:
-    secure_cookie = COOKIE_SECURE or request.headers.get("x-forwarded-proto") == "https"
-    response.set_cookie(
-        key=COOKIE_NAME,
-        value=token,
-        max_age=SESSION_TTL_SECONDS,
-        httponly=True,
-        secure=secure_cookie,
-        samesite="lax",
-        path="/",
-    )
-
-
-def _clear_auth_cookie(response: Response, request: Request) -> None:
-    secure_cookie = COOKIE_SECURE or request.headers.get("x-forwarded-proto") == "https"
-    response.set_cookie(
-        key=COOKIE_NAME,
-        value="",
-        max_age=0,
-        expires=0,
-        httponly=True,
-        secure=secure_cookie,
-        samesite="lax",
-        path="/",
-    )
-
-
-def _verify_credentials(username: str, password: str) -> bool:
-    expected_hash = AUTH_USERS.get(username)
-    if not expected_hash:
-        _debug(f"Login rejected: unknown username (provided={username})")
-        return False
-    if not AUTH_USERS:
-        _debug("Login rejected: no auth users configured")
-        return False
-    try:
-        verified = _password_hasher.verify(expected_hash, password)
-        _debug(f"Argon2 verification result: {verified}")
-        return verified
-    except (VerifyMismatchError, InvalidHash):
-        _debug("Login rejected: password mismatch or invalid hash format")
-        return False
-    except Exception as exc:
-        _debug(f"Login rejected: unexpected verify error {type(exc).__name__}: {exc}")
-        return False
-
-
-@app.post("/auth/login")
-def login(req: LoginRequest, request: Request, response: Response):
-    _debug(f"/auth/login called from origin={request.headers.get('origin')} host={request.headers.get('host')}")
-    if not _verify_credentials(req.username, req.password):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    token = _create_session_token(req.username)
-    _set_auth_cookie(response, token, request)
-    _debug(f"Login success: cookie set for username={req.username}")
-    return {"authenticated": True, "username": req.username}
-
-
-@app.post("/auth/logout")
-def logout(request: Request, response: Response):
-    _clear_auth_cookie(response, request)
-    return {"authenticated": False}
-
-
-@app.get("/auth/me")
-def me(request: Request):
-    _debug("/auth/me called")
-    username = _read_session_username(request)
-    if not username or username not in AUTH_USERS:
-        _debug(f"/auth/me unauthorized: session_username={username}, configured_users={len(AUTH_USERS)}")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return {"authenticated": True, "username": username}
 
 @app.post("/generate-eflint")
 def generate_eflint_endpoint(req: GenerateRequest, request: Request):

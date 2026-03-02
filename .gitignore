@@ -18,3 +18,4 @@
 *.env
 my_notes.md
 mongodb/data/
+.env.stack
