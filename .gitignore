@@ -15,7 +15,10 @@
 *.pyc
 *.pyc
 /flint-to-eflint/service/.venv
+# Local environment files (secrets/runtime config)
+.env*
 *.env
+!*.env.example
+!.env*.example
 my_notes.md
 mongodb/data/
-.env.stack
