@@ -1,6 +1,6 @@
 export function getTranslationBaseUrl() {
   return (
-    process.env.FLINT_TRANSLATION_URL ||
+    process.env.VITE_EFLINT_API_BASE_URL ||
     process.env.PY_SERVICE_URL ||
     "http://localhost:8000"
   );

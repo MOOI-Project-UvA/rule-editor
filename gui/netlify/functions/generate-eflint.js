@@ -1,5 +1,5 @@
 // /.netlify/functions/generate-eflint
-// Proxies interpretation JSON to ${FLINT_TRANSLATION_URL}/generate-eflint
+// Proxies interpretation JSON to ${VITE_EFLINT_API_BASE_URL}/generate-eflint
 
 import { buildGenerateEflintUrl } from "./eflintConfig.js";
 
