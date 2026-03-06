@@ -70,37 +70,21 @@
                       dense
                       outlined
                       label="Actor type"
-                      :options="agentTypeOptions"
+                      :options="agentTypeOptions(f.actor)"
                       emit-value
                       map-options
-                      v-model="actSelections[f.id].actorType"
+                      v-model="actSelections[f.id].actorName"
                       class="q-mb-xs"
                     />
-                    <q-input
-                      dense
-                      outlined
-                      label="Actor name"
-                      placeholder="instance name"
-                      v-model="actSelections[f.id].actorName"
-                      class="q-mb-sm"
-                    />
-
                     <q-select
                       dense
                       outlined
                       label="Recipient type"
-                      :options="agentTypeOptions"
+                      :options="agentTypeOptions(f.recipient)"
                       emit-value
                       map-options
-                      v-model="actSelections[f.id].recipientType"
-                      class="q-mb-xs"
-                    />
-                    <q-input
-                      dense
-                      outlined
-                      label="Recipient name"
-                      placeholder="instance name"
                       v-model="actSelections[f.id].recipientName"
+                      class="q-mb-xs"
                     />
                   </div>
                 </q-item-section>
@@ -249,12 +233,6 @@ export default {
       return out;
     },
 
-    agentTypeOptions() {
-      return this.framesUnion
-        .filter((f) => this.isAgentFact(f))
-        .map((f) => ({ label: f.shortName, value: f.shortName }));
-    },
-
     selectionLines() {
       return this.selectedFrames
         .map((f) => {
@@ -268,8 +246,8 @@ export default {
 
           if (this.isAct(f)) {
             const sel = this.actSelections[f.id] || {};
-            const at = sel.actorType || "";
-            const rt = sel.recipientType || "";
+            const at = f.actor.shortName || "";
+            const rt = f.recipient.shortName || "";
             const an = this.escape(sel.actorName || "");
             const rn = this.escape(sel.recipientName || "");
             return `[${f.shortName}]([${at}]("${an}"), [${rt}]("${rn}")).`;
@@ -284,6 +262,11 @@ export default {
   },
 
   methods: {
+    agentTypeOptions(type) {
+      return this.agentInstanceNames[type.id]
+    },
+
+
     isAgentFact(f) {
       return f.typeId === "fact" && f.subTypeIds?.[0] === "agent";
     },
