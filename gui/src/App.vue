@@ -19,18 +19,29 @@
   -->
 
   <div class="column fit">
-    <div class="col-auto">
-      <NavigationBar :activeView="activeView" @changed="$store.state.activeView = $event"/>
-    </div>
-    <div class="col q-px-sm scroll">
-      <component v-if="activeView" :is="activeView.component" />
-    </div>
+    <LoginForm
+      v-if="authEnabled && !isAuthenticated"
+      class="col"
+      :loading="authLoading"
+      :error-message="authError"
+      @login="onLogin"
+    />
+    <template v-else>
+      <div class="col-auto row justify-end q-pa-sm" v-if="authEnabled">
+        <q-btn flat dense label="Logout" @click="onLogout" />
+      </div>
+      <div class="col-auto">
+        <NavigationBar v-model:activeView="activeView"/>
+      </div>
+      <div class="col q-px-sm scroll">
+        <component v-if="activeView" :is="activeView.component" />
+      </div>
+      <div>
+        <TaskRetrieval />
+      </div>
+    </template>
   </div>
-  
-  
-  <div>
-    <TaskRetrieval />
-  </div>
+
 </template>
 
 <script>
@@ -38,41 +49,123 @@ import { alertWidget } from "./helpers/alertWidget.js";
 import { retrieveDeploymentInformation } from "./helpers/utilities.js";
 import TaskRetrieval from "./components/TaskRetrieval.vue";
 import NavigationBar from "./components/NavigationBar.vue";
+import LoginForm from "./components/LoginForm.vue";
+import {
+  getCurrentUser,
+  isAuthEnabled,
+  login,
+  logout,
+} from "./services/AuthService.js";
+
+function resolveUserIdentity(user) {
+  return {
+    username:
+      user?.username || user?.user || user?.name || user?.email || "",
+    ownerGroup:
+      user?.owner_group || "",
+  };
+}
+
 export default {
   name: "app",
   data: () => ({
     hash: import.meta.env.VITE_VERSION,
     repo: import.meta.env.VITE_REPOSITORY_URL,
     branch: import.meta.env.VITE_BRANCH,
+    activeView: null,
+    authEnabled: isAuthEnabled(),
+    isAuthenticated: false,
+    authLoading: false,
+    authError: "",
+    appInitialized: false,
   }),
-  computed: {
-    activeView() {
-      return this.$store.state.activeView
-    }
-  },
   components: {
     NavigationBar,
     TaskRetrieval,
+    LoginForm,
   },
 
-  mounted() {
-    // if there is deployment information, show it
-    if (this.repo != null) {
-      const message = retrieveDeploymentInformation(
-        this.repo,
-        this.branch,
-        this.hash,
-      );
-      alertWidget("welcome", message);
+  async mounted() {
+    if (!this.authEnabled) {
+      this.isAuthenticated = true;
+      this.initializeAppAfterAuth();
+      return;
     }
-    // list of action to be dispatched on mount
-    this.$store.dispatch("readAvailableSources");
-    // this.$store.dispatch("readAvailableSourcesInTripleStore");
-    // this.$store.dispatch("readAvailableTasksInTripleStore");
+
+    this.authLoading = true;
+    try {
+      const user = await getCurrentUser();
+      const { username, ownerGroup } = resolveUserIdentity(user);
+      const resolvedUsername = username || localStorage.getItem("rule-editor.username") || "unknown";
+      this.$store.commit("setEditorIdentity", { username: resolvedUsername, ownerGroup });
+      localStorage.setItem("rule-editor.username", resolvedUsername);
+      localStorage.setItem("rule-editor.ownerGroup", ownerGroup);
+      this.isAuthenticated = true;
+      this.authError = "";
+      this.initializeAppAfterAuth();
+    } catch {
+      this.isAuthenticated = false;
+    } finally {
+      this.authLoading = false;
+    }
+  },
+
+  methods: {
+    async onLogin({ username, password }) {
+      this.authError = "";
+      this.authLoading = true;
+      try {
+        const user = await login(username, password);
+        const identityFromResponse = resolveUserIdentity(user);
+        const resolvedUsername = identityFromResponse.username || username || "unknown";
+        const resolvedOwnerGroup = identityFromResponse.ownerGroup || "";
+
+        this.$store.commit("setEditorIdentity", {
+          username: resolvedUsername,
+          ownerGroup: resolvedOwnerGroup,
+        });
+        localStorage.setItem("rule-editor.username", resolvedUsername);
+        localStorage.setItem("rule-editor.ownerGroup", resolvedOwnerGroup);
+
+        this.isAuthenticated = true;
+        this.initializeAppAfterAuth();
+      } catch {
+        this.authError = "Invalid username or password";
+      } finally {
+        this.authLoading = false;
+      }
+    },
+    async onLogout() {
+      this.authLoading = true;
+      try {
+        await logout();
+      } finally {
+        this.isAuthenticated = false;
+        this.authLoading = false;
+        this.appInitialized = false;
+        this.activeView = null;
+        window.location.reload();
+      }
+    },
+    initializeAppAfterAuth() {
+      if (this.appInitialized) return;
+
+      if (this.repo != null) {
+        const message = retrieveDeploymentInformation(
+          this.repo,
+          this.branch,
+          this.hash,
+        );
+        alertWidget("welcome", message);
+      }
+
+      this.$store.dispatch("readAvailableSources");
+      this.appInitialized = true;
+    },
   },
 };
 </script>
 
 <style>
-  
+
 </style>

@@ -1,0 +1,48 @@
+{% import "tools.j2" as tools %}
+
+{% for frame in frames %}
+  {% if frame.typeId == 'act' %}
+
+Act [{{ frame.label }}] Actor [{{ frame.actorId }}] Recipient [{{ frame.recipientId }}]
+{% set raw_cond = (tools.render_condition(frame.precondition, frames) if frame.precondition is not none else '') %}
+{% set cond = raw_cond | trim %}
+{% set has_cond = cond and cond != '[]' %}
+{% if frame.objectId or has_cond %}
+Holds when (
+  {%- if frame.objectId -%}
+[{{ frame.objectId }}]{% if has_cond %} && {% endif %}
+  {%- endif -%}
+{%- if has_cond -%}{{ cond }}{%- endif -%}
+)
+{% endif %}
+
+{% set creates_items = [] %}
+{% for cid in frame.creates or [] %}
+  {% for f in frames %}
+    {% if f.id == cid or f.label == cid %}
+      {% if f.typeId in ['claim_duty', 'claim-duty'] %}
+        {% set _ = creates_items.append('[' ~ f.label ~ ']([' ~ frame.recipientId ~ '], [' ~ frame.actorId ~ '])') %}
+      {% else %}
+        {% set _ = creates_items.append('[' ~ f.label ~ ']') %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% if creates_items %}Creates {{ creates_items | join(', ') }}{% endif %}
+
+{% set terminates_items = [] %}
+{% for tid in frame.terminates or [] %}
+  {% for f in frames %}
+    {% if f.id == tid or f.label == tid %}
+      {% if f.typeId in ['claim_duty', 'claim-duty'] %}
+        {% set _ = terminates_items.append('[' ~ f.label ~ ']([' ~ frame.recipientId ~ '], [' ~ frame.actorId ~ '])') %}
+      {% else %}
+        {% set _ = terminates_items.append('[' ~ f.label ~ ']') %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% if terminates_items %}Terminates {{ terminates_items | join(', ') }}{% endif %}
+.
+  {% endif %}
+{% endfor %}

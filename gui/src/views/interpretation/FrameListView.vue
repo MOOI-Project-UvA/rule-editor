@@ -37,12 +37,16 @@
 
 <script>
 import FramesList from "../../components/FramesList.vue";
+import FrameEditorPanel from "../../components/FrameEditorPanel.vue";
 
 export default {
   data: () => ({
     searchTerm: "",
   }),
   computed: {
+    sourceViewIsCollapsed() {
+      return this.$store.state.sourceViewIsCollapsed;
+    },
     frames() {
       return this.$store.state.frames;
     },
@@ -65,7 +69,8 @@ export default {
   },
 
   components: {
-    FramesList
+    FramesList,
+    FrameEditorPanel,
   },
 };
 </script>

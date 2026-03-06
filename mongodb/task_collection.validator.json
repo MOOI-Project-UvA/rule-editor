@@ -1,0 +1,117 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "owner_username",
+      "project_id",
+      "project_version",
+      "task_id",
+      "metadata",
+      "flint_spec",
+      "saved_artifact",
+      "eflint"
+    ],
+    "properties": {
+      "owner_username": {
+        "bsonType": "string",
+        "description": "Canonical username used for user-level ownership and access control"
+      },
+      "project_id": {
+        "bsonType": "string",
+        "description": "Stable identifier grouping all versions of the same project"
+      },
+      "project_version": {
+        "bsonType": "int",
+        "description": "Monotonic version number within a project"
+      },
+      "task_id": {
+        "bsonType": "string",
+        "description": "Snapshot identifier for a specific saved project version"
+      },
+      "metadata": {
+        "bsonType": "object",
+        "required": [
+          "owner",
+          "owner_group",
+          "created_at",
+          "modified_at"
+        ],
+        "properties": {
+          "owner": {
+            "bsonType": "string"
+          },
+          "owner_group": {
+            "bsonType": "string"
+          },
+          "created_at": {
+            "bsonType": "date"
+          },
+          "modified_at": {
+            "bsonType": "date"
+          },
+          "title": {
+            "bsonType": "string"
+          },
+          "description": {
+            "bsonType": "string"
+          },
+          "tags": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string"
+            }
+          }
+        }
+      },
+      "flint_spec": {
+        "description": "Original FLINT specification payload",
+        "bsonType": [
+          "object",
+          "string"
+        ]
+      },
+      "saved_artifact": {
+        "bsonType": "object",
+        "required": [
+          "format",
+          "content"
+        ],
+        "properties": {
+          "format": {
+            "enum": [
+              "application/json"
+            ]
+          },
+          "content": {
+            "bsonType": "string",
+            "description": "Generated artifact content saved by export"
+          }
+        }
+      },
+      "eflint": {
+        "bsonType": "object",
+        "required": [
+          "specification",
+          "scenario",
+          "generated_at"
+        ],
+        "properties": {
+          "specification": {
+            "bsonType": "string",
+            "description": "Generated eFLINT specification"
+          },
+          "scenario": {
+            "bsonType": "string",
+            "description": "Generated eFLINT scenario"
+          },
+          "generated_at": {
+            "bsonType": "date"
+          },
+          "generator_version": {
+            "bsonType": "string"
+          }
+        }
+      }
+    }
+  }
+}

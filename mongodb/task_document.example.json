@@ -1,0 +1,43 @@
+{
+  "project_id": "gdpr-2025-05-01T12:20:52Z",
+  "project_version": 3,
+  "task_id": "gdpr-2025-05-01T12:20:52Z:v3",
+  "metadata": {
+    "owner": "alice@example.org",
+    "owner_group": "company1",
+    "created_at": {
+      "$date": "2026-02-25T10:45:00Z"
+    },
+    "modified_at": {
+      "$date": "2026-02-25T11:02:00Z"
+    },
+    "title": "GDPR (with a duty)",
+    "description": "Interpretation and generated eFLINT code",
+    "tags": [
+      "gdpr",
+      "duty",
+      "demo"
+    ]
+  },
+  "flint_spec": {
+    "task": {
+      "title": "GDPR (with a duty)",
+      "sources": [
+        "GDPR"
+      ]
+    },
+    "frames": []
+  },
+  "saved_artifact": {
+    "format": "application/json",
+    "content": "{\"id\":\"task-1\",\"label\":\"GDPR (with a duty)\"}"
+  },
+  "eflint": {
+    "specification": "Fact Example(actor).",
+    "scenario": "Act DoSomething(actor).",
+    "generated_at": {
+      "$date": "2026-02-25T11:02:00Z"
+    },
+    "generator_version": "flint-to-eflint@1.0.0"
+  }
+}

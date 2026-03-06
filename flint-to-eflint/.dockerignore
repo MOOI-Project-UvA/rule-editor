@@ -1,0 +1,17 @@
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.ipynb
+.git
+.gitignore
+node_modules
+dist
+build
+*.log
+secrets.env
+secrets.env.*
+GDPR*
+json*.json

@@ -2,6 +2,16 @@ import SuperAgent from "superagent";
 import { alertWidget } from "../helpers/alertWidget.js";
 import { reformatDate } from "../helpers/dateTimeFunctions.js";
 
+function getMongoApiBaseUrl() {
+  return (import.meta.env.VITE_MONGO_API_BASE_URL || "").replace(/\/+$/, "");
+}
+
+function buildMongoApiUrl(path, netlifyFallbackPath) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const baseUrl = getMongoApiBaseUrl();
+  return baseUrl ? `${baseUrl}${normalizedPath}` : netlifyFallbackPath;
+}
+
 export async function fetchNlpPrediction(text) {
   try {
     const response = await fetch("/api/predict", {
@@ -265,5 +275,144 @@ export async function saveTaskAtTriply(taskInRdf) {
     console.error(error);
     return { message: error };
     // throw new Error(error);
+  }
+}
+
+export async function saveTaskAtMongo(exportDocument, username) {
+  try {
+    const resp = await fetch(
+      buildMongoApiUrl("/mongo-api/saveTask", "/.netlify/functions/saveTaskToMongo"),
+      {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
+      },
+      body: JSON.stringify({ task: exportDocument, username }),
+      },
+    );
+
+    if (!resp.ok) {
+      if (resp.status === 404) throw new Error("404, Not found");
+      if (resp.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${resp.status},${resp.statusText}`);
+    }
+
+    const data = await resp.json();
+    alertWidget("success", "The export has been saved to MongoDB successfully!");
+    return { status: resp.status, message: data.message };
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while trying to save the export to MongoDB. " + error,
+    );
+    console.error(error);
+    return { message: error };
+  }
+}
+
+export async function getProjectsFromMongo(username) {
+  try {
+    const response = await fetch(
+      buildMongoApiUrl(
+        "/mongo-api/projects",
+        "/.netlify/functions/getAvailableProjectsFromMongo",
+      ),
+      {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
+      },
+      body: JSON.stringify({ username }),
+      },
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.projects || [];
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving projects from MongoDB. " + error,
+    );
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getProjectVersionsFromMongo(projectId, username) {
+  try {
+    const response = await fetch(
+      buildMongoApiUrl(
+        "/mongo-api/project-versions",
+        "/.netlify/functions/getProjectVersionsFromMongo",
+      ),
+      {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
+      },
+      body: JSON.stringify({ project_id: projectId, username }),
+      },
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.versions || [];
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving project versions from MongoDB. " + error,
+    );
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getTaskFromMongo(projectId, projectVersion = null, username) {
+  try {
+    const response = await fetch(
+      buildMongoApiUrl("/mongo-api/task", "/.netlify/functions/getTaskFromMongo"),
+      {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Editor-Username": username || "",
+      },
+      body: JSON.stringify({
+        project_id: projectId,
+        project_version: projectVersion,
+        username,
+      }),
+      },
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) throw new Error("404, Not found");
+      if (response.status === 500) throw new Error("500, internal server error");
+      throw new Error(`${response.status}, ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.task;
+  } catch (error) {
+    alertWidget(
+      "error",
+      "An error occurred while retrieving a task from MongoDB. " + error,
+    );
+    console.error(error);
+    return null;
   }
 }

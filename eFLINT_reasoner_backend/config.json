@@ -1,0 +1,38 @@
+{
+  "cors": {
+    "allowOrigins": ["*"],
+    "allowMethods": ["*"],
+    "allowHeaders": ["*"]
+  },
+  "docker": {
+    "image": "eflint",
+    "execute": {
+      "network": "none",
+      "readOnly": true,
+      "securityNoNewPrivileges": true,
+      "capDropAll": true,
+      "pidsLimit": 128,
+      "memory": "256m",
+      "cpus": "1.0",
+      "tmpfs": "/tmp:size=64m,noexec,nosuid,nodev",
+      "timeoutSeconds": 30
+    },
+    "interactive": {
+      "network": "none",
+      "pidsLimit": 256,
+      "memory": "512m",
+      "cpus": "1.5"
+    }
+  },
+  "repl": {
+    "sessionTtlSeconds": 900,
+    "readIdleTimeoutSeconds": 0.15,
+    "readMaxDurationSeconds": 1.5,
+    "sessionStartReadIdleTimeoutSeconds": 0.2,
+    "sessionStartReadMaxDurationSeconds": 2.0,
+    "sessionInputReadIdleTimeoutSeconds": 0.2,
+    "sessionInputReadMaxDurationSeconds": 2.0,
+    "singleShotTimeoutSeconds": 20,
+    "sessionStopWaitTimeoutSeconds": 2
+  }
+}

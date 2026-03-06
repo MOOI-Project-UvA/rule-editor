@@ -36,10 +36,8 @@ export function initSimulation() {
         .alphaDecay(0.0228)
         .on("end", () => {
             positionsUpdated.emit('change',
-                { nodePositions: nodesInSimulation, linkPositions: linksInSimulation, isFinal: true }
+                { nodePositions: nodesInSimulation, linkPositions: linksInSimulation }
             )
-            console.log("simulation ended")
-
         })
 }
 
@@ -47,15 +45,12 @@ function ticked() {
     if (simulation.alpha() < 0.5) {
         //release nodes that have fixed position
         nodesInSimulation.forEach(n => {
-            if (!n.sticky) {
-                n.fx = null
-                n.fy = null
-            }
-
+            n.fx = null
+            n.fy = null
         })
     }
     positionsUpdated.emit('change',
-        { nodePositions: nodesInSimulation, linkPositions: linksInSimulation, isFinal: false }
+        { nodePositions: nodesInSimulation, linkPositions: linksInSimulation }
     )
 }
 

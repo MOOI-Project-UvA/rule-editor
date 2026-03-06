@@ -5,10 +5,15 @@ export default {
   name: "LoadSaveInterpretationBanner",
   data: () => ({
     icons: icons,
+    showRdfOptions: false,
+    showTriplyOptions: false,
   }),
   methods: {
     saveInterpretationAsJson() {
       this.$store.dispatch("saveInterpretationAsJson");
+    },
+    saveInterpretationAsExport() {
+      this.$store.dispatch("saveInterpretationAsExport");
     },
     saveInterpretationAsTrig() {
       this.$store.dispatch("saveInterpretationAsTrig");
@@ -16,10 +21,16 @@ export default {
     saveInterpretationRemotely() {
       this.$store.dispatch("saveInterpretationTriply");
     },
+    saveInterpretationToMongo() {
+      this.$store.dispatch("saveInterpretationMongo");
+    },
     chooseFile(fileType) {
       switch (fileType) {
         case "json":
           this.$refs.fileUpload.click();
+          break;
+        case "import":
+          this.$refs.fileUploadImport.click();
           break;
         case "rdf":
           this.$refs.fileUploadRDF.click();
@@ -33,6 +44,13 @@ export default {
       };
       reader.readAsText(evt.target.files[0]);
     },
+    handleImportFileSelection(evt) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        this.$store.dispatch("loadInterpretationFromExport", evt.target.result);
+      };
+      reader.readAsText(evt.target.files[0]);
+    },
     handleFileSelectionRDF(evt) {
       console.log("rdf");
       const reader = new FileReader();
@@ -42,7 +60,10 @@ export default {
       reader.readAsText(evt.target.files[0]);
     },
     loadRemoteInterpretation() {
-      this.$store.commit("setTaskOverview", true);
+      this.$store.dispatch("openTaskOverviewTriply");
+    },
+    loadRemoteInterpretationMongo() {
+      this.$store.dispatch("openTaskOverviewMongo");
     },
   },
 };
@@ -64,9 +85,12 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item clickable v-close-popup dense @click="chooseFile('json')">
-            <q-item-section>JSON</q-item-section>
+            <q-item-section>JSON (legacy)</q-item-section>
           </q-item>
-          <q-item clickable v-close-popup dense @click="chooseFile('rdf')">
+          <q-item clickable v-close-popup dense @click="chooseFile('import')">
+            <q-item-section>JSON (with eFLINT)</q-item-section>
+          </q-item>
+          <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -75,12 +99,21 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item
+            v-if="showTriplyOptions"
             clickable
             v-close-popup
             dense
             @click="loadRemoteInterpretation"
           >
             <q-item-section>Triply</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="loadRemoteInterpretationMongo"
+          >
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
@@ -107,14 +140,17 @@ export default {
             dense
             @click="saveInterpretationAsJson"
           >
-            <q-item-section>JSON</q-item-section>
+            <q-item-section>JSON (legacy)</q-item-section>
           </q-item>
           <q-item
             clickable
             v-close-popup
             dense
-            @click="saveInterpretationAsTrig"
+            @click="saveInterpretationAsExport"
           >
+            <q-item-section>JSON (with eFLINT)</q-item-section>
+          </q-item>
+          <q-item v-if="showRdfOptions" disable dense>
             <q-item-section>RDF</q-item-section>
           </q-item>
           <q-separator></q-separator>
@@ -123,12 +159,21 @@ export default {
           </q-item>
           <q-separator></q-separator>
           <q-item
+            v-if="showTriplyOptions"
             clickable
             v-close-popup
             dense
             @click="saveInterpretationRemotely"
           >
             <q-item-section>Triply</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            dense
+            @click="saveInterpretationToMongo"
+          >
+            <q-item-section>JSON (with eFLINT)</q-item-section>
           </q-item>
         </q-list>
       </q-menu>
@@ -138,6 +183,13 @@ export default {
     </q-btn>
 
     <input type="file" @change="handleFileSelection" hidden ref="fileUpload" />
+    <input
+      type="file"
+      @change="handleImportFileSelection"
+      accept=".json,application/json"
+      hidden
+      ref="fileUploadImport"
+    />
     <input
       type="file"
       @change="handleFileSelectionRDF"

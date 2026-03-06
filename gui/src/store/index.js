@@ -13,9 +13,13 @@ import { v4 as uuid4 } from "uuid";
 import {
   convertToRDF,
   convertRDFToJSON,
+  getProjectsFromMongo,
+  getProjectVersionsFromMongo,
+  getTaskFromMongo,
   getTasksFromTriply,
   getTaskFromTriply,
   saveTaskAtTriply,
+  saveTaskAtMongo,
 } from "../services/ApiServices.js";
 import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 import { alertWidget } from "../helpers/alertWidget.js";
@@ -25,7 +29,7 @@ import { Task } from "../model/task.js";
 const store = createStore({
   state() {
     return {
-      activeView: null,
+      step: 1, //step in the process
       frames: [], //list of frames in interpretation
       frameBeingEdited: null, //frame for which editor-pane is opened
       framesOpenInEditor: [], //list of frames in edit mode. any new frames are not saved to the frames list.
@@ -45,12 +49,21 @@ const store = createStore({
       frameFilter: {}, //for each frame type and sub types: whether or not the user selected the frame type (for filtering in network view)
       showDependenciesBetweenActs: false, //whether or not to show dependeny relations 'Before' between acts
       availableTasksInTripleStore: [], // list of tasks available at TriplyDB
+      availableProjectsInMongo: [],
+      availableProjectVersionsInMongo: [],
       showTaskOverview: false,
+      taskOverviewSource: "triply",
       selectedNode: null, //node that is selected in the network visualization
-      network: null,
-      networkZoomTransform: null, // default zoom
-      showNlpModal: false, // whether or not the NLP modal is open
-      nlpResults: [] // array of sentences to be sent to the NLP model
+      executableFrameIds: [], // ids of frames selected in "Make interpretations executable"
+      executableSelectionDirty: false,
+      executableSelectedIds: [],
+      executableClickOrder: [],
+      executableAgentInstanceNames: {},
+      executableActSelections: {},
+      executableEflintBase: "",
+      executableEflintFinal: "",
+      editorUsername: "",
+      editorOwnerGroup: "",
     };
   },
   mutations: {
@@ -183,24 +196,64 @@ const store = createStore({
     setTaskOverview(state, status) {
       state.showTaskOverview = status;
     },
-    setNetwork(state, network) {
-        state.network = network;
+    setTaskOverviewSource(state, source) {
+      state.taskOverviewSource = source || "triply";
     },
-    setNetworkZoom(state, zoom) {
-        state.networkZoomTransform = zoom;
+    setAvailableProjectVersionsInMongo(state, versions) {
+      state.availableProjectVersionsInMongo = versions || [];
     },
-    setNlpModal(state, value){
-        state.showNlpModal = value
+    setExecutableFrames(state, ids) {
+      // store as unique strings
+      const unique = Array.from(new Set((ids || []).map(String)));
+      state.executableFrameIds = unique;
+      state.executableSelectionDirty = true;
     },
-    setNlpResults(state, payload){
-        if (Array.isArray(payload)) {
-            // Reset the array if an array is passed
-            state.nlpResults = payload;
-        } else {
-            // Otherwise, push the single sentence
-            state.nlpResults.push(payload);
+
+    loadExecutableFramesFromStorage(state, { storageKey }) {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+          state.executableFrameIds = [];
+          state.executableSelectionDirty = false;
+          return;
         }
-    }
+        const parsed = JSON.parse(raw);
+        state.executableFrameIds = Array.isArray(parsed)
+          ? Array.from(new Set(parsed.map(String)))
+          : [];
+        state.executableSelectionDirty = false;
+      } catch {
+        state.executableFrameIds = [];
+        state.executableSelectionDirty = false;
+      }
+    },
+
+    persistExecutableFramesToStorage(state, { storageKey }) {
+      localStorage.setItem(storageKey, JSON.stringify(state.executableFrameIds));
+      state.executableSelectionDirty = false;
+    },
+    setEditorIdentity(state, { username, ownerGroup } = {}) {
+      state.editorUsername = username || "";
+      state.editorOwnerGroup = ownerGroup || "";
+    },
+  },
+  getters: {
+    // union frames + framesOpenInEditor (same logic used by save/export) :contentReference[oaicite:1]{index=1}
+    allFramesForCurrentInterpretation(state) {
+      return state.frames
+        .concat(state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id === frame.id) === index,
+        );
+    },
+
+    executableFrames(state, getters) {
+      const idSet = new Set((state.executableFrameIds || []).map(String));
+      return getters.allFramesForCurrentInterpretation.filter((f) =>
+        idSet.has(String(f.id)),
+      );
+    },
   },
   actions: {
     loadInterpretationForDebugging(context) {
@@ -284,12 +337,64 @@ const store = createStore({
         });
       }
     },
+    async addTaskFromMongo(context, { projectId, projectVersion = null }) {
+      const notification = alertWidget("loading", "Retrieving task...");
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
+
+      const mongoTask = await getTaskFromMongo(projectId, projectVersion, username);
+      if (!mongoTask) {
+        notification();
+        alertWidget("error", "Could not retrieve the task from MongoDB.");
+        return;
+      }
+
+      context.dispatch("loadInterpretationFromExport", JSON.stringify(mongoTask));
+
+      notification({
+        message: "The task has been loaded successfully!",
+        color: "teal",
+        icon: "mdi-check-circle-outline",
+        position: "top",
+        spinner: false,
+        timeout: 0,
+        actions: [
+          {
+            label: "Dismiss",
+            color: "white",
+          },
+        ],
+      });
+    },
     async readAvailableTasksInTripleStore(context) {
       context.state.availableTasksInTripleStore = await getTasksFromTriply();
       // console.log(
       //   "availableTasksInTripleStore",
       //   context.state.availableTasksInTripleStore,
       // );
+    },
+    async readAvailableProjectsInMongo(context) {
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
+      context.state.availableProjectsInMongo = await getProjectsFromMongo(username);
+    },
+    async readAvailableProjectVersionsInMongo(context, projectId) {
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "";
+      const versions = await getProjectVersionsFromMongo(projectId, username);
+      context.commit("setAvailableProjectVersionsInMongo", versions);
+      return versions;
+    },
+    async openTaskOverviewTriply(context) {
+      context.commit("setTaskOverviewSource", "triply");
+      await context.dispatch("readAvailableTasksInTripleStore");
+      context.commit("setTaskOverview", true);
+    },
+    async openTaskOverviewMongo(context) {
+      context.commit("setTaskOverviewSource", "mongo");
+      context.commit("setAvailableProjectVersionsInMongo", []);
+      await context.dispatch("readAvailableProjectsInMongo");
+      context.commit("setTaskOverview", true);
     },
     async createSourceDocFromJsonLD(context, jsonLdObject) {
       const sourceDoc = new SourceDocument(jsonLdObject);
@@ -372,6 +477,60 @@ const store = createStore({
       const dateString = new Date().toISOString().substring(0, 10);
       saveAs(blob, `${dateString}_interpretation.trig`);
     },
+    async saveInterpretationAsExport(context) {
+      const notification = alertWidget("loading", "exporting...");
+
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id == frame.id) === index,
+        );
+
+      const interpretationJson = convertInterpretationToJson(
+        context.state.task,
+        allFrames,
+        context.state.sourceDocuments,
+      );
+      const interpretationAsString = JSON.stringify(interpretationJson);
+
+      const nowIso = new Date().toISOString();
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "unknown";
+      const ownerGroup =
+        context.state.editorOwnerGroup || localStorage.getItem("rule-editor.ownerGroup") || "";
+
+      const exportDocument = {
+        task_id: interpretationJson?.id || uuid4(),
+        metadata: {
+          owner: username,
+          owner_group: ownerGroup,
+          created_at: { $date: nowIso },
+          modified_at: { $date: nowIso },
+          title: interpretationJson?.label || "",
+        },
+        flint_spec: interpretationJson,
+        saved_artifact: {
+          format: "application/json",
+          content: interpretationAsString,
+        },
+        eflint: {
+          specification: context.state.executableEflintBase || "",
+          scenario: context.state.executableEflintFinal || "",
+          generated_at: { $date: nowIso },
+          generator_version: "",
+        },
+      };
+
+      notification();
+      alertWidget("success", "Export created successfully!");
+
+      const blob = new Blob([JSON.stringify(exportDocument, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const dateString = new Date().toISOString().substring(0, 19);
+      saveAs(blob, `${dateString}_export.json`);
+    },
     loadInterpretation(context, jsonText) {
       const interpretation = parseJsonToInterpretation(jsonText);
       context.state.task = interpretation.task;
@@ -381,6 +540,31 @@ const store = createStore({
       context.state.frameBeingEdited = null;
       context.state.framesOpenInEditor = [];
       context.state.booleanConstructBeingEdited = null;
+      //show the interpretation view
+      context.state.step = 3;
+    },
+    loadInterpretationFromExport(context, jsonText) {
+      try {
+        const parsed = JSON.parse(jsonText);
+        const flintSpec = parsed?.flint_spec;
+
+        if (!flintSpec) {
+          alertWidget("error", "Invalid export file: missing flint_spec.");
+          return;
+        }
+
+        const interpretationJson =
+          typeof flintSpec === "string" ? flintSpec : JSON.stringify(flintSpec);
+
+        context.dispatch("loadInterpretation", interpretationJson);
+
+        context.state.executableEflintBase = parsed?.eflint?.specification || "";
+        context.state.executableEflintFinal = parsed?.eflint?.scenario || "";
+
+        alertWidget("success", "The export has been loaded successfully!");
+      } catch {
+        alertWidget("error", "Invalid export file: unable to parse JSON.");
+      }
     },
     async loadInterpretationFromRDF(context, rdfText) {
       //set loading indication
@@ -440,6 +624,64 @@ const store = createStore({
         //dismiss notification
         notification();
       }
+    },
+    async saveInterpretationMongo(context) {
+      const notification = alertWidget("loading", "saving to MongoDB...");
+
+      const allFrames = context.state.frames
+        .concat(context.state.framesOpenInEditor)
+        .filter(
+          (frame, index, array) =>
+            array.findIndex((f) => f.id == frame.id) === index,
+        );
+
+      const interpretationJson = convertInterpretationToJson(
+        context.state.task,
+        allFrames,
+        context.state.sourceDocuments,
+      );
+      const interpretationAsString = JSON.stringify(interpretationJson);
+
+      const nowIso = new Date().toISOString();
+      const username =
+        context.state.editorUsername || localStorage.getItem("rule-editor.username") || "unknown";
+      const ownerGroup =
+        context.state.editorOwnerGroup || localStorage.getItem("rule-editor.ownerGroup") || "";
+
+      const exportDocument = {
+        task_id: interpretationJson?.id || uuid4(),
+        metadata: {
+          owner: username,
+          owner_group: ownerGroup,
+          created_at: { $date: nowIso },
+          modified_at: { $date: nowIso },
+          title: interpretationJson?.label || "",
+        },
+        flint_spec: interpretationJson,
+        saved_artifact: {
+          format: "application/json",
+          content: interpretationAsString,
+        },
+        eflint: {
+          specification: context.state.executableEflintBase || "",
+          scenario: context.state.executableEflintFinal || "",
+          generated_at: { $date: nowIso },
+          generator_version: "",
+        },
+      };
+
+      const resp = await saveTaskAtMongo(exportDocument, username);
+      notification();
+
+      if (resp?.status !== 200) {
+        alertWidget("error", "Could not save export to MongoDB.");
+      }
+    },
+    loadExecutableSelection(context, { storageKey = "rule-editor.executableFrames.v1" } = {}) {
+      context.commit("loadExecutableFramesFromStorage", { storageKey });
+    },
+    persistExecutableSelection(context, { storageKey = "rule-editor.executableFrames.v1" } = {}) {
+      context.commit("persistExecutableFramesToStorage", { storageKey });
     },
   },
 });

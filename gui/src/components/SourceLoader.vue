@@ -16,36 +16,6 @@
         </template>
       </q-select>
     </div>
-    <div class="col">
-      <q-select
-        v-model="selectedSource"
-        use-input
-        label="Add source from Triply"
-        :options="availableSourcesInTripleStore"
-        behavior="menu"
-        autocomplete="title"
-        option-label="title"
-        @update:model-value="handleSelectionTripleStore"
-      >
-        <template v-slot:before>
-          <q-icon name="mdi-book-outline" />
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section>
-              <q-item-label>Source: {{ scope.opt.title }}</q-item-label>
-              <q-item-label caption
-                >Editor: {{ scope.opt.editor }}
-              </q-item-label>
-              <q-item-label caption>
-                Date:
-                {{ reformatDate(scope.opt.date) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-    </div>
     <div class="q-ml-lg text-right">
       <q-btn
         round
@@ -81,9 +51,6 @@ export default {
     availableSources() {
       return this.$store.state.availableSources;
     },
-    availableSourcesInTripleStore() {
-      return this.$store.state.availableSourcesInTripleStore;
-    },
     //already loaded sources
     sourceDocuments() {
       return this.$store.state.sourceDocuments;
@@ -97,10 +64,6 @@ export default {
     reformatDate,
     handleSelection() {
       this.$store.dispatch("addSource", this.selectedSource);
-      this.selectedSource = null;
-    },
-    handleSelectionTripleStore() {
-      this.$store.dispatch("addSourceFromTriply", this.selectedSource);
       this.selectedSource = null;
     },
     chooseFile() {

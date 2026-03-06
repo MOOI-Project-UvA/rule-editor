@@ -1,3 +1,13 @@
+# Note: 
+
+This is branch of the editor focuses on expanding its functionality towards translating 
+the generated FLINT norm specification into an executable form (eFLINT). 
+Part of code contributed by https://github.com/Azoth4006/bsc-thesis.
+
+![screenshot_eflint.png](screenshot_eflint.png)
+
+_Figure 1: Screenshot of the "Make Interpretations executable" tab that translates the FLINT specification to eFLINT_  
+
 # Rule editor
 
 **The Rule Editor** is an application built using web-based technologies that allows users to create interpretations of 
@@ -32,7 +42,7 @@ Feel free to explore both!
 
 ## Application Overview
 
-The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation. The editor allows to view an interpretation as a network, to get a clearer understanding of the relations between the frames in an interpretation.
+The Rule Editor is a web application for interpreting normative tasks. To use the editor, a task is defined and the normative text (sources) describing the task and the constraints for its execution are collected and imported into the editor. The editor allows users to mark components (e.g., articles, sections, or sentences) of the source as relevant or irrelevant to the task. Relevant sources can be annotated and used as building blocks for the interpretation.
 
 The current version of the Editor enables users to express interpretations in FLINT. The Editor is designed to be easily extendable for other interpretation schemes. It allows users to get automated recommendations, while working on their interpretation by using the [FlintFiller](https://gitlab.com/normativesystems/flintfillers/flintfiller-srl). This feature is experimental and available only for Dutch texts.
 
@@ -57,9 +67,8 @@ The interface of the Rule Editor consists of five main views:
 1. Set task
 2. Collect sources
 3. Interpret sources
-4. View interpretation
-5. Make interpretations executable (not yet in use)
-6. Execute task (not yet in use)
+4. Make interpretations executable (not yet in use)
+5. Execute task (not yet in use)
 
 Navigate between views using the tabs at the top of the page.
 
@@ -85,25 +94,13 @@ There are three ways of adding sources to the editor:
 
 Select the source or the sources you consider relevant in relation to the task you are working on.
 
-Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**.
-
-To remove a source document from the interpretation altogether, click the **Remove from interpretation button**.
+Use the checkboxes to select or deselect text fragments. There are also buttons to **select all** or to **deselect all**. 
 
 You can always get back to this screen to add additional sources, or remove redundant sources or text fragments.
 
 Once you have selected the relevant sources for your task, you can go to the next step by clicking  the **Interpret sources** tab.
 
 The only way to navigate between screens is by using the tabs at the top of the page.
-
-#### *Experimental: source versioning*
-
-An experimental functionality, only for demo purposes, is the one allowing for creating new versions of a source. Clicking the **New version** button will create a copy of the currently selected source. It opens a new window, showing the current version of that source next to the created copy. Using the buttons in the middle of the screen, the user can change the copy, sentence by sentence. These buttons are:
-  - Copy: copies the sentence from current to new version (this is the default setting)
-  - Delete: does not include the sentence in the copy
-  - Edit: allows the sentence in the copy to be edited
-
-Clicking the close button will save the new version and brings back the previous view. The newly created source will appear in the list of active sources.
-
 
 ### Interpret sources (step 3)
 
@@ -135,7 +132,8 @@ This pane provides an overview of the linked text fragments (per source) for the
 
 **Frames**
 
-The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top.
+The **Frames** pane lists all created frames by type. You can filter frames by label using the search field at the top. Alternatively, you can switch to a network visualization, which shows how different frames are related.
+Switch between **List** and **Network** views using the provided radio buttons.
 
 **Edit** 
 
@@ -204,33 +202,10 @@ A **duty** should be linked to:
 - One or more **acts** that can create the **duty**
 - One or more **acts** that terminate the **duty**
 
-### View interpretation (step 4)
-This step shows the frames in the interpretation as a network of connected nodes. Its purpose is to allow for visual inspection of the interpretation. This helps in understanding the interpretation, its frames, and how frames are related to each other. It also may make visible any problems in the interpretation, e.g. missing parts or connections.
-
-The view consists of two panels:
-
-#### Frames
-A list of all frames currently present in the interpretation. It is the same panel as the one in the previous step (Interpret sources) with a view enhancements specifically designed for this view:
-- Clicking a frame will add a node representing that frame to the network
-- Frames that are part of the network visualization are presented with a coloured fill; frames not part of the network visualization have a blank fill.
-- Each frame type and sub type header (e.g. 'Act', 'Agent') has two buttons. They respectivally add and remove all frames of the corresponding (sub)type to the network visualization.
-
-#### Network
-This is actual visualization as a node-link network. Each node represents a frame, drawn as a circle, its colour indicating the (sub)type of the frame. Acts and ClaimDuty nodes have smaller circles left of the main one, showing the roles of the Act / ClaimDuty. Fact nodes are drawn as smaller circles.
-
-Nodes are connected with a line if there is a relation between the frames represented by those nodes. Currently we show two types of relations:
-- Undirected: these are relations between Facts and Acts/ClaimDuties or between Facts and other Facts. A fact is connected to an Act if it has a role in that Act, is created by the Act, or if it is part of the Act's precondition. A Fact is connected to another Fact if one is part of the subdivision of the other
-- Directed: these are relations between Acts, depicted as an arrow from one Act to another. The relation can be read as *affects* meaning that one Act is affecting, or is needed for, another Act. Act `A` is affecting Act `B` if at least one of three conditions is true:
-  - `A` creates a frame that is part of the preconditions of `B`
-  - `A` creates a frame that is connected to a role in `B`
-  - `A` creates a frame that is terminated by `B`
-
-When hovering over a node, a button appears for removing that node from the network. It can be added again by clicking its corresponding frame in the frame list, as described under *Frames*.
-
-### Make interpretations executable (step 5)
+### Make interpretations executable (step 4)
 Not yet available.
 
-### Execute task (step 6)
+### Execute task (step 5)
 Not yet available.
 
 ## Data Model
@@ -327,6 +302,10 @@ The link between snippets and annotation is stored in the snippets, see above. A
     │    ├── package.json           # Project dependencies and scripts
     │    ├── .env                   # Environment variables
     │    └── vite.config.js         # Vite and dev server configuration, plugin registration
+    ├── auth-service/               # Dedicated authentication API (cookie/session based)
+    │    ├── app.py
+    │    ├── requirements.txt
+    │    └── scripts/
     ├── .gitignore                  # Git ignored files   
     ├── docker-compose.yml
     ├── netlify.toml                # Netlify build, functions and routing configuration
@@ -401,6 +380,49 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+### Unified backend stack via Docker Compose (auth + eFLINT + mongo-api + MongoDB)
+
+From the project root, you can start the self-hosted backend dependencies with one command.
+
+1. Create and fill stack environment file:
+
+```bash
+cp .env.stack.example .env.stack
+```
+
+2. Add at least one auth user hash to `AUTH_USERS_JSON` (in `.env.stack`), for example:
+
+```bash
+cd auth-service
+python scripts/generate_auth_user.py --username editor --env-file ../.env.stack
+cd ..
+```
+
+3. Start services:
+
+```bash
+docker compose up -d --build
+```
+
+4. Check health endpoints:
+
+```bash
+curl http://localhost:8101/health
+curl http://localhost:8000/health
+```
+
+This starts:
+- `auth-service` on `http://localhost:8101`
+- `flint-to-eflint` on `http://localhost:8000`
+- `mongo-api` on `http://localhost:8102`
+- `mongodb` on `localhost:27017`
+
+To stop:
+
+```bash
+docker compose down
+```
+
 ### Deploy to Netlify
 
 Want to deploy immediately to Netlify? Click this button
@@ -449,6 +471,86 @@ Add these variables to your Netlify dashboard or a local .env file as appropriat
 | VITE_X_API_KEY  | API key required for fetching NLP predictions, and converting your interpretation in RDF and JSON to save them locally. Please contact us to generate one for you.       |
 
 Create an `.env` file in the `gui` folder and define the environment variable there. 
+
+### Optional self-hosted authentication (no Netlify dependency)
+
+Authentication is implemented as a dedicated API service in `auth-service/app.py`.
+The eFLINT translation backend (`flint-to-eflint/service/app.py`) only validates signed session cookies and no longer stores user password hashes.
+
+Authentication service environment variables:
+
+| Variable | Explanation |
+|---|---|
+| AUTH_USERS_JSON | Preferred. JSON object mapping username to Argon2 hash, e.g. `{"editor":"$argon2id$...","alice":"$argon2id$..."}` |
+| AUTH_SESSION_SECRET | Secret used to sign session cookies |
+| AUTH_SESSION_TTL_SECONDS | Session lifetime in seconds (default `28800`) |
+| AUTH_COOKIE_NAME | Cookie name (default `rule_editor_session`) |
+| AUTH_COOKIE_SECURE | Set `true` in HTTPS production environments |
+| AUTH_ALLOWED_ORIGINS | Comma-separated CORS origins for GUI, e.g. `http://localhost:5173,http://localhost:8888` |
+
+eFLINT translation backend environment variables:
+
+| Variable | Explanation |
+|---|---|
+| AUTH_SESSION_SECRET | Must match auth-service secret to verify signed cookies |
+| AUTH_COOKIE_NAME | Must match auth-service cookie name |
+| AUTH_ALLOWED_ORIGINS | Comma-separated CORS origins for GUI, e.g. `http://localhost:5173,http://localhost:8888` |
+
+Frontend environment variables (in `gui/.env`):
+
+| Variable | Explanation |
+|---|---|
+| VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
+| VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
+| VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
+| VITE_MONGO_API_BASE_URL | Base URL for Mongo intermediate API (optional; falls back to Netlify functions when empty) |
+
+Generate an Argon2 hash locally:
+
+```bash
+python -c "from argon2 import PasswordHasher; print(PasswordHasher().hash('your-password'))"
+```
+
+Streamlined user creation (recommended):
+
+```bash
+cd auth-service
+pip install -r requirements.txt
+cp secrets.env.example secrets.env
+python scripts/generate_auth_user.py --username editor --env-file secrets.env
+python scripts/generate_auth_user.py --username alice --env-file secrets.env
+```
+
+Then start auth service, backend, and frontend (example local development):
+
+```bash
+# auth-service
+cd auth-service
+uvicorn app:app --reload --host 0.0.0.0 --port 8101
+
+# eFLINT backend
+cd flint-to-eflint
+pip install -r requirements.txt
+uvicorn service.app:app --reload --host 0.0.0.0 --port 8000
+
+# frontend
+cd gui
+npm install
+npm run dev
+```
+
+This updates `AUTH_USERS_JSON` in `auth-service/secrets.env` and lets you add users incrementally without manually editing Argon2 hashes.
+
+### MongoDB artifact ownership (multi-user)
+
+MongoDB saves are now scoped per user.
+
+- Every saved export stores a canonical `owner_username`.
+- Save versioning is computed per `(owner_username, project_id)`.
+- Retrieval endpoints (projects list, versions list, task retrieval) are filtered by owner, so users only see their own saved artifacts.
+- For backward compatibility, legacy records without `owner_username` are matched using `metadata.owner`.
+
+If you apply Mongo schema changes on an existing database, re-run the init/migration script from `mongodb/init/01-init-rule-editor.js` and backfill legacy documents where needed.
 
 ## Contributing
 
