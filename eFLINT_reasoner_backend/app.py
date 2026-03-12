@@ -1,6 +1,6 @@
 """
 python -m venv .venv
-uvicorn app:app --reload --host 0.0.0.0 --port 8001 --no-access-log
+uvicorn app:app --reload --host 127.0.0.1 --port 8001 --no-access-log
 """
 
 from __future__ import annotations

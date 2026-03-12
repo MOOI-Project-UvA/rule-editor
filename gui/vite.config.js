@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
+import { fileURLToPath, URL } from "node:url";
 
 const eflintApiBaseUrl = process.env.VITE_EFLINT_API_BASE_URL || "http://localhost:8000";
 const authApiBaseUrl = process.env.VITE_AUTH_API_BASE_URL || "http://localhost:8101";
@@ -15,6 +16,11 @@ export default defineConfig({
     quasar(),
   ],
   server: {
+    host: "127.0.0.1",
+    fs: {
+      strict: true,
+      allow: [fileURLToPath(new URL(".", import.meta.url))],
+    },
     proxy: {
       "/api/predict": {
         target: "https://nlp-api-normativesystems.tnodatalab.nl",
