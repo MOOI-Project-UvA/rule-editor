@@ -503,6 +503,7 @@ Frontend environment variables (in `gui/.env`):
 | VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
 | VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
+| VITE_EFLINT_EXECUTE_URL | Base URL for reasoner endpoints (`/execute`, `/repl/*`) (optional; empty means same origin) |
 | VITE_MONGO_API_BASE_URL | Base URL for Mongo intermediate API (optional; falls back to Netlify functions when empty) |
 
 Generate an Argon2 hash locally:

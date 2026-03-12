@@ -4,6 +4,7 @@ import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 import { fileURLToPath, URL } from "node:url";
 
 const eflintApiBaseUrl = process.env.VITE_EFLINT_API_BASE_URL || "http://localhost:8000";
+const eflintExecuteBaseUrl = process.env.VITE_EFLINT_EXECUTE_URL || "http://localhost:8001";
 const authApiBaseUrl = process.env.VITE_AUTH_API_BASE_URL || "http://localhost:8101";
 const mongoApiBaseUrl = process.env.VITE_MONGO_API_BASE_URL || "http://localhost:8102";
 
@@ -78,6 +79,16 @@ export default defineConfig({
       },
       "/generate-eflint": {
         target: eflintApiBaseUrl,
+        secure: false,
+        changeOrigin: true,
+      },
+      "/execute": {
+        target: eflintExecuteBaseUrl,
+        secure: false,
+        changeOrigin: true,
+      },
+      "/repl": {
+        target: eflintExecuteBaseUrl,
         secure: false,
         changeOrigin: true,
       },
