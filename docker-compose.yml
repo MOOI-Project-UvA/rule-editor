@@ -7,7 +7,7 @@ services:
     env_file:
       - ./.env.stack
     ports:
-      - "8101:8001"
+      - "127.0.0.1:8101:8001"
     healthcheck:
       test:
         [
@@ -34,7 +34,7 @@ services:
       auth-service:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     healthcheck:
       test:
         [
@@ -61,7 +61,7 @@ services:
       mongodb:
         condition: service_healthy
     ports:
-      - "8102:8002"
+      - "127.0.0.1:8102:8002"
     healthcheck:
       test:
         [
@@ -84,7 +84,7 @@ services:
     env_file:
       - ./.env.stack
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongodb_data:/data/db
       - ./mongodb/init:/docker-entrypoint-initdb.d:ro

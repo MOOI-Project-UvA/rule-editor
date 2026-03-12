@@ -417,10 +417,43 @@ This starts:
 - `mongo-api` on `http://localhost:8102`
 - `mongodb` on `localhost:27017`
 
-To stop:
+### Observability stack (Grafana + Prometheus + Loki)
+
+The observability stack runs as a separate Docker Compose project that attaches to the backend network. **The main app stack must be running first** so the shared Docker network exists.
+
+Services exposed locally:
+- `grafana` on `http://127.0.0.1:3000`
+- `prometheus` on `http://127.0.0.1:9090`
+- `loki` on `http://127.0.0.1:3100`
+- `promtail` and `blackbox-exporter` (internal only)
+
+**Setup:**
+
+1. Create and edit the monitoring env file:
 
 ```bash
-docker compose down
+cp deploy/monitoring/monitoring.env.example deploy/monitoring/monitoring.env
+# Edit: set GRAFANA_ADMIN_PASSWORD and verify MONITOR_TARGET_NETWORK
+# Default network name (rule-editor_rule-editor) is correct if the project folder is named rule-editor.
+# Confirm with: docker network ls | grep rule-editor
+```
+
+2. Start the monitoring stack:
+
+```bash
+docker compose --env-file deploy/monitoring/monitoring.env -f deploy/monitoring/docker-compose.monitoring.yml up -d
+```
+
+3. Open Grafana at `http://127.0.0.1:3000` and log in.
+
+Grafana is pre-provisioned with Prometheus and Loki datasources and a starter dashboard (**Rule Editor Observability**) showing:
+- health probe status for all core service `/health` endpoints
+- centralized container logs from the Docker Compose project
+
+**Stop monitoring stack:**
+
+```bash
+docker compose --env-file deploy/monitoring/monitoring.env -f deploy/monitoring/docker-compose.monitoring.yml down
 ```
 
 ### Deploy to Netlify
@@ -503,6 +536,7 @@ Frontend environment variables (in `gui/.env`):
 | VITE_AUTH_ENABLED | Enable login gate (`true` / `false`, default `true`) |
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
 | VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
+| VITE_EFLINT_EXECUTE_URL | Base URL for reasoner endpoints (`/execute`, `/repl/*`) (optional; empty means same origin) |
 | VITE_MONGO_API_BASE_URL | Base URL for Mongo intermediate API (optional; falls back to Netlify functions when empty) |
 
 Generate an Argon2 hash locally:
