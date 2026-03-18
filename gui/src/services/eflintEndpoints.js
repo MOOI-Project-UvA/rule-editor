@@ -1,4 +1,5 @@
 export function getExecuteBaseUrl() {
+  console.log(import.meta.env.VITE_EFLINT_EXECUTE_URL)
   return (import.meta.env.VITE_EFLINT_EXECUTE_URL || "").replace(/\/+$/, "");
 }
 
