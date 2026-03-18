@@ -110,6 +110,70 @@
                 </q-item-section>
               </q-item>
             </q-list>
+
+            <q-separator class="q-my-md" />
+
+            <div class="row items-center q-gutter-sm">
+              <div class="text-subtitle2">Queries</div>
+              <q-btn flat dense label="Select all acts" @click="selectAllQueries" />
+              <q-btn flat dense label="Select none" @click="selectNoneQueries" />
+            </div>
+
+            <q-list bordered separator class="q-mt-sm">
+              <q-item v-for="f in actFrames" :key="`query-${f.id}`">
+                <q-item-section avatar>
+                  <q-checkbox :model-value="querySelectedIds.includes(f.id)" @click.stop="toggleQuery(f.id)" />
+                </q-item-section>
+
+                <q-item-section class="cursor-pointer" @click="toggleQuery(f.id)">
+                  <q-item-label>{{ f.shortName }}</q-item-label>
+                  <q-item-label caption>query act</q-item-label>
+
+                  <div v-if="querySelectedIds.includes(f.id)" @click.stop class="q-mt-xs">
+                    <q-select
+                      dense
+                      outlined
+                      label="Actor type"
+                      :options="agentTypeOptions()"
+                      emit-value
+                      map-options
+                      v-model="queryActSelections[f.id].actorType"
+                      class="q-mb-xs"
+                    />
+                    <q-select
+                      dense
+                      outlined
+                      label="Actor name"
+                      :options="agentNameOptions(queryActSelections[f.id]?.actorType)"
+                      emit-value
+                      map-options
+                      v-model="queryActSelections[f.id].actorName"
+                      class="q-mb-xs"
+                    />
+                    <q-select
+                      dense
+                      outlined
+                      label="Recipient type"
+                      :options="agentTypeOptions()"
+                      emit-value
+                      map-options
+                      v-model="queryActSelections[f.id].recipientType"
+                      class="q-mb-xs"
+                    />
+                    <q-select
+                      dense
+                      outlined
+                      label="Recipient name"
+                      :options="agentNameOptions(queryActSelections[f.id]?.recipientType)"
+                      emit-value
+                      map-options
+                      v-model="queryActSelections[f.id].recipientName"
+                      class="q-mb-xs"
+                    />
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-card-section>
 
           <q-separator />
@@ -171,7 +235,12 @@ export default {
   name: "MakeExecutableView",
 
   data() {
-    return { isGenerating: false };
+    return {
+      isGenerating: false,
+      querySelectedIds: [],
+      queryClickOrder: [],
+      queryActSelections: {},
+    };
   },
 
   computed: {
@@ -237,6 +306,10 @@ export default {
         });
     },
 
+    actFrames() {
+      return this.framesUnion.filter((f) => this.isAct(f));
+    },
+
     selectedFrames() {
       const byId = Object.fromEntries(this.framesUnion.map((f) => [f.id, f]));
       const seen = new Set();
@@ -253,8 +326,24 @@ export default {
       return out;
     },
 
+    querySelectedFrames() {
+      const byId = Object.fromEntries(this.actFrames.map((f) => [f.id, f]));
+      const seen = new Set();
+      const out = [];
+
+      for (const id of this.queryClickOrder) {
+        if (!this.querySelectedIds.includes(id)) continue;
+        if (!byId[id]) continue;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        out.push(byId[id]);
+      }
+
+      return out;
+    },
+
     selectionLines() {
-      return this.selectedFrames
+      const frameLines = this.selectedFrames
         .map((f) => {
           if (this.isAgentFact(f)) {
             const names = this.agentInstanceNames[f.id] || [];
@@ -265,14 +354,7 @@ export default {
           }
 
           if (this.isAct(f)) {
-            const sel = this.actSelections[f.id] || {};
-            const actorFrame = this.findFrameById(sel.actorType || f.actor?.id);
-            const recipientFrame = this.findFrameById(sel.recipientType || f.recipient?.id);
-            const at = actorFrame?.shortName || f.actor?.shortName || "";
-            const rt = recipientFrame?.shortName || f.recipient?.shortName || "";
-            const an = this.escape(sel.actorName || "");
-            const rn = this.escape(sel.recipientName || "");
-            return `[${f.shortName}]([${at}]("${an}"), [${rt}]("${rn}")).`;
+            return this.buildActTerm(f, this.actSelections[f.id] || {});
           }
 
           return `+[${f.shortName}] .`;
@@ -280,6 +362,11 @@ export default {
         .join("\n")
         .split("\n")
         .filter((l) => l.trim().length > 0);
+
+      const queryLines = this.querySelectedFrames
+        .map((f) => `?Holds(${this.buildActTerm(f, this.queryActSelections[f.id] || {})}).`);
+
+      return [...frameLines, ...queryLines];
     },
   },
 
@@ -321,6 +408,16 @@ export default {
         ...this.agentInstanceNames,
         [typeId]: [this.defaultAgentInstanceName(frame)],
       };
+    },
+
+    buildActTerm(f, selection) {
+      const actorFrame = this.findFrameById(selection.actorType || f.actor?.id);
+      const recipientFrame = this.findFrameById(selection.recipientType || f.recipient?.id);
+      const at = actorFrame?.shortName || f.actor?.shortName || "";
+      const rt = recipientFrame?.shortName || f.recipient?.shortName || "";
+      const an = this.escape(selection.actorName || "");
+      const rn = this.escape(selection.recipientName || "");
+      return `[${f.shortName}]([${at}]("${an}"), [${rt}]("${rn}"))`;
     },
 
 
@@ -420,6 +517,28 @@ export default {
       }
     },
 
+    toggleQuery(id) {
+      if (this.querySelectedIds.includes(id)) {
+        this.querySelectedIds = this.querySelectedIds.filter((x) => x !== id);
+        this.queryClickOrder = this.queryClickOrder.filter((x) => x !== id);
+        return;
+      }
+
+      this.querySelectedIds = [...this.querySelectedIds, id];
+      this.queryClickOrder = [...this.queryClickOrder, id];
+
+      const f = this.actFrames.find((x) => x.id === id);
+      if (!f || this.queryActSelections[id] !== undefined) return;
+
+      const inferred = this.inferredActSelection(f);
+      this.ensureAgentTypeHasDefaultName(inferred.actorType);
+      this.ensureAgentTypeHasDefaultName(inferred.recipientType);
+      this.queryActSelections = {
+        ...this.queryActSelections,
+        [id]: inferred,
+      };
+    },
+
     selectAll() {
       this.selectedIds = this.framesUnion.map((f) => f.id);
       this.clickOrder = [...this.selectedIds];
@@ -438,6 +557,27 @@ export default {
 
       this.agentInstanceNames = names;
       this.actSelections = acts;
+    },
+
+    selectAllQueries() {
+      this.querySelectedIds = this.actFrames.map((f) => f.id);
+      this.queryClickOrder = [...this.querySelectedIds];
+
+      const queryActs = { ...this.queryActSelections };
+      this.actFrames.forEach((f) => {
+        if (queryActs[f.id] === undefined) {
+          queryActs[f.id] = this.inferredActSelection(f);
+          this.ensureAgentTypeHasDefaultName(queryActs[f.id].actorType);
+          this.ensureAgentTypeHasDefaultName(queryActs[f.id].recipientType);
+        }
+      });
+
+      this.queryActSelections = queryActs;
+    },
+
+    selectNoneQueries() {
+      this.querySelectedIds = [];
+      this.queryClickOrder = [];
     },
 
     selectNone() {
