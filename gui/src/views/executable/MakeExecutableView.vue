@@ -70,7 +70,17 @@
                       dense
                       outlined
                       label="Actor type"
-                      :options="agentTypeOptions(f.actor)"
+                      :options="agentTypeOptions()"
+                      emit-value
+                      map-options
+                      v-model="actSelections[f.id].actorType"
+                      class="q-mb-xs"
+                    />
+                    <q-select
+                      dense
+                      outlined
+                      label="Actor name"
+                      :options="agentNameOptions(actSelections[f.id]?.actorType)"
                       emit-value
                       map-options
                       v-model="actSelections[f.id].actorName"
@@ -80,7 +90,17 @@
                       dense
                       outlined
                       label="Recipient type"
-                      :options="agentTypeOptions(f.recipient)"
+                      :options="agentTypeOptions()"
+                      emit-value
+                      map-options
+                      v-model="actSelections[f.id].recipientType"
+                      class="q-mb-xs"
+                    />
+                    <q-select
+                      dense
+                      outlined
+                      label="Recipient name"
+                      :options="agentNameOptions(actSelections[f.id]?.recipientType)"
                       emit-value
                       map-options
                       v-model="actSelections[f.id].recipientName"
@@ -246,8 +266,10 @@ export default {
 
           if (this.isAct(f)) {
             const sel = this.actSelections[f.id] || {};
-            const at = f.actor.shortName || "";
-            const rt = f.recipient.shortName || "";
+            const actorFrame = this.findFrameById(sel.actorType || f.actor?.id);
+            const recipientFrame = this.findFrameById(sel.recipientType || f.recipient?.id);
+            const at = actorFrame?.shortName || f.actor?.shortName || "";
+            const rt = recipientFrame?.shortName || f.recipient?.shortName || "";
             const an = this.escape(sel.actorName || "");
             const rn = this.escape(sel.recipientName || "");
             return `[${f.shortName}]([${at}]("${an}"), [${rt}]("${rn}")).`;
@@ -262,10 +284,75 @@ export default {
   },
 
   methods: {
-    agentTypeOptions(type) {
-      return this.agentInstanceNames[type.id]
+    agentTypeOptions() {
+      return this.framesUnion
+        .filter((f) => this.isAgentFact(f))
+        .map((f) => ({ label: f.shortName, value: f.id }));
     },
 
+    agentNameOptions(typeId) {
+      return (this.agentInstanceNames[typeId] || []).map((name) => ({ label: name, value: name }));
+    },
+
+    findFrameById(id) {
+      return this.framesUnion.find((f) => f.id === id) || this.allFrames.find((f) => f.id === id) || null;
+    },
+
+    inferredActSelection(f) {
+      const actorType = f?.actor?.id || "";
+      const recipientType = f?.recipient?.id || "";
+      const actorFrame = this.findFrameById(actorType);
+      const recipientFrame = this.findFrameById(recipientType);
+
+      return {
+        actorType,
+        actorName: actorFrame ? this.defaultAgentInstanceName(actorFrame) : "",
+        recipientType,
+        recipientName: recipientFrame ? this.defaultAgentInstanceName(recipientFrame) : "",
+      };
+    },
+
+    ensureAgentTypeHasDefaultName(typeId) {
+      if (!typeId) return;
+      if (this.agentInstanceNames[typeId] !== undefined) return;
+      const frame = this.findFrameById(typeId);
+      if (!frame || !this.isAgentFact(frame)) return;
+      this.agentInstanceNames = {
+        ...this.agentInstanceNames,
+        [typeId]: [this.defaultAgentInstanceName(frame)],
+      };
+    },
+
+
+    normalizeEflint(text) {
+      // Newlines are only allowed directly after a full stop.
+      // Any newline (including blank lines) that interrupts a statement is collapsed into a space.
+      const lines = text.split('\n');
+      const out = [];
+      let buffer = '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed === '') {
+          // Blank line: only emit as a separator when we are NOT mid-statement.
+          // If we are mid-statement (buffer not ending with '.'), absorb the blank line.
+          if (buffer === '') {
+            out.push('');
+          }
+          // else: mid-statement blank line — skip it, keep accumulating
+        } else {
+          buffer = buffer === '' ? trimmed : buffer + ' ' + trimmed;
+          if (buffer.endsWith('.')) { out.push(buffer); buffer = ''; }
+        }
+      }
+
+      if (buffer !== '') out.push(buffer);
+      return out.join('\n');
+    },
+
+    defaultAgentInstanceName(f) {
+      return f.shortName.trim().replace(/\s+/g, "_") + "_1";
+    },
 
     isAgentFact(f) {
       return f.typeId === "fact" && f.subTypeIds?.[0] === "agent";
@@ -319,13 +406,16 @@ export default {
       const f = this.framesUnion.find((x) => x.id === id);
 
       if (f && this.isAgentFact(f) && this.agentInstanceNames[id] === undefined) {
-        this.agentInstanceNames = { ...this.agentInstanceNames, [id]: [""] };
+        this.agentInstanceNames = { ...this.agentInstanceNames, [id]: [this.defaultAgentInstanceName(f)] };
       }
 
       if (f && this.isAct(f) && this.actSelections[id] === undefined) {
+        const inferred = this.inferredActSelection(f);
+        this.ensureAgentTypeHasDefaultName(inferred.actorType);
+        this.ensureAgentTypeHasDefaultName(inferred.recipientType);
         this.actSelections = {
           ...this.actSelections,
-          [id]: { actorType: "", actorName: "", recipientType: "", recipientName: "" },
+          [id]: inferred,
         };
       }
     },
@@ -338,9 +428,11 @@ export default {
       const acts = { ...this.actSelections };
 
       this.framesUnion.forEach((f) => {
-        if (this.isAgentFact(f) && names[f.id] === undefined) names[f.id] = [""];
+        if (this.isAgentFact(f) && names[f.id] === undefined) names[f.id] = [this.defaultAgentInstanceName(f)];
         if (this.isAct(f) && acts[f.id] === undefined) {
-          acts[f.id] = { actorType: "", actorName: "", recipientType: "", recipientName: "" };
+          acts[f.id] = this.inferredActSelection(f);
+          this.ensureAgentTypeHasDefaultName(acts[f.id].actorType);
+          this.ensureAgentTypeHasDefaultName(acts[f.id].recipientType);
         }
       });
 
@@ -354,7 +446,7 @@ export default {
     },
 
     applySelection() {
-      this.eflintFinal = `${this.eflintBase}\n\n${this.selectionLines.join("\n")}\n`;
+      this.eflintFinal = this.normalizeEflint(`${this.eflintBase}\n\n${this.selectionLines.join("\n")}\n`);
     },
 
     sanitizeFilePart(value) {
@@ -410,8 +502,8 @@ export default {
         const data = await resp.json();
         const eflint = data?.eflint || "";
 
-        this.eflintBase = eflint;
-        this.eflintFinal = eflint;
+        this.eflintBase = this.normalizeEflint(eflint);
+        this.eflintFinal = this.normalizeEflint(eflint);
       } finally {
         this.isGenerating = false;
       }
