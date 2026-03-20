@@ -380,6 +380,40 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+### Static frontend deployment (self-hosted)
+
+If you want to run the GUI as static files (without `netlify dev`), use this flow.
+
+1. Configure frontend runtime targets in `gui/.env.production` (example values for local stack):
+
+```dotenv
+VITE_AUTH_ENABLED=true
+VITE_AUTH_API_BASE_URL=http://localhost:8101
+VITE_EFLINT_API_BASE_URL=http://localhost:8000
+VITE_EFLINT_EXECUTE_URL=http://localhost:8001
+VITE_MONGO_API_BASE_URL=http://localhost:8102
+VITE_X_API_KEY=
+```
+
+2. Build static assets from `gui/`:
+
+```bash
+npm run build
+```
+
+3. Serve the generated `dist` folder (example):
+
+```bash
+npx serve -s dist -l 4173
+```
+
+4. Open `http://localhost:4173`.
+
+Notes:
+- `VITE_*` values are embedded at build time, so rebuild after changing `.env.production`.
+- For Mongo-backed project storage/loading, `VITE_MONGO_API_BASE_URL` must be set.
+- Netlify Functions paths (`/api/serverless/*`) are not available in pure static hosting; Triply-related actions will not work unless you replace those endpoints with your own backend.
+
 ### Unified backend stack via Docker Compose (auth + eFLINT + mongo-api + MongoDB)
 
 From the project root, you can start the self-hosted backend dependencies with one command.
