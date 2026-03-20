@@ -13,6 +13,7 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
+          - https://rule-editor.nl/
           - http://auth-service:8001/health
           - http://flint-to-eflint:8000/health
           - http://mongo-api:8002/health
