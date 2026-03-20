@@ -26,3 +26,18 @@ scrape_configs:
         target_label: compose_project
     pipeline_stages:
       - docker: {}
+
+  - job_name: nginx
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: nginx
+          host: rule-editor
+          log_type: access
+          __path__: /var/log/nginx/access.log
+      - targets: [localhost]
+        labels:
+          job: nginx
+          host: rule-editor
+          log_type: error
+          __path__: /var/log/nginx/error.log
