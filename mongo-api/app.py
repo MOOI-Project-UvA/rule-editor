@@ -379,10 +379,14 @@ def get_task(
             "project_id": payload.project_id,
             "project_version": int(payload.project_version),
         }
-        task = collection.find_one(_owner_scoped_query(username, base_query))
+        task = collection.find_one(
+            _owner_scoped_query(username, base_query),
+            {"_id": 0},
+        )
     else:
         task = collection.find_one(
             _owner_scoped_query(username, {"project_id": payload.project_id}),
+            {"_id": 0},
             sort=[("project_version", DESCENDING)],
         )
 
