@@ -104,11 +104,45 @@
             "bsonType": "string",
             "description": "Generated eFLINT scenario"
           },
+          "query": {
+            "bsonType": "string",
+            "description": "Generated eFLINT query statements"
+          },
           "generated_at": {
             "bsonType": "date"
           },
           "generator_version": {
             "bsonType": "string"
+          }
+        }
+      },
+      "executable_selection": {
+        "bsonType": "object",
+        "properties": {
+          "selected_ids": {
+            "bsonType": "array",
+            "items": { "bsonType": "string" }
+          },
+          "click_order": {
+            "bsonType": "array",
+            "items": { "bsonType": "string" }
+          },
+          "agent_instance_names": {
+            "bsonType": "object"
+          },
+          "act_selections": {
+            "bsonType": "object"
+          },
+          "query_selected_ids": {
+            "bsonType": "array",
+            "items": { "bsonType": "string" }
+          },
+          "query_click_order": {
+            "bsonType": "array",
+            "items": { "bsonType": "string" }
+          },
+          "query_act_selections": {
+            "bsonType": "object"
           }
         }
       }

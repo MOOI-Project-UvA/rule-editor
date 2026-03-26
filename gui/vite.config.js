@@ -5,6 +5,7 @@ import { fileURLToPath, URL } from "node:url";
 
 const eflintApiBaseUrl = process.env.VITE_EFLINT_API_BASE_URL || "http://localhost:8000";
 const eflintExecuteBaseUrl = process.env.VITE_EFLINT_EXECUTE_URL || "http://localhost:8001";
+const eflintServerBaseUrl = process.env.VITE_EFLINT_SERVER_BASE_URL || "http://localhost:8080";
 const authApiBaseUrl = process.env.VITE_AUTH_API_BASE_URL || "http://localhost:8101";
 const mongoApiBaseUrl = process.env.VITE_MONGO_API_BASE_URL || "http://localhost:8102";
 
@@ -91,6 +92,12 @@ export default defineConfig({
         target: eflintExecuteBaseUrl,
         secure: false,
         changeOrigin: true,
+      },
+      "/eflint-server": {
+        target: eflintServerBaseUrl,
+        secure: false,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/eflint-server/, ""),
       },
       "/mongo-api": {
         target: mongoApiBaseUrl,

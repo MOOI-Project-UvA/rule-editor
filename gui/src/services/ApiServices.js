@@ -9,7 +9,15 @@ function getMongoApiBaseUrl() {
 function buildMongoApiUrl(path, netlifyFallbackPath) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const baseUrl = getMongoApiBaseUrl();
-  return baseUrl ? `${baseUrl}${normalizedPath}` : netlifyFallbackPath;
+  if (baseUrl) {
+    return `${baseUrl}${normalizedPath}`;
+  }
+
+  if (import.meta.env.DEV) {
+    return normalizedPath;
+  }
+
+  return netlifyFallbackPath;
 }
 
 export async function fetchNlpPrediction(text) {
@@ -280,8 +288,9 @@ export async function saveTaskAtTriply(taskInRdf) {
 
 export async function saveTaskAtMongo(exportDocument, username) {
   try {
+    const url = buildMongoApiUrl("/mongo-api/saveTask", "/.netlify/functions/saveTaskToMongo");
     const resp = await fetch(
-      buildMongoApiUrl("/mongo-api/saveTask", "/.netlify/functions/saveTaskToMongo"),
+      url,
       {
       method: "POST",
       headers: {
@@ -293,9 +302,15 @@ export async function saveTaskAtMongo(exportDocument, username) {
     );
 
     if (!resp.ok) {
-      if (resp.status === 404) throw new Error("404, Not found");
-      if (resp.status === 500) throw new Error("500, internal server error");
-      throw new Error(`${resp.status},${resp.statusText}`);
+      const errorText = await resp.text();
+      let parsedError = "";
+      try {
+        const parsed = JSON.parse(errorText || "{}");
+        parsedError = parsed?.error || parsed?.detail || "";
+      } catch {
+      }
+      const details = parsedError || errorText || resp.statusText;
+      throw new Error(`${resp.status} @ ${url} - ${details}`);
     }
 
     const data = await resp.json();

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # ---------------------------------------------------------------------------
@@ -60,6 +61,14 @@ def _log(level: str, message: str, **fields) -> None:
         **fields,
     }
     logger.log(_to_python_log_level(level), json.dumps(event, default=str))
+
+
+def _parse_allowed_origins() -> list[str]:
+    raw = os.getenv(
+        "AUTH_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:8888,http://127.0.0.1:5173,http://127.0.0.1:8888",
+    )
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
 EFLINT_HOST = "127.0.0.1"
@@ -311,6 +320,14 @@ def _require_session_id(x_session_id: str | None) -> str:
 
 app = FastAPI(title="eFLINT server API", lifespan=lifespan)
 SessionHeader = Annotated[str | None, Header(alias=SESSION_HEADER_NAME)]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_parse_allowed_origins(),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
