@@ -1,0 +1,2 @@
+// Default empty eFLINT specification.
+// Override by mounting your own file and setting EFLINT_SPEC_PATH.
