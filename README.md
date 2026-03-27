@@ -386,11 +386,14 @@ If you want to run the GUI as static files (without `netlify dev`), use this flo
 
 1. Configure frontend runtime targets in `gui/.env.production` (example values for local stack):
 
+(or replace with actual URL instead of localhost if live in production)
+
 ```dotenv
 VITE_AUTH_ENABLED=true
 VITE_AUTH_API_BASE_URL=http://localhost:8101
 VITE_EFLINT_API_BASE_URL=http://localhost:8000
 VITE_EFLINT_EXECUTE_URL=http://localhost:8001
+VITE_EFLINT_SERVER_BASE_URL=http://localhost:8080
 VITE_MONGO_API_BASE_URL=http://localhost:8102
 VITE_X_API_KEY=
 ```
@@ -409,8 +412,29 @@ npx serve -s dist -l 4173
 
 4. Open `http://localhost:4173`.
 
+#### Production tip (Nginx static hosting)
+
+If your server serves files from `/var/www/rule-editor/dist`, deploy updates with:
+
+```bash
+sudo rsync -av --delete ~/rule-editor/gui/dist/ /var/www/rule-editor/dist/
+```
+
+Then validate and reload Nginx:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Quick checks when you see `500`:
+- Confirm `index.html` exists at `/var/www/rule-editor/dist/index.html`.
+- Ensure your server block uses the same root path (for example `root /var/www/rule-editor/dist;`).
+- Keep SPA fallback as `try_files $uri $uri/ /index.html;` and avoid proxying `/` to a stopped dev upstream (e.g. `127.0.0.1:8888`).
+
 Notes:
 - `VITE_*` values are embedded at build time, so rebuild after changing `.env.production`.
+- Set `VITE_EFLINT_SERVER_BASE_URL` for static deployments so session endpoints (`/sessions`, `/reset`, `/spec/register`, `/statements`, `/query/holds`) target your `eflint_server` instance.
 - For Mongo-backed project storage/loading, `VITE_MONGO_API_BASE_URL` must be set.
 - Netlify Functions paths (`/api/serverless/*`) are not available in pure static hosting; Triply-related actions will not work unless you replace those endpoints with your own backend.
 
@@ -571,6 +595,7 @@ Frontend environment variables (in `gui/.env`):
 | VITE_AUTH_API_BASE_URL | Base URL for auth endpoints (optional; empty means same origin) |
 | VITE_EFLINT_API_BASE_URL | Base URL for `/generate-eflint` (optional; set this when eFLINT API is on another origin) |
 | VITE_EFLINT_EXECUTE_URL | Base URL for reasoner endpoints (`/execute`, `/repl/*`) (optional; empty means same origin) |
+| VITE_EFLINT_SERVER_BASE_URL | Base URL for `eflint_server` session endpoints (`/sessions`, `/reset`, `/spec/register`, `/statements`, `/query/holds`). Set explicitly for production/static hosting. |
 | VITE_MONGO_API_BASE_URL | Base URL for Mongo intermediate API (optional; falls back to Netlify functions when empty) |
 
 Generate an Argon2 hash locally:
@@ -584,9 +609,9 @@ Streamlined user creation (recommended):
 ```bash
 cd auth-service
 pip install -r requirements.txt
-cp secrets.env.example secrets.env
-python scripts/generate_auth_user.py --username editor --env-file secrets.env
-python scripts/generate_auth_user.py --username alice --env-file secrets.env
+# cp secrets.env.example secrets.env
+python scripts/generate_auth_user.py --username editor --env-file .env.stack
+python scripts/generate_auth_user.py --username alice --env-file .env.stack
 ```
 
 Then start auth service, backend, and frontend (example local development):
