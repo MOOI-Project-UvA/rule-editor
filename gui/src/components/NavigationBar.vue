@@ -66,7 +66,7 @@ export default {
       },
       {
         id: 5,
-        label: "Execute task",
+        label: "interactive eFLINT",
         component: markRaw(ExecuteTaskView),
         completed: false,
         icon: 'mdi-playlist-check'

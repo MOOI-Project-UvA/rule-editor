@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import { alertWidget } from "./helpers/alertWidget.js";
-import { retrieveDeploymentInformation } from "./helpers/utilities.js";
 import TaskRetrieval from "./components/TaskRetrieval.vue";
 import NavigationBar from "./components/NavigationBar.vue";
 import LoginForm from "./components/LoginForm.vue";
@@ -149,15 +147,6 @@ export default {
     },
     initializeAppAfterAuth() {
       if (this.appInitialized) return;
-
-      if (this.repo != null) {
-        const message = retrieveDeploymentInformation(
-          this.repo,
-          this.branch,
-          this.hash,
-        );
-        alertWidget("welcome", message);
-      }
 
       this.$store.dispatch("readAvailableSources");
       this.appInitialized = true;

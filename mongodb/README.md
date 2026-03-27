@@ -16,7 +16,8 @@ Each saved entry is a **snapshot** of one project version and contains:
 - `metadata`: owner, group, title, timestamps, optional tags/description
 - `flint_spec`: FLINT interpretation payload
 - `saved_artifact`: serialized export content (`application/json`)
-- `eflint`: generated `specification` + `scenario` (+ generation metadata)
+- `eflint`: generated `specification` + `scenario` + `query` (+ generation metadata)
+- `executable_selection`: UI selection state for executable generation (frames, order, instance/query selections)
 
 Schema validator source: [task_collection.validator.json](task_collection.validator.json)
 
@@ -46,7 +47,8 @@ Load flow supports two modes (always scoped to `owner_username`):
 Loaded snapshot is applied to:
 
 - interpretation (`flint_spec`)
-- executable fields (`eflint.specification`, `eflint.scenario`)
+- executable fields (`eflint.specification`, `eflint.scenario`, `eflint.query`)
+- executable selection state (`executable_selection.*`) so frame/query selections are restored
 
 ---
 

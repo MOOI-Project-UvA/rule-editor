@@ -7,12 +7,13 @@ Act [{{ frame.label }}] Actor [{{ frame.actorId }}] Recipient [{{ frame.recipien
 {% set raw_cond = (tools.render_condition(frame.precondition, frames) if frame.precondition is not none else '') %}
 {% set cond = raw_cond | trim %}
 {% set has_cond = cond and cond != '[]' %}
+{% set rendered_cond = ('(' ~ cond ~ ')') if frame.objectId and has_cond else cond %}
 {% if frame.objectId or has_cond %}
 Holds when (
   {%- if frame.objectId -%}
 [{{ frame.objectId }}]{% if has_cond %} && {% endif %}
   {%- endif -%}
-{%- if has_cond -%}{{ cond }}{%- endif -%}
+{%- if has_cond -%}{{ rendered_cond }}{%- endif -%}
 )
 {% endif %}
 

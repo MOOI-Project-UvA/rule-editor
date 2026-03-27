@@ -25,6 +25,36 @@ import { getSourceList, getSourceFromTriply } from "../services/ApiServices";
 import { alertWidget } from "../helpers/alertWidget.js";
 import { QSpinnerGears } from "quasar";
 import { Task } from "../model/task.js";
+
+function encodeMongoSafeKey(key) {
+  return encodeURIComponent(String(key));
+}
+
+function decodeMongoSafeKey(key) {
+  try {
+    return decodeURIComponent(String(key));
+  } catch {
+    return String(key);
+  }
+}
+
+function encodeMongoSafeMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, val]) => [encodeMongoSafeKey(key), val]),
+  );
+}
+
+function decodeMongoSafeMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, val]) => [decodeMongoSafeKey(key), val]),
+  );
+}
 // Create a new store instance.
 const store = createStore({
   state() {
@@ -60,8 +90,12 @@ const store = createStore({
       executableClickOrder: [],
       executableAgentInstanceNames: {},
       executableActSelections: {},
+      executableQuerySelectedIds: [],
+      executableQueryClickOrder: [],
+      executableQueryActSelections: {},
       executableEflintBase: "",
       executableEflintFinal: "",
+      executableEflintQuery: "",
       editorUsername: "",
       editorOwnerGroup: "",
     };
@@ -517,8 +551,18 @@ const store = createStore({
         eflint: {
           specification: context.state.executableEflintBase || "",
           scenario: context.state.executableEflintFinal || "",
+          query: context.state.executableEflintQuery || "",
           generated_at: { $date: nowIso },
           generator_version: "",
+        },
+        executable_selection: {
+          selected_ids: context.state.executableSelectedIds || [],
+          click_order: context.state.executableClickOrder || [],
+          agent_instance_names: encodeMongoSafeMap(context.state.executableAgentInstanceNames),
+          act_selections: encodeMongoSafeMap(context.state.executableActSelections),
+          query_selected_ids: context.state.executableQuerySelectedIds || [],
+          query_click_order: context.state.executableQueryClickOrder || [],
+          query_act_selections: encodeMongoSafeMap(context.state.executableQueryActSelections),
         },
       };
 
@@ -540,6 +584,16 @@ const store = createStore({
       context.state.frameBeingEdited = null;
       context.state.framesOpenInEditor = [];
       context.state.booleanConstructBeingEdited = null;
+      context.state.executableSelectedIds = [];
+      context.state.executableClickOrder = [];
+      context.state.executableAgentInstanceNames = {};
+      context.state.executableActSelections = {};
+      context.state.executableQuerySelectedIds = [];
+      context.state.executableQueryClickOrder = [];
+      context.state.executableQueryActSelections = {};
+      context.state.executableEflintBase = "";
+      context.state.executableEflintFinal = "";
+      context.state.executableEflintQuery = "";
       //show the interpretation view
       context.state.step = 3;
     },
@@ -560,6 +614,16 @@ const store = createStore({
 
         context.state.executableEflintBase = parsed?.eflint?.specification || "";
         context.state.executableEflintFinal = parsed?.eflint?.scenario || "";
+        context.state.executableEflintQuery = parsed?.eflint?.query || "";
+
+        const executableSelection = parsed?.executable_selection || {};
+        context.state.executableSelectedIds = executableSelection.selected_ids || [];
+        context.state.executableClickOrder = executableSelection.click_order || [];
+        context.state.executableAgentInstanceNames = decodeMongoSafeMap(executableSelection.agent_instance_names);
+        context.state.executableActSelections = decodeMongoSafeMap(executableSelection.act_selections);
+        context.state.executableQuerySelectedIds = executableSelection.query_selected_ids || [];
+        context.state.executableQueryClickOrder = executableSelection.query_click_order || [];
+        context.state.executableQueryActSelections = decodeMongoSafeMap(executableSelection.query_act_selections);
 
         alertWidget("success", "The export has been loaded successfully!");
       } catch {
@@ -665,8 +729,18 @@ const store = createStore({
         eflint: {
           specification: context.state.executableEflintBase || "",
           scenario: context.state.executableEflintFinal || "",
+          query: context.state.executableEflintQuery || "",
           generated_at: { $date: nowIso },
           generator_version: "",
+        },
+        executable_selection: {
+          selected_ids: context.state.executableSelectedIds || [],
+          click_order: context.state.executableClickOrder || [],
+          agent_instance_names: encodeMongoSafeMap(context.state.executableAgentInstanceNames),
+          act_selections: encodeMongoSafeMap(context.state.executableActSelections),
+          query_selected_ids: context.state.executableQuerySelectedIds || [],
+          query_click_order: context.state.executableQueryClickOrder || [],
+          query_act_selections: encodeMongoSafeMap(context.state.executableQueryActSelections),
         },
       };
 

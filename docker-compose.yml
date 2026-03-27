@@ -97,6 +97,19 @@ services:
     networks:
       - rule-editor
 
+  eflint_server:
+    build:
+      context: ./eflint_server
+      dockerfile: Dockerfile
+    container_name: rule-editor-eflint-server
+    restart: unless-stopped
+    env_file:
+      - ./.env.stack
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - rule-editor
+
 volumes:
   mongodb_data:
 
