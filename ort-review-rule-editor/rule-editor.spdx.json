@@ -1,0 +1,1123 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "rule-editor-dependencies",
+  "documentNamespace": "https://github.com/Alk0u/rule-editor/spdx/2026-08-26",
+  "creationInfo": {
+    "created": "2026-08-26T00:00:00Z",
+    "creators": [
+      "Tool: compile_dependencies.py-generate_ort_spdx.py"
+    ]
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-rule-editor",
+      "name": "rule-editor",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-eflint-1",
+      "name": "eflint",
+      "versionInfo": "latest",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/eflint@latest"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-nginxinc-nginx-unprivileged-2",
+      "name": "nginxinc/nginx-unprivileged",
+      "versionInfo": "1.23-alpine",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/nginxinc/nginx-unprivileged@1.23-alpine"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-node-3",
+      "name": "node",
+      "versionInfo": "18.12",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/node@18.12"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-python-4",
+      "name": "python",
+      "versionInfo": "3.11-slim",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/python@3.11-slim"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-python-5",
+      "name": "python",
+      "versionInfo": "3.11-slim",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/python@3.11-slim"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-python-6",
+      "name": "python",
+      "versionInfo": "3.11-slim",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/python@3.11-slim"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-docker-image-python-7",
+      "name": "python",
+      "versionInfo": "3.12-slim",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/python@3.12-slim"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm--quasar-extras-8",
+      "name": "@quasar/extras",
+      "versionInfo": "1.15.5",
+      "downloadLocation": "https://registry.npmjs.org/@quasar/extras/-/extras-1.15.5.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40quasar/extras@1.15.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm--quasar-vite-plugin-9",
+      "name": "@quasar/vite-plugin",
+      "versionInfo": "1.2.3",
+      "downloadLocation": "https://registry.npmjs.org/@quasar/vite-plugin/-/vite-plugin-1.2.3.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40quasar/vite-plugin@1.2.3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm--triply-triplydb-10",
+      "name": "@triply/triplydb",
+      "versionInfo": "9.1.0",
+      "downloadLocation": "https://registry.npmjs.org/@triply/triplydb/-/triplydb-9.1.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40triply/triplydb@9.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm--vitejs-plugin-vue-11",
+      "name": "@vitejs/plugin-vue",
+      "versionInfo": "3.1.0",
+      "downloadLocation": "https://registry.npmjs.org/@vitejs/plugin-vue/-/plugin-vue-3.1.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40vitejs/plugin-vue@3.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-d3-array-12",
+      "name": "d3-array",
+      "versionInfo": "3.2.2",
+      "downloadLocation": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.2.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/d3-array@3.2.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-d3-fetch-13",
+      "name": "d3-fetch",
+      "versionInfo": "3.0.1",
+      "downloadLocation": "https://registry.npmjs.org/d3-fetch/-/d3-fetch-3.0.1.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/d3-fetch@3.0.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-d3-force-14",
+      "name": "d3-force",
+      "versionInfo": "3.0.0",
+      "downloadLocation": "https://registry.npmjs.org/d3-force/-/d3-force-3.0.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/d3-force@3.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-d3-selection-15",
+      "name": "d3-selection",
+      "versionInfo": "3.0.0",
+      "downloadLocation": "https://registry.npmjs.org/d3-selection/-/d3-selection-3.0.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/d3-selection@3.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-d3-zoom-16",
+      "name": "d3-zoom",
+      "versionInfo": "3.0.0",
+      "downloadLocation": "https://registry.npmjs.org/d3-zoom/-/d3-zoom-3.0.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/d3-zoom@3.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-eslint-17",
+      "name": "eslint",
+      "versionInfo": "8.35.0",
+      "downloadLocation": "https://registry.npmjs.org/eslint/-/eslint-8.35.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/eslint@8.35.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-eslint-config-prettier-18",
+      "name": "eslint-config-prettier",
+      "versionInfo": "8.7.0",
+      "downloadLocation": "https://registry.npmjs.org/eslint-config-prettier/-/eslint-config-prettier-8.7.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/eslint-config-prettier@8.7.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-eslint-plugin-vue-19",
+      "name": "eslint-plugin-vue",
+      "versionInfo": "9.9.0",
+      "downloadLocation": "https://registry.npmjs.org/eslint-plugin-vue/-/eslint-plugin-vue-9.9.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/eslint-plugin-vue@9.9.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-file-saver-20",
+      "name": "file-saver",
+      "versionInfo": "2.0.5",
+      "downloadLocation": "https://registry.npmjs.org/file-saver/-/file-saver-2.0.5.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/file-saver@2.0.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-mongodb-21",
+      "name": "mongodb",
+      "versionInfo": "7.1.0",
+      "downloadLocation": "https://registry.npmjs.org/mongodb/-/mongodb-7.1.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/mongodb@7.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-netlify-cli-22",
+      "name": "netlify-cli",
+      "versionInfo": "23.10",
+      "downloadLocation": "https://registry.npmjs.org/netlify-cli/-/netlify-cli-23.10.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/netlify-cli@23.10"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-prettier-23",
+      "name": "prettier",
+      "versionInfo": "2.8.4",
+      "downloadLocation": "https://registry.npmjs.org/prettier/-/prettier-2.8.4.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/prettier@2.8.4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-quasar-24",
+      "name": "quasar",
+      "versionInfo": "2.10.0",
+      "downloadLocation": "https://registry.npmjs.org/quasar/-/quasar-2.10.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/quasar@2.10.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-quasar-app-extension-qdraggabletree-25",
+      "name": "quasar-app-extension-qdraggabletree",
+      "versionInfo": "2.0.5",
+      "downloadLocation": "https://registry.npmjs.org/quasar-app-extension-qdraggabletree/-/quasar-app-extension-qdraggabletree-2.0.5.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/quasar-app-extension-qdraggabletree@2.0.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-sass-26",
+      "name": "sass",
+      "versionInfo": "1.32.12",
+      "downloadLocation": "https://registry.npmjs.org/sass/-/sass-1.32.12.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/sass@1.32.12"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-superagent-27",
+      "name": "superagent",
+      "versionInfo": "10.2.3",
+      "downloadLocation": "https://registry.npmjs.org/superagent/-/superagent-10.2.3.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/superagent@10.2.3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-uuid-28",
+      "name": "uuid",
+      "versionInfo": "9.0.0",
+      "downloadLocation": "https://registry.npmjs.org/uuid/-/uuid-9.0.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/uuid@9.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-vite-29",
+      "name": "vite",
+      "versionInfo": "3.1.0",
+      "downloadLocation": "https://registry.npmjs.org/vite/-/vite-3.1.0.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/vite@3.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-vue-30",
+      "name": "vue",
+      "versionInfo": "3.2.37",
+      "downloadLocation": "https://registry.npmjs.org/vue/-/vue-3.2.37.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/vue@3.2.37"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-npm-vuex-31",
+      "name": "vuex",
+      "versionInfo": "4.0.2",
+      "downloadLocation": "https://registry.npmjs.org/vuex/-/vuex-4.0.2.tgz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/vuex@4.0.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-os-package-libgmp10-32",
+      "name": "libgmp10",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:generic/libgmp10"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-os-package-libtinfo6-33",
+      "name": "libtinfo6",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:generic/libtinfo6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-argon2-cffi-34",
+      "name": "argon2-cffi",
+      "versionInfo": "23.1.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/31/fa/57ec2c6d16ecd2ba0cf15f3c7d1c3c2e7b5fcb83555ff56d7ab10888ec8f/argon2_cffi-23.1.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/argon2-cffi@23.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-argon2-cffi-35",
+      "name": "argon2-cffi",
+      "versionInfo": "23.1.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/31/fa/57ec2c6d16ecd2ba0cf15f3c7d1c3c2e7b5fcb83555ff56d7ab10888ec8f/argon2_cffi-23.1.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/argon2-cffi@23.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-fastapi-36",
+      "name": "fastapi",
+      "versionInfo": "0.115.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/7b/5e/bf0471f14bf6ebfbee8208148a3396d1a23298531a6cc10776c59f4c0f87/fastapi-0.115.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/fastapi@0.115.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-fastapi-37",
+      "name": "fastapi",
+      "versionInfo": "0.115.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/7b/5e/bf0471f14bf6ebfbee8208148a3396d1a23298531a6cc10776c59f4c0f87/fastapi-0.115.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/fastapi@0.115.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-fastapi-38",
+      "name": "fastapi",
+      "versionInfo": "0.115.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/7b/5e/bf0471f14bf6ebfbee8208148a3396d1a23298531a6cc10776c59f4c0f87/fastapi-0.115.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/fastapi@0.115.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-fastapi-39",
+      "name": "fastapi",
+      "versionInfo": "0.115.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/7b/5e/bf0471f14bf6ebfbee8208148a3396d1a23298531a6cc10776c59f4c0f87/fastapi-0.115.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/fastapi@0.115.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-fastapi-40",
+      "name": "fastapi",
+      "versionInfo": "0.115.6",
+      "downloadLocation": "https://files.pythonhosted.org/packages/93/72/d83b98cd106541e8f5e5bfab8ef2974ab45a62e8a6c5b5e6940f26d2ed4b/fastapi-0.115.6.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/fastapi@0.115.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-jinja2-41",
+      "name": "jinja2",
+      "versionInfo": "3.1.4",
+      "downloadLocation": "https://files.pythonhosted.org/packages/ed/55/39036716d19cab0747a5020fc7e907f362fbf48c984b14e62127f7e68e5d/jinja2-3.1.4.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/jinja2@3.1.4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pydantic-42",
+      "name": "pydantic",
+      "versionInfo": "2.10.5",
+      "downloadLocation": "https://files.pythonhosted.org/packages/6a/c7/ca334c2ef6f2e046b1144fe4bb2a5da8a4c574e7f2ebf7e16b34a6a2fa92/pydantic-2.10.5.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pydantic@2.10.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pydantic-43",
+      "name": "pydantic",
+      "versionInfo": "2.8.2",
+      "downloadLocation": "https://files.pythonhosted.org/packages/8c/99/d0a5dca411e0a017762258013ba9905cd6e7baa9a3fd1fe8b6529472902e/pydantic-2.8.2.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pydantic@2.8.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pydantic-44",
+      "name": "pydantic",
+      "versionInfo": "2.8.2",
+      "downloadLocation": "https://files.pythonhosted.org/packages/8c/99/d0a5dca411e0a017762258013ba9905cd6e7baa9a3fd1fe8b6529472902e/pydantic-2.8.2.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pydantic@2.8.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pydantic-45",
+      "name": "pydantic",
+      "versionInfo": "2.8.2",
+      "downloadLocation": "https://files.pythonhosted.org/packages/8c/99/d0a5dca411e0a017762258013ba9905cd6e7baa9a3fd1fe8b6529472902e/pydantic-2.8.2.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pydantic@2.8.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pydantic-46",
+      "name": "pydantic",
+      "versionInfo": "2.8.2",
+      "downloadLocation": "https://files.pythonhosted.org/packages/8c/99/d0a5dca411e0a017762258013ba9905cd6e7baa9a3fd1fe8b6529472902e/pydantic-2.8.2.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pydantic@2.8.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-pymongo-47",
+      "name": "pymongo",
+      "versionInfo": "4.8.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/05/2c/ad0896cb94668c3cad1eb702ab60ae17036b051f54cfe547f11a0322f1d3/pymongo-4.8.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pymongo@4.8.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-uvicorn-48",
+      "name": "uvicorn",
+      "versionInfo": "0.30.6",
+      "downloadLocation": "https://files.pythonhosted.org/packages/5a/01/5e637e7aa9dd031be5376b9fb749ec20b86f5a5b6a49b87fabd374d5fa9f/uvicorn-0.30.6.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/uvicorn@0.30.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-uvicorn-49",
+      "name": "uvicorn",
+      "versionInfo": "0.30.6",
+      "downloadLocation": "https://files.pythonhosted.org/packages/5a/01/5e637e7aa9dd031be5376b9fb749ec20b86f5a5b6a49b87fabd374d5fa9f/uvicorn-0.30.6.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/uvicorn@0.30.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-uvicorn-50",
+      "name": "uvicorn",
+      "versionInfo": "0.30.6",
+      "downloadLocation": "https://files.pythonhosted.org/packages/5a/01/5e637e7aa9dd031be5376b9fb749ec20b86f5a5b6a49b87fabd374d5fa9f/uvicorn-0.30.6.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/uvicorn@0.30.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-uvicorn-51",
+      "name": "uvicorn",
+      "versionInfo": "0.30.6",
+      "downloadLocation": "https://files.pythonhosted.org/packages/5a/01/5e637e7aa9dd031be5376b9fb749ec20b86f5a5b6a49b87fabd374d5fa9f/uvicorn-0.30.6.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/uvicorn@0.30.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pip-uvicorn-52",
+      "name": "uvicorn",
+      "versionInfo": "0.34.0",
+      "downloadLocation": "https://files.pythonhosted.org/packages/4b/4d/938bd85e5bf2edeec766267a5015ad969730bb91e31b44021dfe8b22df6c/uvicorn-0.34.0.tar.gz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/uvicorn@0.34.0"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-rule-editor",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-eflint-1",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-nginxinc-nginx-unprivileged-2",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-node-3",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-python-4",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-python-5",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-python-6",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-docker-image-python-7",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm--quasar-extras-8",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm--quasar-vite-plugin-9",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm--triply-triplydb-10",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm--vitejs-plugin-vue-11",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-d3-array-12",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-d3-fetch-13",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-d3-force-14",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-d3-selection-15",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-d3-zoom-16",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-eslint-17",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-eslint-config-prettier-18",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-eslint-plugin-vue-19",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-file-saver-20",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-mongodb-21",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-netlify-cli-22",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-prettier-23",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-quasar-24",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-quasar-app-extension-qdraggabletree-25",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-sass-26",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-superagent-27",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-uuid-28",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-vite-29",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-vue-30",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-npm-vuex-31",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-os-package-libgmp10-32",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-os-package-libtinfo6-33",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-argon2-cffi-34",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-argon2-cffi-35",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-fastapi-36",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-fastapi-37",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-fastapi-38",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-fastapi-39",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-fastapi-40",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-jinja2-41",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pydantic-42",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pydantic-43",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pydantic-44",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pydantic-45",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pydantic-46",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-pymongo-47",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-uvicorn-48",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-uvicorn-49",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-uvicorn-50",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-uvicorn-51",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-rule-editor",
+      "relatedSpdxElement": "SPDXRef-Package-pip-uvicorn-52",
+      "relationshipType": "DEPENDS_ON"
+    }
+  ]
+}

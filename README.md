@@ -37,7 +37,8 @@ Feel free to explore both!
 7. [Development](#development)
 8. [Environment Variables](#environment-variables)
 9. [Contributing](#contributing)
-10. [License](#license)
+10. [Dependency Licenses](#dependency-licenses)
+11. [License](#license)
 
 
 ## Application Overview
@@ -672,6 +673,10 @@ git push origin my-feature-or-bugfix
 ```
 8. Open a Merge Request ([GitLab guide](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/))
 
+
+## Dependency Licenses
+
+See the [dependency license report](./ort-review-rule-editor/license-report.md) for the versions, descriptions, SPDX license identifiers, and license links of the project's included dependencies.
 
 ## License
 
