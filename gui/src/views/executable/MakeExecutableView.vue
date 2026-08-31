@@ -215,13 +215,7 @@
           <q-card-section>
             <q-expansion-item default-opened header-class="text-caption" label="Specification">
               <div class="q-pt-sm">
-                <q-input
-                  v-model="eflintBase"
-                  type="textarea"
-                  autogrow
-                  outlined
-                  input-style="font-family: monospace;"
-                />
+                <EflintEditor v-model="eflintBase" />
                 <div class="row items-center q-gutter-sm q-mt-sm">
                   <q-btn
                     color="primary"
@@ -250,13 +244,7 @@
 
             <q-expansion-item default-opened header-class="text-caption q-mt-md" label="Scenario">
               <div class="q-pt-sm">
-                <q-input
-                  v-model="eflintFinal"
-                  type="textarea"
-                  autogrow
-                  outlined
-                  input-style="font-family: monospace;"
-                />
+                <EflintEditor v-model="eflintFinal" />
                 <div class="row items-center q-gutter-sm q-mt-sm">
                   <q-btn
                     color="primary"
@@ -285,13 +273,7 @@
 
             <q-expansion-item default-opened header-class="text-caption q-mt-md" label="Queries">
               <div class="q-pt-sm">
-                <q-input
-                  v-model="eflintQuery"
-                  type="textarea"
-                  autogrow
-                  outlined
-                  input-style="font-family: monospace;"
-                />
+                <EflintEditor v-model="eflintQuery" />
                 <div class="row items-center q-gutter-sm q-mt-sm">
                   <q-btn
                     color="primary"
@@ -329,9 +311,11 @@ import { convertInterpretationToJson } from "../../helpers/importExport.js";
 import { alertWidget } from "../../helpers/alertWidget.js";
 import { buildEflintApiUrl } from "../../services/AuthService.js";
 import { buildEflintServerUrl } from "../../services/eflintEndpoints.js";
+import EflintEditor from "../../components/EflintEditor.vue";
 
 export default {
   name: "MakeExecutableView",
+  components: { EflintEditor },
 
   data() {
     return {
