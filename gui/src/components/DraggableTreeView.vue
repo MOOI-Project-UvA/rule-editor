@@ -532,15 +532,7 @@ export default {
       event.stopPropagation();
       console.log("deleting booleanConstruct");
       nodeData.beingEdited = false;
-      //if bc has no parent, do not delete, since that would leave precondition empty
-      //instead: clean
-      if (nodeData.parent) {
-        console.log("nodeData.parent:", nodeData.parent);
-        nodeData.delete();
-      } else {
-        console.log("no parent: ", nodeData.parent);
-        nodeData.clean();
-      }
+      this.$store.commit("removeBooleanConstruct", nodeData);
       // set the initial margin to negative for styling purposes
       !nodeData.parent.parent && nodeData.parent.children.length == 0
         ? (this.notMargined = true)

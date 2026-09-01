@@ -190,13 +190,7 @@ export default {
     deleteBooleanConstruct(event, nodeData) {
       event.stopPropagation();
       nodeData.beingEdited = false;
-      //if bc has no parent, do not delete, since that would leave precondition empty
-      //instead: clean
-      if (nodeData.parent) {
-        nodeData.delete();
-      } else {
-        nodeData.clean();
-      }
+      this.$store.commit("removeBooleanConstruct", nodeData);
       // set the initial margin to negative for styling purposes
       !nodeData.parent.parent && nodeData.parent.children.length == 0
         ? (this.notMargined = true)

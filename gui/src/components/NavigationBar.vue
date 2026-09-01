@@ -11,6 +11,7 @@
     </div>
     <div class="q-ml-lg col">
       <div class="float-right">
+        <UndoButton/>
         <LoadSaveInterpretationBanner/></div>
     </div>
   </div>
@@ -24,6 +25,7 @@ import VisualizationView from "../views/visualization/VisualizationView.vue";
 import MakeExecutableView from "../views/executable/MakeExecutableView.vue";
 import ExecuteTaskView from "../views/executable/ExecuteTaskView.vue";
 import LoadSaveInterpretationBanner from "./LoadSaveIntepretationBanner.vue"
+import UndoButton from "./UndoButton.vue"
 import { markRaw } from 'vue' //to prevent components from becoming reactie
 
 export default {
@@ -80,7 +82,8 @@ export default {
     TaskDefinitionView,
     InterpretationView,
     SourceCollectionView,
-    LoadSaveInterpretationBanner
+    LoadSaveInterpretationBanner,
+    UndoButton,
   },
   mounted() {
     this.updateActiveView(this.views[0])

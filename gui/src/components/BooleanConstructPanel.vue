@@ -157,13 +157,7 @@ export default {
     },
     deleteBooleanConstruct(event) {
       event.stopPropagation();
-      //if bc has no parent, do not delete, since that would leave precondition empty
-      //instead: clean
-      if (this.booleanConstruct.parent) {
-        this.booleanConstruct.delete();
-      } else {
-        this.booleanConstruct.clean();
-      }
+      this.$store.commit("removeBooleanConstruct", this.booleanConstruct);
     },
   },
 };
