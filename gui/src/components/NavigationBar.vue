@@ -95,7 +95,7 @@ export default {
   computed: {
     isWhatsNewEnabled() {
       const value = import.meta.env.VITE_WHATS_NEW_ENABLED;
-      return value === undefined || value === "" || String(value).toLowerCase() === "true";
+      return String(value).toLowerCase() === "true";
     },
   },
   components: {
