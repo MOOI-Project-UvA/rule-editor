@@ -1,0 +1,22 @@
+[
+  {
+    "version": "v1.4",
+    "date": "2026-09-01",
+    "status": "unreleased",
+    "sections": [
+      {
+        "type": "Features",
+        "items": [
+          "Added eFLINT syntax highlighting across executable editors.",
+          "Added terminal-style REPL navigation and command-state feedback."
+        ]
+      },
+      {
+        "type": "Fixes",
+        "items": [
+          "Changed act query semantics from ?Holds to ?Enabled."
+        ]
+      }
+    ]
+  }
+]
