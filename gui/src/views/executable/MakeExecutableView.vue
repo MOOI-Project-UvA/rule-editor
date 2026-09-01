@@ -481,7 +481,7 @@ export default {
 
     queryResultLines() {
       return this.querySelectedFrames
-        .map((f) => `?Holds(${this.buildActTerm(f, this.queryActSelections[f.id] || {})}).`);
+        .map((f) => `?Enabled(${this.buildActTerm(f, this.queryActSelections[f.id] || {})}).`);
     },
 
     queryResultText() {
@@ -857,7 +857,7 @@ export default {
         .split("\n")
         .map((line) => line.trim())
         .filter((line) => line.length > 0)
-        .filter((line) => line.startsWith("?Holds("));
+        .filter((line) => line.startsWith("?Enabled("));
     },
 
     queryItemClass(frameId) {
@@ -1047,7 +1047,7 @@ export default {
         const statusByFrame = {};
 
         for (const { frameId, query } of queryPairs) {
-          const resp = await fetch(buildEflintServerUrl("/query/holds"), {
+          const resp = await fetch(buildEflintServerUrl("/query/enabled"), {
             method: "POST",
             headers,
             body: JSON.stringify({ text: query }),
