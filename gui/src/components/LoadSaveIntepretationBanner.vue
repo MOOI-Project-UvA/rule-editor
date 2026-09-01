@@ -70,7 +70,7 @@ export default {
 </script>
 
 <template>
-  <div class="row q-gutter-sm q-ma-sm save-load-button-container">
+  <div class="row q-gutter-xs save-load-button-container">
     <q-btn
       round
       size="sm"
@@ -206,9 +206,6 @@ export default {
 }
 
 .save-load-button-container {
-  /* border-left: 2px solid #1976D2; */
-  background-color: #b6d1ec;
-  padding: 0px 7px 7px 0px;
-  border-radius: 5px;
+  align-items: center;
 }
 </style>
